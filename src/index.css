@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+    .input {
+    @apply    appearance-none  border-b-2 border-gray-300 w-full ml-3  py-4 px-4 text-gray-700 leading-tight focus:outline-none min-w-full ; 
+    }
+}
