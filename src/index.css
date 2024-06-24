@@ -7,4 +7,14 @@
     .input {
     @apply    appearance-none  border-b-2 border-gray-300 w-full ml-3  py-4 px-4 text-gray-700 leading-tight focus:outline-none min-w-full ; 
     }
+
+    .input1 {
+    @apply border-b-2 border-gray-300 p-2 w-full min-w-full focus:outline-none text-[14px];
+    }
+    
+    .icon {
+    @apply text-[25px] text-teal-700 md:hidden;
+    }
+
+    
 }
