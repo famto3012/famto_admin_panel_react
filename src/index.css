@@ -16,5 +16,13 @@
     @apply text-[25px] text-teal-700 md:hidden;
     }
 
+    .side {
+     @apply hover:bg-cyan-400 hover:text-white;
+    }
+    
+    .dropside { 
+    @apply flex items-center justify-between text-white mt-[20px]
+    }
+
     
 }
