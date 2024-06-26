@@ -11,14 +11,17 @@ const LoginPage = () => {
     role: ""
   })
 
+
+
+
   const handleInputChange = async (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
+
+  
   
   };
 
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [role, setRole] = useState("Merchant");
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(loginData);
@@ -62,7 +65,7 @@ const LoginPage = () => {
                 id="role"
                 className="mt-1 text-gray-500 p-2 w-full border rounded"
                 value={loginData.role}
-                onChange={handleSubmit}
+                onChange={handleInputChange}
 
                 // to do
 

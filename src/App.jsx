@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import Signup from "./pages/SignUp";
-
+import Verification from "./verify/Verification";
+import MerchantDetails from "./pages/admin/merchant/MerchantDetails";
 
 function App() {
 
@@ -12,6 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/verify" element={<Verification />} />
+        <Route path="/merchantdetails" element={<MerchantDetails />} />
       </Routes>
     </BrowserRouter>
 
