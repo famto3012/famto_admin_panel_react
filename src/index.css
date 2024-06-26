@@ -22,6 +22,13 @@
 
     .dropside { 
     @apply flex items-center justify-between text-white mt-[20px]
+
+     @apply hover:bg-cyan-400 hover:text-white;
+    }
+    
+    .dropside { 
+    @apply flex items-center justify-between text-white mt-[20px]
+\\
     }
 
     
