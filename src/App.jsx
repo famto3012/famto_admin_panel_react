@@ -1,42 +1,36 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import Signup from "./pages/SignUp";
+import LoginPage from "./pages/auth/LoginPage";
+import Signup from "./pages/auth/SignUp";
 
-import Success from "./success/Success";
-import AddMerchant from "./pages/model/AddMerchant";
-import EditMerchant from "./pages/model/EditMerchant";
-import Sidebar from "./pages/sidebar/Sidebar";
+import Success from "./pages/auth/Success";
+import AddMerchant from "./components/model/AddMerchant";
+import EditMerchant from "./components/model/EditMerchant";
 import Merchant from "./pages/admin/merchant/Merchant";
 
-import Verification from "./verify/Verification";
+import Verification from "./pages/auth/Verification";
 import MerchantDetails from "./pages/admin/merchant/MerchantDetails";
 
-
 function App() {
-
-
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<Signup />} />
 
-        <Route path="/success" element={<Success />} />     
+        <Route path="/success" element={<Success />} />
         <Route path="/addmerchant" element={<AddMerchant />} />
         <Route path="/editmerchant" element={<EditMerchant />} />
-        <Route path="/sidebar" element={<Sidebar />} />
-        <Route path="/merchant" element={<Merchant />} />
-    
-        </Routes>
+        <Route path="/all-merchants" element={<Merchant />} />
 
         <Route path="/verify" element={<Verification />} />
-        <Route path="/merchantdetails" element={<MerchantDetails />} />
+        <Route
+          path="/merchant-detail/:merchantId"
+          element={<MerchantDetails />}
+        />
       </Routes>
-
     </BrowserRouter>
-
-  )
+  );
 }
 
-export default App
+export default App;

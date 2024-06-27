@@ -1,4 +1,3 @@
-
 /* Modal Starts */
 
 .overlay,
@@ -70,10 +69,6 @@
   opacity: 1;
   visibility: visible;
   animation: modal-in 0.5s;
-
-}
-
 }
 
 /* Modal Ends */
-

@@ -1,5 +1,5 @@
-import { Modal } from '@mui/material';
-import React, { useState } from 'react';
+import { Modal } from "@mui/material";
+import React, { useState } from "react";
 
 const AddMerchant = () => {
   const [addData, setAddData] = useState({
@@ -27,7 +27,7 @@ const AddMerchant = () => {
         <form onSubmit={signupAction}>
           <div className="flex flex-col gap-4">
             <div className="flex items-center">
-              <label className= "w-1/3 text-gray-500">Full Name of owner</label>
+              <label className="w-1/3 text-gray-500">Full Name of owner</label>
               <input
                 className="border-2 border-gray-300 rounded p-2 w-2/3"
                 type="text"
@@ -38,7 +38,9 @@ const AddMerchant = () => {
               />
             </div>
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="email">Email</label>
+              <label className="w-1/3 text-gray-500" htmlFor="email">
+                Email
+              </label>
               <input
                 className="border-2 border-gray-300 rounded p-2 w-2/3"
                 type="email"
@@ -49,7 +51,9 @@ const AddMerchant = () => {
               />
             </div>
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="phone">Phone Number</label>
+              <label className="w-1/3 text-gray-500" htmlFor="phone">
+                Phone Number
+              </label>
               <input
                 className="border-2 border-gray-300 rounded p-2 w-2/3"
                 type="tel"
@@ -60,7 +64,9 @@ const AddMerchant = () => {
               />
             </div>
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="password">Password</label>
+              <label className="w-1/3 text-gray-500" htmlFor="password">
+                Password
+              </label>
               <input
                 className="border-2 border-gray-300 rounded p-2 w-2/3"
                 type="password"
@@ -71,7 +77,9 @@ const AddMerchant = () => {
               />
             </div>
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="confirmpassword">Confirm Password</label>
+              <label className="w-1/3 text-gray-500" htmlFor="confirmpassword">
+                Confirm Password
+              </label>
               <input
                 className="border-2 border-gray-300 rounded p-2 w-2/3"
                 type="password"
@@ -82,10 +90,7 @@ const AddMerchant = () => {
               />
             </div>
             <div className="flex justify-end gap-4 mt-6">
-              <button
-                className="bg-cyan-50 py-2 px-4 rounded-md"
-                type="button"
-              >
+              <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
                 Cancel
               </button>
               <button
