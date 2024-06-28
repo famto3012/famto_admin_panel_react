@@ -116,7 +116,9 @@ const AddManager = () => {
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   onChange={inputChange}
                 >
-                  <option hidden selected>Select</option>
+                  <option hidden selected>
+                    Select
+                  </option>
                   <option value="Option 1">Option 1</option>
                   <option value="Option 2">Option 2</option>
                 </select>

@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import Sidebar from '../../../components/Sidebar';
-import { BellOutlined, SearchOutlined } from '@ant-design/icons';
-import { Switch } from 'antd';
+import React, { useState } from "react";
+import Sidebar from "../../../components/Sidebar";
+import { BellOutlined, SearchOutlined } from "@ant-design/icons";
+import { Switch } from "antd";
 
 const UpdateManager = () => {
   const [managerData, setManagerData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    role: '',
-    merchant :'',
-    geofence:'' ,
-    viewcustomes:'',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    role: "",
+    merchant: "",
+    geofence: "",
+    viewcustomes: "",
   });
 
   const inputChange = (e) => {
@@ -156,10 +156,8 @@ const UpdateManager = () => {
                   View All Customers
                 </label>
 
-                    <Switch
-                    />
-                </div>
-
+                <Switch />
+              </div>
 
               <div className="flex justify-end gap-4 mt-6">
                 <button

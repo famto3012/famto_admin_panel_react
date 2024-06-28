@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 const EditMerchant = () => {
   const [editData, setEditData] = useState({
@@ -21,11 +21,13 @@ const EditMerchant = () => {
   return (
     <section className="flex items-center justify-center min-h-screen font-poppins">
       <div className="bg-white p-10 rounded-lg shadow-md w-[800px]">
-        <h1 className="text-2xl font-bold font-poppins mb-6 text-gray-800">Edit Merchant</h1>
+        <h1 className="text-2xl font-bold font-poppins mb-6 text-gray-800">
+          Edit Merchant
+        </h1>
         <form onSubmit={signupAction}>
           <div className="flex flex-col gap-4">
             <div className="flex items-center">
-              <label className= "w-1/3 text-gray-500">Full Name of owner</label>
+              <label className="w-1/3 text-gray-500">Full Name of owner</label>
               <input
                 className="border-2 border-gray-300 rounded p-2 w-2/3"
                 type="text"
@@ -80,10 +82,7 @@ const EditMerchant = () => {
               />
             </div>
             <div className="flex justify-end gap-4 mt-6">
-              <button
-                className="bg-cyan-50 py-2 px-4 rounded-md"
-                type="button"
-              >
+              <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
                 Cancel
               </button>
               <button
@@ -97,8 +96,7 @@ const EditMerchant = () => {
         </form>
       </div>
     </section>
-    
-  )
-}
+  );
+};
 
-export default EditMerchant
+export default EditMerchant;

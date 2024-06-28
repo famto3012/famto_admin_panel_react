@@ -36,10 +36,16 @@ const Signup = () => {
         <img className="h-full w-full object-cover" src="LoginImage.svg" />
         <div className="absolute inset-0 bg-black opacity-40 md:relative"></div>
       </div>
-      <img className=" mt-[100px] absolute md:hidden" src="famto-white-logo.svg" />
+      <img
+        className=" mt-[100px] absolute md:hidden"
+        src="famto-white-logo.svg"
+      />
       <div className="absolute h-full w-full md:w-1/2 flex items-end md:justify-center md:items-center md:relative">
         <div className="min-w-sm md:border-2  border-teal-700 p-2 md:p-10 md:rounded-xl rounded-tl-[100px] bg-white w-full md:max-w-md">
-          <img className="hidden md:flex mx-auto mb-4" src="famto-black-logo.svg" />
+          <img
+            className="hidden md:flex mx-auto mb-4"
+            src="famto-black-logo.svg"
+          />
           <h1 className="text-teal-700 md:text-[20px] mb-6 text-center md:text-black ">
             Sign Up
           </h1>
@@ -131,8 +137,11 @@ const Signup = () => {
           </form>
           <div className="flex justify-center m-5 text-gray-500">
             <p>
-              Already have an Account ? 
-              <Link to="/" className="text-teal-700 "> Sign in</Link>
+              Already have an Account ?
+              <Link to="/" className="text-teal-700 ">
+                {" "}
+                Sign in
+              </Link>
             </p>
           </div>
         </div>

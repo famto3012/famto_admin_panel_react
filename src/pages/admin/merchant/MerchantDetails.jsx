@@ -8,7 +8,7 @@ import AddMerchant from "../../../components/model/AddMerchant";
 import EditMerchant from "../../../components/model/EditMerchant";
 import { Modal, Switch } from "antd";
 
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const MerchantDetails = () => {
   const [formData, setFormData] = useState({
@@ -98,21 +98,24 @@ const MerchantDetails = () => {
 
   const data = [
     {
-      id: 'ID',
-      name: 'Name',
-      review: 'This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it\'s so smooth from the scrub & mask',
+      id: "ID",
+      name: "Name",
+      review:
+        "This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it's so smooth from the scrub & mask",
       rating: 5,
     },
     {
-      id: 'ID',
-      name: 'Name',
-      review: 'This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it\'s so smooth from the scrub & mask',
+      id: "ID",
+      name: "Name",
+      review:
+        "This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it's so smooth from the scrub & mask",
       rating: 5,
     },
     {
-      id: 'ID',
-      name: 'Name',
-      review: 'This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it\'s so smooth from the scrub & mask',
+      id: "ID",
+      name: "Name",
+      review:
+        "This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it's so smooth from the scrub & mask",
       rating: 5,
     },
   ];
@@ -142,7 +145,6 @@ const MerchantDetails = () => {
     const file = e.target.files[0];
     setMerchantFile(file);
     setMerchantPreviewURL(URL.createObjectURL(file));
-
   };
 
   const [pancardFile, setPancardFile] = useState(null);
@@ -196,8 +198,6 @@ const MerchantDetails = () => {
       )
     );
   };
-
-
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -282,8 +282,6 @@ const MerchantDetails = () => {
     }
   };
 
-
-
   const handleChangeRadio = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === "radio") {
@@ -328,14 +326,12 @@ const MerchantDetails = () => {
 
         <div className="flex justify-between my-[15px] mt-8 mb-8">
           <h3 className="font-[600] text-[18px]">Merchantname</h3>
-          <div >
+          <div>
             <Link className="bg-yellow-100 py-2 px-5 p-1 mr-5 rounded-xl">
               <BlockIcon className="w-2 h-2 text-red-600" /> Block
             </Link>
-            Status<Switch className='text-teal-700 ml-2'
-
-
-            />
+            Status
+            <Switch className="text-teal-700 ml-2" />
           </div>
         </div>
 
@@ -614,7 +610,8 @@ const MerchantDetails = () => {
             <div className="mb-[20px] w-[600px] flex items-center justify-between gap-[30px]">
               <label className="text-gray-700 ">Ratings</label>
               <button
-                type="button" onClick={showModalRatings}
+                type="button"
+                onClick={showModalRatings}
                 className="bg-teal-700 text-white p-2 rounded-md w-[20rem]"
               >
                 Show ratings and reviews
@@ -627,34 +624,48 @@ const MerchantDetails = () => {
                 className="w-[600px]"
                 footer={null} // Custom footer to include form buttons
               >
-
                 <div className="overflow-x-auto">
                   <table className="min-w-full border-collapse block md:table text-center mt-4">
                     <thead className="block md:table-header-group">
                       <tr className="border border-gray-300 md:border-none md:table-row">
-                        <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">ID</th>
-                        <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">Name</th>
-                        <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left ">Ratings and Review</th>
+                        <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
+                          ID
+                        </th>
+                        <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
+                          Name
+                        </th>
+                        <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left ">
+                          Ratings and Review
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="block md:table-row-group">
                       {data.map((item, index) => (
-                        <tr key={index} className=" bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0">
-                          <td className="p-2 text-center  md:table-cell">{item.id}</td>
-                          <td className="p-2  text-center md:table-cell">{item.name}</td>
+                        <tr
+                          key={index}
+                          className=" bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0"
+                        >
+                          <td className="p-2 text-center  md:table-cell">
+                            {item.id}
+                          </td>
+                          <td className="p-2  text-center md:table-cell">
+                            {item.name}
+                          </td>
                           <td className=" px-6 py-4 text-left md:table-cell">
                             <div className="flex items-center text-center">
-                              {Array.from({ length: item.rating }).map((_, i) => (
-                                <svg
-                                  key={i}
-                                  className="w-5 h-5 text-yellow-500 text-center"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
-                                </svg>
-                              ))}
+                              {Array.from({ length: item.rating }).map(
+                                (_, i) => (
+                                  <svg
+                                    key={i}
+                                    className="w-5 h-5 text-yellow-500 text-center"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
+                                  </svg>
+                                )
+                              )}
                             </div>
                             <p className="mt-2 ">{item.review}</p>
                           </td>
@@ -663,8 +674,6 @@ const MerchantDetails = () => {
                     </tbody>
                   </table>
                 </div>
-
-
               </Modal>
             </div>
           </div>
@@ -749,7 +758,6 @@ const MerchantDetails = () => {
                 </label>
               </div>
             </div>
-
 
             <div className="flex justify-between items-center my-[20px] max-w-[700px]">
               <label className=" text-gray-700 text-[16px]">FSSAI</label>
@@ -1041,7 +1049,6 @@ const MerchantDetails = () => {
                     {plan.label}({plan.price})
                   </label>
                 ))}
-
               </div>
 
               <button
@@ -1055,7 +1062,9 @@ const MerchantDetails = () => {
                 sheet and reach your customers more easily.
               </p>
             </div>
-            <p className="right-5 ml-[6rem]"><Switch /></p>
+            <p className="right-5 ml-[6rem]">
+              <Switch />
+            </p>
           </div>
 
           <div className="mb-6 flex mt-10">
@@ -1214,4 +1223,3 @@ const MerchantDetails = () => {
 };
 
 export default MerchantDetails;
-

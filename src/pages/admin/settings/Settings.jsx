@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Sidebar from '../../../components/Sidebar';
-import { BellOutlined, SearchOutlined } from '@ant-design/icons';
-import { Modal } from 'antd';
+import React, { useState } from "react";
+import Sidebar from "../../../components/Sidebar";
+import { BellOutlined, SearchOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 
 const Settings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -84,7 +84,10 @@ const Settings = () => {
               <form onSubmit={signupAction}>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="currentpassword">
+                    <label
+                      className="w-1/3 text-gray-500"
+                      htmlFor="currentpassword"
+                    >
                       Current Password
                     </label>
                     <input
@@ -97,7 +100,10 @@ const Settings = () => {
                     />
                   </div>
                   <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="newpassword">
+                    <label
+                      className="w-1/3 text-gray-500"
+                      htmlFor="newpassword"
+                    >
                       New Password
                     </label>
                     <input
@@ -133,7 +139,9 @@ const Settings = () => {
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4 ">
               <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="id">ID</label>
+                <label className="w-1/3 text-gray-500" htmlFor="id">
+                  ID
+                </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   type="text"
@@ -145,7 +153,9 @@ const Settings = () => {
                 />
               </div>
               <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="name">Name</label>
+                <label className="w-1/3 text-gray-500" htmlFor="name">
+                  Name
+                </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   type="text"
@@ -157,7 +167,9 @@ const Settings = () => {
                 />
               </div>
               <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="email">Email</label>
+                <label className="w-1/3 text-gray-500" htmlFor="email">
+                  Email
+                </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   type="email"
@@ -169,7 +181,9 @@ const Settings = () => {
                 />
               </div>
               <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="phone">Phone</label>
+                <label className="w-1/3 text-gray-500" htmlFor="phone">
+                  Phone
+                </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   type="tel"

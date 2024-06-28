@@ -1,35 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-// import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
-    role: ""
-  })
-
-
-
+    role: "",
+  });
 
   const handleInputChange = async (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
-
-  
-  
   };
 
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(loginData);
- 
   };
-
-
-
 
   return (
     <section className="flex w-screen font-poppins h-screen justify-center ">
@@ -54,7 +42,9 @@ const LoginPage = () => {
               alt="Logo"
               className="mx-auto hidden lg:flex h-20 w-20"
             />
-            <h2 className="mt-3 text-2xl font-poppins text-teal-700 md:text-black ">Login</h2>
+            <h2 className="mt-3 text-2xl font-poppins text-teal-700 md:text-black ">
+              Login
+            </h2>
           </div>
           <form onSubmit={handleSubmit}>
             <div className="mb-4 ">
@@ -68,7 +58,6 @@ const LoginPage = () => {
                 onChange={handleInputChange}
 
                 // to do
-
               >
                 <option value={"Admin"}>Admin</option>
                 <option value={"Merchant"}>Merchant</option>
@@ -76,8 +65,10 @@ const LoginPage = () => {
               </select>
             </div>
             <div className="mb-3 ">
-              <div className="mb-2 relative inset-y-0 left-0 flex items-center" >
-                <div className="absolute text-teal-700 "><PersonOutlineOutlinedIcon/></div>
+              <div className="mb-2 relative inset-y-0 left-0 flex items-center">
+                <div className="absolute text-teal-700 ">
+                  <PersonOutlineOutlinedIcon />
+                </div>
                 <input
                   className="input"
                   id="username"
@@ -91,7 +82,9 @@ const LoginPage = () => {
               </div>
             </div>
             <div className="mb-2  relative inset-y-0 left-0 flex items-center">
-              <div className="absolute text-teal-700">< LockOutlinedIcon/></div>
+              <div className="absolute text-teal-700">
+                <LockOutlinedIcon />
+              </div>
               <input
                 className="input"
                 id="password"
@@ -102,7 +95,6 @@ const LoginPage = () => {
                 onChange={handleInputChange}
                 required
               />
-              
             </div>
             <div className="flex items-center justify-end mb-4 text-teal-700">
               <Link to="/">Forgot Password?</Link>
