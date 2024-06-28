@@ -10,6 +10,11 @@ import Merchant from "./pages/admin/merchant/Merchant";
 import Tax from "./pages/admin/tax/Tax";
 import Verification from "./pages/auth/Verification";
 import MerchantDetails from "./pages/admin/merchant/MerchantDetails";
+import Settings from "./pages/admin/settings/Settings";
+import Sidebar from "./components/Sidebar";
+import Rating from "./components/model/Rating";
+import AddManager from "./pages/admin/manager/AddManager";
+import UpdateManager from "./pages/admin/manager/UpdateManager";
 import AccountLogs from "./pages/admin/manager/AccountLogs";
 import Managers from "./pages/admin/manager/Managers";
 
@@ -19,13 +24,17 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<Signup />} />
-
+         <Route path="/sidebar" element={<Sidebar />} />
         <Route path="/success" element={<Success />} />
         <Route path="/addmerchant" element={<AddMerchant />} />
         <Route path="/editmerchant" element={<EditMerchant />} />
         <Route path="/all-merchants" element={<Merchant />} />
-        <Route path="/tax" element={<Tax />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/verify" element={<Verification />} />
+        <Route path="/rating" element={<Rating />} />
+        <Route path="/addmanager" element={<AddManager />} />
+        <Route path="/updatemanager" element={<UpdateManager />} />
+        <Route path="/tax" element={<Tax />} />
         <Route path="/account" element={<AccountLogs />} />
         <Route path="/managers" element={<Managers />} />
         <Route
