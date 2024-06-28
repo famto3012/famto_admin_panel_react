@@ -4,14 +4,14 @@ import LoginPage from "./pages/auth/LoginPage";
 import Signup from "./pages/auth/SignUp";
 
 import Success from "./pages/auth/Success";
-import AddMerchant from "./components/model/AddMerchant";
-import EditMerchant from "./components/model/EditMerchant";
+import AddMerchant from "./components/model/MerchantModels/AddMerchant";
+import EditMerchant from "./components/model/MerchantModels/EditMerchant";
 import Merchant from "./pages/admin/merchant/AllMerchant";
 import Tax from "./pages/admin/tax/Tax";
 import Verification from "./pages/auth/Verification";
 import MerchantDetails from "./pages/admin/merchant/MerchantDetails";
 import Settings from "./pages/admin/settings/Settings";
-import Rating from "./components/model/Rating";
+import Rating from "./components/model/MerchantModels/Rating";
 import AddManager from "./pages/admin/manager/AddManager";
 import UpdateManager from "./pages/admin/manager/UpdateManager";
 import AccountLogs from "./pages/admin/manager/AccountLogs";

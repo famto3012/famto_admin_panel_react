@@ -4,8 +4,8 @@ import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
 import Sidebar from "../../../components/Sidebar";
 import { Link } from "react-router-dom";
 import GlobalSearch from "../../../components/GlobalSearch";
-import AddMerchant from "../../../components/model/AddMerchant";
-import EditMerchant from "../../../components/model/EditMerchant";
+import AddMerchant from "../../../components/model/MerchantModels/AddMerchant";
+import EditMerchant from "../../../components/model/MerchantModels/EditMerchant";
 import { Modal, Switch } from "antd";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
