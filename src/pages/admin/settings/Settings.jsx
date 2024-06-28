@@ -46,11 +46,10 @@ const Settings = () => {
   };
 
   return (
-    <section className="flex font-poppins">
-      <div className="w-64">
-        <Sidebar />
-      </div>
-      <div className="w-full h-screen bg-gray-100">
+    <>
+      <Sidebar />
+
+      <div className="w-full h-screen pl-[300px] bg-gray-100">
         <div className="flex justify-end p-4 gap-3">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
@@ -65,11 +64,13 @@ const Settings = () => {
             </button>
           </div>
         </div>
-        <div className="flex justify-between">
-          <h1 className="text-xl font-semibold ml-[60px] mt-7">Settings</h1>
-          <div className=" md:flex justify-end">
+
+        <div className="flex items-center justify-between mx-[30px] mt-[20px]">
+          <h1 className="text-xl font-semibold">Settings</h1>
+
+          <div>
             <button
-              className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-4 mt-[10px] mr-7"
+              className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-4"
               onClick={showModal}
             >
               Change Password
@@ -135,7 +136,8 @@ const Settings = () => {
             </Modal>
           </div>
         </div>
-        <div className="bg-white p-12 rounded-lg ml-[60px] mt-7 mr-[30px]">
+
+        <div className="bg-white p-12 rounded-lg  mt-[40px] mx-[30px]">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4 ">
               <div className="flex items-center">
@@ -212,7 +214,7 @@ const Settings = () => {
           </form>
         </div>
       </div>
-    </section>
+    </>
   );
 };
 

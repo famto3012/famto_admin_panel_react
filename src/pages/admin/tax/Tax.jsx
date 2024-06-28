@@ -63,7 +63,7 @@ const Tax = () => {
     <>
       <Sidebar />
 
-      <div className="pl-[250px] w-full">
+      <div className="pl-[300px] w-full">
         <nav className="p-5">
           <GlobalSearch />
         </nav>

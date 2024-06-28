@@ -111,7 +111,7 @@ const Merchant = () => {
   return (
     <>
       <Sidebar />
-      <main className="pl-[250px]">
+      <main className="pl-[300px]">
         <div className="flex items-center gap-[20px] justify-end py-[20px] pe-[30px]">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">

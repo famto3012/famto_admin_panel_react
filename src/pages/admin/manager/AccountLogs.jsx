@@ -34,7 +34,7 @@ const AccountLogs = () => {
   return (
     <>
       <Sidebar />
-      <div className="pl-[250px] bg-gray-100 h-screen w-full">
+      <div className="pl-[300px] bg-gray-100 h-screen w-full">
         <nav className="p-7">
           <GlobalSearch />
         </nav>
