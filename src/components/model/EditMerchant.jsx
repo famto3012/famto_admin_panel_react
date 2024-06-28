@@ -19,7 +19,7 @@ const EditMerchant = () => {
   };
 
   return (
-    <section className="flex items-center justify-center min-h-screen font-poppins">
+    // <section className="flex items-center justify-center min-h-screen font-poppins">
       <div className="bg-white p-10 rounded-lg shadow-md w-[800px]">
         <h1 className="text-2xl font-bold font-poppins mb-6 text-gray-800">Edit Merchant</h1>
         <form onSubmit={signupAction}>
@@ -96,7 +96,7 @@ const EditMerchant = () => {
           </div>
         </form>
       </div>
-    </section>
+    // </section>
     
   )
 }
