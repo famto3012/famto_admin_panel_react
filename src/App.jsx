@@ -16,6 +16,7 @@ import AddManager from "./pages/admin/manager/AddManager";
 import UpdateManager from "./pages/admin/manager/UpdateManager";
 import AccountLogs from "./pages/admin/manager/AccountLogs";
 import Managers from "./pages/admin/manager/Managers";
+import PushNotification from "./pages/admin/notifications/PushNotification";
 import AlertNotification from "./pages/admin/notifications/AlertNotification";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/all-tax" element={<Tax />} />
         <Route path="/account-logs" element={<AccountLogs />} />
         <Route path="/all-managers" element={<Managers />} />
+        <Route path="/push-notification" element={< PushNotification />} />
         <Route path="/alert-notification" element={<AlertNotification />} />
         <Route
           path="/merchant-detail/:merchantId"
