@@ -11,8 +11,8 @@ const UpdateManager = () => {
     password: "",
     role: "",
     merchant: "",
-    geofence: "",
-    viewcustomes: "",
+    geofenceId: "",
+    viewCustomers: null,
   });
 
   const inputChange = (e) => {
@@ -25,11 +25,10 @@ const UpdateManager = () => {
   };
 
   return (
-    <section className="flex font-poppins">
-      <div className="w-64">
+    <>
         <Sidebar />
-      </div>
-      <div className="w-full h-screen bg-gray-100">
+    
+      <div className="w-full h-screen pl-[280px] bg-gray-100">
         <div className="flex justify-end p-4 gap-3">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
@@ -47,7 +46,8 @@ const UpdateManager = () => {
         <div>
           <h1 className="text-xl font-semibold mt-7 mx-16">Update Manager</h1>
         </div>
-        <div className="bg-white p-12 rounded-lg ml-[60px] mt-7 mr-[30px]">
+      
+        <div className="bg-white p-10 rounded-lg mx-[60px] mt-7">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4">
               <div className="flex items-center">
@@ -116,7 +116,9 @@ const UpdateManager = () => {
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   onChange={inputChange}
                 >
-                  <option value=""></option>
+                  <option hidden selected>
+                    Select
+                  </option>
                   <option value="Option 1">Option 1</option>
                   <option value="Option 2">Option 2</option>
                 </select>
@@ -142,7 +144,7 @@ const UpdateManager = () => {
                 </label>
                 <select
                   name="geofence"
-                  value={managerData.geofence}
+                  value={managerData.geofenceId}
                   className="border-2 border-gray-300 rounded p-2 w-[45%]"
                   onChange={inputChange}
                 >
@@ -151,6 +153,7 @@ const UpdateManager = () => {
                   <option value="Option 2">Option 2</option>
                 </select>
               </div>
+
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="viewcustomers">
                   View All Customers
@@ -170,14 +173,14 @@ const UpdateManager = () => {
                   className="bg-teal-700 text-white py-2 px-10 rounded-md"
                   type="submit"
                 >
-                  Save
+                  Add
                 </button>
               </div>
             </div>
           </form>
         </div>
       </div>
-    </section>
+    </>
   );
 };
 
