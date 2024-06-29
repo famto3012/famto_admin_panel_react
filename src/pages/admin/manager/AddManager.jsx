@@ -25,11 +25,10 @@ const AddManager = () => {
   };
 
   return (
-    <section className="flex font-poppins">
-      <div className="w-64">
+    <>
         <Sidebar />
-      </div>
-      <div className="w-full h-screen bg-gray-100">
+    
+      <div className="w-full h-screen pl-[280px] bg-gray-100">
         <div className="flex justify-end p-4 gap-3">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
@@ -47,7 +46,8 @@ const AddManager = () => {
         <div>
           <h1 className="text-xl font-semibold mt-7 mx-16">Add Manager</h1>
         </div>
-        <div className="bg-white p-12 rounded-lg ml-[60px] mt-7 mr-[30px]">
+      
+        <div className="bg-white p-10 rounded-lg mx-[60px] mt-7">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4">
               <div className="flex items-center">
@@ -180,7 +180,7 @@ const AddManager = () => {
           </form>
         </div>
       </div>
-    </section>
+    </>
   );
 };
 

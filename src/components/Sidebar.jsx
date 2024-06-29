@@ -13,6 +13,10 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import { CaretRightOutlined } from "@ant-design/icons";
 import CurrencyRupeeOutlinedIcon from "@mui/icons-material/CurrencyRupeeOutlined";
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import NotificationImportantOutlinedIcon from '@mui/icons-material/NotificationImportantOutlined';
+import EditNotificationsOutlinedIcon from '@mui/icons-material/EditNotificationsOutlined';
+import CrisisAlertOutlinedIcon from '@mui/icons-material/CrisisAlertOutlined';
 import { Link } from "react-router-dom";
 
 import "../App.css";
@@ -70,7 +74,7 @@ const Sidebar = () => {
             <BookOutlinedIcon className="m-2" />
             Orders
           </Link>
-          <Link to="/merchants" className="side">
+          <Link to="/all-merchants" className="side">
             <StorefrontOutlinedIcon className="m-2" />
             Merchants
           </Link>
@@ -82,11 +86,11 @@ const Sidebar = () => {
             <GroupsOutlinedIcon className="m-2" />
             Customers
           </Link>
-          <Link to="/deliveryagent" className="side">
+          <Link to="/delivery-agent" className="side">
             <AssignmentIndOutlinedIcon className="m-2" />
             Delivery Agents
           </Link>
-          <Link to="/deliverymanagement" className="side">
+          <Link to="/delivery-management" className="side">
             <TwoWheelerOutlinedIcon className="m-2" />
             Delivery Management
           </Link>
@@ -120,10 +124,23 @@ const Sidebar = () => {
       </div>
       {isnotifcationOpen && (
         <ul className="ul-side">
-          <Link to="/options" className="side">
-            <HomeOutlinedIcon className="m-2" />
-            Option
+          <Link to="/push-notification" className="side">
+            <NotificationsNoneOutlinedIcon className="m-2" />
+            Notification log
           </Link>
+          <Link to="/push-notification" className="side">
+            <NotificationImportantOutlinedIcon className="m-2" />
+            Push Notification
+          </Link>
+          <Link to="/notification-settings" className="side">
+            <EditNotificationsOutlinedIcon className="m-2" />
+            Notification Settings
+          </Link>
+          <Link to="/alert-notification" className="side">
+            <CrisisAlertOutlinedIcon className="m-2" />
+            Alert Notification
+          </Link>
+          
         </ul>
       )}
 
@@ -135,7 +152,7 @@ const Sidebar = () => {
       </div>
       {isconfigureOpen && (
         <ul className="ul-side">
-          <Link to="/roles" className="side">
+          <Link to="/all-managers" className="side">
             <PersonOutlineOutlinedIcon className="m-2" />
             Managers
           </Link>
@@ -151,7 +168,7 @@ const Sidebar = () => {
             <CurrencyRupeeOutlinedIcon className="m-2" />
             Pricing
           </Link>
-          <Link to="/tax" className="side">
+          <Link to="/all-tax" className="side">
             <PercentOutlinedIcon className="m-2" />
             Tax
           </Link>
@@ -181,7 +198,7 @@ const Sidebar = () => {
       </div>
       {isaccountOpen && (
         <ul className="ul-side">
-          <Link to="/accountlogs" className="side">
+          <Link to="/account-logs" className="side">
             <AppBlockingOutlinedIcon className="m-2" />
             Account logs
           </Link>
