@@ -78,6 +78,7 @@ const Tax = () => {
           <Modal
             title="Add Tax"
             open={isModalVisible}
+            className="mt-24"
             onOk={handleOk}
             onCancel={handleCancel}
             footer={null} // Custom footer to include form buttons
@@ -234,9 +235,10 @@ const Tax = () => {
                       <EditOutlined className="bg-gray-200 p-3 rounded-lg" />
                     </button>
                     <Modal
-                      title="Edit Tax"
+                       title="Edit Tax"
                       open={isModalVisibleEdit}
                       onOk={handleOkEdit}
+                      className="mt-24"
                       onCancel={handleCancelEdit}
                       footer={null} // Custom footer to include form buttons
                     >

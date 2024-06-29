@@ -43,7 +43,7 @@ const Managers = () => {
         </nav>
         <div className="flex justify-between mt-5 px-5">
           <h1 className="font-bold text-[20px]"> Managers</h1>
-          <Link to="/addmanager">
+          <Link to="/add-manager">
             {" "}
             <button className="bg-teal-800 rounded-md py-2 px-5 text-white">
               <PlusOutlined />
