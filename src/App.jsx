@@ -18,6 +18,7 @@ import AccountLogs from "./pages/admin/manager/AccountLogs";
 import Managers from "./pages/admin/manager/Managers";
 import PushNotification from "./pages/admin/notifications/PushNotification";
 import AlertNotification from "./pages/admin/notifications/AlertNotification";
+import Referral from "./pages/admin/marketing/Referral";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/all-managers" element={<Managers />} />
         <Route path="/push-notification" element={< PushNotification />} />
         <Route path="/alert-notification" element={<AlertNotification />} />
+        <Route path="/referral" element={<Referral />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}
