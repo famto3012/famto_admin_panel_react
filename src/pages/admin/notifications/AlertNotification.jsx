@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '../../../components/Sidebar';
-import { BellOutlined, DeleteColumnOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { BellOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import { MdCameraAlt } from 'react-icons/md';
 
@@ -146,7 +146,7 @@ const AlertNotification = () => {
                     <div className="bg-gray-400 ml-[55px] mt-0.5 h-20 w-20 rounded-md" />
                   )}
                   {notificationPreviewURL && (
-                    <figure className="mt-0.5 h-20 w-20 rounded-md relative">
+                    <figure className="mt-0.5 ml-[55px] h-20 w-20 rounded-md relative">
                       <img
                         src={notificationPreviewURL}
                         alt="profile"
