@@ -63,7 +63,7 @@ const PushNotification = () => {
               />
             </div>
             <div className="flex">
-              <label className="mt-10 ml-10 w-48">Description (This note will be shown in notification.</label>
+              <label className="mt-10 ml-10 w-48">Description (This note will be shown in notification.)</label>
               <input
                 type="text"
                 name="description"
