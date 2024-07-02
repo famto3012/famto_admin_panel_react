@@ -12,6 +12,7 @@ const Settings = () => {
 
   const handleModalClose = () => {
     setIsModalVisible(false);
+  
   };
 
   const [addData, setAddData] = useState({
@@ -29,6 +30,7 @@ const Settings = () => {
     handleModalClose(); // Close the modal after submitting the form
   };
 
+
   const [settingsData, setSettingsData] = useState({
     id: "",
     name: "",
@@ -39,44 +41,45 @@ const Settings = () => {
   const inputChange = (e) => {
     setSettingsData({ ...settingsData, [e.target.name]: e.target.value });
   };
-
   const formSubmit = (e) => {
     e.preventDefault();
     console.log(settingsData);
   };
+  
 
   return (
     <>
       <Sidebar />
 
       <div className="w-full h-screen pl-[300px] bg-gray-100">
-        <div className="flex justify-end p-4 gap-3">
+        <div className="flex justify-end p-4 gap-7">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
             <input
               type="search"
               name="search"
               placeholder="Search"
-              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-3"
+              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
             />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
+            <button type="submit" className="absolute right-0 top-0 mt-2 mr-9">
               <SearchOutlined className="text-xl text-gray-600" />
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mx-[30px] mt-[20px]">
+        <div className="flex items-center justify-between mx-11 mt-[20px]">
           <h1 className="text-xl font-semibold">Settings</h1>
 
           <div>
             <button
-              className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-4"
+              className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
               onClick={showModal}
             >
               Change Password
             </button>
             <Modal
               title="Change Password"
+              className="mt-32"
               open={isModalVisible}
               onOk={handleModalClose}
               onCancel={handleModalClose}
@@ -92,7 +95,7 @@ const Settings = () => {
                       Current Password
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 w-2/3"
+                      className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
                       type="password"
                       value={addData.currentpassword}
                       id="currentpassword"
@@ -108,7 +111,7 @@ const Settings = () => {
                       New Password
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 w-2/3"
+                      className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
                       type="password"
                       value={addData.newpassword}
                       id="newpassword"
@@ -137,7 +140,7 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="bg-white p-12 rounded-lg  mt-[40px] mx-[30px]">
+        <div className="bg-white p-12 rounded-lg  mt-[40px] mx-11">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4 ">
               <div className="flex items-center">
@@ -145,7 +148,7 @@ const Settings = () => {
                   ID
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="text"
                   placeholder="ID"
                   value={""}
@@ -159,7 +162,7 @@ const Settings = () => {
                   Name
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="text"
                   placeholder="Name"
                   value={settingsData.name}
@@ -173,7 +176,7 @@ const Settings = () => {
                   Email
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="email"
                   placeholder="Email"
                   value={settingsData.email}
@@ -187,7 +190,7 @@ const Settings = () => {
                   Phone
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="tel"
                   placeholder="Phone"
                   value={settingsData.phone}
@@ -200,12 +203,14 @@ const Settings = () => {
                 <button
                   className="bg-cyan-50 py-2 px-8 rounded-md"
                   type="button"
+            
                 >
                   Cancel
                 </button>
                 <button
                   className="bg-teal-700 text-white py-2 px-10 rounded-md"
                   type="submit"
+                  onClick={formSubmit}
                 >
                   Save
                 </button>

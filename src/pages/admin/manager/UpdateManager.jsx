@@ -23,31 +23,35 @@ const UpdateManager = () => {
     e.preventDefault();
     console.log(managerData);
   };
+  const onChange = (name, checked) => {
+    setManagerData({ ...managerData, [name]: checked });
+  };
+
 
   return (
     <>
         <Sidebar />
     
-      <div className="w-full h-screen pl-[280px] bg-gray-100">
-        <div className="flex justify-end p-4 gap-3">
+      <div className="w-full h-screen pl-[300px] bg-gray-100">
+        <div className="flex justify-end p-4 gap-7">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
             <input
               type="search"
               name="search"
               placeholder="Search"
-              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-3"
+              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
             />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
+            <button type="submit" className="absolute right-0 top-0 mt-2 mr-9">
               <SearchOutlined className="text-xl text-gray-600" />
             </button>
           </div>
         </div>
         <div>
-          <h1 className="text-xl font-semibold mt-7 mx-16">Update Manager</h1>
+          <h1 className="text-xl font-semibold mt-7 mx-11">Update Manager</h1>
         </div>
       
-        <div className="bg-white p-10 rounded-lg mx-[60px] mt-7">
+        <div className="bg-white p-10 rounded-lg mx-11 mt-7">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4">
               <div className="flex items-center">
@@ -55,7 +59,7 @@ const UpdateManager = () => {
                   Name
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="text"
                   placeholder="Name"
                   value={managerData.name}
@@ -69,7 +73,7 @@ const UpdateManager = () => {
                   Email
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="email"
                   placeholder="Email"
                   value={managerData.email}
@@ -83,7 +87,7 @@ const UpdateManager = () => {
                   Phone
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="tel"
                   placeholder="Phone"
                   value={managerData.phone}
@@ -97,7 +101,7 @@ const UpdateManager = () => {
                   Password
                 </label>
                 <input
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="password"
                   placeholder="Password"
                   value={managerData.password}
@@ -113,7 +117,7 @@ const UpdateManager = () => {
                 <select
                   name="role"
                   value={managerData.role}
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   onChange={inputChange}
                 >
                   <option hidden selected>
@@ -130,10 +134,12 @@ const UpdateManager = () => {
                 <select
                   name="merchant"
                   value={managerData.merchant}
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   onChange={inputChange}
                 >
-                  <option value=""></option>
+                   <option hidden selected>
+                    Select
+                  </option>
                   <option value="Option 1">Option 1</option>
                   <option value="Option 2">Option 2</option>
                 </select>
@@ -145,21 +151,27 @@ const UpdateManager = () => {
                 <select
                   name="geofence"
                   value={managerData.geofenceId}
-                  className="border-2 border-gray-300 rounded p-2 w-[45%]"
+                  className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   onChange={inputChange}
                 >
-                  <option value=""></option>
+                   <option hidden selected>
+                    Select
+                  </option>
                   <option value="Option 1">Option 1</option>
                   <option value="Option 2">Option 2</option>
                 </select>
               </div>
 
-              <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="viewcustomers">
+              <div className="flex items-center mt-2">
+                <label className="w-1/3 text-gray-500" htmlFor="viewCustomers">
                   View All Customers
                 </label>
 
-                <Switch />
+                <Switch
+                      
+                      onChange={(checked) => onChange("viewCustomers", checked)}
+                      name="viewCustomers"
+                    />
               </div>
 
               <div className="flex justify-end gap-4 mt-6">

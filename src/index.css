@@ -20,12 +20,13 @@
   }
 
   .dropside {
-    @apply flex items-center justify-between text-white mt-[20px];
+    @apply flex items-center justify-between text-white mt-[20px] text-[16px];
   }
 
   .ul-side{
-    @apply flex flex-col text-[14px] text-gray-300  mt-[30px] w-full
+    @apply flex flex-col text-[14px] text-gray-300  mt-[10px] w-full
 
 }
+  
 
 }

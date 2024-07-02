@@ -17,38 +17,40 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import NotificationImportantOutlinedIcon from '@mui/icons-material/NotificationImportantOutlined';
 import EditNotificationsOutlinedIcon from '@mui/icons-material/EditNotificationsOutlined';
 import CrisisAlertOutlinedIcon from '@mui/icons-material/CrisisAlertOutlined';
+import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
+import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
+import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
 import { Link } from "react-router-dom";
 
 import "../App.css";
 
 const Sidebar = () => {
-  const [isgeneralOpen, setGeneralOpen] = useState(false);
+
   const [ismarketingOpen, setMarketingOpen] = useState(false);
   const [isnotifcationOpen, setNotificationOpen] = useState(false);
   const [isconfigureOpen, setConfigureOpen] = useState(false);
   const [isappOpen, setAppOpen] = useState(false);
   const [isaccountOpen, setAccountOpen] = useState(false);
 
-  const toggleSidebar1 = () => {
-    setGeneralOpen(!isgeneralOpen);
-  };
 
-  const toggleSidebar2 = () => {
+
+  const toggleSidebar1 = () => {
     setMarketingOpen(!ismarketingOpen);
   };
 
-  const toggleSidebar3 = () => {
+  const toggleSidebar2 = () => {
     setNotificationOpen(!isnotifcationOpen);
   };
 
-  const toggleSidebar4 = () => {
+  const toggleSidebar3 = () => {
     setConfigureOpen(!isconfigureOpen);
   };
 
-  const toggleSidebar5 = () => {
+  const toggleSidebar4 = () => {
     setAppOpen(!isappOpen);
   };
-  const toggleSidebar6 = () => {
+  const toggleSidebar5 = () => {
     setAccountOpen(!isaccountOpen);
   };
 
@@ -60,11 +62,10 @@ const Sidebar = () => {
       </div>
       <div className="dropside">
         General
-        <button onClick={toggleSidebar1}>
-          <CaretRightOutlined />
-        </button>
-      </div>
-      {isgeneralOpen && (
+       </div>
+      
+      
+  
         <ul className="ul-side">
           <Link to="/home" className="side">
             <HomeOutlinedIcon className="m-2" />
@@ -99,32 +100,48 @@ const Sidebar = () => {
             Commission/Subscription
           </Link>
         </ul>
-      )}
+    
 
       <div className="dropside">
         Marketing
-        <button onClick={toggleSidebar2}>
+        <button onClick={toggleSidebar1}>
           <CaretRightOutlined />
         </button>
       </div>
       {ismarketingOpen && (
         <ul className="ul-side">
-          <Link to="/options" className="side">
+          <Link to="/ad-banner" className="side">
+            <CampaignOutlinedIcon className="m-2" />
+            Ad banner
+          </Link>
+          <Link to="/discount" className="side">
             <HomeOutlinedIcon className="m-2" />
-            Option
+            Discount
+          </Link>
+          <Link to="/loyality-point" className="side">
+            <LoyaltyOutlinedIcon className="m-2" />
+            Loyality Point
+          </Link>
+          <Link to="/promo-code" className="side">
+            <RedeemOutlinedIcon className="m-2" />
+            Promo code
+          </Link>
+          <Link to="/referal" className="side">
+            <HubOutlinedIcon className="m-2" />
+            Referral
           </Link>
         </ul>
       )}
 
       <div className="dropside">
         Notification
-        <button onClick={toggleSidebar3}>
+        <button onClick={toggleSidebar2}>
           <CaretRightOutlined />
         </button>
       </div>
       {isnotifcationOpen && (
         <ul className="ul-side">
-          <Link to="/push-notification" className="side">
+          <Link to="/notification-log" className="side">
             <NotificationsNoneOutlinedIcon className="m-2" />
             Notification log
           </Link>
@@ -146,7 +163,7 @@ const Sidebar = () => {
 
       <div className="dropside">
         Configure
-        <button onClick={toggleSidebar4}>
+        <button onClick={toggleSidebar3}>
           <CaretRightOutlined />
         </button>
       </div>
@@ -177,7 +194,7 @@ const Sidebar = () => {
 
       <div className="dropside">
         App Customization
-        <button onClick={toggleSidebar5}>
+        <button onClick={toggleSidebar4}>
           <CaretRightOutlined />
         </button>
       </div>
@@ -192,7 +209,7 @@ const Sidebar = () => {
 
       <div className="dropside">
         Account
-        <button onClick={toggleSidebar6}>
+        <button onClick={toggleSidebar5}>
           <CaretRightOutlined />
         </button>
       </div>
