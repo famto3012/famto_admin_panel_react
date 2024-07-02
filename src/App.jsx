@@ -20,6 +20,7 @@ import PushNotification from "./pages/admin/notifications/PushNotification";
 import AlertNotification from "./pages/admin/notifications/AlertNotification";
 import NotificationSettings from "./pages/admin/notifications/NotificationSettings";
 import LoyalityPoint from "./pages/admin/marketing/LoyalityPoint";
+import Adbanner from "./pages/admin/marketing/Adbanner";
 import Referral from "./pages/admin/marketing/Referral";
 import PromoCode from "./pages/admin/marketing/PromoCode";
 import Discount from "./pages/admin/marketing/Discount";
@@ -44,6 +45,7 @@ function App() {
         <Route path="/alert-notification" element={<AlertNotification />} />
         <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/loyality-point" element={<LoyalityPoint />} />
+        <Route path="/ad-banner" element={<Adbanner/>} />
         <Route path="/promocode" element={<PromoCode />} />
         <Route path="/referral" element={<Referral />} />
         <Route path="/discount" element={<Discount />} />

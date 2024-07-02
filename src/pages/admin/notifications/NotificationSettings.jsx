@@ -82,9 +82,7 @@ const NotificationSettings = () => {
     setIsModalVisibleEdit(false);
   };
 
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked });
-  };
+
 
   return (
     <>
@@ -286,10 +284,13 @@ const NotificationSettings = () => {
                   <td className="px-6 py-4">
                     <Switch />
                   </td>
-                  <td className="px-4 py-4 flex gap-3 items-center">
+                  <td>
+                  <div className='flex justify-center items-center gap-3'>
+                    <div>
                     <Switch />
+                    </div>
                     <button onClick={showModalEdit}>
-                      <MdOutlineEdit className="bg-gray-200 rounded-lg p-1 text-[30px]" />
+                      <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
                     <Modal
                       title="Edit Notification"
@@ -431,7 +432,10 @@ const NotificationSettings = () => {
                         </div>
                       </form>
                     </Modal>
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-1 text-[30px]" />
+                    <div>
+                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                    </div>
+                    </div>
                   </td>
                 </tr>
               ))}

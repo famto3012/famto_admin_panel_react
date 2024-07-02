@@ -12,8 +12,8 @@ const LoyalityPoint = () => {
     minOrderAmountForEarning: "",
     maxEarningPoint: "",
     expiryDuration: "",
-    redemptionCriteraPoint: "",
-    redemptionCriteraRupee: "",
+    redemptionCriteriaPoint: "",
+    redemptionCriteriaRupee: "",
     minOrderAmountForRedemption: "",
     minLoyaltyPointForRedemption: "",
     maxRedemptionAmountPercentage: "",
@@ -84,7 +84,7 @@ const LoyalityPoint = () => {
                 </label>
               
                 <input
-                  className="border-2 border-gray-300 rounded p-2 ml-[80px] outline-none focus:outline-none w-[25rem] "
+                  className="border-2 border-gray-300 rounded p-2 pl-8 ml-[80px] outline-none focus:outline-none w-[25rem] "
                   type="text"
                   value={loyalityData.earningCriteriaRupee}
                   id="earningCriteriaRupee"
@@ -93,9 +93,9 @@ const LoyalityPoint = () => {
 
                   
                 />
-                 <button className="absolute inset-y-0 left-0 ms-[360px]  text-black rounded-md">
+                 <button className="absolute inset-y-0 left-80 ms-10 text-black rounded-md">
                 <CurrencyRupeeOutlined/>
-            </button>
+                </button>
                 
 
                 <RiEqualFill className="mx-2" />
@@ -156,7 +156,7 @@ const LoyalityPoint = () => {
                 />
               </div>
               <div className="flex flex-row">
-                <div className="flex items-center">
+                <div className="flex items-center relative">
                   <label
                     className="w-1/3 text-gray-500"
                     htmlFor="redemptionCriteraPoint"
@@ -172,8 +172,12 @@ const LoyalityPoint = () => {
                     onChange={handleInputChange}
                   />
                   points <RiEqualFill className="mx-3" />
+                  <button className="absolute inset-y-0 right-60 me-10 text-black rounded-md">
+                <CurrencyRupeeOutlined/>
+                </button>
+                
                   <input
-                    className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-[25rem] "
+                    className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
                     type="text"
                     value={loyalityData.redemptionCriteriaRupee}
                     id="redemptionCriteraRupee"
