@@ -24,6 +24,11 @@ import Adbanner from "./pages/admin/marketing/Adbanner";
 import Notificationlog from "./pages/admin/notifications/Notificationlog";
 import Agentapp from "./pages/admin/appcustomization/Agentapp";
 import MerchantApp from "./pages/admin/appcustomization/MerchantApp";
+import Referral from "./pages/admin/marketing/Referral";
+import PromoCode from "./pages/admin/marketing/PromoCode";
+import Discount from "./pages/admin/marketing/Discount";
+import CustomerApp from "./pages/admin/apps/CustomerApp";
+
 
 function App() {
   return (
@@ -49,6 +54,10 @@ function App() {
         <Route path="/agent-app" element={<Agentapp/>} />
         <Route path="/notification-log" element={<Notificationlog/>} />
         <Route path="/merchant-app" element={<MerchantApp/>} />
+        <Route path="/promocode" element={<PromoCode />} />
+        <Route path="/referral" element={<Referral />} />
+        <Route path="/discount" element={<Discount />} />
+        <Route path="/customer-app" element={<CustomerApp />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}

@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+
 import {
   BellOutlined,
   DeleteColumnOutlined,
   DeleteOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import { MdCameraAlt } from "react-icons/md";
+import React, { useState } from 'react';
+import Sidebar from '../../../components/Sidebar';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import { MdCameraAlt } from 'react-icons/md';
 
 const AlertNotification = () => {
   const [userType, setUserType] = useState("");

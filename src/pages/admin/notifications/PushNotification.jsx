@@ -4,6 +4,7 @@ import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
 import { Switch } from "antd";
 import { FunnelPlotOutlined, SearchOutlined, DeleteOutlined, CloudUploadOutlined } from "@ant-design/icons";
+import FilterAltOutlined from "@mui/icons-material/FilterAltOutlined";
 
 const PushNotification = () => {
 
@@ -22,7 +23,7 @@ const PushNotification = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const submitAction = (e) => {
+  const submitAction = async (e) => {
     e.preventDefault();
     console.log(formData);
   };
@@ -58,7 +59,7 @@ const PushNotification = () => {
                 type="text"
                 name="title"
                 value={formData.title}
-                className="border-2 border-gray-300 rounded ml-60 mt-10  w-96 p-1"
+                className="border-2 border-gray-300 rounded ml-60 mt-10  w-96 p-2 outline-none focus:outline-none"
                 onChange={handleInputChange}
               />
             </div>
@@ -68,7 +69,7 @@ const PushNotification = () => {
                 type="text"
                 name="description"
                 value={formData.description}
-                className="border-2 border-gray-300 rounded  mt-10 ml-20  w-96 "
+                className="border-2 border-gray-300 rounded  mt-10 ml-20  w-96 outline-none focus:outline-none p-2"
                 onChange={handleInputChange}
               />
             </div>
@@ -77,7 +78,7 @@ const PushNotification = () => {
               <select
                 name="geofenceId"
                 value={formData.geofenceId}
-                className="border-2 border-gray-300 rounded ml-52 mt-10  w-96 p-1"
+                className="border-2 border-gray-300 rounded ml-52 mt-10  w-96 p-2 focus:outline-none"
                 onChange={handleInputChange}
               >
                 <option hidden>Select Geofence</option>
@@ -117,15 +118,15 @@ const PushNotification = () => {
             </div>
             <div className="flex">
               <label className="mt-10 ml-10">Customer App</label>
-              <Switch className="mt-11 ml-44" style={{backgroundColor:"#016B6C"}} onChange={(checked) => onChange('customer', checked)} name="agent" />
+              <Switch className="mt-11 ml-44"    onChange={(checked) => onChange('customer', checked)} name="agent" />
             </div>
             <div className="flex">
               <label className="mt-10 ml-10">Agent App</label>
-              <Switch className="mt-11 ml-[200px]" style={{backgroundColor:"#016B6C"}}  onChange={(checked) => onChange('agent', checked)} name="agent" />
+              <Switch className="mt-11 ml-[200px]"  onChange={(checked) => onChange('agent', checked)} name="agent" />
             </div>
             <div className="flex">
               <label className="mt-10 ml-10">Driver App</label>
-              <Switch className="mt-11 ml-[200px]" style={{backgroundColor:"#016B6C"}} onChange={(checked) => onChange('driver', checked)} name="driver" />
+              <Switch className="mt-11 ml-[200px]" onChange={(checked) => onChange('driver', checked)} name="driver" />
             </div>
             <div className="flex justify-end  mb-10 gap-4">
               <button
@@ -157,7 +158,7 @@ const PushNotification = () => {
             <option value="driver">Driver</option>
           </select>
           <div>
-            <FunnelPlotOutlined />
+            <FilterAltOutlined className="text-gray-500" />
             <input
               type="search"
               name="search"
