@@ -294,7 +294,7 @@ const Discount = () => {
                                         onClick={handleOk}
                                         type="submit"
                                     >
-                                        Save
+                                        Add
                                     </button>
                                 </div>
                             </div>
