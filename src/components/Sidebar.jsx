@@ -21,6 +21,9 @@ import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
 import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
 import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
+import ShareLocationOutlinedIcon from '@mui/icons-material/ShareLocationOutlined';
+import { BsPersonLinesFill } from "react-icons/bs";
+import { LuFolderCog } from "react-icons/lu";
 import { Link } from "react-router-dom";
 
 import "../App.css";
@@ -169,17 +172,13 @@ const Sidebar = () => {
       </div>
       {isconfigureOpen && (
         <ul className="ul-side">
-          <Link to="/all-managers" className="side">
-            <PersonOutlineOutlinedIcon className="m-2" />
+          <Link to="/all-managers" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
+          <BsPersonLinesFill className="m-2 text-[20px]" />
             Managers
           </Link>
           <Link to="/roles" className="side">
             <ManageAccountsOutlinedIcon className="m-2" />
             Roles
-          </Link>
-          <Link to="/customer-app-edits" className="side">
-            <SettingsOutlinedIcon className="m-2" />
-            Customer App Edits
           </Link>
           <Link to="/pricing" className="side">
             <CurrencyRupeeOutlinedIcon className="m-2" />
@@ -188,6 +187,10 @@ const Sidebar = () => {
           <Link to="/all-tax" className="side">
             <PercentOutlinedIcon className="m-2" />
             Tax
+          </Link>
+          <Link to="/geofence" className="side">
+            <ShareLocationOutlinedIcon className="m-2" />
+            Geofence
           </Link>
         </ul>
       )}
@@ -200,9 +203,16 @@ const Sidebar = () => {
       </div>
       {isappOpen && (
         <ul className="ul-side">
-          <Link to="/options" className="side">
-            <HomeOutlinedIcon className="m-2" />
-            Option
+          <Link to="/customer-app" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
+          <LuFolderCog className="m-2 text-[25px]" />
+            Customer App
+          </Link>
+          <Link to="/agent-app" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
+          <LuFolderCog className="m-2 text-[25px]" />
+            Agent App
+          </Link>
+          <Link to="/merchant-app" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
+          <LuFolderCog className="m-2 text-[25px] " /> Merchant App
           </Link>
         </ul>
       )}
