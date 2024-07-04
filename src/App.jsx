@@ -24,7 +24,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/success" element={<Success />} />
         <Route path="/all-merchants" element={<Merchant />} />
@@ -36,7 +36,7 @@ function App() {
         <Route path="/all-tax" element={<Tax />} />
         <Route path="/account-logs" element={<AccountLogs />} />
         <Route path="/all-managers" element={<Managers />} />
-        <Route path="/push-notification" element={< PushNotification />} />
+        <Route path="/push-notification" element={<PushNotification />} />
         <Route path="/alert-notification" element={<AlertNotification />} />
         <Route path="/referral" element={<Referral />} />
         <Route

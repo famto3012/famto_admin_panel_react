@@ -1,32 +1,48 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { FunnelPlotOutlined, PlusOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../../../context/UserContext";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Managers = () => {
-  const dummyData = [
-    {
-      id: "1",
-      name: "Adam",
-      email: "adam@gmail.com",
-      phone: "1234567",
-      role: "Manager",
-      geofence: "TVM",
-      action: "",
-    },
-    {
-      id: "2",
-      name: "Famto",
-      email: "famto@gmail.com",
-      phone: "123456789",
-      role: "Owner",
-      geofence: "PMG",
-      action: "",
-    },
-  ];
+  const [allManagers, setAllManagers] = useState([]);
+
+  const navigate = useNavigate();
+
+  const { isLoggedIn } = useContext(UserContext);
+
+  const token = isLoggedIn;
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+
+    const getAllManagers = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/admin/managers`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setAllManagers(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getting all managers: ${err}`);
+      }
+    };
+
+    getAllManagers();
+  }, [token]);
 
   const handleChange = (event) => {
     e.preventDefault();
@@ -100,14 +116,14 @@ const Managers = () => {
             </tr>
           </thead>
           <tbody>
-            {dummyData.map((dummyData) => (
-              <tr className="text-center bg-white h-20" key={dummyData.id}>
-                <td>{dummyData.id}</td>
-                <td>{dummyData.name}</td>
-                <td>{dummyData.email}</td>
-                <td>{dummyData.phone}</td>
-                <td>{dummyData.role}</td>
-                <td>{dummyData.geofence}</td>
+            {allManagers.map((manager) => (
+              <tr className="text-center bg-white h-20" key={manager._id}>
+                <td>{manager._id}</td>
+                <td>{manager.name}</td>
+                <td>{manager.email}</td>
+                <td>{manager.phoneNumber}</td>
+                <td>{manager.role}</td>
+                <td>{manager.geofenceId.name}</td>
                 <td>
                   <button>
                     <EditOutlined className="bg-gray-200 p-3 mr-2 rounded-lg" />
