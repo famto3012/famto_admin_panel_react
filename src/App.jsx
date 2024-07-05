@@ -28,6 +28,9 @@ import Referral from "./pages/admin/marketing/Referral";
 import PromoCode from "./pages/admin/marketing/PromoCode";
 import Discount from "./pages/admin/marketing/Discount";
 import CustomerApp from "./pages/admin/apps/CustomerApp";
+import Customers from "./pages/admin/customers/Customers";
+import CustomerDetails from "./pages/admin/customers/CustomerDetails";
+import Example from "./pages/admin/example/Example";
 import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
 import AgentDetails from "./pages/admin/agents/AgentDetails";
 
@@ -60,6 +63,9 @@ function App() {
         <Route path="/referral" element={<Referral />} />
         <Route path="/discount" element={<Discount />} />
         <Route path="/customer-app" element={<CustomerApp />} />
+        <Route path="/customers" element={<Customers/>} />
+        <Route path="/customer-detail/:cusomerId" element={<CustomerDetails/>} />
+        <Route path="/example" element={<Example />} />
         <Route path="/all-agents" element={<DeliveryAgent />} />
         <Route path="/agent-details/:agentId" element={<AgentDetails />} />
         <Route
