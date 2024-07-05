@@ -31,13 +31,15 @@ import CustomerApp from "./pages/admin/apps/CustomerApp";
 import Customers from "./pages/admin/customers/Customers";
 import CustomerDetails from "./pages/admin/customers/CustomerDetails";
 import Example from "./pages/admin/example/Example";
+import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
+import AgentDetails from "./pages/admin/agents/AgentDetails";
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/success" element={<Success />} />
         <Route path="/all-merchants" element={<Merchant />} />
@@ -49,7 +51,7 @@ function App() {
         <Route path="/all-tax" element={<Tax />} />
         <Route path="/account-logs" element={<AccountLogs />} />
         <Route path="/all-managers" element={<Managers />} />
-        <Route path="/push-notification" element={< PushNotification />} />
+        <Route path="/push-notification" element={<PushNotification />} />
         <Route path="/alert-notification" element={<AlertNotification />} />
         <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/loyality-point" element={<LoyalityPoint />} />
@@ -64,6 +66,8 @@ function App() {
         <Route path="/customers" element={<Customers/>} />
         <Route path="/customer-detail/:cusomerId" element={<CustomerDetails/>} />
         <Route path="/example" element={<Example />} />
+        <Route path="/all-agents" element={<DeliveryAgent />} />
+        <Route path="/agent-details/:agentId" element={<AgentDetails />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}
