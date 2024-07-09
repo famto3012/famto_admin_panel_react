@@ -87,6 +87,9 @@
 
 .ant-switch-checked{
    background:#016B6C !important;
-  
+}
+
+input[type='radio'] {
+  accent-color: teal !important;
 
 }

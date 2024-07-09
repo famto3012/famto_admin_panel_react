@@ -33,6 +33,10 @@ import CustomerDetails from "./pages/admin/customers/CustomerDetails";
 import Example from "./pages/admin/example/Example";
 import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
 import AgentDetails from "./pages/admin/agents/AgentDetails";
+import Commision from "./pages/admin/manager/Commision";
+import OrderDetails from "./pages/admin/orders/OrderDetails";
+import Orders from "./pages/admin/orders/Orders";
+import Products from "./pages/products/Products";
 
 
 function App() {
@@ -68,6 +72,10 @@ function App() {
         <Route path="/example" element={<Example />} />
         <Route path="/all-agents" element={<DeliveryAgent />} />
         <Route path="/agent-details/:agentId" element={<AgentDetails />} />
+        <Route path="/commision" element={<Commision />} />
+        <Route path="/order-details/:orderId" element={<OrderDetails />} />
+        <Route path="/all-orders" element= {<Orders />} />
+        <Route path="/products" element= {<Products />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}
