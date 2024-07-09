@@ -2,6 +2,19 @@ import React from 'react'
 import Sidebar from '../../../components/Sidebar'
 import GlobalSearch from '../../../components/GlobalSearch'
 import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons'
+import {
+    Step,
+    StepDescription,
+    StepIcon,
+    StepIndicator,
+    StepNumber,
+    StepSeparator,
+    StepStatus,
+    StepTitle,
+    Stepper,
+    useSteps,
+    Box
+} from '@chakra-ui/react'
 
 const OrderDetails = () => {
 
@@ -25,6 +38,24 @@ const OrderDetails = () => {
             status: "active",
         },
     ];
+
+    const steps = [
+        { title: 'Created', description: 'by Admin ID #123' },
+        { title: 'Assigned', description: 'by Admin ID #123' },
+        { title: 'Accepted', description: 'by Agent Name' },
+        { title: 'Started', description: 'by Agent Name' },
+        { title: 'Reached pickup location', description: 'by Agent Name' },
+        { title: 'Note Added', description: 'by Agent Name' },
+        { title: 'Signature Added', description: 'by Agent Name' },
+        { title: 'Image Added', description: 'by Agent Name' },
+        { title: 'Completed', description: 'by Agent Name' },
+    ];
+
+    const { activeStep } = useSteps({
+        index: 2,
+        count: steps.length,
+    })
+
 
     return (
         <>
@@ -284,30 +315,30 @@ const OrderDetails = () => {
                 <div>
                     <h1 className='text-[18px] font-semibold m-5'>Bill Summary</h1>
                     <div className='border-2 border-gray-600'>
-                    <div className='flex justify-between mx-5 m-3'>
-                        <label>Price</label>
-                        <p>514</p>
-                    </div>
-                    <div className='flex justify-between mx-5 m-3'>
-                        <label>Delivery Charges</label>
-                        <p>514</p>
-                    </div>
-                    <div className='flex justify-between mx-5 m-3'>
-                        <label>Added Tip</label>
-                        <p>514</p>
-                    </div>
-                    <div className='flex justify-between mx-5 m-3'>
-                        <label>Discount</label>
-                        <p>514</p>
-                    </div>
-                    <div className='flex justify-between mx-5 m-3'>
-                        <label>Sub Total</label>
-                        <p>514</p>
-                    </div>
-                    <div className='flex justify-between mx-5 m-3'>
-                        <label>GST (inclusive of all taxes)</label>
-                        <p>514</p>
-                    </div>
+                        <div className='flex justify-between mx-5 m-3'>
+                            <label>Price</label>
+                            <p>514</p>
+                        </div>
+                        <div className='flex justify-between mx-5 m-3'>
+                            <label>Delivery Charges</label>
+                            <p>514</p>
+                        </div>
+                        <div className='flex justify-between mx-5 m-3'>
+                            <label>Added Tip</label>
+                            <p>514</p>
+                        </div>
+                        <div className='flex justify-between mx-5 m-3'>
+                            <label>Discount</label>
+                            <p>514</p>
+                        </div>
+                        <div className='flex justify-between mx-5 m-3'>
+                            <label>Sub Total</label>
+                            <p>514</p>
+                        </div>
+                        <div className='flex justify-between mx-5 m-3'>
+                            <label>GST (inclusive of all taxes)</label>
+                            <p>514</p>
+                        </div>
                     </div>
                     <div className='bg-teal-800 flex justify-between p-5 text-white text-[16px] font-semibold'>
                         <label>Net Payable Amount</label>
@@ -317,7 +348,7 @@ const OrderDetails = () => {
                 </div>
                 <h1 className='text-[18px] font-semibold m-5'>Order Activity log</h1>
                 <div className='bg-white mx-5 p-5 rounded-lg flex justify-between gap-20 items-center'>
-                    <div className='bg-gray-200 p-3 rounded-full'><img src='avatar.svg'/></div>
+                    <div className='bg-gray-200 p-3 rounded-full'><img src='avatar.svg' /></div>
                     <div className='flex justify-around w-1/4'>
                         <label className='text-gray-600'>Agent Name</label>
                         <p>Famto</p>
@@ -332,15 +363,33 @@ const OrderDetails = () => {
                     </div>
 
                 </div>
-                <div className='flex m-5 gap-10 mx-10'>
-                    <div>
-                        <img src='demo.svg'></img>
+                <div className='flex m-5 gap-10 mx-10 w-full'>
+                    <div className='w-1/2 '>
+                        <Stepper index={activeStep} orientation='vertical' colorScheme='teal' gap='2'>
+                            {steps.map((step, index) => (
+                                <Step key={index} className='flex gap-5 size-20'>
+                                    <StepIndicator>
+                                        <StepStatus
+                                            complete={<div className='bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold'>{index + 1}</div>}
+                                            incomplete={<div className='bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold'>{index + 1}</div>}
+                                            active={<div className='bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold'>{index + 1}</div>}
+                                        />
+                                    </StepIndicator>
+                                    <Box flexShrink='0' className='ml-4'>
+                                        <StepTitle className='font-semibold'>{step.title}</StepTitle>
+                                        <StepDescription className='text-sm text-gray-500'>{step.description}</StepDescription>
+                                    </Box>
+                                    <StepSeparator className='my-2' />
+                                </Step>
+                            ))}
+                        </Stepper>
+
                     </div>
                     <div>
                         <img src='map.svg'/>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     )
 }
