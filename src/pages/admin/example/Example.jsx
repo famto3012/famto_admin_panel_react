@@ -6,7 +6,10 @@ const Example = () => {
     // Example form data state
     name: 'John Doe',
     email: 'john.doe@example.com',
-    phone: '123-456-7890' // Removed trailing comma
+    phone: '123-456-7890',
+    registrationdate:'18/06/2024',
+    platformUsed:'online',
+    referalcode:'54'// Removed trailing comma
   });
 
   const handleEditClick = () => {
