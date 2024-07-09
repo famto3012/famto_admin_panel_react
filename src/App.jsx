@@ -43,13 +43,19 @@ import Customorder from "./components/Customorder";
 import MyComponent from "./pages/admin/order/MyComponent";
 import Pricing from "./pages/admin/pricing/Pricing";
 import Examples1 from "./pages/admin/order/Example";
+import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
+import AgentDetails from "./pages/admin/agents/AgentDetails";
+import Commision from "./pages/admin/manager/Commision";
+import OrderDetails from "./pages/admin/orders/OrderDetails";
+import Orders from "./pages/admin/orders/Orders";
+import Products from "./pages/products/Products";
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/success" element={<Success />} />
         <Route path="/all-merchants" element={<Merchant />} />
@@ -61,7 +67,7 @@ function App() {
         <Route path="/all-tax" element={<Tax />} />
         <Route path="/account-logs" element={<AccountLogs />} />
         <Route path="/all-managers" element={<Managers />} />
-        <Route path="/push-notification" element={< PushNotification />} />
+        <Route path="/push-notification" element={<PushNotification />} />
         <Route path="/alert-notification" element={<AlertNotification />} />
         <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/loyality-point" element={<LoyalityPoint />} />
@@ -88,6 +94,12 @@ function App() {
         <Route path="/my-component" element={<MyComponent/>} />
         <Route path="/pricing" element={<Pricing/>} />
         <Route path="/examples1" element={<Examples1/>} />
+        <Route path="/all-agents" element={<DeliveryAgent />} />
+        <Route path="/agent-details/:agentId" element={<AgentDetails />} />
+        <Route path="/commision" element={<Commision />} />
+        <Route path="/order-details/:orderId" element={<OrderDetails />} />
+        <Route path="/all-orders" element= {<Orders />} />
+        <Route path="/products" element= {<Products />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}
