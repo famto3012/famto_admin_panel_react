@@ -41,7 +41,7 @@ const AlertNotification = () => {
 
   const handleConfirm = (e) => {
     e.preventDefault();
-    const payload = { userType, id, title, description, imageURL };
+    const payload = { userType, id, title, description, imageUrl };
     console.log("Confirmed Payload", payload);
   };
 
