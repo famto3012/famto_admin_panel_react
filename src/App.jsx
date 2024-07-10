@@ -44,6 +44,7 @@ import Products from "./pages/products/Products";
 import Geofence from "./pages/admin/geofence/Geofence";
 import AddGeofence from "./pages/admin/geofence/AddGeofence";
 
+import DeliveryManagement from "./pages/admin/delivery-management/DeliveryManagement";
 
 
 function App() {
@@ -90,6 +91,7 @@ function App() {
         <Route path="/products" element= {<Products />} />
         <Route path="/geofence" element={<Geofence/>} />
         <Route path="/add-geofence" element={<AddGeofence/>} />
+        <Route path="/delivery-management" element={<DeliveryManagement />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}

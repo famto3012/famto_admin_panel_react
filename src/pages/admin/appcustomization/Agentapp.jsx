@@ -33,12 +33,6 @@ const Agentapp = () => {
     
   };
 
-
-
-
-
-
-
     const [notificationFile, setNotificationFile] = useState(null);
     const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   
@@ -47,7 +41,6 @@ const Agentapp = () => {
       setNotificationFile(file);
       setNotificationPreviewURL(URL.createObjectURL(file));
     };
-
 
   return (
     <>

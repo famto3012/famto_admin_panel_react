@@ -365,28 +365,30 @@ const OrderDetails = () => {
                 </div>
                 <div className='flex m-5 gap-10 mx-10 w-full'>
                     <div className='w-1/2 '>
-                        <Stepper index={activeStep} orientation='vertical' colorScheme='teal' gap='2'>
+                        <Stepper index={activeStep} orientation='vertical' height='800px' colorScheme='teal' m='20px' gap='0'>
                             {steps.map((step, index) => (
-                                <Step key={index} className='flex gap-5 size-20'>
+                                <Step key={index}>
                                     <StepIndicator>
                                         <StepStatus
-                                            complete={<div className='bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold'>{index + 1}</div>}
-                                            incomplete={<div className='bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold'>{index + 1}</div>}
-                                            active={<div className='bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold'>{index + 1}</div>}
+                                            complete={<StepIcon />}
+                                            incomplete={<StepNumber />}
+                                            active={<StepNumber />}
                                         />
                                     </StepIndicator>
-                                    <Box flexShrink='0' className='ml-4'>
-                                        <StepTitle className='font-semibold'>{step.title}</StepTitle>
-                                        <StepDescription className='text-sm text-gray-500'>{step.description}</StepDescription>
+
+                                    <Box flexShrink='0'>
+                                        <StepTitle>{step.title}</StepTitle>
+                                        <StepDescription>{step.description}</StepDescription>
                                     </Box>
-                                    <StepSeparator className='my-2' />
+
+                                    <StepSeparator />
                                 </Step>
                             ))}
                         </Stepper>
 
                     </div>
                     <div>
-                        <img src='map.svg'/>
+                        <img src='map.svg' alt='map' />
                     </div>
                 </div>
             </div >
