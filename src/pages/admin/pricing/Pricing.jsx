@@ -461,11 +461,11 @@ const Pricing = () => {
               </div>
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
-                 Waiting Time
+                 Waiting Time (minutes)
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                  type="time"
+                  type="text"
                   placeholder="Waiting Time"
                   value={apricing.waitingTime}
                   id="waitingTime"
@@ -691,11 +691,11 @@ const Pricing = () => {
               </div>
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="waitingTimedata">
-                 Waiting Time
+                 Waiting Time (minutes)
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                  type="time"
+                  type="text"
                   placeholder="Waiting Time"
                   value={formData1.waitingTimedata}
                   id="waitingTimedata"
@@ -899,11 +899,11 @@ const Pricing = () => {
               </div>
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
-                 Waiting Time
+                 Waiting Time (minutes)
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                  type="time"
+                  type="text"
                   placeholder="Waiting Time"
                   value={mpricing.waitingTime}
                   id="waitingTime"
@@ -1102,11 +1102,11 @@ const Pricing = () => {
               </div>
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="waitingTimedata">
-                 Waiting Time
+                 Waiting Time (minutes)
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                  type="time"
+                  type="text"
                   placeholder="Waiting Time"
                   value={formData2.waitingTimedata}
                   id="waitingTimedata"
@@ -1328,7 +1328,7 @@ const Pricing = () => {
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                  type="time"
+                  type="text"
                   placeholder="Waiting Time"
                   value={cpricing.waitingTime}
                   id="waitingTime"
@@ -1545,11 +1545,11 @@ const Pricing = () => {
               </div>
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="waitingTimedata">
-                 Waiting Time
+                 Waiting Time (minutes)
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                  type="time"
+                  type="text"
                   placeholder="Waiting Time"
                   value={formData3.waitingTimedata}
                   id="waitingTimedata"

@@ -90,7 +90,7 @@ const Sidebar = () => {
             <GroupsOutlinedIcon className="m-2" />
             Customers
           </Link>
-          <Link to="/delivery-agent" className="side">
+          <Link to="/all-agents" className="side">
             <AssignmentIndOutlinedIcon className="m-2" />
             Delivery Agents
           </Link>
@@ -98,7 +98,7 @@ const Sidebar = () => {
             <TwoWheelerOutlinedIcon className="m-2" />
             Delivery Management
           </Link>
-          <Link to="commission" className="side">
+          <Link to="/commission" className="side">
             <PercentOutlinedIcon className="flex mr-[3px] m-2" />
             Commission/Subscription
           </Link>
@@ -129,7 +129,7 @@ const Sidebar = () => {
             <RedeemOutlinedIcon className="m-2" />
             Promo code
           </Link>
-          <Link to="/referal" className="side">
+          <Link to="/referral" className="side">
             <HubOutlinedIcon className="m-2" />
             Referral
           </Link>
