@@ -145,7 +145,7 @@ const Takeaway = () => {
             <div className='flex mt-5'>
                 <h1 className='px-6 w-1/3 font-semibold'>Bill Summary</h1>
                 <div className="overflow-auo w-1/2">
-              <table className="border-2 border-teal-700 w-1/2 text-center ">
+              <table className="border-2 border-teal-700 w-full text-left ">
                 <thead>
                   <tr>
                     {["Item", " Quantity", "Amount"].map((header, index) => (
@@ -160,7 +160,7 @@ const Takeaway = () => {
                 </thead>
                 <tbody>
                   {order.map((order) => (
-                    <tr key={order.id} className="text-center align-middle">
+                    <tr key={order.id} className="text-left align-middle">
                       <td className="p-4">{order.item}</td>
                       <td className="p-4">{order.quantity}</td>
                       <td className="p-4">{order.amount}</td>

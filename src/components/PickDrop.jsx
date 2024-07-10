@@ -515,7 +515,7 @@ const PickDrop = () => {
                 <div className='flex mt-8'>
                 <h1 className='px-6 w-1/3 font-semibold'>Bill Summary</h1>
              <div className="overflow-auo w-2/3">
-              <table className="border-2 border-teal-700  text-center w-[75%]">
+              <table className="border-2 border-teal-700  text-left w-[75%]">
                 <thead>
                   <tr>
                     {["Item", "Amount"].map((header, index) => (
@@ -530,7 +530,7 @@ const PickDrop = () => {
                 </thead>
                 <tbody>
                   {order.map((order) => (
-                    <tr key={order.id} className="text-center">
+                    <tr key={order.id} className="text-left">
                       <td className="p-4">{order.item}</td>
                       <td className="p-4">{order.amount}</td>
                     </tr>

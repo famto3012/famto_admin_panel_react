@@ -592,7 +592,7 @@ const CustomerDetails = () => {
             Order Details
           </h1>
           <div className="overflow-auto mt-[20px] ml-2 w-full">
-            <table className="text-start w-full">
+            <table className="text-start w-full mb-24">
               <thead>
                 <tr>
                   {[

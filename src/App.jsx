@@ -30,25 +30,20 @@ import Discount from "./pages/admin/marketing/Discount";
 import CustomerApp from "./pages/admin/apps/CustomerApp";
 import Customers from "./pages/admin/customers/Customers";
 import CustomerDetails from "./pages/admin/customers/CustomerDetails";
-import Example from "./pages/admin/example/Example";
 import Commissionlog from "./pages/admin/commission/Commissionlog";
 import Subscriptioncustomer from "./pages/admin/commission/Subscriptioncustomer";
 import Commission from "./pages/admin/commission/Commission";
-import CustomerOrder from "./pages/admin/order/CustomerOrder";
 import CreateOrder from "./pages/admin/order/CreateOrder";
-import Takeaway from "./components/Takeaway";
-import HomeDelivery from "./components/HomeDelivery";
-import PickDrop from "./components/PickDrop";
-import Customorder from "./components/Customorder";
-import MyComponent from "./pages/admin/order/MyComponent";
 import Pricing from "./pages/admin/pricing/Pricing";
-import Examples1 from "./pages/admin/order/Example";
 import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
 import AgentDetails from "./pages/admin/agents/AgentDetails";
 import Commision from "./pages/admin/manager/Commision";
 import OrderDetails from "./pages/admin/orders/OrderDetails";
 import Orders from "./pages/admin/orders/Orders";
 import Products from "./pages/products/Products";
+import Geofence from "./pages/admin/geofence/Geofence";
+import AddGeofence from "./pages/admin/geofence/AddGeofence";
+
 
 
 function App() {
@@ -75,31 +70,26 @@ function App() {
         <Route path="/agent-app" element={<Agentapp/>} />
         <Route path="/notification-log" element={<Notificationlog/>} />
         <Route path="/merchant-app" element={<MerchantApp/>} />
-        <Route path="/promocode" element={<PromoCode />} />
+        <Route path="/promo-code" element={<PromoCode />} />
         <Route path="/referral" element={<Referral />} />
         <Route path="/discount" element={<Discount />} />
         <Route path="/customer-app" element={<CustomerApp />} />
         <Route path="/customers" element={<Customers/>} />
         <Route path="/customer-detail/:cusomerId" element={<CustomerDetails/>} />
-        <Route path="/example" element={<Example />} />
         <Route path="/view-commission" element={<Commissionlog />} />
         <Route path="/view-subscription" element={<Subscriptioncustomer/>} />
         <Route path="/commission" element={<Commission/>} />
-        <Route path="/customerorder" element={<CustomerOrder/>} />
-        <Route path="/createorder" element={<CreateOrder />} />
-        <Route path="/take-away" element={<Takeaway />} />
-        <Route path="/home-delivery" element={<HomeDelivery />} />
-        <Route path="/pick-drop" element={<PickDrop/>} />
-        <Route path="/custom-order" element={<Customorder/>} />
-        <Route path="/my-component" element={<MyComponent/>} />
+        <Route path="/create-order" element={<CreateOrder />} />
         <Route path="/pricing" element={<Pricing/>} />
-        <Route path="/examples1" element={<Examples1/>} />
+      
         <Route path="/all-agents" element={<DeliveryAgent />} />
         <Route path="/agent-details/:agentId" element={<AgentDetails />} />
         <Route path="/commision" element={<Commision />} />
         <Route path="/order-details/:orderId" element={<OrderDetails />} />
         <Route path="/all-orders" element= {<Orders />} />
         <Route path="/products" element= {<Products />} />
+        <Route path="/geofence" element={<Geofence/>} />
+        <Route path="/add-geofence" element={<AddGeofence/>} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}
