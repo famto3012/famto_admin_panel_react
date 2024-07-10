@@ -256,7 +256,7 @@ const AgentDetails = () => {
                         <div >
                             <button className='bg-gray-100 p-2 focus:outline-none rounded-lg' onClick={showModal} ><EditOutlined />{" "}Edit Agent</button>
                             <Modal
-                                title="Add Deliery Agent"
+                                title="Edit Delivery Agent"
                                 width="700px"
                                 centered
                                 open={isModalVisible}

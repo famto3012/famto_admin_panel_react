@@ -49,6 +49,7 @@ import Commision from "./pages/admin/manager/Commision";
 import OrderDetails from "./pages/admin/orders/OrderDetails";
 import Orders from "./pages/admin/orders/Orders";
 import Products from "./pages/products/Products";
+import DeliveryManagement from "./pages/admin/delivery-management/DeliveryManagement";
 
 
 function App() {
@@ -100,6 +101,7 @@ function App() {
         <Route path="/order-details/:orderId" element={<OrderDetails />} />
         <Route path="/all-orders" element= {<Orders />} />
         <Route path="/products" element= {<Products />} />
+        <Route path="/delivery-management" element={<DeliveryManagement />} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}
