@@ -32,7 +32,6 @@ import Customers from "./pages/admin/customers/Customers";
 import CustomerDetails from "./pages/admin/customers/CustomerDetails";
 import Commissionlog from "./pages/admin/commission/Commissionlog";
 import Subscriptioncustomer from "./pages/admin/commission/Subscriptioncustomer";
-import Commission from "./pages/admin/commission/Commission";
 import CreateOrder from "./pages/admin/order/CreateOrder";
 import Pricing from "./pages/admin/pricing/Pricing";
 import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
@@ -45,6 +44,7 @@ import Geofence from "./pages/admin/geofence/Geofence";
 import AddGeofence from "./pages/admin/geofence/AddGeofence";
 
 import DeliveryManagement from "./pages/admin/delivery-management/DeliveryManagement";
+import HomePage from "./pages/admin/home/HomePage";
 
 
 function App() {
@@ -79,10 +79,9 @@ function App() {
         <Route path="/customer-detail/:cusomerId" element={<CustomerDetails/>} />
         <Route path="/view-commission" element={<Commissionlog />} />
         <Route path="/view-subscription" element={<Subscriptioncustomer/>} />
-        <Route path="/commission" element={<Commission/>} />
         <Route path="/create-order" element={<CreateOrder />} />
         <Route path="/pricing" element={<Pricing/>} />
-      
+        <Route path="/home" element={<HomePage />} />
         <Route path="/all-agents" element={<DeliveryAgent />} />
         <Route path="/agent-details/:agentId" element={<AgentDetails />} />
         <Route path="/commision" element={<Commision />} />
