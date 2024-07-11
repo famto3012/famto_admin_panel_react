@@ -57,6 +57,10 @@ const Products = () => {
         setCategory({ ...category, [e.target.name]: e.target.value })
     }
 
+    const handleRadio = (event) => {
+        setCategory(event.target.value)
+    }
+
     const submitCategory = (e) => {
         e.preventDefault()
         console.log("Categoty", category)
@@ -293,7 +297,7 @@ const Products = () => {
                                                 value={category.categoryName}
                                                 id="categoryName"
                                                 name="categoryName"
-                                                onChange={handleCategory}
+                                                onChange={handleRadio}
                                             />
                                         </div>
                                         <div className="flex items-center">
@@ -306,7 +310,7 @@ const Products = () => {
                                                 value={category.description}
                                                 id="description"
                                                 name="description"
-                                                onChange={handleCategory}
+                                                onChange={handleRadio}
                                             >
 
                                             </input>
@@ -321,7 +325,7 @@ const Products = () => {
                                                 name="type"
                                                 value="veg"
                                                 checked={category.type === "veg"}
-                                                onChange={handleCategory}
+                                                onChange={handleRadio}
                                                 className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
                                             />
                                            <label> Veg</label>
@@ -471,6 +475,7 @@ const Products = () => {
                                                     <input
                                                         type="radio"
                                                         name="type"
+                                                        id="veg"
                                                         value="veg"
                                                         checked={category.type === "veg"}
                                                         onChange={handleCategory}
@@ -482,6 +487,7 @@ const Products = () => {
                                                     <input
                                                         type="radio"
                                                         name="type"
+                                                        id="non-veg"
                                                         value="non-veg"
                                                         checked={category.type === "non-veg"}
                                                         onChange={handleCategory}
@@ -493,6 +499,7 @@ const Products = () => {
                                                     <input
                                                         type="radio"
                                                         name="type"
+                                                        id='both'
                                                         value="both"
                                                         checked={category.type === "both"}
                                                         onChange={handleCategory}
@@ -1122,6 +1129,7 @@ const Products = () => {
                                                         <input
                                                             className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
                                                             type="radio"
+                                                            id="veg"
                                                             value="veg"
                                                             checked={addData.type === "veg"}
 
@@ -1131,6 +1139,7 @@ const Products = () => {
                                                         <input
                                                             className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
                                                             type="radio"
+                                                            id="non-veg"
                                                             value="non-veg"
                                                             checked={addData.type === "non-veg"}
 
