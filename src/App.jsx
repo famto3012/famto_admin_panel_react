@@ -32,12 +32,11 @@ import Customers from "./pages/admin/customers/Customers";
 import CustomerDetails from "./pages/admin/customers/CustomerDetails";
 import Commissionlog from "./pages/admin/commission/Commissionlog";
 import Subscriptioncustomer from "./pages/admin/commission/Subscriptioncustomer";
-import Commission from "./pages/admin/commission/Commission";
 import CreateOrder from "./pages/admin/order/CreateOrder";
 import Pricing from "./pages/admin/pricing/Pricing";
 import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
 import AgentDetails from "./pages/admin/agents/AgentDetails";
-import Commision from "./pages/admin/manager/Commision";
+
 import OrderDetails from "./pages/admin/orders/OrderDetails";
 import Orders from "./pages/admin/orders/Orders";
 import Products from "./pages/products/Products";
@@ -45,6 +44,10 @@ import Geofence from "./pages/admin/geofence/Geofence";
 import AddGeofence from "./pages/admin/geofence/AddGeofence";
 
 import DeliveryManagement from "./pages/admin/delivery-management/DeliveryManagement";
+import Radio from "./pages/admin/settings/Radio";
+import Commission from "./pages/admin/manager/Commission";
+import Sarath from "./pages/admin/settings/Sarath";
+
 
 
 function App() {
@@ -57,7 +60,6 @@ function App() {
         <Route path="/all-merchants" element={<Merchant />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/verify" element={<Verification />} />
-        <Route path="/rating" element={<Rating />} />
         <Route path="/add-manager" element={<AddManager />} />
         <Route path="/update-manager" element={<UpdateManager />} />
         <Route path="/all-tax" element={<Tax />} />
@@ -79,13 +81,11 @@ function App() {
         <Route path="/customer-detail/:cusomerId" element={<CustomerDetails/>} />
         <Route path="/view-commission" element={<Commissionlog />} />
         <Route path="/view-subscription" element={<Subscriptioncustomer/>} />
-        <Route path="/commission" element={<Commission/>} />
         <Route path="/create-order" element={<CreateOrder />} />
         <Route path="/pricing" element={<Pricing/>} />
-      
+        <Route path="/commission" element={<Commission/>} />
         <Route path="/all-agents" element={<DeliveryAgent />} />
         <Route path="/agent-details/:agentId" element={<AgentDetails />} />
-        <Route path="/commision" element={<Commision />} />
         <Route path="/order-details/:orderId" element={<OrderDetails />} />
         <Route path="/all-orders" element= {<Orders />} />
         <Route path="/products" element= {<Products />} />

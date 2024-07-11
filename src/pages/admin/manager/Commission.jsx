@@ -6,7 +6,7 @@ import SubscriptionComponent from '../../../components/SubscriptionComponent'
 import { BellOutlined, SearchOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 
-const Commision = () => {
+const Commission = () => {
 
     const [isCommission, setIsCommission] = useState(false);
 
@@ -56,4 +56,4 @@ const Commision = () => {
     )
 }
 
-export default Commision
+export default Commission

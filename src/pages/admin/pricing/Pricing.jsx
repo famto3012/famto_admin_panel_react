@@ -143,48 +143,91 @@ const Pricing = () => {
         fetchCustomerSurge();
       }, []);
 
-      const [isModalVisibleEdit1, setIsModalVisibleEdit1] = useState(false);
+      const [isModalVisibleEditAr, setIsModalVisibleEditAr] = useState(false);
 
-      const showModalEdit1 = () => {
-        setIsModalVisibleEdit1(true);
+      const showModalEditAr = () => {
+        setIsModalVisibleEditAr(true);
       };
     
-      const handleEditConfirm1 = () => {
-        setIsModalVisibleEdit1(false);
+      const handleEditConfirmAr = () => {
+        setIsModalVisibleEditAr(false);
       };
     
-      const handleEditCancel1 = () => {
-        setIsModalVisibleEdit1(false);
+      const handleEditCancelAr = () => {
+        setIsModalVisibleEditAr(false);
       };
         
     
-      const [isModalVisibleEdit2, setIsModalVisibleEdit2] = useState(false);
+      const [isModalVisibleEditAs, setIsModalVisibleEditAs] = useState(false);
     
 
-      const showModalEdit2 = () => {
-        setIsModalVisibleEdit2(true);
+      const showModalEditAs = () => {
+        setIsModalVisibleEditAs(true);
       };
     
-      const handleEditConfirm2 = () => {
-        setIsModalVisibleEdit2(false);
+      const handleEditConfirmAs = () => {
+        setIsModalVisibleEditAs(false);
       };
     
-      const handleEditCancel2 = () => {
-        setIsModalVisibleEdit2(false);
+      const handleEditCancelAs = () => {
+        setIsModalVisibleEditAs(false);
       };
 
-      const [isModalVisibleEdit3, setIsModalVisibleEdit3] = useState(false);
+      const [isModalVisibleEditMr, setIsModalVisibleEditMr] = useState(false);
 
-      const showModalEdit3 = () => {
-        setIsModalVisibleEdit3(true);
+      const showModalEditMr = () => {
+        setIsModalVisibleEditMr(true);
       };
     
-      const handleEditConfirm3 = () => {
-        setIsModalVisibleEdit3(false);
+      const handleEditConfirmMr = () => {
+        setIsModalVisibleEditMr(false);
       };
     
-      const handleEditCancel3= () => {
-        setIsModalVisibleEdit3(false);
+      const handleEditCancelMr= () => {
+        setIsModalVisibleEditMr(false);
+      };
+      const [isModalVisibleEditMs, setIsModalVisibleEditMs] = useState(false);
+
+      const showModalEditMs = () => {
+        setIsModalVisibleEditMs(true);
+      };
+    
+      const handleEditConfirmMs = () => {
+        setIsModalVisibleEditMs(false);
+      };
+    
+      const handleEditCancelMs = () => {
+        setIsModalVisibleEditMs(false);
+      };
+        
+    
+      const [isModalVisibleEditCr, setIsModalVisibleEditCr] = useState(false);
+    
+
+      const showModalEditCr = () => {
+        setIsModalVisibleEditCr(true);
+      };
+    
+      const handleEditConfirmCr = () => {
+        setIsModalVisibleEditCr(false);
+      };
+    
+      const handleEditCancelCr = () => {
+        setIsModalVisibleEditCr(false);
+      };
+
+      const [isModalVisibleEditCs, setIsModalVisibleEditCs] = useState(false);
+
+      const showModalEditCs = () => {
+        setIsModalVisibleEditCs(true);
+      };
+    
+      const handleEditConfirmCs = () => {
+        setIsModalVisibleEditCs(false);
+      };
+    
+      const handleEditCancelCs= () => {
+        setIsModalVisibleEditCs(false);
       };
 
 
@@ -305,48 +348,94 @@ const Pricing = () => {
                e.preventDefault();
                console.log(cpricing);
              }
-             const [isModalVisible1, setIsModalVisible1] = useState(false);
+             const [isModalVisibleAr, setIsModalVisibleAr] = useState(false);
 
-             const showModal1 = () => {
-               setIsModalVisible1(true);
+             const showModalAr = () => {
+               setIsModalVisibleAr(true);
              };
            
-             const handleConfirm1 = () => {
-               setIsModalVisible1(false);
+             const handleConfirmAr = () => {
+               setIsModalVisibleAr(false);
              };
            
-             const handleCancel1 = () => {
-               setIsModalVisible1(false);
+             const handleCancelAr = () => {
+               setIsModalVisibleAr(false);
              };
                
            
-             const [isModalVisible2, setIsModalVisible2] = useState(false);
+             const [isModalVisibleMr, setIsModalVisibleMr] = useState(false);
            
        
-             const showModal2 = () => {
-               setIsModalVisible2(true);
+             const showModalMr = () => {
+               setIsModalVisibleMr(true);
              };
            
-             const handleConfirm2 = () => {
-               setIsModalVisible2(false);
+             const handleConfirmMr= () => {
+               setIsModalVisibleMr(false);
              };
            
-             const handleCancel2 = () => {
-               setIsModalVisible2(false);
+             const handleCancelMr = () => {
+               setIsModalVisibleMr(false);
              };
        
-             const [isModalVisible3, setIsModalVisible3] = useState(false);
+             const [isModalVisibleCr, setIsModalVisibleCr] = useState(false);
        
-             const showModal3 = () => {
-               setIsModalVisible3(true);
+             const showModalCr = () => {
+               setIsModalVisibleCr(true);
              };
            
-             const handleConfirm3 = () => {
-               setIsModalVisible3(false);
+             const handleConfirmCr = () => {
+               setIsModalVisibleCr(false);
              };
            
-             const handleCancel3= () => {
-               setIsModalVisible3(false);
+             const handleCancelCr= () => {
+               setIsModalVisibleCr(false);
+             };
+
+
+
+             const [isModalVisibleAs, setIsModalVisibleAs] = useState(false);
+
+             const showModalAs = () => {
+               setIsModalVisibleAs(true);
+             };
+           
+             const handleConfirmAs = () => {
+               setIsModalVisibleAs(false);
+             };
+           
+             const handleCancelAs = () => {
+               setIsModalVisibleAs(false);
+             };
+               
+           
+             const [isModalVisibleMs, setIsModalVisibleMs] = useState(false);
+           
+       
+             const showModalMs = () => {
+               setIsModalVisibleMs(true);
+             };
+           
+             const handleConfirmMs = () => {
+               setIsModalVisibleMs(false);
+             };
+           
+             const handleCancelMs = () => {
+               setIsModalVisibleMs(false);
+             };
+       
+             const [isModalVisibleCs, setIsModalVisibleCs] = useState(false);
+       
+             const showModalCs = () => {
+               setIsModalVisibleCs(true);
+             };
+           
+             const handleConfirmCs = () => {
+               setIsModalVisibleCs(false);
+             };
+           
+             const handleCancelCs= () => {
+               setIsModalVisibleCs(false);
              };
 
 
@@ -375,16 +464,16 @@ const Pricing = () => {
           <div>
             <button
               className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
-              onClick={showModal1}
+              onClick={showModalAr}
             >
               <PlusOutlined className="mr-3" /> Add rule
             </button>
             <Modal
                 title="Agent Pricing"
-                open={isModalVisible1}
+                open={isModalVisibleAr}
                 centered
-                onOk={handleConfirm1}
-                onCancel={handleCancel1}
+                onOk={handleConfirmAr}
+                onCancel={handleCancelAr}
                 footer={null}
               >
                  <form onSubmit={submitAction1}>
@@ -535,14 +624,14 @@ const Pricing = () => {
                   <button
                     className="bg-cyan-50 py-2 px-4 rounded-md"
                     type="button"
-                    onClick={handleCancel1}
+                    onClick={handleCancelAr}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-teal-700 text-white py-2 px-4 rounded-md"
                     type="submit"
-                    onClick={handleConfirm1}
+                    onClick={handleConfirmAr}
                   >
                     Add
                   </button>
@@ -599,10 +688,181 @@ const Pricing = () => {
                     <div>
                     <Switch />
                     </div>
-                    <button >
+                    <div>
+                    <button onClick={showModalEditAr}>
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
-                 
+                    <Modal
+                title=" Edit Agent Pricing"
+                open={isModalVisibleEditAr}
+                centered
+                onOk={handleEditConfirmAr}
+                onCancel={handleEditCancelAr}
+                footer={null}
+              >
+                 <form onSubmit={submitAction1}>
+               <div className="flex flex-col gap-4">
+               <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="ruleName">
+                 Rule Name
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Rule Name"
+                  value={apricing.ruleName}
+                  id="ruleName"
+                  name="ruleName"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseFare">
+                 Base Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Fare"
+                  value={apricing.baseFare}
+                  id="baseFare"
+                  name="baseFare"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseDistanceFare">
+                 Base Distance Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Distance"
+                  value={apricing.baseDistanceFare}
+                  id="baseDistanceFare"
+                  name="baseDistanceFare"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="extraFareDay">
+                 Extra Fare Day
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Extra Fare Day"
+                  value={apricing.extraFareDay}
+                  id="extraFareDay"
+                  name="extraFareDay"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseDistanceKm">
+                 Base Distance Km
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Distance"
+                  value={apricing.baseDistanceKm}
+                  id="baseDistanceKm"
+                  name="baseDistanceKm"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
+                 Waiting Time (minutes)
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Time"
+                  value={apricing.waitingTime}
+                  id="waitingTime"
+                  name="waitingTime"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingFare">
+                 Waiting Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Fare"
+                  value={apricing.waitingFare}
+                  id="waitingFare"
+                  name="waitingFare"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="purchaseFareHour">
+                 Purchase Fare Hour
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Purchase Fare Hour"
+                  value={apricing.purchaseFareHour}
+                  id="purchaseFareHour"
+                  name="purchaseFareHour"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="addedTip">
+                 Added Tip
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Added Tip"
+                  value={apricing.addedTip}
+                  id="addedTip"
+                  name="addedTip"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="geofence">
+                 Geofence
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Geofence"
+                  value={apricing.geofence}
+                  id="geofence"
+                  name="geofence"
+                  onChange={handleInputChange1}
+                />
+              </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                  <button
+                    className="bg-cyan-50 py-2 px-4 rounded-md"
+                    type="button"
+                    onClick={handleEditCancelAr}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    type="submit"
+                    onClick={handleEditConfirmAr}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+                </Modal>
+                     </div>
                     <div>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </div>
@@ -619,16 +879,16 @@ const Pricing = () => {
           <div>
             <button
               className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
-              onClick={showModalEdit1}
+              onClick={showModalAs}
             >
               <PlusOutlined className="mr-3" /> Add Surge
             </button>
             <Modal
                 title="Surge"
-                open={isModalVisibleEdit1}
+                open={isModalVisibleAs}
                 centered
-                onOk={handleEditConfirm1}
-                onCancel={handleEditCancel1}
+                onOk={handleConfirmAs}
+                onCancel={handleCancelAs}
                 footer={null}
               >
                  <form onSubmit={formSubmit1}>
@@ -722,14 +982,14 @@ const Pricing = () => {
                   <button
                     className="bg-cyan-50 py-2 px-4 rounded-md"
                     type="button"
-                    onClick={handleEditCancel1}
+                    onClick={handleCancelAs}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-teal-700 text-white py-2 px-4 rounded-md"
                     type="submit"
-                    onClick={handleEditConfirm1}
+                    onClick={handleConfirmAs}
                   >
                     Add
                   </button>
@@ -778,10 +1038,124 @@ const Pricing = () => {
                     <div>
                     <Switch />
                     </div>
-                    <button >
+                    <div>
+                    <button onClick={showModalEditAs} >
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
-                 
+                    <Modal
+                title=" Edit Surge"
+                open={isModalVisibleEditAs}
+                centered
+                onOk={handleEditConfirmAs}
+                onCancel={handleEditCancelAs}
+                footer={null}
+              >
+                 <form onSubmit={formSubmit1}>
+               <div className="flex flex-col gap-4">
+               <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="ruleNamedata">
+                 Rule Name
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Rule Name"
+                  value={formData1.ruleNamedata}
+                  id="ruleNamedata"
+                  name="ruleNamedata"
+                  onChange={inputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseFaredata">
+                 Base Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Fare"
+                  value={formData1.baseFaredata}
+                  id="baseFaredata"
+                  name="baseFaredata"
+                  onChange={inputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseDistancedata">
+                 Base Distance
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Distance"
+                  value={formData1.baseDistancedata}
+                  id="baseDistancedata"
+                  name="baseDistancedata"
+                  onChange={inputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingFaredata">
+                 Waiting Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Fare"
+                  value={formData1.waitingFaredata}
+                  id="waitingFaredata"
+                  name="waitingFaredata"
+                  onChange={inputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingTimedata">
+                 Waiting Time (minutes)
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Time"
+                  value={formData1.waitingTimedata}
+                  id="waitingTimedata"
+                  name="waitingTimedata"
+                  onChange={inputChange1}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="geofencedata">
+                 Geofence
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Geofence"
+                  value={formData1.geofencedata}
+                  id="geofencedata"
+                  name="geofencedata"
+                  onChange={inputChange1}
+                />
+              </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                  <button
+                    className="bg-cyan-50 py-2 px-4 rounded-md"
+                    type="button"
+                    onClick={handleEditCancelAs}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    type="submit"
+                    onClick={handleEditConfirmAs}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+                </Modal>
+                    </div>
                     <div>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </div>
@@ -799,16 +1173,16 @@ const Pricing = () => {
           <div>
             <button
               className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
-              onClick={showModal2}
+              onClick={showModalMr}
             >
               <PlusOutlined className="mr-3" /> Add rule
             </button>
             <Modal
                 title="Merchant Pricing"
-                open={isModalVisible2}
+                open={isModalVisibleMr}
                 centered
-                onOk={handleConfirm2}
-                onCancel={handleCancel2}
+                onOk={handleConfirmMr}
+                onCancel={handleCancelMr}
                 footer={null}
               >
                  <form onSubmit={submitAction2}>
@@ -945,14 +1319,14 @@ const Pricing = () => {
                   <button
                     className="bg-cyan-50 py-2 px-4 rounded-md"
                     type="button"
-                    onClick={handleCancel2}
+                    onClick={handleCancelMr}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-teal-700 text-white py-2 px-4 rounded-md"
                     type="submit"
-                    onClick={handleConfirm2}
+                    onClick={handleConfirmMr}
                   >
                     Add
                   </button>
@@ -1010,10 +1384,167 @@ const Pricing = () => {
                     <div>
                     <Switch />
                     </div>
-                    <button >
+                    <div>
+                    <button onClick={showModalEditMr} >
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
-                 
+                    <Modal
+                title="Edit Merchant Pricing"
+                open={isModalVisibleEditMr}
+                centered
+                onOk={handleEditConfirmMr}
+                onCancel={handleEditCancelMr}
+                footer={null}
+              >
+                 <form onSubmit={submitAction2}>
+               <div className="flex flex-col gap-4 min-h-100">
+               <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="ruleName">
+                 Rule Name
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Rule Name"
+                  value={mpricing.ruleName}
+                  id="ruleName"
+                  name="ruleName"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseFare">
+                 Base Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Fare"
+                  value={mpricing.baseFare}
+                  id="baseFare"
+                  name="baseFare"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="fareAfterDistance">
+                 Fare After Distance
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Fare After Distance"
+                  value={mpricing.fareAfterDistance}
+                  id="fareAfterDistance"
+                  name="fareAfterDistance"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseWeight">
+                 Base Weight
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Weight"
+                  value={mpricing.baseWeight}
+                  id="baseWeight"
+                  name="baseWeight"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="fareAfterWeight">
+                 Fare After Weight
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Fare After Weight"
+                  value={mpricing.fareAfterWeight}
+                  id="fareAfterWeight"
+                  name="fareAfterWeight"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingFare">
+                 Waiting Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Fare"
+                  value={mpricing.waitingFare}
+                  id="waitingFare"
+                  name="waitingFare"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
+                 Waiting Time (minutes)
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Time"
+                  value={mpricing.waitingTime}
+                  id="waitingTime"
+                  name="waitingTime"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="purchaseFareHour">
+                 Purchase Fare Hour
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Purchase Fare Hour"
+                  value={mpricing.purchaseFareHour}
+                  id="purchaseFareHour"
+                  name="purchaseFareHour"
+                  onChange={handleInputChange2}
+                />
+              </div>
+             
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="geofence">
+                 Geofence
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Geofence"
+                  value={mpricing.geofence}
+                  id="geofence"
+                  name="geofence"
+                  onChange={handleInputChange2}
+                />
+              </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                  <button
+                    className="bg-cyan-50 py-2 px-4 rounded-md"
+                    type="button"
+                    onClick={handleEditCancelMr}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    type="submit"
+                    onClick={handleEditConfirmMr}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+                </Modal>
+                   </div>
                     <div>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </div>
@@ -1030,16 +1561,16 @@ const Pricing = () => {
           <div>
             <button
               className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
-              onClick={showModalEdit2}
+              onClick={showModalMs}
             >
               <PlusOutlined className="mr-3" /> Add Surge
             </button>
             <Modal
                 title="Surge"
-                open={isModalVisibleEdit2}
+                open={isModalVisibleMs}
                 centered
-                onOk={handleEditConfirm2}
-                onCancel={handleEditCancel2}
+                onOk={handleConfirmMs}
+                onCancel={handleCancelMs}
                 footer={null}
               >
                  <form onSubmit={formSubmit2}>
@@ -1133,14 +1664,14 @@ const Pricing = () => {
                   <button
                     className="bg-cyan-50 py-2 px-4 rounded-md"
                     type="button"
-                    onClick={handleEditCancel2}
+                    onClick={handleCancelMs}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-teal-700 text-white py-2 px-4 rounded-md"
                     type="submit"
-                    onClick={handleEditConfirm2}
+                    onClick={handleConfirmMs}
                   >
                     Add
                   </button>
@@ -1189,10 +1720,125 @@ const Pricing = () => {
                     <div>
                     <Switch />
                     </div>
-                    <button >
+                    <div>
+                    <button onClick={showModalEditMs}>
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                    </button>
-                 
+                      </button>
+                      <Modal
+                title=" Edit Surge"
+                open={isModalVisibleEditMs}
+                centered
+                onOk={handleEditConfirmMs}
+                onCancel={handleEditCancelMs}
+                footer={null}
+              >
+                 <form onSubmit={formSubmit2}>
+               <div className="flex flex-col gap-4">
+               <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="ruleNamedata">
+                 Rule Name
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Rule Name"
+                  value={formData2.ruleNamedata}
+                  id="ruleNamedata"
+                  name="ruleNamedata"
+                  onChange={inputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseFaredata">
+                 Base Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Fare"
+                  value={formData2.baseFaredata}
+                  id="baseFaredata"
+                  name="baseFaredata"
+                  onChange={inputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseDistancedata">
+                 Base Distance
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Distance"
+                  value={formData2.baseDistancedata}
+                  id="baseDistancedata"
+                  name="baseDistancedata"
+                  onChange={inputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingFaredata">
+                 Waiting Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Fare"
+                  value={formData2.waitingFaredata}
+                  id="waitingFaredata"
+                  name="waitingFaredata"
+                  onChange={inputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingTimedata">
+                 Waiting Time (minutes)
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Time"
+                  value={formData2.waitingTimedata}
+                  id="waitingTimedata"
+                  name="waitingTimedata"
+                  onChange={inputChange2}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="geofencedata">
+                 Geofence
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Geofence"
+                  value={formData2.geofencedata}
+                  id="geofencedata"
+                  name="geofencedata"
+                  onChange={inputChange2}
+                />
+              </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                  <button
+                    className="bg-cyan-50 py-2 px-4 rounded-md"
+                    type="button"
+                    onClick={handleEditCancelMs}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    type="submit"
+                    onClick={handleEditConfirmMs}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+                </Modal>
+                  
+                 </div>
                     <div>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </div>
@@ -1210,16 +1856,16 @@ const Pricing = () => {
           <div>
             <button
               className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
-              onClick={showModal3}
+              onClick={showModalCr}
             >
               <PlusOutlined className="mr-3" /> Add rule
             </button>
             <Modal
                 title="Customer Pricing"
-                open={isModalVisible3}
+                open={isModalVisibleCr}
                 centered
-                onOk={handleConfirm3}
-                onCancel={handleCancel3}
+                onOk={handleConfirmCr}
+                onCancel={handleCancelCr}
                 footer={null}
               >
                  <form onSubmit={submitAction3}>
@@ -1385,14 +2031,14 @@ const Pricing = () => {
                   <button
                     className="bg-cyan-50 py-2 px-4 rounded-md"
                     type="button"
-                    onClick={handleCancel3}
+                    onClick={handleCancelCr}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-teal-700 text-white py-2 px-4 rounded-md"
                     type="submit"
-                    onClick={handleConfirm3}
+                    onClick={handleConfirmCr}
                   >
                     Add
                   </button>
@@ -1453,10 +2099,196 @@ const Pricing = () => {
                     <div>
                     <Switch />
                     </div>
-                    <button >
+                    <div>
+                    <button onClick={showModalEditCr} >
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
-                 
+                    <Modal
+                title=" Edit Customer Pricing"
+                open={isModalVisibleEditCr}
+                centered
+                onOk={handleEditConfirmCr}
+                onCancel={handleEditCancelCr}
+                footer={null}
+              >
+                 <form onSubmit={submitAction3}>
+               <div className="flex flex-col gap-4 ">
+               <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="ruleName">
+                 Rule Name
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Rule Name"
+                  value={cpricing.ruleName}
+                  id="ruleName"
+                  name="ruleName"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseFare">
+                 Base Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Fare"
+                  value={cpricing.baseFare}
+                  id="baseFare"
+                  name="baseFare"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseDistance">
+                 Base Distance
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Distance"
+                  value={cpricing.baseDistance}
+                  id="baseDistance"
+                  name="baseDistance"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="fareAfterDistance">
+                 Fare After Distance
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Fare After Distance"
+                  value={cpricing.fareAfterDistance}
+                  id="fareAfterDistance"
+                  name="fareAfterDistance"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseWeight">
+                 Base Weight
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Weight"
+                  value={cpricing.baseWeight}
+                  id="baseWeight"
+                  name="baseWeight"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="fareAfterWeight">
+                 Fare After Weight
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Fare After Weight"
+                  value={cpricing.fareAfterWeight}
+                  id="fareAfterWeight"
+                  name="fareAfterWeight"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingFare">
+                 Waiting Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Fare"
+                  value={cpricing.waitingFare}
+                  id="waitingFare"
+                  name="waitingFare"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
+                 Waiting Time
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Time"
+                  value={cpricing.waitingTime}
+                  id="waitingTime"
+                  name="waitingTime"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="purchaseFareHour">
+                 Purchase Fare Hour
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Purchase Fare Hour"
+                  value={cpricing.purchaseFareHour}
+                  id="purchaseFareHour"
+                  name="purchaseFareHour"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="addedTip">
+                 Added Tip
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Added Tip"
+                  value={cpricing.addedTip}
+                  id="addedTip"
+                  name="addedTip"
+                  onChange={handleInputChange3}
+                />
+              </div>
+
+
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="geofence">
+                 Geofence
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Geofence"
+                  value={cpricing.geofence}
+                  id="geofence"
+                  name="geofence"
+                  onChange={handleInputChange3}
+                />
+              </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                  <button
+                    className="bg-cyan-50 py-2 px-4 rounded-md"
+                    type="button"
+                    onClick={handleEditCancelCr}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    type="submit"
+                    onClick={handleEditConfirmCr}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+                </Modal>
+                    </div>
                     <div>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </div>
@@ -1473,16 +2305,16 @@ const Pricing = () => {
           <div>
             <button
               className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
-              onClick={showModalEdit3}
+              onClick={showModalCs}
             >
               <PlusOutlined className="mr-3" /> Add Surge
             </button>
             <Modal
                 title="Surge"
-                open={isModalVisibleEdit3}
+                open={isModalVisibleCs}
                 centered
-                onOk={handleEditConfirm3}
-                onCancel={handleEditCancel3}
+                onOk={handleConfirmCs}
+                onCancel={handleCancelCs}
                 footer={null}
               >
                  <form onSubmit={formSubmit3}>
@@ -1576,14 +2408,14 @@ const Pricing = () => {
                   <button
                     className="bg-cyan-50 py-2 px-4 rounded-md"
                     type="button"
-                    onClick={handleEditCancel3}
+                    onClick={handleCancelCs}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-teal-700 text-white py-2 px-4 rounded-md"
                     type="submit"
-                    onClick={handleEditConfirm3}
+                    onClick={handleCancelCs}
                   >
                     Add
                   </button>
@@ -1632,10 +2464,124 @@ const Pricing = () => {
                     <div>
                     <Switch />
                     </div>
-                    <button >
+                    <div>
+                    <button onClick={showModalEditCs}>
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
-                 
+                    <Modal
+                title="Surge"
+                open={isModalVisibleEditCs}
+                centered
+                onOk={handleEditConfirmCs}
+                onCancel={handleEditCancelCs}
+                footer={null}
+              >
+                 <form onSubmit={formSubmit3}>
+               <div className="flex flex-col gap-4">
+               <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="ruleNamedata">
+                 Rule Name
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Rule Name"
+                  value={formData3.ruleNamedata}
+                  id="ruleNamedata"
+                  name="ruleNamedata"
+                  onChange={inputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseFaredata">
+                 Base Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Fare"
+                  value={formData3.baseFaredata}
+                  id="baseFaredata"
+                  name="baseFaredata"
+                  onChange={inputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="baseDistancedata">
+                 Base Distance
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Base Distance"
+                  value={formData3.baseDistancedata}
+                  id="baseDistancedata"
+                  name="baseDistancedata"
+                  onChange={inputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingFaredata">
+                 Waiting Fare
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Fare"
+                  value={formData3.waitingFaredata}
+                  id="waitingFaredata"
+                  name="waitingFaredata"
+                  onChange={inputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="waitingTimedata">
+                 Waiting Time (minutes)
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Waiting Time"
+                  value={formData3.waitingTimedata}
+                  id="waitingTimedata"
+                  name="waitingTimedata"
+                  onChange={inputChange3}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="geofencedata">
+                 Geofence
+                </label>
+                <input
+                  className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                  type="text"
+                  placeholder="Geofence"
+                  value={formData3.geofencedata}
+                  id="geofencedata"
+                  name="geofencedata"
+                  onChange={inputChange3}
+                />
+              </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                  <button
+                    className="bg-cyan-50 py-2 px-4 rounded-md"
+                    type="button"
+                    onClick={handleEditCancelCr}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    type="submit"
+                    onClick={handleEditCancelCs}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+                </Modal>
+                    </div>
                     <div>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </div>

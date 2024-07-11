@@ -74,7 +74,7 @@ const Sidebar = () => {
             <HomeOutlinedIcon className="m-2" />
             Home
           </Link>
-          <Link to="/orders" className="side">
+          <Link to="/all-orders" className="side">
             <BookOutlinedIcon className="m-2" />
             Orders
           </Link>
