@@ -5,6 +5,7 @@ import CommissionComponent from '../../../components/CommissionComponent'
 import SubscriptionComponent from '../../../components/SubscriptionComponent'
 import { BellOutlined, SearchOutlined } from '@ant-design/icons'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const Commission = () => {
 
@@ -36,9 +37,9 @@ const Commission = () => {
                             </span>
                         </label>
                     </div>
-                    <div>{isCommission ? <button className='bg-teal-800 p-3 rounded-xl text-white '>View Commision log</button>
+                    <div>{isCommission ? <button className='bg-teal-800 p-3 rounded-xl text-white '><Link to="/view-commission"> View Commision log</Link></button>
                         :
-                        <button className='bg-teal-800 p-3 rounded-xl text-white '>View Subscription log</button>
+                        <button className='bg-teal-800 p-3 rounded-xl text-white '><Link to="/view-subscription">View Subscription log</Link></button>
                     }
                     </div>
                 </div>

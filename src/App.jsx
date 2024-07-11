@@ -47,6 +47,7 @@ import DeliveryManagement from "./pages/admin/delivery-management/DeliveryManage
 import Radio from "./pages/admin/settings/Radio";
 import Commission from "./pages/admin/manager/Commission";
 import Sarath from "./pages/admin/settings/Sarath";
+import HomePage from "./pages/admin/home/HomePage";
 
 
 
@@ -84,6 +85,7 @@ function App() {
         <Route path="/create-order" element={<CreateOrder />} />
         <Route path="/pricing" element={<Pricing/>} />
         <Route path="/commission" element={<Commission/>} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/all-agents" element={<DeliveryAgent />} />
         <Route path="/agent-details/:agentId" element={<AgentDetails />} />
         <Route path="/order-details/:orderId" element={<OrderDetails />} />
