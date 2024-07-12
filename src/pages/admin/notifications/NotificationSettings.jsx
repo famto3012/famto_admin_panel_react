@@ -82,7 +82,19 @@ const NotificationSettings = () => {
     setIsModalVisibleEdit(false);
   };
 
+  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
 
+  const showModalDelete = () => {
+    setIsShowModalDelete(true)
+  }
+
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false)
+  }
+
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false)
+  }
 
   return (
     <>
@@ -432,9 +444,23 @@ const NotificationSettings = () => {
                         </div>
                       </form>
                     </Modal>
-                    <div>
+                    <button onClick={showModalDelete}>
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                    </button>
+                    <Modal
+                     onOk={showModalDeleteOk}
+                     onCancel={showModalDeleteCancel}
+                     footer={null}
+                     open={isShowModalDelete}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
                     </div>
+                  </Modal>
                     </div>
                   </td>
                 </tr>

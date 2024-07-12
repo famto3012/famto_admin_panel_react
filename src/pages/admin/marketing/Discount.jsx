@@ -4,6 +4,8 @@ import GlobalSearch from '../../../components/GlobalSearch'
 import { Switch, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { MdOutlineEdit } from 'react-icons/md'
+import { RiDeleteBinLine } from 'react-icons/ri'
 
 const Discount = () => {
 
@@ -134,6 +136,34 @@ const Discount = () => {
             status: true
         }
     ]
+
+    const [isShowModalDelete1 , setIsShowModalDelete1] = useState(false);
+
+    const showModalDelete1 = () => {
+      setIsShowModalDelete1(true)
+    }
+  
+    const showModalDeleteOk1 = () => {
+      setIsShowModalDelete1(false)
+    }
+  
+    const showModalDeleteCancel1 = () => {
+      setIsShowModalDelete1(false)
+    }
+
+    const [isShowModalDelete2 , setIsShowModalDelete2] = useState(false);
+
+    const showModalDelete2 = () => {
+      setIsShowModalDelete2(true)
+    }
+  
+    const showModalDeleteOk2 = () => {
+      setIsShowModalDelete2(false)
+    }
+  
+    const showModalDeleteCancel2 = () => {
+      setIsShowModalDelete2(false)
+    }
 
     return (
         <>
@@ -346,15 +376,16 @@ const Discount = () => {
                                     <td className="py-2 px-4 border-b border-gray-100">
                                         {table.geofence}
                                     </td>
-                                    <td className="py-5 px-4 border-b flex gap-3 justify-center border-gray-100">
+                                    <td className="py-5 px-4 border-b border-gray-100">
+                                        <div className='flex gap-4'>
                                         <Switch
                                             className="text-teal-700 mt-2"
                                             checked={table.status}
 
                                         />
-                                        <div>
+                                        <div className='flex items-center'>
                                             <button onClick={showModalEdit}>
-                                                <EditOutlined className="bg-gray-200 p-3 rounded-lg" />
+                                            <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                                             </button>
                                             <Modal
                                                 title="Edit Tax"
@@ -494,8 +525,24 @@ const Discount = () => {
                                                 </form>
                                             </Modal>
                                         </div>
-
-                                        <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+                                        <button onClick={showModalDelete1} className="outline-none focus:outline-none">
+                   <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                  </button>
+                  <Modal
+                     onOk={showModalDeleteOk1}
+                     onCancel={showModalDeleteCancel1}
+                     footer={null}
+                     open={isShowModalDelete1}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel1}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
+                    </div>
+                  </Modal>
+                  </div>
                                     </td>
                                     <td className="border-b border-gray-300"></td>
                                 </tr>
@@ -715,15 +762,19 @@ const Discount = () => {
                                     <td className="py-2 px-4 border-b border-gray-100">
                                         {table.geofence}
                                     </td>
-                                    <td className="py-5 px-4 border-b flex gap-3 justify-center border-gray-100">
+                                    <td className="py-5 px-4 border-b  border-gray-100">
+                                      <div className='flex gap-4'>  
+                                        
+                                        
                                         <Switch
                                             className="text-teal-700 mt-2"
                                             checked={table.status}
 
                                         />
-                                        <div>
+                                        <div className='flex item-center'>
                                             <button onClick={showModalProductEdit}>
-                                                <EditOutlined className="bg-gray-200 p-3 rounded-lg" />
+                                            <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+
                                             </button>
                                             <Modal
                                                 title="Edit Product"
@@ -882,8 +933,24 @@ const Discount = () => {
                                                 </form>
                                             </Modal>
                                         </div>
-
-                                        <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+                                        <button onClick={showModalDelete2} className="outline-none focus:outline-none">
+                   <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                  </button>
+                  <Modal
+                     onOk={showModalDeleteOk2}
+                     onCancel={showModalDeleteCancel2}
+                     footer={null}
+                     open={isShowModalDelete2}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel2}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
+                    </div>
+                  </Modal>
+                    </div>                
                                     </td>
                                     <td className="border-b border-gray-300"></td>
                                 </tr>

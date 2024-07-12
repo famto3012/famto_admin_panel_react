@@ -159,7 +159,7 @@ const LoyalityPoint = () => {
                 <div className="flex items-center relative">
                   <label
                     className="w-1/3 text-gray-500"
-                    htmlFor="redemptionCriteraPoint"
+                    htmlFor="redemptionCriteriaPoint"
                   >
                     Redemption Criteria *
                   </label>
@@ -167,12 +167,12 @@ const LoyalityPoint = () => {
                     className="border-2 border-gray-300 rounded p-2 ml-[85px] mr-[10px] outline-none focus:outline-none w-[25rem] "
                     type="text"
                     value={loyalityData.redemptionCriteriaPoint}
-                    id="redemptionCriteraPoint"
-                    name="redemptionCriteraPoint"
+                    id="redemptionCriteriaPoint"
+                    name="redemptionCriteriaPoint"
                     onChange={handleInputChange}
                   />
                   points <RiEqualFill className="mx-3" />
-                  <button className="absolute inset-y-0 right-60 me-10 text-black rounded-md">
+                  <button className="absolute inset-y-0 right-60 me-11 text-black rounded-md">
                 <CurrencyRupeeOutlined/>
                 </button>
                 
@@ -180,8 +180,8 @@ const LoyalityPoint = () => {
                     className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
                     type="text"
                     value={loyalityData.redemptionCriteriaRupee}
-                    id="redemptionCriteraRupee"
-                    name="redemptionCriteraRupee"
+                    id="redemptionCriteriaRupee"
+                    name="redemptionCriteriaRupee"
                     onChange={handleInputChange}
                   />
                 </div>
@@ -237,14 +237,14 @@ const LoyalityPoint = () => {
               </div>
               <div className="flex justify-end gap-4 mt-6">
                 <button
-                  className="bg-cyan-50 py-2 px-8 rounded-md"
+                  className="bg-cyan-50 py-2 px-8 rounded-md outline-none focus:outline-none"
                   type="button"
                   onClick={handleCancel}
                 >
                   Cancel
                 </button>
                 <button
-                  className="bg-teal-700 text-white py-2 px-10 rounded-md"
+                  className="bg-teal-700 text-white py-2 px-10 rounded-md outline-none focus:outline-none"
                   type="submit"
                 >
                   Save

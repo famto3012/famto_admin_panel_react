@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
-import { Switch } from "antd";
-import { FunnelPlotOutlined, SearchOutlined, DeleteOutlined, CloudUploadOutlined } from "@ant-design/icons";
+import { Modal, Switch } from "antd";
+import {  SearchOutlined} from "@ant-design/icons";
 import FilterAltOutlined from "@mui/icons-material/FilterAltOutlined";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 const PushNotification = () => {
 
@@ -41,6 +43,20 @@ const PushNotification = () => {
   const onChange = (name, checked) => {
     setFormData({ ...formData, [name]: checked })
   };
+
+  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
+
+  const showModalDelete = () => {
+    setIsShowModalDelete(true)
+  }
+
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false)
+  }
+
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false)
+  }
 
 
   return (
@@ -199,10 +215,28 @@ const PushNotification = () => {
               <td>{formData.driver}</td>
               <td>{formData.agent}</td>
               <td>
+                <div className="flex items-center justify-center gap-3">
                 <button>
-                  <CloudUploadOutlined className="bg-gray-200 text-green-500 p-3 mr-2 rounded-lg" />
+                  <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
                 </button>
-                <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+                <button onClick={showModalDelete} className="outline-none focus:outline-none">
+                   <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                  </button>
+                  <Modal
+                     onOk={showModalDeleteOk}
+                     onCancel={showModalDeleteCancel}
+                     footer={null}
+                     open={isShowModalDelete}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
+                    </div>
+                  </Modal>
+                  </div>
               </td>
             </tr>
           </tbody>

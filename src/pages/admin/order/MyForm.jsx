@@ -1,31 +1,103 @@
-import { ColorPicker } from 'antd';
 import React, { useState } from 'react';
-import { FaPalette } from 'react-icons/fa';
+import { AddOutlined, DeleteOutline } from '@mui/icons-material';
 
 const MyForm = () => {
-//   const [color, setColor] = useState('#ff0000'); // default color
+  const [items, setItems] = useState([
+    { type: '', length: '', width: '', height: '', weight: '' },
+  ]);
 
-//   const handleColorChange = (event) => {
-//     setColor(event.target.value);
-//   };
+  const handleInputChange = (index, event) => {
+    const values = [...items];
+    values[index][event.target.name] = event.target.value;
+    setItems(values);
+  };
+
+  const handleAddItem = () => {
+    setItems([...items, { type: '', length: '', width: '', height: '', weight: '' }]);
+  };
+
+  const handleRemoveItem = (index) => {
+    const values = [...items];
+    values.splice(index, 1);
+    setItems(values);
+  };
 
   return (
-    <div className="p-4 max-w-sm mx-auto">
-      <label className="block text-lg font-medium text-gray-700 mb-1">Colour</label>
-      {/* <div className="relative">
-        <input 
-          type="color" 
-          className="appearance-none w-full h-12 rounded-3xl cursor-pointer "
-          
-          value={color}
-          onChange={handleColorChange}
-        />
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <FaPalette className="text-black text-[35px]" />
+    <div>
+      {items.map((item, index) => (
+        <div key={index} className="bg-gray-100 mx-6 p-10 rounded-lg mb-4">
+          <div className="flex">
+            <label className="w-1/3">Item type</label>
+            <select
+              name="type"
+              value={item.type}
+              onChange={(e) => handleInputChange(index, e)}
+              className="w-1/2 p-3"
+            >
+              <option value="">Select</option>
+              <option value="option1">Option 1</option>
+              <option value="option2">Option 2</option>
+            </select>
+          </div>
+          <div className="flex mt-5">
+            <label className="w-1/3">Dimensions (in cm)</label>
+            <div className="w-1/2 gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="length"
+                  value={item.length}
+                  onChange={(e) => handleInputChange(index, e)}
+                  className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
+                  placeholder="Length"
+                />
+                <input
+                  type="text"
+                  name="width"
+                  value={item.width}
+                  onChange={(e) => handleInputChange(index, e)}
+                  className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
+                  placeholder="Width"
+                />
+                <input
+                  type="text"
+                  name="height"
+                  value={item.height}
+                  onChange={(e) => handleInputChange(index, e)}
+                  className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
+                  placeholder="Height"
+                />
+              </div>
+              <div className="mt-3">
+                <input
+                  type="text"
+                  name="weight"
+                  value={item.weight}
+                  onChange={(e) => handleInputChange(index, e)}
+                  className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-full"
+                  placeholder="Approximate / Exact Weight (in Kg)"
+                />
+              </div>
+              <div className="mx-3 flex justify-between mt-3 gap-3">
+                <button
+                  type="button"
+                  className="bg-zinc-200 w-1/2 rounded-md p-2"
+                  onClick={handleAddItem}
+                >
+                  <AddOutlined /> Add Item
+                </button>
+                <button
+                  type="button"
+                  className="bg-red-100 w-1/2 rounded-md p-2"
+                  onClick={() => handleRemoveItem(index)}
+                >
+                  <DeleteOutline className="text-red-500" /> Delete Item
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div> */}
-      <ColorPicker defaultValue="#4321a0"/>
-      
+      ))}
     </div>
   );
 };

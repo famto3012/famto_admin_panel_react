@@ -139,9 +139,33 @@ const Adbanner = () => {
     setIndTableData({ ...indtableData, [name]: checked });
   };
 
+  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
 
+  const showModalDelete = () => {
+    setIsShowModalDelete(true)
+  }
 
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false)
+  }
 
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false)
+  }
+
+  const [isShowModalDeleteIndividual , setShowModalDeleteIndividual] = useState(false);
+
+  const showModalDeleteIndividual = () => {
+    setShowModalDeleteIndividual(true)
+  }
+
+  const showModalDeleteIndividualOk = () => {
+    setShowModalDeleteIndividual(false)
+  }
+
+  const showModalDeleteIndividualCancel = () => {
+    setShowModalDeleteIndividual(false)
+  }
 
 
 
@@ -444,9 +468,23 @@ const Adbanner = () => {
                       </form>
                     </Modal>
                     
-                    <div>
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                    <button>
+                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" onClick={showModalDelete} />
+                    </button>
+                    <Modal
+                     onOk={showModalDeleteOk}
+                     onCancel={showModalDeleteCancel}
+                     footer={null}
+                     open={isShowModalDelete}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
                     </div>
+                  </Modal>
                     </div>
                   </td>
                 </tr>
@@ -575,7 +613,7 @@ const Adbanner = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="overflow-x-auto p-4 w-full mt-7">
+          <table className="overflow-x-auto p-4 w-full mt-7 mb-20">
             <thead>
               <tr className="p-5 w-full">
                 {[
@@ -722,9 +760,23 @@ const Adbanner = () => {
                       </form>
                     </Modal>
                   
-                    <div>
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                    <button>
+                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" onClick={showModalDeleteIndividual} />
+                    </button>
+                    <Modal
+                     onOk={showModalDeleteIndividualOk}
+                     onCancel={showModalDeleteIndividualCancel}
+                     footer={null}
+                     open={isShowModalDeleteIndividual}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteIndividualCancel}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
                     </div>
+                  </Modal>
                     </div>
                   </td>
                 </tr>
