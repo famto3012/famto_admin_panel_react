@@ -13,6 +13,7 @@ import {
   FacebookFilled,
 } from "@ant-design/icons";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 const CustomerApp = () => {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ const CustomerApp = () => {
   });
 
   const [business, setBusiness] = useState({
-    title: "",
+    title: "Food",
     geofence: "",
     imageURL: "",
   });
@@ -217,6 +218,20 @@ const CustomerApp = () => {
     setIsModalVisiblePickDrop(false);
   };
 
+  const [isModalVisiblePickDropEdit, setIsModalVisiblePickDropEdit] = useState(false);
+
+  const showModalPickDropEdit = () => {
+    setIsModalVisiblePickDropEdit(true);
+  };
+
+  const handleOkPickDropEdit = () => {
+    setIsModalVisiblePickDropEdit(false);
+  };
+
+  const handleCancelPickDropEdit = () => {
+    setIsModalVisiblePickDropEdit(false);
+  };
+
   const [isModalVisibleBusiness, setIsModalVisibleBusiness] = useState(false);
 
   const showModalBusiness = () => {
@@ -246,10 +261,26 @@ const CustomerApp = () => {
     setIsModalVisibleBusinessEdit(false);
   };
 
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+
+  const showModalDelete = () => {
+    setIsShowModalDelete(true)
+  }
+
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false)
+  }
+
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false)
+  }
+
+  
+
   return (
     <>
       <Sidebar />
-      <div className="pl-[300px] bg-gray-100 p-5">
+      <div className="pl-[300px] bg-gray-100">
         <nav className="p-5">
           <GlobalSearch />
         </nav>
@@ -635,6 +666,7 @@ const CustomerApp = () => {
             <DragIndicatorIcon />
             <div className="bg-gray-200 rounded-full p-5">
               <img src="Food.svg" />
+
             </div>
             <p>{business.title}</p>
             <Switch className="ml-24" />
@@ -717,7 +749,7 @@ const CustomerApp = () => {
                     Cancel
                   </button>
                   <button
-                    className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
+                    className="bg-teal-800 rounded-lg px-6 py-3 text-white font-semibold justify-end"
                     onClick={handleOkBusinessEdit}
                     type="submit"
                   >
@@ -726,12 +758,31 @@ const CustomerApp = () => {
                 </div>
               </form>
             </Modal>
-            <button>
-              <DeleteOutlined className="bg-red-100 text-red-600 p-3 rounded-lg" />
+            <button onClick={showModalDelete} className="bg-red-100 p-3 rounded-lg">
+              <RiDeleteBinLine className=" text-[18px] text-red-900 " />
             </button>
+            <Modal
+              onOk={showModalDeleteOk}
+              onCancel={showModalDeleteCancel}
+              footer={null}
+              open={isShowModalDelete}
+              centered
+            >
+              <form>
+                <p className="font-bold text-[20px] mb-5">Are you sure want to delete?</p>
+                <div className="flex justify-end">
+                  <button className="bg-zinc-200 p-2 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                  <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white"> Delete</button>
+                </div>
+              </form>
+            </Modal>
           </div>
         </div>
-        <div className="mt-10 justify-between flex mx-5 border-b-2 pb-10 mb-5 border-gray-200">
+
+        {/* // Customer Login Restriction */}
+
+
+        {/* <div className="mt-10 justify-between flex mx-5 border-b-2 pb-10 mb-5 border-gray-200">
           <h1>Customer login Restriction</h1>
           <p className="w-[43rem] text-gray-500">
             Enable this, to restrict Customer from accessing the platform
@@ -739,7 +790,9 @@ const CustomerApp = () => {
             updated).
           </p>
           <Switch />
-        </div>
+        </div> */}
+
+
         <div className="mt-10 justify-between flex mx-5">
           <h1>Customer Order Banners (info)</h1>
           <p className="w-[45rem] text-gray-500">
@@ -833,8 +886,8 @@ const CustomerApp = () => {
             </form>
           </Modal>
         </div>
-        <div className="grid grid-cols-2 ml-[335px] w-[61%] mt-10  gap-5">
-          <Card>
+        <div className="grid grid-cols-2 ml-[335px] mt-10  gap-5">
+          <Card className="w-[23rem]">
             <p>Card 1</p>
             <p className="font-semibold">{banner.title}</p>
             <p>{banner.description}</p>
@@ -846,7 +899,7 @@ const CustomerApp = () => {
               <EditOutlined /> Edit
             </button>
             <Modal
-              title="Add Banner"
+              title="Edit Banner"
               open={isModalVisibleBannerEdit}
               className="mt-24"
               onOk={handleOkBannerEdit}
@@ -929,33 +982,9 @@ const CustomerApp = () => {
             </button>
           </Card>
 
-          <Card>
-            <p>Card 2</p>
-            <p className="font-semibold">Title</p>
-            <p>Description</p>
-            <img src="Sadhya.svg" />
-            <button className="bg-blue-50 rounded-3xl p-3 px-12 mt-5">
-              <EditOutlined /> Edit
-            </button>
-            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5">
-              <DeleteOutlined />
-              Delete
-            </button>
-          </Card>
 
-          <Card>
-            <p>Card 2</p>
-            <p className="font-semibold">Title</p>
-            <p>Description</p>
-            <img src="Sadhya.svg" />
-            <button className="bg-blue-50 rounded-3xl p-3 px-12 mt-5">
-              <EditOutlined /> Edit
-            </button>
-            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5">
-              <DeleteOutlined />
-              Delete
-            </button>
-          </Card>
+
+
         </div>
         <div className="mt-10 justify-between flex mx-5">
           <h1>Pick and drop banners (info)</h1>
@@ -972,7 +1001,7 @@ const CustomerApp = () => {
             <PlusOutlined /> Add Banner
           </button>
           <Modal
-            title="Edit Banner"
+            title="Add Banner"
             open={isModalVisiblePickDrop}
             className="mt-24"
             onOk={handleOkPickDrop}
@@ -1051,22 +1080,100 @@ const CustomerApp = () => {
           </Modal>
         </div>
 
-        <div className="grid grid-cols-2 ml-[335px] w-[61%] mt-10  gap-5">
-          <Card>
+        <div className="grid grid-cols-2 ml-[335px]  mt-10  gap-5">
+          <Card className="w-[23rem]">
             <p>Card 1</p>
             <p className="font-semibold">{pickDrop.title}</p>
             <p>{pickDrop.description}</p>
             <img src="Sadhya.svg" />
-            <button className="bg-blue-50 rounded-3xl p-3 px-12 mt-5">
+            <button className="bg-blue-50 rounded-3xl p-3 px-12 mt-5" onClick={showModalPickDropEdit}>
               <EditOutlined /> Edit
             </button>
+            <Modal
+              title="Edit Banner"
+              open={isModalVisiblePickDropEdit}
+              className="mt-24"
+              onOk={handleOkPickDropEdit}
+              onCancel={handleCancelPickDropEdit}
+              footer={null} // Custom footer to include form buttons
+            >
+              <form onSubmit={handlePickDrop}>
+                <div className="flex mt-5 gap-4">
+                  <label className="w-1/2 text-gray-500">Service title</label>
+                  <input
+                    type="text"
+                    className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
+                    name="title"
+                    value={pickDrop.title}
+                    onChange={handlePickDropChange}
+                  />
+                </div>
+                <div className="flex mt-5  gap-4">
+                  <label className="w-1/2 text-gray-500">Geofence</label>
+                  <input
+                    type="text"
+                    className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
+                    name="description"
+                    value={pickDrop.description}
+                    onChange={handlePickDropChange}
+                  />
+                </div>
+                <div className="flex">
+                  <label className="mt-5">Image (342px x 160px)</label>
+                  <div className=" flex items-center gap-[30px]">
+                    {!pickDropPreviewURL && (
+                      <div className="bg-gray-400 ml-20 mt-5 h-16 w-16 rounded-md" />
+                    )}
+                    {pickDropPreviewURL && (
+                      <figure className="ml-20 mt-5 h-16 w-16 rounded-md relative">
+                        <img
+                          src={pickDropPreviewURL}
+                          alt="profile"
+                          className="w-full rounded h-full object-cover "
+                        />
+                      </figure>
+                    )}
+                    <input
+                      type="file"
+                      name="pickDrop"
+                      id="pickDrop"
+                      className="hidden"
+                      onChange={handlePickDropImageChange}
+                    />
+                    <label htmlFor="pickDrop" className="cursor-pointer ">
+                      <MdCameraAlt
+                        className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
+                        size={30}
+                      />
+                    </label>
+                  </div>
+                </div>
+                <div className="flex justify-end mt-10  gap-4">
+                  <button
+                    className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
+                    onClick={handleCancelPickDropEdit}
+                    type="submit"
+                  >
+                    {" "}
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
+                    onClick={handleOkPickDropEdit}
+                    type="submit"
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </Modal>
             <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5">
               <DeleteOutlined />
               Delete
             </button>
           </Card>
         </div>
-        <div className="flex justify-end mt-10 mb-10 gap-4">
+        <div className="flex justify-end p-10 gap-4">
           <button
             className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
             // onClick={handleCancelEdit}

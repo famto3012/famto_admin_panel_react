@@ -140,7 +140,7 @@ const Orders = () => {
           <div className="flex items-center gap-[20px]">
             <select
               id="serviceable"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none outline-none block w-full p-2.5"
             >
               <option selected hidden>
                 Order Status
@@ -151,7 +151,7 @@ const Orders = () => {
 
             <select
               id="eofence"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-fit p-2.5"
             >
               <option selected hidden>
                 Payment Mode
@@ -161,7 +161,7 @@ const Orders = () => {
 
             <select
               id="businessCategory"
-              className="bg-gray-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              className="bg-gray-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
             >
               <option selected hidden>
                 Delivery Mode 

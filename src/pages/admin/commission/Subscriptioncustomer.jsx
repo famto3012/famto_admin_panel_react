@@ -143,7 +143,7 @@ const Subscriptioncustomer = () => {
                 // name="date"
                 value={""}
                 // onChange={handleChange}
-                className=""
+                className="p-2 rounded"
               />
               </div>
               <div className="flex items-center">
@@ -154,7 +154,7 @@ const Subscriptioncustomer = () => {
                 type="search"
                 name="search"
                 placeholder="Search alert notification name"
-                className="bg-white h-10 rounded-full w-60 text-sm focus:outline-none "
+                className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
               />
               <button type="submit" className="absolute right-0 mt-2 mr-4 ">
                 <SearchOutlined className="text-xl text-gray-500" />

@@ -4,6 +4,7 @@ import GlobalSearch from '../../components/GlobalSearch'
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { Switch, Modal } from 'antd'
 import { MdCameraAlt } from 'react-icons/md'
+import { RiDeleteBinLine } from "react-icons/ri";
 
 const Products = () => {
 
@@ -45,7 +46,7 @@ const Products = () => {
 
 
 
-   
+
 
     const shakes = [
         "sharjah",
@@ -54,12 +55,19 @@ const Products = () => {
     ]
 
     const handleCategory = (e) => {
-        setCategory({ ...category, [e.target.name]: e.target.value })
-    }
+        const { name, value } = e.target;
+        setCategory((prevCategory) => ({
+            ...prevCategory,
+            [name]: value,
+        }));
+    };
 
-    const handleRadio = (event) => {
-        setCategory(event.target.value)
-    }
+    // const handleRadio = (event) => {
+    //     setCategory({
+    //         ...category,
+    //         type: event.target.value,
+    //     });
+    // };
 
     const submitCategory = (e) => {
         e.preventDefault()
@@ -86,7 +94,7 @@ const Products = () => {
     ];
 
     const categoryChange = () => {
-      
+
         console.log(`Selected Category: ${selectedCategory}`);
     };
 
@@ -270,10 +278,15 @@ const Products = () => {
                                 open={isModalVisible}
                                 footer={null}
                             >
-                                <form onClick={submitCategory}>
+                                <form onSubmit={submitCategory}>
                                     <div className="flex flex-col gap-4 mt-5">
-                                        <div className="flex mt-5  gap-4">
-                                            <label className="w-1/2 text-gray-500" htmlFor="businessCategory">Business Category</label>
+                                        <div className="flex mt-5 gap-4">
+                                            <label
+                                                className="w-1/2 text-gray-500"
+                                                htmlFor="businessCategory"
+                                            >
+                                                Business Category
+                                            </label>
                                             <select
                                                 name="businessCategory"
                                                 id="businessCategory"
@@ -288,7 +301,10 @@ const Products = () => {
                                             </select>
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-gray-500" htmlFor="categoryName">
+                                            <label
+                                                className="w-1/3 text-gray-500"
+                                                htmlFor="categoryName"
+                                            >
                                                 Category Name
                                             </label>
                                             <input
@@ -297,11 +313,14 @@ const Products = () => {
                                                 value={category.categoryName}
                                                 id="categoryName"
                                                 name="categoryName"
-                                                onChange={handleRadio}
+                                                onChange={handleCategory}
                                             />
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-gray-500" htmlFor="description">
+                                            <label
+                                                className="w-1/3 text-gray-500"
+                                                htmlFor="description"
+                                            >
                                                 Description
                                             </label>
                                             <input
@@ -310,26 +329,22 @@ const Products = () => {
                                                 value={category.description}
                                                 id="description"
                                                 name="description"
-                                                onChange={handleRadio}
-                                            >
-
-                                            </input>
+                                                onChange={handleCategory}
+                                            ></input>
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-gray-500">
-                                                Veg/Non-veg
-                                            </label>
-                                            <div >
-                                            <input
-                                                type="radio"
-                                                name="type"
-                                                value="veg"
-                                                checked={category.type === "veg"}
-                                                onChange={handleRadio}
-                                                className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
-                                            />
-                                           <label> Veg</label>
-                                           </div>
+                                            <label className="w-1/3 text-gray-500">Veg/Non-veg</label>
+                                            <div>
+                                                <input
+                                                    type="radio"
+                                                    name="type"
+                                                    value="veg"
+                                                    checked={category.type === "veg"}
+                                                    onChange={handleCategory}
+                                                    className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
+                                                />
+                                                <label> Veg</label>
+                                            </div>
                                             <input
                                                 type="radio"
                                                 name="type"
@@ -338,8 +353,8 @@ const Products = () => {
                                                 onChange={handleCategory}
                                                 className="border-2 border-gray-100 ml-5 rounded p-2 mr-3 focus:outline-none"
                                             />
-                                           <label>Non-Veg</label>
-                                            
+                                            <label>Non-Veg</label>
+
                                             <input
                                                 type="radio"
                                                 name="type"
@@ -349,15 +364,12 @@ const Products = () => {
                                                 className="border-2 border-gray-100 ml-5 rounded p-2 mr-3 focus:outline-none"
                                             />
                                             <label> Both</label>
-
                                         </div>
                                         <div className="flex items-center">
-                                            <label className=" w-1/3">
-                                                Photos
-                                            </label>
+                                            <label className=" w-1/3">Photos</label>
                                             <div className="flex items-center gap-[30px]">
                                                 {!adPreviewURL && (
-                                                    <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
+                                                    <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md" />
                                                 )}
                                                 {adPreviewURL && (
                                                     <figure className="mt-3 h-16 w-16 rounded-md relative">
@@ -375,10 +387,7 @@ const Products = () => {
                                                     className="hidden"
                                                     onChange={handleAdImageChange}
                                                 />
-                                                <label
-                                                    htmlFor="adImage"
-                                                    className="cursor-pointer"
-                                                >
+                                                <label htmlFor="adImage" className="cursor-pointer">
                                                     <MdCameraAlt
                                                         className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
                                                         size={30}
@@ -391,7 +400,7 @@ const Products = () => {
                                             <button
                                                 className="bg-cyan-50 py-2 px-4 rounded-md"
                                                 type="button"
-                                                onClick={showModalCancel}
+                                                onClick={() => setAdPreviewURL(null)}
                                             >
                                                 Cancel
                                             </button>
@@ -415,14 +424,21 @@ const Products = () => {
                                 Disabled <Switch /> Enable
                                 <button className='bg-zinc-100 p-2 rounded' onClick={showModalCategory}><EditOutlined />{" "}Edit</button>
                                 <Modal
-                                    title="Edit Categories"
+
                                     onCancel={showModalCancelCategory}
                                     onOk={showModalOkCategory}
                                     width="60rem"
+                                    closeIcon={null}
                                     open={isModalVisibleCategory}
                                     footer={null}
                                 >
                                     <form onClick={submitCategory}>
+                                        <div className='flex justify-between'>
+                                            <b>Edit Category name</b>
+                                            <button className='flex bg-red-100 rounded-md p-2 outline-none focus:outline-none'>
+                                                <RiDeleteBinLine className=" text-[18px] text-red-900 mr-1" />{""}Delete
+                                            </button>
+                                        </div>
                                         <div className="flex flex-col gap-4 mt-5">
                                             <div className="flex mt-5  gap-4">
                                                 <label className="w-1/2 text-gray-500" htmlFor="businessCategory">Business Category</label>
@@ -583,7 +599,7 @@ const Products = () => {
                                         open={isModalVisibleItems}
                                     >
                                         <form onSubmit={signupAction}
-                                         className='max-h-[30rem] overflow-auto'>
+                                            className='max-h-[30rem] overflow-auto'>
                                             <div className="flex flex-col gap-4 mt-5">
                                                 <div className="flex items-center">
                                                     <label className="w-1/3 text-gray-500" htmlFor="name">
@@ -920,14 +936,20 @@ const Products = () => {
                                         Inventory<Switch />
                                         <button className='bg-zinc-100 p-2 rounded' onClick={showModalItemsEdit}><EditOutlined />{" "}Edit</button>
                                         <Modal
-                                            title="Edit Product"
                                             onCancel={showModalCancelItemsEdit}
                                             onOk={showModalOkItemsEdit}
                                             width="60rem"
+                                            closeIcon={null}
                                             footer={null}
                                             open={isModalVisibleItemsEdit}
                                         >
                                             <form onSubmit={signupAction} className='max-h-[30rem] overflow-auto'>
+                                                <div className='flex justify-between'>
+                                                    <b>Edit Category name</b>
+                                                    <button className='flex bg-red-100 rounded-md p-2 outline-none focus:outline-none'>
+                                                        <RiDeleteBinLine className=" text-[18px] text-red-900 mr-1" />{""}Delete
+                                                    </button>
+                                                </div>
                                                 <div className="flex flex-col gap-4 mt-5">
                                                     <div className="flex items-center">
                                                         <label className="w-1/3 text-gray-500" htmlFor="name">

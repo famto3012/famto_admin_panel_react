@@ -59,7 +59,7 @@ const Customers = () => {
           <select
             name="type"
             defaultValue=""
-            className="bg-cyan-100 px-4 outline-none focus:outline-none "
+            className="bg-cyan-100 px-4 outline-none rounded-lg focus:outline-none "
           >
             <option hidden value="">
               Geofence

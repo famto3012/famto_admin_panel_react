@@ -96,6 +96,7 @@ const PromoCode = () => {
             <Sidebar />
 
             <div className="pl-[300px] bg-gray-100 w-fit h-fit">
+                <div className='w-[1250px]'>
                 <nav className="p-5">
                     <GlobalSearch />
                 </nav>
@@ -330,6 +331,7 @@ const PromoCode = () => {
                             </form>
                         </div>
                     </Modal>
+                </div>
                 </div>
                 <div className='overflow-x-auto'>
                     <table className='overflow-x-auto p-5 w-full'>
