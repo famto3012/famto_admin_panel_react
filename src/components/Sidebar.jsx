@@ -38,7 +38,8 @@ const Sidebar = () => {
 
 
 
-  const toggleSidebar1 = () => {
+  const toggleSidebar1 = (e) => {
+    e.stopPropagation()
     setMarketingOpen(!ismarketingOpen);
   };
 

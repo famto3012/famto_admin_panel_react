@@ -1,6 +1,8 @@
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { Switch, Modal } from 'antd'
 import React, { useState } from 'react'
+import { RiDeleteBinLine } from "react-icons/ri";
+import { BiEdit } from "react-icons/bi";
 
 const SubscriptionComponent = () => {
 
@@ -138,6 +140,33 @@ const SubscriptionComponent = () => {
         setIsModalVisibleCustomerEdit(false);
     };
 
+    const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+
+    const showModalDelete = () => {
+        setIsShowModalDelete(true)
+    }
+
+    const showModalDeleteOk = () => {
+        setIsShowModalDelete(false)
+    }
+
+    const showModalDeleteCancel = () => {
+        setIsShowModalDelete(false)
+    }
+
+    const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] = useState(false);
+
+    const showModalDeleteCustomer = () => {
+        setIsShowModalDeleteCustomer(true)
+    }
+
+    const showModalDeleteOkCustomer = () => {
+        setIsShowModalDeleteCustomer(false)
+    }
+
+    const showModalDeleteCancelCustomer = () => {
+        setIsShowModalDeleteCustomer(false)
+    }
 
     const handleInputChange = (e) => {
         setAddData({ ...addData, [e.target.name]: e.target.value });
@@ -288,9 +317,9 @@ const SubscriptionComponent = () => {
                     <h1>Apply Subscription</h1>
                     <div className='flex mt-10'>
                         <label className='w-1/3'>Added Subscription Plans</label>
-                        <div className='w-2/3  grid grid-cols-2 gap-5'>
+                        <div className='w-2/3 grid grid-cols-2 gap-5'>
                             {subscription.map((subscriptions) => (
-                                <div className='bg-zinc-50 shadow-2xl rounded-lg flex'>
+                                <div className='bg-zinc-50 shadow rounded-lg flex'>
                                     <div>
                                         <div className='flex justify-between m-3'>
                                             <p>Name:{subscriptions.name}</p>
@@ -302,9 +331,9 @@ const SubscriptionComponent = () => {
                                         </div>
                                         <p className='m-3'>{subscriptions.tax}</p>
                                         <p className='m-3'>{subscriptions.description}</p>
-                                        <div className='mb-5'>
-                                            <button className="bg-blue-50 rounded-3xl p-3 px-10 ml-3 mt-5" onClick={showModalEdit}>
-                                                <EditOutlined /> Edit
+                                        <div className='mb-5 flex'>
+                                            <button className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5" onClick={showModalEdit}>
+                                                <BiEdit className='text-[22px] mr-1' /> Edit
                                             </button>
                                             <Modal
                                                 title="Edit Merchant Subscription Plan"
@@ -415,10 +444,27 @@ const SubscriptionComponent = () => {
                                                     </div>
                                                 </form>
                                             </Modal>
-                                            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-3 px-8 mt-5">
-                                                <DeleteOutlined />
+
+                                            <button className="bg-teal-800 flex  rounded-3xl p-3 items-center text-white ml-3 px-8 mt-5" onClick={showModalDelete}>
+                                                <RiDeleteBinLine className='text-[20px] mr-1' />
                                                 Delete
                                             </button>
+                                            <Modal
+                                                onOk={showModalDeleteOk}
+                                                onCancel={showModalDeleteCancel}
+                                                footer={null}
+                                                open={isShowModalDelete}
+                                                centered
+                                            >
+                                                <form>
+                                                    <p className="font-bold text-[20px] mb-5">Are you sure want to delete?</p>
+                                                    <div className="flex justify-end">
+                                                        <button className="bg-zinc-200 p-2 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                                                        <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white"> Delete</button>
+                                                    </div>
+                                                </form>
+                                            </Modal>
+
                                         </div>
                                     </div>
                                     <div className='bg-white  shadow ml-auto rounded-lg w-14 flex items-center justify-center'>
@@ -614,9 +660,9 @@ const SubscriptionComponent = () => {
                                         </div>
                                         <p className='m-3'>{subscriptions.tax}</p>
                                         <p className='m-3'>{subscriptions.description}</p>
-                                        <div className='mb-5'>
-                                            <button className="bg-blue-50 rounded-3xl p-3 px-10 ml-3 mt-5" onClick={showModalCustomerEdit}>
-                                                <EditOutlined /> Edit
+                                        <div className='mb-5 flex'>
+                                            <button className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5" onClick={showModalCustomerEdit}>
+                                                <BiEdit className='text-[22px] mr-1' /> Edit
                                             </button>
                                             <Modal
                                                 title="Edit Customer Subscription Plan"
@@ -727,10 +773,25 @@ const SubscriptionComponent = () => {
                                                     </div>
                                                 </form>
                                             </Modal>
-                                            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-3 px-8 mt-5">
-                                                <DeleteOutlined />
+                                            <button className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5" onClick={showModalDeleteCustomer}>
+                                                <RiDeleteBinLine className='text-[20px] mr-1' />
                                                 Delete
                                             </button>
+                                            <Modal
+                                                onOk={showModalDeleteOkCustomer}
+                                                onCancel={showModalDeleteCancelCustomer}
+                                                footer={null}
+                                                open={isShowModalDeleteCustomer}
+                                                centered
+                                            >
+                                                <form>
+                                                    <p className="font-bold text-[20px] mb-5">Are you sure want to delete?</p>
+                                                    <div className="flex justify-end">
+                                                        <button className="bg-zinc-200 p-2 rounded-md font-semibold" onClick={showModalDeleteCancelCustomer}>Cancel</button>
+                                                        <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white"> Delete</button>
+                                                    </div>
+                                                </form>
+                                            </Modal>
                                         </div>
                                     </div>
                                     <div className='bg-white  shadow ml-auto rounded-lg w-14 flex items-center justify-center'>

@@ -144,6 +144,8 @@ const Merchant = () => {
                 title="Add Merchant"
                 open={isModalVisible}
                 onOk={handleOk}
+                centered
+                width="600px"
                 onCancel={handleCancel}
                 footer={null}
               >
@@ -244,7 +246,7 @@ const Merchant = () => {
           <div className="flex items-center gap-[20px]">
             <select
               id="serviceable"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
             >
               <option selected hidden>
                 Serviceable
@@ -255,7 +257,7 @@ const Merchant = () => {
 
             <select
               id="eofence"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
             >
               <option selected hidden>
                 Geofence
@@ -265,7 +267,7 @@ const Merchant = () => {
 
             <select
               id="businessCategory"
-              className="bg-gray-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              className="bg-gray-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
             >
               <option selected hidden>
                 Business category
