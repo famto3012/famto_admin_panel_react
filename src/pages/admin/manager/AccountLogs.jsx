@@ -4,6 +4,7 @@ import { DownloadOutlined, FunnelPlotOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
 import { Switch } from "antd";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 
 const AccountLogs = () => {
   const dummyData = [
@@ -75,7 +76,7 @@ const AccountLogs = () => {
               className="right-4"
             />
             <p className="mt-2">
-              <FunnelPlotOutlined />
+            <FilterAltOutlinedIcon className=" text-gray-400   " />
             </p>
             <input
               type="search"

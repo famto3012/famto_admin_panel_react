@@ -71,7 +71,7 @@ const SidebarDelivery = () => {
           <Link to="/home" className="side">
             <HomeOutlinedIcon className="m-2" />
           </Link>
-          <Link to="/orders" className="side">
+          <Link to="/all-orders" className="side">
             <BookOutlinedIcon className="m-2" />
         
           </Link>
@@ -86,14 +86,14 @@ const SidebarDelivery = () => {
           <Link to="/customers" className="side">
             <GroupsOutlinedIcon className="m-2" />
           </Link>
-          <Link to="/delivery-agent" className="side">
+          <Link to="/all-agents" className="side">
             <AssignmentIndOutlinedIcon className="m-2" />
              
           </Link>
           <Link to="/delivery-management" className="side">
             <TwoWheelerOutlinedIcon className="m-2" />
                       </Link>
-          <Link to="commission" className="side">
+          <Link to="/commission" className="side">
             <PercentOutlinedIcon className="flex mr-[3px] m-2" />
        
           </Link>
@@ -124,7 +124,7 @@ const SidebarDelivery = () => {
             <RedeemOutlinedIcon className="m-2" />
   
           </Link>
-          <Link to="/referal" className="side">
+          <Link to="/referral" className="side">
             <HubOutlinedIcon className="m-2" />
           </Link>
         </ul>

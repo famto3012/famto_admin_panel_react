@@ -9,6 +9,7 @@ import EditMerchant from "../../../components/model/MerchantModels/EditMerchant"
 import { Modal, Switch } from "antd";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { HelpOutlineOutlined } from "@mui/icons-material";
 
 const MerchantDetails = () => {
   const [formData, setFormData] = useState({
@@ -43,8 +44,9 @@ const MerchantDetails = () => {
     },
     sponsorshipDetail: [],
     availability: {
+
       type: "",
-      sunday: {
+        sunday: {
         openAllDay: null,
         closedAllDay: null,
         specificTime: null,
@@ -248,6 +250,10 @@ const MerchantDetails = () => {
     }
   }
 
+  const handlePlanChange = (e) => {
+      setFormData({sponsorshipDetail : e.target.value})
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
@@ -282,34 +288,36 @@ const MerchantDetails = () => {
     }
   };
 
-  const handleChangeRadio = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "radio") {
-      const [day, field] = name.split(".");
-      const test = ["open", "closed", "specific"];
-      const details = {
-        open: false,
-        closed: false,
-        specific: true,
-        startTime: "",
-        endTime: "",
-      };
+  const handleChangeRadio = (event) => {
+    const { name, value } = event.target;
+    const [day, type] = name.split('.');
+    setFormData((prevState) => ({
+      ...prevState,
+      availability: {
+        ...prevState.availability,
+        [day]: {
+          ...prevState.availability[day],
+          openAllDay: type === 'openAllDay' ? value === 'true' : prevState.availability[day].openAllDay,
+          closedAllDay: type === 'closedAllDay' ? value === 'true' : prevState.availability[day].closedAllDay,
+          specificTime: type === 'specificTime' ? value === 'true' : prevState.availability[day].specificTime,
+        },
+      },
+    }));
+  };
 
-      test.forEach((testValue) => {
-        if (field == testValue) {
-          details[testValue] = true;
-        } else {
-          details[testValue] = false;
-        }
-        setFormData({
-          ...formData,
-          weekdays: {
-            ...formData.weekdays,
-            [day]: details,
-          },
-        });
-      });
-    }
+  const handleChangeTime = (event) => {
+    const { name, value } = event.target;
+    const [day, timeType] = name.split('.');
+    setFormData((prevState) => ({
+      ...prevState,
+      availability: {
+        ...prevState.availability,
+        [day]: {
+          ...prevState.availability[day],
+          [timeType]: value,
+        },
+      },
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -321,7 +329,7 @@ const MerchantDetails = () => {
     <>
       <Sidebar />
 
-      <main className="p-6 bg-gray-100 pl-[260px] h-full overflow-auto">
+      <main className="p-6 bg-gray-100 pl-[300px] h-full">
         <GlobalSearch />
 
         <div className="flex justify-between my-[15px] mt-8 mb-8">
@@ -1043,7 +1051,7 @@ const MerchantDetails = () => {
                       name="sponsorshipdetail"
                       value={plan.value}
                       checked={formData.sponsorshipDetail === plan.value}
-                      onChange={handleChange}
+                      onChange={handlePlanChange}
                       className="mr-2 justify-between"
                     />{" "}
                     {plan.label}({plan.price})
@@ -1098,7 +1106,10 @@ const MerchantDetails = () => {
           </div>
 
           {formData.availability === "specific" && (
-            <div className="overflow-x-auto">
+          
+
+
+             <div className="overflow-x-auto">
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
@@ -1109,7 +1120,7 @@ const MerchantDetails = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(formData.type).map((day, index) => (
+                {Object.keys(formData.availability).map((day, index) => (
                     <tr key={index}>
                       <td className="py-2 px-4 capitalize">{day}</td>
                       <td className="py-2 px-4 text-center">
@@ -1117,7 +1128,7 @@ const MerchantDetails = () => {
                           type="radio"
                           name={`${day}.open`}
                           value={true}
-                          checked={formData.weekdays[day].open}
+                          checked={formData.availability[day].openAllDay}
                           onChange={handleChangeRadio}
                           className="mr-2"
                         />
@@ -1127,7 +1138,7 @@ const MerchantDetails = () => {
                           type="radio"
                           name={`${day}.closed`}
                           value={true}
-                          checked={formData.weekdays[day].closed}
+                          checked={formData.availability[day].closedAllDay}
                           onChange={handleChangeRadio}
                           className="mr-2"
                         />
@@ -1137,20 +1148,20 @@ const MerchantDetails = () => {
                           type="radio"
                           name={`${day}.specific`}
                           value={true}
-                          checked={formData.weekdays[day].specific}
+                          checked={formData.availability[day].specificTime}
                           onChange={handleChangeRadio}
                           className="mr-2"
                         />
                       </td>
 
-                      {formData.weekdays[day].specific && (
+                      {formData.availability[day].specific && (
                         <div className="flex justify-start mt-2">
                           <td>
                             <input
                               type="text"
                               name={`${day}.startTime`}
-                              value={formData.weekdays[day].startTime}
-                              onChange={handleChangeRadio}
+                              value={formData.availability[day].startTime}
+                              onChange={handleChangeTime}
                               className="py-2 border rounded-md text-center mr-2"
                               placeholder="Start Time (HH:MM)"
                             />
@@ -1159,8 +1170,8 @@ const MerchantDetails = () => {
                             <input
                               type="text"
                               name={`${day}.endTime`}
-                              value={formData.weekdays[day].endTime}
-                              onChange={handleChangeRadio}
+                              value={formData.availability[day].endTime}
+                              onChange={handleChangeTime}
                               className="py-2 border text-center rounded-md"
                               placeholder="End Time (HH:MM)"
                             />
@@ -1174,36 +1185,7 @@ const MerchantDetails = () => {
             </div>
           )}
 
-          {/* <div>
-            <table className="border-2 border-gray-500 w-full">
-              <thead>
-                <tr>
-                  {[
-                    "Week days",
-                    "Open All days",
-                    "Close All days",
-                    "Specific time"
-                  ].map((header) => (
-                    <th
-                      key={header}
-                      className=" text-center h-[70px]"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <td>{Object.keys(formData.weekdays).map((day, index) => (
-
-                <th
-                  key={index}>
-                  {day}
-                </th>
-
-              ))}
-              </td>
-            </table>
-          </div> */}
+      
 
           <div className="flex justify-end items-center gap-3 mt-8">
             <button type="button" className="bg-gray-300  px-6 p-1 rounded-md">

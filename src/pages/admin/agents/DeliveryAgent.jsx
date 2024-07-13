@@ -175,15 +175,16 @@ const DeliveryAgent = () => {
                                 <PlusOutlined /> <span>Add Agent</span>
                             </button>
                             <Modal
-                                title="Add Deliery Agent"
+                                title="Add Delivery Agent"
                                 width="700px"
                                 open={isModalVisible}
                                 onOk={handleOk}
+                                centered
                                 onCancel={handleCancel}
                                 footer={null}
                             >
                                 <form onSubmit={signupAction}>
-                                    <div className="flex flex-col gap-4 mt-5">
+                                    <div className="flex flex-col gap-4 mt-5 max-h-[30rem] overflow-auto">
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-gray-500" htmlFor="fullName">
                                                 Full Name of owner
@@ -450,33 +451,33 @@ const DeliveryAgent = () => {
                                                 />
                                             </div>
                                             <div className=" flex items-center gap-[30px]">
-                                            {!businessPreviewURL && (
-                                                <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
-                                            )}
-                                            {businessPreviewURL && (
-                                                <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                                                    <img
-                                                        src={businessPreviewURL}
-                                                        alt="profile"
-                                                        className="w-full rounded h-full object-cover "
-                                                    />
-                                                </figure>
-                                            )}
-                                            <input
-                                                type="file"
-                                                name="BusinessImage"
-                                                id="BusinessImage"
-                                                className="hidden"
-                                                onChange={handleBusinessImageChange}
-                                            />
-                                            <label htmlFor="BusinessImage" className="cursor-pointer ">
-                                                <MdCameraAlt
-                                                    className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                                                    size={30}
+                                                {!businessPreviewURL && (
+                                                    <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
+                                                )}
+                                                {businessPreviewURL && (
+                                                    <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
+                                                        <img
+                                                            src={businessPreviewURL}
+                                                            alt="profile"
+                                                            className="w-full rounded h-full object-cover "
+                                                        />
+                                                    </figure>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    name="BusinessImage"
+                                                    id="BusinessImage"
+                                                    className="hidden"
+                                                    onChange={handleBusinessImageChange}
                                                 />
-                                            </label>
+                                                <label htmlFor="BusinessImage" className="cursor-pointer ">
+                                                    <MdCameraAlt
+                                                        className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
+                                                        size={30}
+                                                    />
+                                                </label>
 
-                                        </div>
+                                            </div>
                                         </div>
                                         <h1 className="font-semibold text-[18px]">Work Structure</h1>
                                         <div className="flex mt-5  gap-4">
@@ -539,36 +540,36 @@ const DeliveryAgent = () => {
                                         </div>
                                         <h1 className="font-semibold text-[18px]">Add Profile</h1>
                                         <div className=" flex items-center gap-[30px]">
-                                                {!agentPreviewURL && (
-                                                    <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
-                                                )}
-                                                {agentPreviewURL && (
-                                                    <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                                                        <img
-                                                            src={agentPreviewURL}
-                                                            alt="profile"
-                                                            className="w-full rounded h-full object-cover "
-                                                        />
-                                                    </figure>
-                                                )}
-                                                <input
-                                                    type="file"
-                                                    name="agentImage"
-                                                    id="agentImage"
-                                                    className="hidden"
-                                                    onChange={handleAgentImageChange}
-                                                />
-                                                <label htmlFor="agentImage" className="cursor-pointer ">
-                                                    <MdCameraAlt
-                                                        className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                                                        size={30}
+                                            {!agentPreviewURL && (
+                                                <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
+                                            )}
+                                            {agentPreviewURL && (
+                                                <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
+                                                    <img
+                                                        src={agentPreviewURL}
+                                                        alt="profile"
+                                                        className="w-full rounded h-full object-cover "
                                                     />
-                                                </label>
-                                            </div>
-                                        
-                                        
-                                        
-                                        
+                                                </figure>
+                                            )}
+                                            <input
+                                                type="file"
+                                                name="agentImage"
+                                                id="agentImage"
+                                                className="hidden"
+                                                onChange={handleAgentImageChange}
+                                            />
+                                            <label htmlFor="agentImage" className="cursor-pointer ">
+                                                <MdCameraAlt
+                                                    className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
+                                                    size={30}
+                                                />
+                                            </label>
+                                        </div>
+
+
+
+
                                         <div className="flex gap-14 ml-8 text-gray-500">
                                             <p>1.PNG</p>
                                             <p>Photo</p>
