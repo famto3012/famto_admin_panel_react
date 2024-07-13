@@ -5,7 +5,8 @@ import { PlusOutlined } from '@ant-design/icons'
 import GlobalSearch from '../../../components/GlobalSearch'
 import { useState } from 'react'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { MdCameraAlt } from 'react-icons/md'
+import { MdCameraAlt, MdOutlineEdit } from 'react-icons/md'
+import { RiDeleteBin2Line, RiDeleteBinLine, RiEditBoxLine } from 'react-icons/ri'
 
 const PromoCode = () => {
 
@@ -89,7 +90,19 @@ const PromoCode = () => {
         setNotificationFile(file);
         setNotificationPreviewURL(URL.createObjectURL(file));
     };
+    const [isShowModalDelete , setIsShowModalDelete] = useState(false);
 
+    const showModalDelete = () => {
+      setIsShowModalDelete(true)
+    }
+  
+    const showModalDeleteOk = () => {
+      setIsShowModalDelete(false)
+    }
+  
+    const showModalDeleteCancel = () => {
+      setIsShowModalDelete(false)
+    }
 
     return (
         <>
@@ -100,14 +113,14 @@ const PromoCode = () => {
                 <nav className="p-5">
                     <GlobalSearch />
                 </nav>
-                <div>
+            
                     <div className='mx-5 flex justify-between'>
                         <h1 className='font-bold text-[20px]'>Promo codes</h1>
                         <Switch onChange={(checked) => onChange('agent', checked)} name="referral" />
                     </div>
-                </div>
+    
                 <p className='m-5 text-gray-500'>
-                    Promo codes are exclusive discount vouchers that can be redeemed by the customers during the checkout process You can create customized promotional codes with a detailed description that will be visible to customers
+                    Promo codes are exclusive discount vouchers that can be redeemed by the customers during the checkout process<span className='flex justify-start'>You can create customized promotional codes with a detailed description that will be visible to customers</span>
                 </p>
                 <div className="flex justify-end pr-5 mb-10">
                     <button
@@ -381,7 +394,10 @@ const PromoCode = () => {
                                             <div>
                                                 <Switch />
                                             </div>
-                                            <div>                  <button onClick={showModalEdit}><EditOutlined className="bg-gray-200 p-3 ml-5 mr-2 rounded-lg" /></button>
+                                            <div className='flex items-center'>                  
+                                                <button onClick={showModalEdit}>
+                                                <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                                                </button>
                                                 <Modal
                                                     width="900px"
                                                     title="Edit Promo Code"
@@ -598,9 +614,23 @@ const PromoCode = () => {
                                                     </div>
                                                 </Modal>
                                             </div>
-                                            <div>
-                                                <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
-                                            </div>
+                                            <button onClick={showModalDelete}>
+                                                <RiDeleteBinLine className="bg-red-100 text-red-600 p-2 text-[35px] rounded-lg" />
+                                            </button>
+                                            <Modal
+                     onOk={showModalDeleteOk}
+                     onCancel={showModalDeleteCancel}
+                     footer={null}
+                     open={isShowModalDelete}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
+                    </div>
+                  </Modal>
 
                                         </div>
                                     </td>

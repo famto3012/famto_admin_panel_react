@@ -48,6 +48,7 @@ import Radio from "./pages/admin/settings/Radio";
 import Commission from "./pages/admin/manager/Commission";
 import Sarath from "./pages/admin/settings/Sarath";
 import HomePage from "./pages/admin/home/HomePage";
+import MyForm from "./pages/admin/order/MyForm";
 
 
 
@@ -94,6 +95,7 @@ function App() {
         <Route path="/geofence" element={<Geofence/>} />
         <Route path="/add-geofence" element={<AddGeofence/>} />
         <Route path="/delivery-management" element={<DeliveryManagement />} />
+        <Route path="/my-form" element={<MyForm/>} />
         <Route
           path="/merchant-detail/:merchantId"
           element={<MerchantDetails />}

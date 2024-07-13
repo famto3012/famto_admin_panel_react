@@ -313,6 +313,7 @@ const HomeDelivery = () => {
                 </tbody>
               </table>
             </div>
+            </div>
             <div className="flex justify-end gap-4 mt-16 mx-10">
           <button
             className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
@@ -336,7 +337,7 @@ const HomeDelivery = () => {
 
 
 
-    </div>
+    
      </div>           
      </form>
 

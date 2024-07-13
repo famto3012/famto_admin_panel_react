@@ -14,7 +14,7 @@ const CreateOrder = () => {
   const [customer, setCustomer] = useState("");
   const [selectedOption, setSelectedOption] = useState("takeaway");
   const [selectOption, setSelectOption] = useState("ondemand");
-  const [date, setDate] = useState("");
+  
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -27,8 +27,10 @@ const CreateOrder = () => {
     }
   };
 
-  const handleChange = (e) => {
-    setDate(e.target.value);
+  const [dateTime, setDateTime] = useState('');
+
+  const handleChange = (event) => {
+    setDateTime(event.target.value);
   };
 
   const formSubmit = (e) => {
@@ -212,13 +214,13 @@ const CreateOrder = () => {
               </div>
               {selectOption === "scheduled" && (
                 <div className="relative flex justify-center my-8 ml-24">
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    placeholder="Date"
+                    <input
+                    type="datetime-local"
+                    id="datetime"
+                  name="datetime"
+    
                     className="h-10 text-sm  px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
-                    value={date}
+                    value={dateTime}
                     onChange={handleChange}
                   />
                 </div>

@@ -11,7 +11,7 @@ const Settings = () => {
   };
 
   const handleModalClose = () => {
-    setIsModalVisible(false);
+    setIsModalVisible(false)
   
   };
 
@@ -45,7 +45,16 @@ const Settings = () => {
     e.preventDefault();
     console.log(settingsData);
   };
-  
+  const handleSettingsCancel = () => {
+    setSettingsData({
+      id:"",
+      name:"",
+      email:"",
+      phone:"",
+      
+  });
+  };
+
 
   return (
     <>
@@ -81,7 +90,7 @@ const Settings = () => {
               title="Change Password"
               className="mt-32"
               open={isModalVisible}
-              onOk={handleModalClose}
+          
               onCancel={handleModalClose}
               footer={null}
             >
@@ -203,7 +212,7 @@ const Settings = () => {
                 <button
                   className="bg-cyan-50 py-2 px-8 rounded-md"
                   type="button"
-            
+                 onClick={handleSettingsCancel}
                 >
                   Cancel
                 </button>

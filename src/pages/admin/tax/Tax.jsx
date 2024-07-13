@@ -4,6 +4,8 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
 import { Switch, Modal } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
+import { RiDeleteBinLine } from "react-icons/ri";
+import { MdOutlineEdit } from "react-icons/md";
 
 const Tax = () => {
   const [tax, setTax] = useState({
@@ -58,6 +60,20 @@ const Tax = () => {
       type: event.target.value,
     }));
   };
+
+  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
+
+  const showModalDelete = () => {
+    setIsShowModalDelete(true)
+  }
+
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false)
+  }
+
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false)
+  }
 
   return (
     <>
@@ -224,15 +240,18 @@ const Tax = () => {
                 <td className="py-2 px-4 border-b border-gray-100">
                   {tax.geofence}
                 </td>
-                <td className="py-5 px-4 border-b flex gap-3 justify-end border-gray-100">
+                <td className="py-5 px-4 border-b border-gray-100">
+                <div className="flex justify-center items-center gap-3">
+                  <div>
                   <Switch
                     className="text-teal-700 mt-2"
                     checked={tax.status}
                     onChange={() => handleToggle(tax.id)}
                   />
-                  <div>
+                  </div>
+                  <div className="flex items-center">
                     <button onClick={showModalEdit}>
-                      <EditOutlined className="bg-gray-200 p-3 rounded-lg" />
+                    <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </button>
                     <Modal
                        title="Edit Tax"
@@ -339,9 +358,26 @@ const Tax = () => {
                         </div>
                       </form>
                     </Modal>
+                    </div>
+                   <button onClick={showModalDelete} className="outline-none focus:outline-none">
+                   <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                  </button>
+                  <Modal
+                     onOk={showModalDeleteOk}
+                     onCancel={showModalDeleteCancel}
+                     footer={null}
+                     open={isShowModalDelete}
+                     centered
+                    >
+                    
+                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    <div className="flex justify-end">
+                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
+                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
+                    </div>
+                  </Modal>
                   </div>
-
-                  <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+                
                 </td>
                 <td className="border-b border-gray-300"></td>
               </tr>
