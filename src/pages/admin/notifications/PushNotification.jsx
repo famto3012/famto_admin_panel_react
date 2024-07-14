@@ -3,13 +3,12 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
 import { Modal, Switch } from "antd";
-import {  SearchOutlined} from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import FilterAltOutlined from "@mui/icons-material/FilterAltOutlined";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { RiDeleteBinLine } from "react-icons/ri";
 
 const PushNotification = () => {
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -18,12 +17,12 @@ const PushNotification = () => {
     type: "",
     customer: null,
     driver: null,
-    agent: null
-  })
+    agent: null,
+  });
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const submitAction = async (e) => {
     e.preventDefault();
@@ -41,23 +40,22 @@ const PushNotification = () => {
   };
 
   const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked })
+    setFormData({ ...formData, [name]: checked });
   };
 
-  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
-    setIsShowModalDelete(true)
-  }
+    setIsShowModalDelete(true);
+  };
 
   const showModalDeleteOk = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false)
-  }
-
+    setIsShowModalDelete(false);
+  };
 
   return (
     <>
@@ -80,7 +78,9 @@ const PushNotification = () => {
               />
             </div>
             <div className="flex">
-              <label className="mt-10 ml-10 w-48">Description (This note will be shown in notification.)</label>
+              <label className="mt-10 ml-10 w-48">
+                Description (This note will be shown in notification.)
+              </label>
               <input
                 type="text"
                 name="description"
@@ -134,15 +134,27 @@ const PushNotification = () => {
             </div>
             <div className="flex">
               <label className="mt-10 ml-10">Customer App</label>
-              <Switch className="mt-11 ml-44"    onChange={(checked) => onChange('customer', checked)} name="agent" />
+              <Switch
+                className="mt-11 ml-44"
+                onChange={(checked) => onChange("customer", checked)}
+                name="agent"
+              />
             </div>
             <div className="flex">
               <label className="mt-10 ml-10">Agent App</label>
-              <Switch className="mt-11 ml-[200px]"  onChange={(checked) => onChange('agent', checked)} name="agent" />
+              <Switch
+                className="mt-11 ml-[200px]"
+                onChange={(checked) => onChange("agent", checked)}
+                name="agent"
+              />
             </div>
             <div className="flex">
               <label className="mt-10 ml-10">Driver App</label>
-              <Switch className="mt-11 ml-[200px]" onChange={(checked) => onChange('driver', checked)} name="driver" />
+              <Switch
+                className="mt-11 ml-[200px]"
+                onChange={(checked) => onChange("driver", checked)}
+                name="driver"
+              />
             </div>
             <div className="flex justify-end  mb-10 gap-4">
               <button
@@ -168,7 +180,9 @@ const PushNotification = () => {
             className="bg-blue-50 rounded-lg p-3"
             onChange={handleInputChange}
           >
-            <option hidden selected>Type of user</option>
+            <option hidden selected>
+              Type of user
+            </option>
             <option value="customer">Customer</option>
             <option value="agent">Agent</option>
             <option value="driver">Driver</option>
@@ -196,9 +210,10 @@ const PushNotification = () => {
                 "Customer App",
                 "Driver App",
                 "Agent App",
-                "Action"
+                "Action",
               ].map((header) => (
-                <th key={header}
+                <th
+                  key={header}
                   className="bg-teal-800 text-white h-[70px] text-center w-screen"
                 >
                   {header}
@@ -216,34 +231,45 @@ const PushNotification = () => {
               <td>{formData.agent}</td>
               <td>
                 <div className="flex items-center justify-center gap-3">
-                <button>
-                  <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
-                </button>
-                <button onClick={showModalDelete} className="outline-none focus:outline-none">
-                   <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                  <button>
+                    <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
+                  </button>
+                  <button
+                    onClick={showModalDelete}
+                    className="outline-none focus:outline-none"
+                  >
+                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                   </button>
                   <Modal
-                     onOk={showModalDeleteOk}
-                     onCancel={showModalDeleteCancel}
-                     footer={null}
-                     open={isShowModalDelete}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
+                    onOk={showModalDeleteOk}
+                    onCancel={showModalDeleteCancel}
+                    footer={null}
+                    open={isShowModalDelete}
+                    centered
+                  >
+                    <p className="font-semibold text-[18px] mb-5">
+                      Are you sure want to delete?
+                    </p>
                     <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
+                      <button
+                        className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                        onClick={showModalDeleteCancel}
+                      >
+                        Cancel
+                      </button>
+                      <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                        {" "}
+                        Delete
+                      </button>
                     </div>
                   </Modal>
-                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </>
-
   );
 };
 

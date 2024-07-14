@@ -5,7 +5,6 @@ import BlockIcon from "@mui/icons-material/Block";
 import Sidebar from "../../../components/Sidebar";
 import { PlusOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
-import { EditOutlined } from "@ant-design/icons";
 import { MdOutlineEdit } from "react-icons/md";
 
 const CustomerDetails = () => {

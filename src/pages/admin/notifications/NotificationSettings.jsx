@@ -82,19 +82,19 @@ const NotificationSettings = () => {
     setIsModalVisibleEdit(false);
   };
 
-  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
-    setIsShowModalDelete(true)
-  }
+    setIsShowModalDelete(true);
+  };
 
   const showModalDeleteOk = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   return (
     <>
@@ -297,170 +297,185 @@ const NotificationSettings = () => {
                     <Switch />
                   </td>
                   <td>
-                  <div className='flex justify-center items-center gap-3'>
-                    <div>
-                    <Switch />
-                    </div>
-                    <button onClick={showModalEdit}>
-                      <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                    </button>
-                    <Modal
-                      title="Edit Notification"
-                      open={isModalVisibleEdit}
-                      onOk={handleConfirmEdit}
-                      className="mt-10"
-                      onCancel={handleCancelEdit}
-                      footer={null}
-                    >
-                      <form onSubmit={signupAction}>
-                        <div className="flex flex-col gap-4">
-                          <div className="flex items-center">
-                            <label
-                              htmlFor="event"
-                              className="w-1/3 text-gray-500"
-                            >
-                              Event
-                            </label>
-                            <input
-                              type="text"
-                              id="event"
-                              name="event"
-                              value={formData.event}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center mt-4">
-                            <label
-                              htmlFor="description"
-                              className="text-gray-500 w-1/3"
-                            >
-                              Description (This note will be shown in
-                              notification)
-                            </label>
-                            <input
-                              type="text"
-                              id="description"
-                              name="description"
-                              value={formData.description}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-300 rounded p-6 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                        </div>
-                        <section className="flex gap-16">
-                          <div>
-                            <div className="flex items-center mt-9">
-                              <label className="text-gray-500">Admin</label>
-                              <Switch
-                                className="ml-28"
-                                onChange={(checked) =>
-                                  onChange("admin", checked)
-                                }
-                                name="admin"
-                              />
-                            </div>
-                            <div className="flex items-center mt-4">
-                              <label className="text-gray-500">
-                                Customer App
+                    <div className="flex justify-center items-center gap-3">
+                      <div>
+                        <Switch />
+                      </div>
+                      <button onClick={showModalEdit}>
+                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        title="Edit Notification"
+                        open={isModalVisibleEdit}
+                        onOk={handleConfirmEdit}
+                        className="mt-10"
+                        onCancel={handleCancelEdit}
+                        footer={null}
+                      >
+                        <form onSubmit={signupAction}>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="event"
+                                className="w-1/3 text-gray-500"
+                              >
+                                Event
                               </label>
-                              <Switch
-                                className="ml-16"
-                                onChange={(checked) =>
-                                  onChange("customer", checked)
-                                }
-                                name="customer"
+                              <input
+                                type="text"
+                                id="event"
+                                name="event"
+                                value={formData.event}
+                                onChange={handleInputChange}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
                               />
                             </div>
                             <div className="flex items-center mt-4">
-                              <label className="text-gray-500">Driver App</label>
-                              <Switch
-                                className="ml-[85px]"
-                                onChange={(checked) =>
-                                  onChange("driver", checked)
-                                }
-                                name="driver"
-                              />
-                            </div>
-                            <div className="flex items-center mt-4">
-                              <label className="text-gray-500">
-                                Merchant App
+                              <label
+                                htmlFor="description"
+                                className="text-gray-500 w-1/3"
+                              >
+                                Description (This note will be shown in
+                                notification)
                               </label>
-                              <Switch
-                                className="ml-16"
-                                onChange={(checked) =>
-                                  onChange("merchant", checked)
-                                }
-                                name="merchant"
+                              <input
+                                type="text"
+                                id="description"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                                className="border-2 border-gray-300 rounded p-6 w-2/3 outline-none focus:outline-none"
                               />
                             </div>
                           </div>
-                          <div>
-                            <div className="flex items-center mt-9">
-                              <label className="text-gray-500">Whatsapp</label>
-                              <Switch
-                                className="ml-24"
-                                onChange={(checked) =>
-                                  onChange("whatsapp", checked)
-                                }
-                                name="whatsapp"
-                              />
+                          <section className="flex gap-16">
+                            <div>
+                              <div className="flex items-center mt-9">
+                                <label className="text-gray-500">Admin</label>
+                                <Switch
+                                  className="ml-28"
+                                  onChange={(checked) =>
+                                    onChange("admin", checked)
+                                  }
+                                  name="admin"
+                                />
+                              </div>
+                              <div className="flex items-center mt-4">
+                                <label className="text-gray-500">
+                                  Customer App
+                                </label>
+                                <Switch
+                                  className="ml-16"
+                                  onChange={(checked) =>
+                                    onChange("customer", checked)
+                                  }
+                                  name="customer"
+                                />
+                              </div>
+                              <div className="flex items-center mt-4">
+                                <label className="text-gray-500">
+                                  Driver App
+                                </label>
+                                <Switch
+                                  className="ml-[85px]"
+                                  onChange={(checked) =>
+                                    onChange("driver", checked)
+                                  }
+                                  name="driver"
+                                />
+                              </div>
+                              <div className="flex items-center mt-4">
+                                <label className="text-gray-500">
+                                  Merchant App
+                                </label>
+                                <Switch
+                                  className="ml-16"
+                                  onChange={(checked) =>
+                                    onChange("merchant", checked)
+                                  }
+                                  name="merchant"
+                                />
+                              </div>
                             </div>
-                            <div className="flex items-center mt-4">
-                              <label className="text-gray-500">Email</label>
-                              <Switch
-                                className="ml-[125px]"
-                                onChange={(checked) =>
-                                  onChange("email", checked)
-                                }
-                                name="email"
-                              />
+                            <div>
+                              <div className="flex items-center mt-9">
+                                <label className="text-gray-500">
+                                  Whatsapp
+                                </label>
+                                <Switch
+                                  className="ml-24"
+                                  onChange={(checked) =>
+                                    onChange("whatsapp", checked)
+                                  }
+                                  name="whatsapp"
+                                />
+                              </div>
+                              <div className="flex items-center mt-4">
+                                <label className="text-gray-500">Email</label>
+                                <Switch
+                                  className="ml-[125px]"
+                                  onChange={(checked) =>
+                                    onChange("email", checked)
+                                  }
+                                  name="email"
+                                />
+                              </div>
+                              <div className="flex items-center mt-4">
+                                <label className="text-gray-500">SMS</label>
+                                <Switch
+                                  className="ml-[130px]"
+                                  onChange={(checked) =>
+                                    onChange("sms", checked)
+                                  }
+                                  name="sms"
+                                />
+                              </div>
                             </div>
-                            <div className="flex items-center mt-4">
-                              <label className="text-gray-500">SMS</label>
-                              <Switch
-                                className="ml-[130px]"
-                                onChange={(checked) => onChange("sms", checked)}
-                                name="sms"
-                              />
-                            </div>
+                          </section>
+                          <div className="flex justify-end gap-4 mt-6">
+                            <button
+                              className="bg-cyan-50 py-2 px-4 rounded-md"
+                              type="button"
+                              onClick={handleCancelEdit}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                              type="submit"
+                              onClick={handleConfirmEdit}
+                            >
+                              Confirm
+                            </button>
                           </div>
-                        </section>
-                        <div className="flex justify-end gap-4 mt-6">
+                        </form>
+                      </Modal>
+                      <button onClick={showModalDelete}>
+                        <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        onOk={showModalDeleteOk}
+                        onCancel={showModalDeleteCancel}
+                        footer={null}
+                        open={isShowModalDelete}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
                           <button
-                            className="bg-cyan-50 py-2 px-4 rounded-md"
-                            type="button"
-                            onClick={handleCancelEdit}
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancel}
                           >
                             Cancel
                           </button>
-                          <button
-                            className="bg-teal-700 text-white py-2 px-4 rounded-md"
-                            type="submit"
-                            onClick={handleConfirmEdit}
-                          >
-                            Confirm
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
                           </button>
                         </div>
-                      </form>
-                    </Modal>
-                    <button onClick={showModalDelete}>
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                    </button>
-                    <Modal
-                     onOk={showModalDeleteOk}
-                     onCancel={showModalDeleteCancel}
-                     footer={null}
-                     open={isShowModalDelete}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                      </Modal>
                     </div>
                   </td>
                 </tr>

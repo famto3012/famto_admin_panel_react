@@ -27,11 +27,10 @@ const UpdateManager = () => {
     setManagerData({ ...managerData, [name]: checked });
   };
 
-
   return (
     <>
-        <Sidebar />
-    
+      <Sidebar />
+
       <div className="w-full h-screen pl-[300px] bg-gray-100">
         <div className="flex justify-end p-4 gap-7">
           <BellOutlined className="text-2xl text-gray-500" />
@@ -50,7 +49,7 @@ const UpdateManager = () => {
         <div>
           <h1 className="text-xl font-semibold mt-7 mx-11">Update Manager</h1>
         </div>
-      
+
         <div className="bg-white p-10 rounded-lg mx-11 mt-7">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4">
@@ -137,7 +136,7 @@ const UpdateManager = () => {
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   onChange={inputChange}
                 >
-                   <option hidden selected>
+                  <option hidden selected>
                     Select
                   </option>
                   <option value="Option 1">Option 1</option>
@@ -154,7 +153,7 @@ const UpdateManager = () => {
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   onChange={inputChange}
                 >
-                   <option hidden selected>
+                  <option hidden selected>
                     Select
                   </option>
                   <option value="Option 1">Option 1</option>
@@ -168,10 +167,9 @@ const UpdateManager = () => {
                 </label>
 
                 <Switch
-                      
-                      onChange={(checked) => onChange("viewCustomers", checked)}
-                      name="viewCustomers"
-                    />
+                  onChange={(checked) => onChange("viewCustomers", checked)}
+                  name="viewCustomers"
+                />
               </div>
 
               <div className="flex justify-end gap-4 mt-6">

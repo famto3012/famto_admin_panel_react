@@ -424,92 +424,89 @@ const Pricing = () => {
     setIsModalVisibleCs(false);
   };
 
-
-
-
-  const [isShowModalDeleteAr , setIsShowModalDeleteAr] = useState(false);
+  const [isShowModalDeleteAr, setIsShowModalDeleteAr] = useState(false);
 
   const showModalDeleteAr = () => {
-    setIsShowModalDeleteAr(true)
-  }
+    setIsShowModalDeleteAr(true);
+  };
 
   const showModalDeleteOkAr = () => {
-    setIsShowModalDeleteAr(false)
-  }
+    setIsShowModalDeleteAr(false);
+  };
 
   const showModalDeleteCancelAr = () => {
-    setIsShowModalDeleteAr(false)
-  }
+    setIsShowModalDeleteAr(false);
+  };
 
-  const [isShowModalDeleteAs , setIsShowModalDeleteAs] = useState(false);
+  const [isShowModalDeleteAs, setIsShowModalDeleteAs] = useState(false);
 
   const showModalDeleteAs = () => {
-    setIsShowModalDeleteAs(true)
-  }
+    setIsShowModalDeleteAs(true);
+  };
 
   const showModalDeleteOkAs = () => {
-    setIsShowModalDeleteAs(false)
-  }
+    setIsShowModalDeleteAs(false);
+  };
 
   const showModalDeleteCancelAs = () => {
-    setIsShowModalDeleteAs(false)
-  }
+    setIsShowModalDeleteAs(false);
+  };
 
-  const [isShowModalDeleteMr , setIsShowModalDeleteMr] = useState(false);
+  const [isShowModalDeleteMr, setIsShowModalDeleteMr] = useState(false);
 
   const showModalDeleteMr = () => {
-    setIsShowModalDeleteMr(true)
-  }
+    setIsShowModalDeleteMr(true);
+  };
 
   const showModalDeleteOkMr = () => {
-    setIsShowModalDeleteMr(false)
-  }
+    setIsShowModalDeleteMr(false);
+  };
 
   const showModalDeleteCancelMr = () => {
-    setIsShowModalDeleteMr(false)
-  }
+    setIsShowModalDeleteMr(false);
+  };
 
-  const [isShowModalDeleteMs , setIsShowModalDeleteMs] = useState(false);
+  const [isShowModalDeleteMs, setIsShowModalDeleteMs] = useState(false);
 
   const showModalDeleteMs = () => {
-    setIsShowModalDeleteMs(true)
-  }
+    setIsShowModalDeleteMs(true);
+  };
 
   const showModalDeleteOkMs = () => {
-    setIsShowModalDeleteMs(false)
-  }
+    setIsShowModalDeleteMs(false);
+  };
 
   const showModalDeleteCancelMs = () => {
-    setIsShowModalDeleteMs(false)
-  }
+    setIsShowModalDeleteMs(false);
+  };
 
-  const [isShowModalDeleteCr , setIsShowModalDeleteCr] = useState(false);
+  const [isShowModalDeleteCr, setIsShowModalDeleteCr] = useState(false);
 
   const showModalDeleteCr = () => {
-    setIsShowModalDeleteCr(true)
-  }
+    setIsShowModalDeleteCr(true);
+  };
 
   const showModalDeleteOkCr = () => {
-    setIsShowModalDeleteCr(false)
-  }
+    setIsShowModalDeleteCr(false);
+  };
 
   const showModalDeleteCancelCr = () => {
-    setIsShowModalDeleteCr(false)
-  }
+    setIsShowModalDeleteCr(false);
+  };
 
-  const [isShowModalDeleteCs , setIsShowModalDeleteCs] = useState(false);
+  const [isShowModalDeleteCs, setIsShowModalDeleteCs] = useState(false);
 
   const showModalDeleteCs = () => {
-    setIsShowModalDeleteCs(true)
-  }
+    setIsShowModalDeleteCs(true);
+  };
 
   const showModalDeleteOkCs = () => {
-    setIsShowModalDeleteCs(false)
-  }
+    setIsShowModalDeleteCs(false);
+  };
 
   const showModalDeleteCancelCs = () => {
-    setIsShowModalDeleteCs(false)
-  }
+    setIsShowModalDeleteCs(false);
+  };
 
   return (
     <>
@@ -987,19 +984,28 @@ const Pricing = () => {
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
                       <Modal
-                     onOk={showModalDeleteOkAr}
-                     onCancel={showModalDeleteCancelAr}
-                     footer={null}
-                     open={isShowModalDeleteAr}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancelAr}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                        onOk={showModalDeleteOkAr}
+                        onCancel={showModalDeleteCancelAr}
+                        footer={null}
+                        open={isShowModalDeleteAr}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancelAr}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -1330,19 +1336,28 @@ const Pricing = () => {
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
                       <Modal
-                     onOk={showModalDeleteOkAs}
-                     onCancel={showModalDeleteCancelAs}
-                     footer={null}
-                     open={isShowModalDeleteAs}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancelAs}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                        onOk={showModalDeleteOkAs}
+                        onCancel={showModalDeleteCancelAs}
+                        footer={null}
+                        open={isShowModalDeleteAs}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancelAs}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -1774,19 +1789,28 @@ const Pricing = () => {
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
                       <Modal
-                     onOk={showModalDeleteOkMr}
-                     onCancel={showModalDeleteCancelMr}
-                     footer={null}
-                     open={isShowModalDeleteMr}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancelMr}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                        onOk={showModalDeleteOkMr}
+                        onCancel={showModalDeleteCancelMr}
+                        footer={null}
+                        open={isShowModalDeleteMr}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancelMr}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -2117,19 +2141,28 @@ const Pricing = () => {
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
                       <Modal
-                     onOk={showModalDeleteOkMs}
-                     onCancel={showModalDeleteCancelMs}
-                     footer={null}
-                     open={isShowModalDeleteMs}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancelMs}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                        onOk={showModalDeleteOkMs}
+                        onCancel={showModalDeleteCancelMs}
+                        footer={null}
+                        open={isShowModalDeleteMs}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancelMs}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -2629,19 +2662,28 @@ const Pricing = () => {
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
                       <Modal
-                     onOk={showModalDeleteOkCr}
-                     onCancel={showModalDeleteCancelCr}
-                     footer={null}
-                     open={isShowModalDeleteCr}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancelCr}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                        onOk={showModalDeleteOkCr}
+                        onCancel={showModalDeleteCancelCr}
+                        footer={null}
+                        open={isShowModalDeleteCr}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancelCr}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -2972,19 +3014,28 @@ const Pricing = () => {
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
                       <Modal
-                     onOk={showModalDeleteOkCs}
-                     onCancel={showModalDeleteCancelCs}
-                     footer={null}
-                     open={isShowModalDeleteCs}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancelCs}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                        onOk={showModalDeleteOkCs}
+                        onCancel={showModalDeleteCancelCs}
+                        footer={null}
+                        open={isShowModalDeleteCs}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancelCs}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
                   </td>
                 </tr>

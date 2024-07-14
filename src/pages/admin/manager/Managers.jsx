@@ -116,22 +116,20 @@ const Managers = () => {
             </tr>
           </thead>
           <tbody>
-           
-              <tr className="text-center bg-white h-20">
-                <td>Dummy Data</td>
-                <td>Dummy Data</td>
-                <td>Dummy Data</td>
-                <td>Dummy Data</td>
-                <td>Dummy Data</td>
-                <td>Dummy Data</td>
-                <td>
-                  <button>
-                    <EditOutlined className="bg-gray-200 p-3 mr-2 rounded-lg" />
-                  </button>
-                  <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
-                </td>
-              </tr>
-       
+            <tr className="text-center bg-white h-20">
+              <td>Dummy Data</td>
+              <td>Dummy Data</td>
+              <td>Dummy Data</td>
+              <td>Dummy Data</td>
+              <td>Dummy Data</td>
+              <td>Dummy Data</td>
+              <td>
+                <button>
+                  <EditOutlined className="bg-gray-200 p-3 mr-2 rounded-lg" />
+                </button>
+                <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -140,8 +138,6 @@ const Managers = () => {
 };
 
 export default Managers;
-
-
 
 // {allManagers.map((manager) => (
 //   <tr className="text-center bg-white h-20" key={manager._id}>

@@ -32,24 +32,28 @@ const Commissionlog = () => {
     <>
       <Sidebar />
       <div className="w-full h-screen pl-[290px] bg-gray-100">
-      <div className="flex justify-between items-center">
-            <div className="flex items-center">
-        <ArrowBack  className="ml-7"/> <span className="text-lg font-semibold ml-3">Commission log</span>
-        </div>
-        <div className="flex justify-end p-4 gap-7">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-9">
-              <SearchOutlined className="text-xl text-gray-500" />
-            </button>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <ArrowBack className="ml-7" />{" "}
+            <span className="text-lg font-semibold ml-3">Commission log</span>
           </div>
-        </div>
+          <div className="flex justify-end p-4 gap-7">
+            <BellOutlined className="text-2xl text-gray-500" />
+            <div className="relative">
+              <input
+                type="search"
+                name="search"
+                placeholder="Search"
+                className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
+              />
+              <button
+                type="submit"
+                className="absolute right-0 top-0 mt-2 mr-9"
+              >
+                <SearchOutlined className="text-xl text-gray-500" />
+              </button>
+            </div>
+          </div>
         </div>
         <div className="mx-11 rounded-lg mt-5 flex justify-between">
           <select
@@ -119,10 +123,7 @@ const Commissionlog = () => {
                   className="align-middle border-b border-gray-300 text-center"
                 >
                   <td>
-                    <Link
-                      to="/home"
-                      className="underline underline-offset-4  "
-                    >
+                    <Link to="/home" className="underline underline-offset-4  ">
                       {commissionlog.orderId}
                     </Link>
                   </td>

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Sidebar from '../../../components/Sidebar';
-import { ArrowDownOutlined, BellOutlined, SearchOutlined } from '@ant-design/icons';
-import { FilterAltOutlined } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
-import StarRating from '../../../components/model/StarRating';
-
+import React, { useEffect, useState } from "react";
+import Sidebar from "../../../components/Sidebar";
+import {
+  ArrowDownOutlined,
+  BellOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import { FilterAltOutlined } from "@mui/icons-material";
+import { Link } from "react-router-dom";
+import StarRating from "../../../components/model/StarRating";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -111,9 +114,17 @@ const Customers = () => {
             </thead>
             <tbody>
               {customers.map((customer) => (
-                <tr key={customer.id} className="align-middle border-b border-gray-300 text-center">
+                <tr
+                  key={customer.id}
+                  className="align-middle border-b border-gray-300 text-center"
+                >
                   <td className="p-4">
-                    <Link to={`/customer-detail/${customer.id}`} className='underline underline-offset-4'>{customer.id}</Link>
+                    <Link
+                      to={`/customer-detail/${customer.id}`}
+                      className="underline underline-offset-4"
+                    >
+                      {customer.id}
+                    </Link>
                   </td>
                   <td>{customer.name}</td>
                   <td>{customer.email}</td>
@@ -122,7 +133,8 @@ const Customers = () => {
                   <td>{customer.registrationDate}</td>
                   <td>
                     <StarRating rating={customer.rating} />
-                  </td> {/* Display Rating as stars */}
+                  </td>{" "}
+                  {/* Display Rating as stars */}
                 </tr>
               ))}
             </tbody>

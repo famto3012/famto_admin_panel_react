@@ -218,7 +218,8 @@ const CustomerApp = () => {
     setIsModalVisiblePickDrop(false);
   };
 
-  const [isModalVisiblePickDropEdit, setIsModalVisiblePickDropEdit] = useState(false);
+  const [isModalVisiblePickDropEdit, setIsModalVisiblePickDropEdit] =
+    useState(false);
 
   const showModalPickDropEdit = () => {
     setIsModalVisiblePickDropEdit(true);
@@ -264,18 +265,16 @@ const CustomerApp = () => {
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
-    setIsShowModalDelete(true)
-  }
+    setIsShowModalDelete(true);
+  };
 
   const showModalDeleteOk = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false)
-  }
-
-  
+    setIsShowModalDelete(false);
+  };
 
   return (
     <>
@@ -666,7 +665,6 @@ const CustomerApp = () => {
             <DragIndicatorIcon />
             <div className="bg-gray-200 rounded-full p-5">
               <img src="Food.svg" />
-
             </div>
             <p>{business.title}</p>
             <Switch className="ml-24" />
@@ -758,7 +756,10 @@ const CustomerApp = () => {
                 </div>
               </form>
             </Modal>
-            <button onClick={showModalDelete} className="bg-red-100 p-3 rounded-lg">
+            <button
+              onClick={showModalDelete}
+              className="bg-red-100 p-3 rounded-lg"
+            >
               <RiDeleteBinLine className=" text-[18px] text-red-900 " />
             </button>
             <Modal
@@ -769,10 +770,20 @@ const CustomerApp = () => {
               centered
             >
               <form>
-                <p className="font-bold text-[20px] mb-5">Are you sure want to delete?</p>
+                <p className="font-bold text-[20px] mb-5">
+                  Are you sure want to delete?
+                </p>
                 <div className="flex justify-end">
-                  <button className="bg-zinc-200 p-2 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
-                  <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white"> Delete</button>
+                  <button
+                    className="bg-zinc-200 p-2 rounded-md font-semibold"
+                    onClick={showModalDeleteCancel}
+                  >
+                    Cancel
+                  </button>
+                  <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white">
+                    {" "}
+                    Delete
+                  </button>
                 </div>
               </form>
             </Modal>
@@ -780,7 +791,6 @@ const CustomerApp = () => {
         </div>
 
         {/* // Customer Login Restriction */}
-
 
         {/* <div className="mt-10 justify-between flex mx-5 border-b-2 pb-10 mb-5 border-gray-200">
           <h1>Customer login Restriction</h1>
@@ -791,7 +801,6 @@ const CustomerApp = () => {
           </p>
           <Switch />
         </div> */}
-
 
         <div className="mt-10 justify-between flex mx-5">
           <h1>Customer Order Banners (info)</h1>
@@ -981,10 +990,6 @@ const CustomerApp = () => {
               Delete
             </button>
           </Card>
-
-
-
-
         </div>
         <div className="mt-10 justify-between flex mx-5">
           <h1>Pick and drop banners (info)</h1>
@@ -1086,7 +1091,10 @@ const CustomerApp = () => {
             <p className="font-semibold">{pickDrop.title}</p>
             <p>{pickDrop.description}</p>
             <img src="Sadhya.svg" />
-            <button className="bg-blue-50 rounded-3xl p-3 px-12 mt-5" onClick={showModalPickDropEdit}>
+            <button
+              className="bg-blue-50 rounded-3xl p-3 px-12 mt-5"
+              onClick={showModalPickDropEdit}
+            >
               <EditOutlined /> Edit
             </button>
             <Modal

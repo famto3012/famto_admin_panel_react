@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { DownloadOutlined, FunnelPlotOutlined } from "@ant-design/icons";
+import { DownloadOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
 import { Switch } from "antd";
@@ -76,7 +76,7 @@ const AccountLogs = () => {
               className="right-4"
             />
             <p className="mt-2">
-            <FilterAltOutlinedIcon className=" text-gray-400   " />
+              <FilterAltOutlinedIcon className=" text-gray-400   " />
             </p>
             <input
               type="search"

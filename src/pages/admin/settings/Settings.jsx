@@ -11,8 +11,7 @@ const Settings = () => {
   };
 
   const handleModalClose = () => {
-    setIsModalVisible(false)
-  
+    setIsModalVisible(false);
   };
 
   const [addData, setAddData] = useState({
@@ -30,7 +29,6 @@ const Settings = () => {
     handleModalClose(); // Close the modal after submitting the form
   };
 
-
   const [settingsData, setSettingsData] = useState({
     id: "",
     name: "",
@@ -47,14 +45,12 @@ const Settings = () => {
   };
   const handleSettingsCancel = () => {
     setSettingsData({
-      id:"",
-      name:"",
-      email:"",
-      phone:"",
-      
-  });
+      id: "",
+      name: "",
+      email: "",
+      phone: "",
+    });
   };
-
 
   return (
     <>
@@ -90,7 +86,6 @@ const Settings = () => {
               title="Change Password"
               className="mt-32"
               open={isModalVisible}
-          
               onCancel={handleModalClose}
               footer={null}
             >
@@ -212,7 +207,7 @@ const Settings = () => {
                 <button
                   className="bg-cyan-50 py-2 px-8 rounded-md"
                   type="button"
-                 onClick={handleSettingsCancel}
+                  onClick={handleSettingsCancel}
                 >
                   Cancel
                 </button>

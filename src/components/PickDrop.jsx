@@ -18,7 +18,7 @@ const PickDrop = () => {
       discount: "",
       paymentType: "",
       subtotal: "",
-      items:[],
+      items: [],
     },
     dropdata: {
       firstName: "",
@@ -32,7 +32,7 @@ const PickDrop = () => {
       discount: "",
       paymentType: "",
       subtotal: "",
-      items:[],
+      items: [],
     },
   });
   const handleInputChange = (e) => {
@@ -224,18 +224,21 @@ const PickDrop = () => {
             />
           </div>
           <h4 className="px-6">Task Specifications</h4>
-          <div className="w-2/3"><button
-                  type="button"
-                  className="bg-zinc-200 w-1/2 rounded-md p-2"
-                  onClick={() => handleAddItem("pickdata")}
-
-                >
-                  <AddOutlined /> Add Item
-                </button>
-             </div>
+          <div className="w-2/3">
+            <button
+              type="button"
+              className="bg-zinc-200 w-1/2 rounded-md p-2"
+              onClick={() => handleAddItem("pickdata")}
+            >
+              <AddOutlined /> Add Item
+            </button>
+          </div>
           <div>
             {formData.pickdata.items.map((item, index) => (
-              <div key={index} className="bg-gray-100 mx-6 p-10 rounded-lg mb-4">
+              <div
+                key={index}
+                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4"
+              >
                 <div className="flex">
                   <label className="w-1/3">Item type</label>
                   <select
@@ -291,22 +294,22 @@ const PickDrop = () => {
                   </div>
                 </div>
                 <div className="mx-3 flex justify-between mt-3 gap-3">
-                <button
-                  type="button"
-                  className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                  onClick={() => handleAddItem("pickdata")}
-
-                >
-                  <AddOutlined /> Add Item
-                </button>
-                <button
-                  type="button"
-                  className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                  onClick={() => handleRemoveItem("pickdata", index)}
-                >
-                  <RiDeleteBinLine className="text-red-500 text-[18px]" /> Delete Item
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    onClick={() => handleAddItem("pickdata")}
+                  >
+                    <AddOutlined /> Add Item
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    onClick={() => handleRemoveItem("pickdata", index)}
+                  >
+                    <RiDeleteBinLine className="text-red-500 text-[18px]" />{" "}
+                    Delete Item
+                  </button>
+                </div>
               </div>
             ))}
           </div>

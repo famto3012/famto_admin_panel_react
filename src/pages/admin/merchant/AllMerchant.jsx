@@ -301,7 +301,7 @@ const Merchant = () => {
               <input
                 type="text"
                 id="simple-search"
-                class="bg-gray-50 border border-gray-300 outline-none focus:outline-none text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5  "
+                className="bg-gray-50 border border-gray-300 outline-none focus:outline-none text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5  "
                 placeholder="Search branch name..."
                 required
               />

@@ -28,11 +28,10 @@ const AddManager = () => {
     setManagerData({ ...managerData, [name]: checked });
   };
 
-
   return (
     <>
-        <Sidebar />
-    
+      <Sidebar />
+
       <div className="w-full h-screen pl-[300px] bg-gray-100">
         <div className="flex justify-end p-4 gap-7">
           <BellOutlined className="text-2xl text-gray-500" />
@@ -51,7 +50,7 @@ const AddManager = () => {
         <div>
           <h1 className="text-xl font-semibold mt-7 mx-11">Add Manager</h1>
         </div>
-      
+
         <div className="bg-white p-10 rounded-lg mx-11 mt-7">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-4">
@@ -168,11 +167,10 @@ const AddManager = () => {
                   View All Customers
                 </label>
 
-                     <Switch
-                      
-                        onChange={(checked) => onChange("viewCustomers", checked)}
-                        name="viewCustomers"
-                      />
+                <Switch
+                  onChange={(checked) => onChange("viewCustomers", checked)}
+                  name="viewCustomers"
+                />
               </div>
 
               <div className="flex justify-end gap-4 mt-6">

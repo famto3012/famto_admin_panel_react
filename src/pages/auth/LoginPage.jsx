@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
+import LoginImage from "/LoginImage.svg";
+import famtoWhiteLogo from "/famto-white-logo.svg";
+import famtoBlackLogo from "/famto-black-logo.svg";
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState({
@@ -24,21 +27,22 @@ const LoginPage = () => {
       <figure className="h-full  w-full lg:w-1/2 md:w-1/2 lg:opacity-100  relative ">
         <img
           className="w-full min-w-full h-full object-cover fill-black"
-          src="LoginImage.svg"
+          src={LoginImage}
         />
         <div className="inset-0 bg-black opacity-50 absolute md:relative"></div>
       </figure>
 
       <img
         className="flex justify-center mt-32 absolute md:hidden "
-        src="famto-white-logo.svg"
+        src={famtoWhiteLogo}
+        alt="White logo"
       />
 
       <div className="mim-w-screen flex justify-center h-full md:h-auto  lg:w-1/2 md:w-1/2 w-full  absolute lg:relative md:relative md:items-center    lg:items-center items-end ">
         <div className="min-w-screen bg-white w-full md:w-[450px]  lg:h-auto rounded-tl-[100px]  shadow-lg md:rounded-2xl lg:rounded-2xl md:border-2 md:border-teal-700 p-5 lg:p-14">
           <div className="text-center ">
             <img
-              src="famto-black-logo.svg"
+              src={famtoBlackLogo}
               alt="Logo"
               className="mx-auto hidden lg:flex h-20 w-20"
             />
@@ -97,7 +101,7 @@ const LoginPage = () => {
               />
             </div>
             <div className="flex items-center justify-end mb-4 text-teal-700">
-              <Link to="/">Forgot Password?</Link>
+              <Link to="/forgot-password">Forgot Password?</Link>
             </div>
             <button
               type="submit"
@@ -109,7 +113,7 @@ const LoginPage = () => {
           <div className="mt-3 text-center">
             <p>
               Don't have an account?
-              <Link className="text-teal-700" to="/signup">
+              <Link className="text-teal-700" to="/auth/sign-up">
                 {" "}
                 Sign up
               </Link>

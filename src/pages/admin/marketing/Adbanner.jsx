@@ -1,6 +1,6 @@
-    import React, { useState } from "react";
+import React, { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { BellOutlined } from "@ant-design/icons";
 import { Modal, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -63,8 +63,8 @@ const Adbanner = () => {
   };
   const [tableData, setTableData] = useState([
     {
-      imageUrl:<img src="sadhya.jpg"/>,
-      name:"paru",
+      imageUrl: <img src="sadhya.jpg" />,
+      name: "paru",
       merchantId: "2",
       geofence: "India",
       status: "",
@@ -81,8 +81,10 @@ const Adbanner = () => {
     imageUrl: "",
   });
 
-  const [isModalVisibleIndividual, setIsModalVisibleIndividual] = useState(false);
-  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] = useState(false);
+  const [isModalVisibleIndividual, setIsModalVisibleIndividual] =
+    useState(false);
+  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] =
+    useState(false);
 
   const showModalIndividual = () => {
     setIsModalVisibleIndividual(true);
@@ -97,7 +99,7 @@ const Adbanner = () => {
   };
 
   const handleInputChangeIndividual = (e) => {
-  SetIndividualData({ ...individualdata, [e.target.name]: e.target.value });
+    SetIndividualData({ ...individualdata, [e.target.name]: e.target.value });
   };
 
   const formSubmit = (e) => {
@@ -110,7 +112,7 @@ const Adbanner = () => {
     setIsModalVisibleIndividualEdit(true);
   };
 
-  const handleConfirmIndividualEdit= () => {
+  const handleConfirmIndividualEdit = () => {
     setIsModalVisibleIndividualEdit(false);
   };
 
@@ -128,8 +130,8 @@ const Adbanner = () => {
   };
   const [indtableData, setIndTableData] = useState([
     {
-      imageUrl:<img src="sadhya.jpg"/>,
-      name:"nandhu",
+      imageUrl: <img src="sadhya.jpg" />,
+      name: "nandhu",
       merchantId: "2",
       geofence: "India",
       status: "",
@@ -139,38 +141,34 @@ const Adbanner = () => {
     setIndTableData({ ...indtableData, [name]: checked });
   };
 
-  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
-    setIsShowModalDelete(true)
-  }
+    setIsShowModalDelete(true);
+  };
 
   const showModalDeleteOk = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
-  const [isShowModalDeleteIndividual , setShowModalDeleteIndividual] = useState(false);
+  const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] =
+    useState(false);
 
   const showModalDeleteIndividual = () => {
-    setShowModalDeleteIndividual(true)
-  }
+    setShowModalDeleteIndividual(true);
+  };
 
   const showModalDeleteIndividualOk = () => {
-    setShowModalDeleteIndividual(false)
-  }
+    setShowModalDeleteIndividual(false);
+  };
 
   const showModalDeleteIndividualCancel = () => {
-    setShowModalDeleteIndividual(false)
-  }
-
-
-
-
-
+    setShowModalDeleteIndividual(false);
+  };
 
   return (
     <>
@@ -355,136 +353,147 @@ const Adbanner = () => {
                     />
                   </td>
                   <td>
-                   <div className='flex justify-center items-center gap-3'>
-                
-                    <button onClick={showModalEdit}>
-                    <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                    </button>
-                    <Modal
-                      title="Edit App Ad Banner"
-                      open={isModalVisibleEdit}
-                      onOk={handleConfirmEdit}
-                      className="mt-20"
-                      onCancel={handleCancelEdit}
-                      footer={null}
-                    >
-                      <form onSubmit={signupAction}>
-                        <div className="flex flex-col gap-4">
-                          <div className="flex items-center">
-                            <label htmlFor="name" className="w-1/3">
-                              Name
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Name"
-                              id="name"
-                              name="name"
-                              value={appdata.name}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label htmlFor="merchantId" className="w-1/3">
-                              Merchant ID
-                            </label>
-                            <input
-                              type="id"
-                              placeholder="Merchant ID"
-                              id="merchantId"
-                              name="merchant.Id"
-                              value={appdata.merchantId}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label htmlFor="geofenceId" className="w-1/3">
-                              Geofence
-                            </label>
-                            <input
-                              type="id"
-                              placeholder="Geofence"
-                              id="geofenceId"
-                              name="geofenceId"
-                              value={appdata.geofenceId}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className=" w-1/3">
-                              Banner Image (390px x 400px)
-                            </label>
-                            <div className="flex items-center gap-[30px]">
-                              {!notificationPreviewURL && (
-                                <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
-                              )}
-                              {notificationPreviewURL && (
-                                <figure className="mt-3 h-16 w-16 rounded-md relative">
-                                  <img
-                                    src={notificationPreviewURL}
-                                    alt="profile"
-                                    className="w-full rounded h-full object-cover"
-                                  />
-                                </figure>
-                              )}
-                              <input
-                                type="file"
-                                name="notificationImage"
-                                id="notificationImage"
-                                className="hidden"
-                                onChange={handleNotificationImageChange}
-                              />
-                              <label
-                                htmlFor="notificationImage"
-                                className="cursor-pointer"
-                              >
-                                <MdCameraAlt
-                                  className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
-                                  size={30}
-                                />
+                    <div className="flex justify-center items-center gap-3">
+                      <button onClick={showModalEdit}>
+                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        title="Edit App Ad Banner"
+                        open={isModalVisibleEdit}
+                        onOk={handleConfirmEdit}
+                        className="mt-20"
+                        onCancel={handleCancelEdit}
+                        footer={null}
+                      >
+                        <form onSubmit={signupAction}>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center">
+                              <label htmlFor="name" className="w-1/3">
+                                Name
                               </label>
+                              <input
+                                type="text"
+                                placeholder="Name"
+                                id="name"
+                                name="name"
+                                value={appdata.name}
+                                onChange={handleInputChange}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label htmlFor="merchantId" className="w-1/3">
+                                Merchant ID
+                              </label>
+                              <input
+                                type="id"
+                                placeholder="Merchant ID"
+                                id="merchantId"
+                                name="merchant.Id"
+                                value={appdata.merchantId}
+                                onChange={handleInputChange}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label htmlFor="geofenceId" className="w-1/3">
+                                Geofence
+                              </label>
+                              <input
+                                type="id"
+                                placeholder="Geofence"
+                                id="geofenceId"
+                                name="geofenceId"
+                                value={appdata.geofenceId}
+                                onChange={handleInputChange}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className=" w-1/3">
+                                Banner Image (390px x 400px)
+                              </label>
+                              <div className="flex items-center gap-[30px]">
+                                {!notificationPreviewURL && (
+                                  <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
+                                )}
+                                {notificationPreviewURL && (
+                                  <figure className="mt-3 h-16 w-16 rounded-md relative">
+                                    <img
+                                      src={notificationPreviewURL}
+                                      alt="profile"
+                                      className="w-full rounded h-full object-cover"
+                                    />
+                                  </figure>
+                                )}
+                                <input
+                                  type="file"
+                                  name="notificationImage"
+                                  id="notificationImage"
+                                  className="hidden"
+                                  onChange={handleNotificationImageChange}
+                                />
+                                <label
+                                  htmlFor="notificationImage"
+                                  className="cursor-pointer"
+                                >
+                                  <MdCameraAlt
+                                    className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
+                                    size={30}
+                                  />
+                                </label>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="flex justify-end gap-4 mt-6">
+                          <div className="flex justify-end gap-4 mt-6">
+                            <button
+                              className="bg-cyan-50 py-2 px-4 rounded-md"
+                              type="button"
+                              onClick={handleCancelEdit}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                              type="submit"
+                              onClick={handleConfirmEdit}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </form>
+                      </Modal>
+
+                      <button>
+                        <RiDeleteBinLine
+                          className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
+                          onClick={showModalDelete}
+                        />
+                      </button>
+                      <Modal
+                        onOk={showModalDeleteOk}
+                        onCancel={showModalDeleteCancel}
+                        footer={null}
+                        open={isShowModalDelete}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
                           <button
-                            className="bg-cyan-50 py-2 px-4 rounded-md"
-                            type="button"
-                            onClick={handleCancelEdit}
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancel}
                           >
                             Cancel
                           </button>
-                          <button
-                            className="bg-teal-700 text-white py-2 px-4 rounded-md"
-                            type="submit"
-                            onClick={handleConfirmEdit}
-                          >
-                            Save
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
                           </button>
                         </div>
-                      </form>
-                    </Modal>
-                    
-                    <button>
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" onClick={showModalDelete} />
-                    </button>
-                    <Modal
-                     onOk={showModalDeleteOk}
-                     onCancel={showModalDeleteCancel}
-                     footer={null}
-                     open={isShowModalDelete}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -492,8 +501,7 @@ const Adbanner = () => {
             </tbody>
           </table>
         </div>
-    
-      
+
         <div className="flex items-center justify-between mx-10 mt-10">
           <h1 className="text-lg font-bold">Individual Merchant Ad Banner</h1>
           <div>
@@ -579,10 +587,7 @@ const Adbanner = () => {
                         className="hidden"
                         onChange={handleAdImageChange}
                       />
-                      <label
-                        htmlFor="adImage"
-                        className="cursor-pointer"
-                      >
+                      <label htmlFor="adImage" className="cursor-pointer">
                         <MdCameraAlt
                           className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
                           size={30}
@@ -647,136 +652,147 @@ const Adbanner = () => {
                     />
                   </td>
                   <td>
-                   <div className='flex justify-center items-center gap-3'>
-                    
-                    <button onClick={showModalIndividualEdit}>
-                    <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                    </button>
-                    <Modal
-                      title="Edit Individual Merchant Ad Banner"
-                      open={isModalVisibleIndividualEdit}
-                      onOk={handleConfirmIndividualEdit}
-                      className="mt-20"
-                      onCancel={handleCancelIndividualEdit}
-                      footer={null}
-                    >
-                      <form onSubmit={formSubmit}>
-                        <div className="flex flex-col gap-4">
-                          <div className="flex items-center">
-                            <label htmlFor="name" className="w-1/3">
-                              Name
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Name"
-                              id="name"
-                              name="name"
-                              value={individualdata.name}
-                              onChange={handleInputChangeIndividual}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label htmlFor="merchantId" className="w-1/3">
-                              Merchant ID
-                            </label>
-                            <input
-                              type="id"
-                              placeholder="Merchant ID"
-                              id="merchantId"
-                              name="merchant.Id"
-                              value={individualdata.merchantId}
-                              onChange={handleInputChangeIndividual}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label htmlFor="geofenceId" className="w-1/3">
-                              Geofence
-                            </label>
-                            <input
-                              type="id"
-                              placeholder="Geofence"
-                              id="geofenceId"
-                              name="geofenceId"
-                              value={individualdata.geofenceId}
-                              onChange={handleInputChangeIndividual}
-                              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className=" w-1/3">
-                              Banner Image (390px x 400px)
-                            </label>
-                            <div className="flex items-center gap-[30px]">
-                              {!adPreviewURL && (
-                                <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
-                              )}
-                              {adPreviewURL && (
-                                <figure className="mt-3 h-16 w-16 rounded-md relative">
-                                  <img
-                                    src={adPreviewURL}
-                                    alt="profile"
-                                    className="w-full rounded h-full object-cover"
-                                  />
-                                </figure>
-                              )}
-                              <input
-                                type="file"
-                                name="adImage"
-                                id="adImage"
-                                className="hidden"
-                                onChange={handleAdImageChange}
-                              />
-                              <label
-                                htmlFor="adImage"
-                                className="cursor-pointer"
-                              >
-                                <MdCameraAlt
-                                  className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
-                                  size={30}
-                                />
+                    <div className="flex justify-center items-center gap-3">
+                      <button onClick={showModalIndividualEdit}>
+                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        title="Edit Individual Merchant Ad Banner"
+                        open={isModalVisibleIndividualEdit}
+                        onOk={handleConfirmIndividualEdit}
+                        className="mt-20"
+                        onCancel={handleCancelIndividualEdit}
+                        footer={null}
+                      >
+                        <form onSubmit={formSubmit}>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center">
+                              <label htmlFor="name" className="w-1/3">
+                                Name
                               </label>
+                              <input
+                                type="text"
+                                placeholder="Name"
+                                id="name"
+                                name="name"
+                                value={individualdata.name}
+                                onChange={handleInputChangeIndividual}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label htmlFor="merchantId" className="w-1/3">
+                                Merchant ID
+                              </label>
+                              <input
+                                type="id"
+                                placeholder="Merchant ID"
+                                id="merchantId"
+                                name="merchant.Id"
+                                value={individualdata.merchantId}
+                                onChange={handleInputChangeIndividual}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label htmlFor="geofenceId" className="w-1/3">
+                                Geofence
+                              </label>
+                              <input
+                                type="id"
+                                placeholder="Geofence"
+                                id="geofenceId"
+                                name="geofenceId"
+                                value={individualdata.geofenceId}
+                                onChange={handleInputChangeIndividual}
+                                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className=" w-1/3">
+                                Banner Image (390px x 400px)
+                              </label>
+                              <div className="flex items-center gap-[30px]">
+                                {!adPreviewURL && (
+                                  <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
+                                )}
+                                {adPreviewURL && (
+                                  <figure className="mt-3 h-16 w-16 rounded-md relative">
+                                    <img
+                                      src={adPreviewURL}
+                                      alt="profile"
+                                      className="w-full rounded h-full object-cover"
+                                    />
+                                  </figure>
+                                )}
+                                <input
+                                  type="file"
+                                  name="adImage"
+                                  id="adImage"
+                                  className="hidden"
+                                  onChange={handleAdImageChange}
+                                />
+                                <label
+                                  htmlFor="adImage"
+                                  className="cursor-pointer"
+                                >
+                                  <MdCameraAlt
+                                    className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
+                                    size={30}
+                                  />
+                                </label>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="flex justify-end gap-4 mt-6">
+                          <div className="flex justify-end gap-4 mt-6">
+                            <button
+                              className="bg-cyan-50 py-2 px-4 rounded-md"
+                              type="button"
+                              onClick={handleCancelIndividualEdit}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                              type="submit"
+                              onClick={handleConfirmIndividualEdit}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </form>
+                      </Modal>
+
+                      <button>
+                        <RiDeleteBinLine
+                          className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
+                          onClick={showModalDeleteIndividual}
+                        />
+                      </button>
+                      <Modal
+                        onOk={showModalDeleteIndividualOk}
+                        onCancel={showModalDeleteIndividualCancel}
+                        footer={null}
+                        open={isShowModalDeleteIndividual}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
                           <button
-                            className="bg-cyan-50 py-2 px-4 rounded-md"
-                            type="button"
-                            onClick={handleCancelIndividualEdit}
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteIndividualCancel}
                           >
                             Cancel
                           </button>
-                          <button
-                            className="bg-teal-700 text-white py-2 px-4 rounded-md"
-                            type="submit"
-                            onClick={handleConfirmIndividualEdit}
-                          >
-                            Save
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            {" "}
+                            Delete
                           </button>
                         </div>
-                      </form>
-                    </Modal>
-                  
-                    <button>
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" onClick={showModalDeleteIndividual} />
-                    </button>
-                    <Modal
-                     onOk={showModalDeleteIndividualOk}
-                     onCancel={showModalDeleteIndividualCancel}
-                     footer={null}
-                     open={isShowModalDeleteIndividual}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteIndividualCancel}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
+                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -784,9 +800,6 @@ const Adbanner = () => {
             </tbody>
           </table>
         </div>
-
-
-
       </div>
     </>
   );

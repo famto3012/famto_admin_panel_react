@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
 import { Switch, Modal } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -61,19 +60,19 @@ const Tax = () => {
     }));
   };
 
-  const [isShowModalDelete , setIsShowModalDelete] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
-    setIsShowModalDelete(true)
-  }
+    setIsShowModalDelete(true);
+  };
 
   const showModalDeleteOk = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false)
-  }
+    setIsShowModalDelete(false);
+  };
 
   return (
     <>
@@ -241,143 +240,156 @@ const Tax = () => {
                   {tax.geofence}
                 </td>
                 <td className="py-5 px-4 border-b border-gray-100">
-                <div className="flex justify-center items-center gap-3">
-                  <div>
-                  <Switch
-                    className="text-teal-700 mt-2"
-                    checked={tax.status}
-                    onChange={() => handleToggle(tax.id)}
-                  />
-                  </div>
-                  <div className="flex items-center">
-                    <button onClick={showModalEdit}>
-                    <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                  <div className="flex justify-center items-center gap-3">
+                    <div>
+                      <Switch
+                        className="text-teal-700 mt-2"
+                        checked={tax.status}
+                        onChange={() => handleToggle(tax.id)}
+                      />
+                    </div>
+                    <div className="flex items-center">
+                      <button onClick={showModalEdit}>
+                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        title="Edit Tax"
+                        open={isModalVisibleEdit}
+                        onOk={handleOkEdit}
+                        className="mt-24"
+                        onCancel={handleCancelEdit}
+                        footer={null} // Custom footer to include form buttons
+                      >
+                        <form onSubmit={submitAction}>
+                          <div className="flex flex-col  gap-4 justify-between">
+                            <div className="flex gap-4">
+                              <label className="w-1/2 text-gray-500">
+                                Tax Name
+                              </label>
+                              <input
+                                type="text"
+                                className="border-2 border-gray-300 rounded p-2 w-2/3"
+                                name="tax"
+                                value={tax.tax}
+                                onChange={handleInputchange}
+                              />
+                            </div>
+                            <div className="flex  gap-4">
+                              <label className="w-1/2 text-gray-500">
+                                Name
+                              </label>
+                              <input
+                                type="text"
+                                className="border-2 border-gray-300 rounded p-2 w-2/3"
+                                name="name"
+                                value={tax.name}
+                                onChange={handleInputchange}
+                              />
+                            </div>
+                            <div className="flex gap-4">
+                              <label className="w-1/2 text-gray-500">Tax</label>
+
+                              <input
+                                type="radio"
+                                className="border-2 ml-24 border-gray-300 rounded "
+                                name="fixed"
+                                value="fixed"
+                                checked={tax.type === "fixed"}
+                                onChange={handleRadioChange}
+                              />
+                              <label className="w-1/2 text-gray-500">
+                                Fixed Amount
+                              </label>
+                              <input
+                                type="radio"
+                                className=" border-gray-300 rounded  "
+                                name="percentage"
+                                value="percentage"
+                                checked={tax.type === "percentage"}
+                                onChange={handleRadioChange}
+                              />
+                              <label className="w-1/2 text-gray-500">
+                                Percentage
+                              </label>
+                            </div>
+                            <div className="flex gap-4">
+                              <label className="w-1/2 text-gray-500">
+                                geoFence
+                              </label>
+                              <select
+                                className="border-2 border-gray-300 rounded p-2 w-2/3"
+                                name="geofence"
+                                value={tax.geofence}
+                                onChange={handleInputchange}
+                              >
+                                <option value="TVM">TVM</option>
+                                <option value="PMG">PMG</option>
+                              </select>
+                            </div>
+                            <div className="flex gap-4">
+                              <label className="w-1/2 text-gray-500">
+                                Assign to Merchant
+                              </label>
+                              <select
+                                className="border-2 border-gray-300 rounded p-2 w-2/3"
+                                name="merchant"
+                                value={tax.merchant}
+                                onChange={handleInputchange}
+                              >
+                                <option value="option 1">Option 1</option>
+                                <option value="option 2">Option 2 </option>
+                              </select>
+                            </div>
+                            <div className="flex justify-end  gap-4">
+                              <button
+                                className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
+                                onClick={handleCancelEdit}
+                                type="submit"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
+                                onClick={handleOkEdit}
+                                type="submit"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </Modal>
+                    </div>
+                    <button
+                      onClick={showModalDelete}
+                      className="outline-none focus:outline-none"
+                    >
+                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </button>
                     <Modal
-                       title="Edit Tax"
-                      open={isModalVisibleEdit}
-                      onOk={handleOkEdit}
-                      className="mt-24"
-                      onCancel={handleCancelEdit}
-                      footer={null} // Custom footer to include form buttons
+                      onOk={showModalDeleteOk}
+                      onCancel={showModalDeleteCancel}
+                      footer={null}
+                      open={isShowModalDelete}
+                      centered
                     >
-                      <form onSubmit={submitAction}>
-                        <div className="flex flex-col  gap-4 justify-between">
-                          <div className="flex gap-4">
-                            <label className="w-1/2 text-gray-500">
-                              Tax Name
-                            </label>
-                            <input
-                              type="text"
-                              className="border-2 border-gray-300 rounded p-2 w-2/3"
-                              name="tax"
-                              value={tax.tax}
-                              onChange={handleInputchange}
-                            />
-                          </div>
-                          <div className="flex  gap-4">
-                            <label className="w-1/2 text-gray-500">Name</label>
-                            <input
-                              type="text"
-                              className="border-2 border-gray-300 rounded p-2 w-2/3"
-                              name="name"
-                              value={tax.name}
-                              onChange={handleInputchange}
-                            />
-                          </div>
-                          <div className="flex gap-4">
-                            <label className="w-1/2 text-gray-500">Tax</label>
-
-                            <input
-                              type="radio"
-                              className="border-2 ml-24 border-gray-300 rounded "
-                              name="fixed"
-                              value="fixed"
-                              checked={tax.type === "fixed"}
-                              onChange={handleRadioChange}
-                            />
-                            <label className="w-1/2 text-gray-500">
-                              Fixed Amount
-                            </label>
-                            <input
-                              type="radio"
-                              className=" border-gray-300 rounded  "
-                              name="percentage"
-                              value="percentage"
-                              checked={tax.type === "percentage"}
-                              onChange={handleRadioChange}
-                            />
-                            <label className="w-1/2 text-gray-500">
-                              Percentage
-                            </label>
-                          </div>
-                          <div className="flex gap-4">
-                            <label className="w-1/2 text-gray-500">
-                              geoFence
-                            </label>
-                            <select
-                              className="border-2 border-gray-300 rounded p-2 w-2/3"
-                              name="geofence"
-                              value={tax.geofence}
-                              onChange={handleInputchange}
-                            >
-                              <option value="TVM">TVM</option>
-                              <option value="PMG">PMG</option>
-                            </select>
-                          </div>
-                          <div className="flex gap-4">
-                            <label className="w-1/2 text-gray-500">
-                              Assign to Merchant
-                            </label>
-                            <select
-                              className="border-2 border-gray-300 rounded p-2 w-2/3"
-                              name="merchant"
-                              value={tax.merchant}
-                              onChange={handleInputchange}
-                            >
-                              <option value="option 1">Option 1</option>
-                              <option value="option 2">Option 2 </option>
-                            </select>
-                          </div>
-                          <div className="flex justify-end  gap-4">
-                            <button
-                              className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                              onClick={handleCancelEdit}
-                              type="submit"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-                              onClick={handleOkEdit}
-                              type="submit"
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </div>
-                      </form>
+                      <p className="font-semibold text-[18px] mb-5">
+                        Are you sure want to delete?
+                      </p>
+                      <div className="flex justify-end">
+                        <button
+                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                          onClick={showModalDeleteCancel}
+                        >
+                          Cancel
+                        </button>
+                        <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                          {" "}
+                          Delete
+                        </button>
+                      </div>
                     </Modal>
-                    </div>
-                   <button onClick={showModalDelete} className="outline-none focus:outline-none">
-                   <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                  </button>
-                  <Modal
-                     onOk={showModalDeleteOk}
-                     onCancel={showModalDeleteCancel}
-                     footer={null}
-                     open={isShowModalDelete}
-                     centered
-                    >
-                    
-                    <p className="font-semibold text-[18px] mb-5">Are you sure want to delete?</p>
-                    <div className="flex justify-end">
-                    <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold" onClick={showModalDeleteCancel}>Cancel</button>
-                    <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"> Delete</button>
-                    </div>
-                  </Modal>
                   </div>
-                
                 </td>
                 <td className="border-b border-gray-300"></td>
               </tr>

@@ -82,7 +82,7 @@ const LoyalityPoint = () => {
                 >
                   Earning Criteria *
                 </label>
-              
+
                 <input
                   className="border-2 border-gray-300 rounded p-2 pl-8 ml-[80px] outline-none focus:outline-none w-[25rem] "
                   type="text"
@@ -90,13 +90,10 @@ const LoyalityPoint = () => {
                   id="earningCriteriaRupee"
                   name="earningCriteriaRupee"
                   onChange={handleInputChange}
-
-                  
                 />
-                 <button className="absolute inset-y-0 left-80 ms-10 text-black rounded-md">
-                <CurrencyRupeeOutlined/>
+                <button className="absolute inset-y-0 left-80 ms-10 text-black rounded-md">
+                  <CurrencyRupeeOutlined />
                 </button>
-                
 
                 <RiEqualFill className="mx-2" />
 
@@ -173,9 +170,8 @@ const LoyalityPoint = () => {
                   />
                   points <RiEqualFill className="mx-3" />
                   <button className="absolute inset-y-0 right-60 me-11 text-black rounded-md">
-                <CurrencyRupeeOutlined/>
-                </button>
-                
+                    <CurrencyRupeeOutlined />
+                  </button>
                   <input
                     className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
                     type="text"

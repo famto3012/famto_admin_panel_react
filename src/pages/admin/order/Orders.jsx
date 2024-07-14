@@ -9,7 +9,6 @@ import {
 } from "@ant-design/icons";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link } from "react-router-dom";
-import { Modal, Switch } from "antd";
 import Sidebar from "../../../components/Sidebar";
 
 const Orders = () => {
@@ -18,9 +17,7 @@ const Orders = () => {
   const handleToggle = (id) => {
     setOrder((prevOrder) =>
       prevOrder.map((order) =>
-        order.id === id
-          ? { ...order, status: !order.status }
-          : order
+        order.id === id ? { ...order, status: !order.status } : order
       )
     );
   };
@@ -28,9 +25,7 @@ const Orders = () => {
   const handleApprove = (id) => {
     setOrder((prevOrder) =>
       prevOrder.map((order) =>
-        prder.id === id
-          ? { ...order, registrationApproval: "approved" }
-          : order
+        prder.id === id ? { ...order, registrationApproval: "approved" } : order
       )
     );
   };
@@ -38,9 +33,7 @@ const Orders = () => {
   const handleReject = (id) => {
     setOrder((prevOrder) =>
       prevOrder.map((order) =>
-        order.id === id
-          ? { ...order, registrationApproval: "rejected" }
-          : order
+        order.id === id ? { ...order, registrationApproval: "rejected" } : order
       )
     );
   };
@@ -58,8 +51,8 @@ const Orders = () => {
           geofence: "geofence",
           status: "Approved",
           registrationApproval: "Pending",
-          delivery : "on-demand",
-          amount : "1000"
+          delivery: "on-demand",
+          amount: "1000",
         },
         {
           id: "02",
@@ -71,8 +64,8 @@ const Orders = () => {
           geofence: "geofence",
           status: "Pending",
           registrationApproval: "Approved",
-           delivery : "on-demand",
-          amount : "1000"
+          delivery: "on-demand",
+          amount: "1000",
         },
       ];
       setOrder(dummyData);
@@ -94,10 +87,6 @@ const Orders = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
- 
-
-
 
   return (
     <>
@@ -125,13 +114,13 @@ const Orders = () => {
               <ArrowDownOutlined /> <span>CSV</span>
             </button>
             <div>
-              <button
-                className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
-            
-              >
-                <PlusOutlined /><Link to="/create-order"> <span>Create Order</span></Link>
+              <button className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 ">
+                <PlusOutlined />
+                <Link to="/create-order">
+                  {" "}
+                  <span>Create Order</span>
+                </Link>
               </button>
-              
             </div>
           </div>
         </div>
@@ -164,7 +153,7 @@ const Orders = () => {
               className="bg-gray-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
             >
               <option selected hidden>
-                Delivery Mode 
+                Delivery Mode
               </option>
               <option value="US">Home delivery</option>
             </select>
@@ -195,7 +184,7 @@ const Orders = () => {
               <input
                 type="text"
                 id="simple-search"
-                class="bg-gray-50 border border-gray-300 outline-none focus:outline-none text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5  "
+                className="bg-gray-50 border border-gray-300 outline-none focus:outline-none text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5  "
                 placeholder="Search Order Id"
                 required
               />
@@ -217,7 +206,7 @@ const Orders = () => {
                   "Delivery Time",
                   "Payment Method",
                   "Delivery Option",
-                  "Amount"
+                  "Amount",
                 ].map((header) => (
                   <th
                     key={header}
@@ -235,9 +224,7 @@ const Orders = () => {
                   className="align-middle border-b border-gray-300"
                 >
                   <td className="p-4">
-                    <Link to={`/order-details/${order.id}`}>
-                      {order.id}
-                    </Link>
+                    <Link to={`/order-details/${order.id}`}>{order.id}</Link>
                   </td>
                   <td className="p-4">
                     <div className="flex space-x-2 justify-center">

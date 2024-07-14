@@ -4,12 +4,7 @@ import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
 import Sidebar from "../../../components/Sidebar";
 import { Link } from "react-router-dom";
 import GlobalSearch from "../../../components/GlobalSearch";
-import AddMerchant from "../../../components/model/MerchantModels/AddMerchant";
-import EditMerchant from "../../../components/model/MerchantModels/EditMerchant";
 import { Modal, Switch } from "antd";
-
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { HelpOutlineOutlined } from "@mui/icons-material";
 
 const MerchantDetails = () => {
   const [formData, setFormData] = useState({
@@ -44,9 +39,8 @@ const MerchantDetails = () => {
     },
     sponsorshipDetail: [],
     availability: {
-
       type: "",
-        sunday: {
+      sunday: {
         openAllDay: null,
         closedAllDay: null,
         specificTime: null,
@@ -251,7 +245,7 @@ const MerchantDetails = () => {
   }
 
   const handlePlanChange = (e) => {
-      setFormData({sponsorshipDetail : e.target.value})
+    setFormData({ sponsorshipDetail: e.target.value });
   };
 
   const handleChange = (e) => {
@@ -290,16 +284,25 @@ const MerchantDetails = () => {
 
   const handleChangeRadio = (event) => {
     const { name, value } = event.target;
-    const [day, type] = name.split('.');
+    const [day, type] = name.split(".");
     setFormData((prevState) => ({
       ...prevState,
       availability: {
         ...prevState.availability,
         [day]: {
           ...prevState.availability[day],
-          openAllDay: type === 'openAllDay' ? value === 'true' : prevState.availability[day].openAllDay,
-          closedAllDay: type === 'closedAllDay' ? value === 'true' : prevState.availability[day].closedAllDay,
-          specificTime: type === 'specificTime' ? value === 'true' : prevState.availability[day].specificTime,
+          openAllDay:
+            type === "openAllDay"
+              ? value === "true"
+              : prevState.availability[day].openAllDay,
+          closedAllDay:
+            type === "closedAllDay"
+              ? value === "true"
+              : prevState.availability[day].closedAllDay,
+          specificTime:
+            type === "specificTime"
+              ? value === "true"
+              : prevState.availability[day].specificTime,
         },
       },
     }));
@@ -307,7 +310,7 @@ const MerchantDetails = () => {
 
   const handleChangeTime = (event) => {
     const { name, value } = event.target;
-    const [day, timeType] = name.split('.');
+    const [day, timeType] = name.split(".");
     setFormData((prevState) => ({
       ...prevState,
       availability: {
@@ -1106,10 +1109,7 @@ const MerchantDetails = () => {
           </div>
 
           {formData.availability === "specific" && (
-          
-
-
-             <div className="overflow-x-auto">
+            <div className="overflow-x-auto">
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
@@ -1120,7 +1120,7 @@ const MerchantDetails = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {Object.keys(formData.availability).map((day, index) => (
+                  {Object.keys(formData.availability).map((day, index) => (
                     <tr key={index}>
                       <td className="py-2 px-4 capitalize">{day}</td>
                       <td className="py-2 px-4 text-center">
@@ -1184,8 +1184,6 @@ const MerchantDetails = () => {
               </table>
             </div>
           )}
-
-      
 
           <div className="flex justify-end items-center gap-3 mt-8">
             <button type="button" className="bg-gray-300  px-6 p-1 rounded-md">

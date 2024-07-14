@@ -3,18 +3,15 @@ import Sidebar from "../../../components/Sidebar";
 import { ArrowBack } from "@mui/icons-material";
 import { BellOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Takeaway from "../../../components/Takeaway";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import HomeDelivery from "../../../components/HomeDelivery";
 import PickDrop from "../../../components/PickDrop";
 import Customorder from "../../../components/Customorder";
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import { Modal } from "antd";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 
 const CreateOrder = () => {
   const [customer, setCustomer] = useState("");
   const [selectedOption, setSelectedOption] = useState("takeaway");
   const [selectOption, setSelectOption] = useState("ondemand");
-  
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -27,7 +24,7 @@ const CreateOrder = () => {
     }
   };
 
-  const [dateTime, setDateTime] = useState('');
+  const [dateTime, setDateTime] = useState("");
 
   const handleChange = (event) => {
     setDateTime(event.target.value);
@@ -91,97 +88,105 @@ const CreateOrder = () => {
                   <button
                     type="submit"
                     className="absolute right-0 top-0 mt-2 mr-2"
-                  
                   >
                     <SearchOutlined className="text-xl text-gray-500" />
                   </button>
                 </div>
               </div>
               <div className="">
-              <div className=" flex">
-                <label className="w-1/3"></label>
-                <button
-                  type="button"
-                  className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                  onClick={toggleFormVisibility}
-                >
-                  <span>Add Customer</span>
-                  <PlusOutlined />
-                </button>
+                <div className=" flex">
+                  <label className="w-1/3"></label>
+                  <button
+                    type="button"
+                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                    onClick={toggleFormVisibility}
+                  >
+                    <span>Add Customer</span>
+                    <PlusOutlined />
+                  </button>
                 </div>
-                
+
                 {isFormVisible && (
-                
                   <div className="flex">
-                <label className="w-1/3"></label>
-            <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-          <form>
-            <div className='flex flex-col gap-3'>
-            <div className='flex item-center justify-center'>
-              <label className="  w-1/3 text-md font-medium ">Name</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                className=" w-2/3 px-3 py-2 bg-white   rounded focus:outline-none outline-none"
-              />
-            </div>
-            <div className='flex items-center'>
-              <label className="w-1/3 text-md font-medium">Email</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-              />
-            </div>
-            <div className='flex items-center'>
-              <label className="w-1/3 text-md font-medium ">Phone</label>
-              <input
-                type="text"
-                name="phone"
-                placeholder="Phone"
-                className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
-              />
-            </div>
-            <div className='flex items-center'>
-              <label className="w-1/3 text-md font-medium">Address</label>
-              <input
-                type="text"
-                name="address"
-                placeholder="Address"
-                className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-              />
-            </div>
-            <div className='flex items-center'>
-              <label className="w-1/3 text-md font-medium "><LocationOnOutlinedIcon/></label>
-              <input
-                type="text"
-                name="location"
-                placeholder="location"
-                className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-              />
-            </div>
-            </div>
-            <div className="flex justify-between mt-5 gap-3">
-              <button
-                type="button"
-                className="bg-cyan-100 px-4 py-2 w-1/2"
-                onClick={toggleFormVisibility}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
-              >
-                Add Customer
-              </button>
-            </div>
-          </form>
-        </div>
-        </div>
-      )}
+                    <label className="w-1/3"></label>
+                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
+                      <form>
+                        <div className="flex flex-col gap-3">
+                          <div className="flex item-center justify-center">
+                            <label className="  w-1/3 text-md font-medium ">
+                              Name
+                            </label>
+                            <input
+                              type="text"
+                              name="name"
+                              placeholder="Name"
+                              className=" w-2/3 px-3 py-2 bg-white   rounded focus:outline-none outline-none"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium">
+                              Email
+                            </label>
+                            <input
+                              type="email"
+                              name="email"
+                              placeholder="Email"
+                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium ">
+                              Phone
+                            </label>
+                            <input
+                              type="text"
+                              name="phone"
+                              placeholder="Phone"
+                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium">
+                              Address
+                            </label>
+                            <input
+                              type="text"
+                              name="address"
+                              placeholder="Address"
+                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium ">
+                              <LocationOnOutlinedIcon />
+                            </label>
+                            <input
+                              type="text"
+                              name="location"
+                              placeholder="location"
+                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-between mt-5 gap-3">
+                          <button
+                            type="button"
+                            className="bg-cyan-100 px-4 py-2 w-1/2"
+                            onClick={toggleFormVisibility}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
+                          >
+                            Add Customer
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex items-center mt-1">
                 <label className="w-1/3 px-6 text-gray-700">
@@ -214,11 +219,10 @@ const CreateOrder = () => {
               </div>
               {selectOption === "scheduled" && (
                 <div className="relative flex justify-center my-8 ml-24">
-                    <input
+                  <input
                     type="datetime-local"
                     id="datetime"
-                  name="datetime"
-    
+                    name="datetime"
                     className="h-10 text-sm  px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
                     value={dateTime}
                     onChange={handleChange}

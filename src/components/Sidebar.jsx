@@ -13,15 +13,15 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import { CaretRightOutlined } from "@ant-design/icons";
 import CurrencyRupeeOutlinedIcon from "@mui/icons-material/CurrencyRupeeOutlined";
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import NotificationImportantOutlinedIcon from '@mui/icons-material/NotificationImportantOutlined';
-import EditNotificationsOutlinedIcon from '@mui/icons-material/EditNotificationsOutlined';
-import CrisisAlertOutlinedIcon from '@mui/icons-material/CrisisAlertOutlined';
-import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
-import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
-import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
-import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
-import ShareLocationOutlinedIcon from '@mui/icons-material/ShareLocationOutlined';
+import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
+import NotificationImportantOutlinedIcon from "@mui/icons-material/NotificationImportantOutlined";
+import EditNotificationsOutlinedIcon from "@mui/icons-material/EditNotificationsOutlined";
+import CrisisAlertOutlinedIcon from "@mui/icons-material/CrisisAlertOutlined";
+import CampaignOutlinedIcon from "@mui/icons-material/CampaignOutlined";
+import RedeemOutlinedIcon from "@mui/icons-material/RedeemOutlined";
+import HubOutlinedIcon from "@mui/icons-material/HubOutlined";
+import LoyaltyOutlinedIcon from "@mui/icons-material/LoyaltyOutlined";
+import ShareLocationOutlinedIcon from "@mui/icons-material/ShareLocationOutlined";
 import { BsPersonLinesFill } from "react-icons/bs";
 import { LuFolderCog } from "react-icons/lu";
 import { Link } from "react-router-dom";
@@ -32,21 +32,19 @@ import {
   AccordionPanel,
   AccordionIcon,
   Box,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 import "../App.css";
+import whitelogo from "/whitelogo.svg";
 
 const Sidebar = () => {
-
   const [ismarketingOpen, setMarketingOpen] = useState(false);
   const [isnotifcationOpen, setNotificationOpen] = useState(false);
   const [isconfigureOpen, setConfigureOpen] = useState(false);
   const [isappOpen, setAppOpen] = useState(false);
   const [isaccountOpen, setAccountOpen] = useState(false);
 
-
-
   const toggleSidebar1 = (e) => {
-    e.stopPropagation()
+    e.stopPropagation();
     // setMarketingOpen(!ismarketingOpen);
   };
 
@@ -61,6 +59,7 @@ const Sidebar = () => {
   const toggleSidebar4 = () => {
     setAppOpen(!isappOpen);
   };
+
   const toggleSidebar5 = () => {
     setAccountOpen(!isaccountOpen);
   };
@@ -68,50 +67,45 @@ const Sidebar = () => {
   return (
     <div className="fixed w-[300px] h-full bg-gradient-to-t from-teal-700 to-cyan-500 p-4 font-poppins overflow-y-auto">
       <div className="flex gap-3 ml-[10px] mt-[30px]">
-        <img src="whitelogo.svg" alt="Logo" />
+        <img src={whitelogo} alt="Logo" />
         <h1 className="text-white font-poppins font-medium text-2xl">Famto</h1>
       </div>
-      <div className="dropside">
-        General
-       </div>
-      
-      
-  
-        <ul className="ul-side">
-          <Link to="/home" className="side">
-            <HomeOutlinedIcon className="m-2" />
-            Home
-          </Link>
-          <Link to="/all-orders" className="side">
-            <BookOutlinedIcon className="m-2" />
-            Orders
-          </Link>
-          <Link to="/all-merchants" className="side">
-            <StorefrontOutlinedIcon className="m-2" />
-            Merchants
-          </Link>
-          <Link to="/products" className="side">
-            <ListAltOutlinedIcon className="m-2" />
-            Products
-          </Link>
-          <Link to="/customers" className="side">
-            <GroupsOutlinedIcon className="m-2" />
-            Customers
-          </Link>
-          <Link to="/all-agents" className="side">
-            <AssignmentIndOutlinedIcon className="m-2" />
-            Delivery Agents
-          </Link>
-          <Link to="/delivery-management" className="side">
-            <TwoWheelerOutlinedIcon className="m-2" />
-            Delivery Management
-          </Link>
-          <Link to="/commission" className="side">
-            <PercentOutlinedIcon className="flex mr-[3px] m-2" />
-            Commission/Subscription
-          </Link>
-        </ul>
-    
+      <div className="dropside">General</div>
+
+      <ul className="ul-side">
+        <Link to="/home" className="side">
+          <HomeOutlinedIcon className="m-2" />
+          Home
+        </Link>
+        <Link to="/all-orders" className="side">
+          <BookOutlinedIcon className="m-2" />
+          Orders
+        </Link>
+        <Link to="/all-merchants" className="side">
+          <StorefrontOutlinedIcon className="m-2" />
+          Merchants
+        </Link>
+        <Link to="/products" className="side">
+          <ListAltOutlinedIcon className="m-2" />
+          Products
+        </Link>
+        <Link to="/customers" className="side">
+          <GroupsOutlinedIcon className="m-2" />
+          Customers
+        </Link>
+        <Link to="/all-agents" className="side">
+          <AssignmentIndOutlinedIcon className="m-2" />
+          Delivery Agents
+        </Link>
+        <Link to="/delivery-management" className="side">
+          <TwoWheelerOutlinedIcon className="m-2" />
+          Delivery Management
+        </Link>
+        <Link to="/commission" className="side">
+          <PercentOutlinedIcon className="flex mr-[3px] m-2" />
+          Commission/Subscription
+        </Link>
+      </ul>
 
       {/* <div className="dropside">
         Marketing
@@ -144,59 +138,79 @@ const Sidebar = () => {
         </ul>
       )} */}
 
-<Accordion>
-  <AccordionItem  onClick={(e) => e.stopPropagation()}>
-    <h2>
-      <AccordionButton>
-        <Box as='span' flex='1' textAlign='left'>
-        Marketing
-        </Box>
-        <AccordionIcon />
-      </AccordionButton>
-    </h2>
-    <AccordionPanel pb={4} onClick={(e) => e.stopPropagation()}>
-    <ul className="ul-side">
-          <Link to="/ad-banner" className="side" onClick={(e) => e.stopPropagation()}>
-            <CampaignOutlinedIcon className="m-2" />
-            Ad banner
-          </Link>
-          <Link to="/discount" className="side" onClick={(e) => e.stopPropagation()}>
-            <HomeOutlinedIcon className="m-2" />
-            Discount
-          </Link>
-          <Link to="/loyality-point" className="side" onClick={(e) => e.stopPropagation()}>
-            <LoyaltyOutlinedIcon className="m-2" />
-            Loyality Point
-          </Link>
-          <Link to="/promo-code" className="side" onClick={(e) => e.stopPropagation()}>
-            <RedeemOutlinedIcon className="m-2" />
-            Promo code
-          </Link>
-          <Link to="/referral" className="side" onClick={(e) => e.stopPropagation()}>
-            <HubOutlinedIcon className="m-2" />
-            Referral
-          </Link>
-        </ul>
-    </AccordionPanel>
-  </AccordionItem>
+      <Accordion>
+        <AccordionItem onClick={(e) => e.stopPropagation()}>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
+                Marketing
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel pb={4} onClick={(e) => e.stopPropagation()}>
+            <ul className="ul-side">
+              <Link
+                to="/ad-banner"
+                className="side"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <CampaignOutlinedIcon className="m-2" />
+                Ad banner
+              </Link>
+              <Link
+                to="/discount"
+                className="side"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <HomeOutlinedIcon className="m-2" />
+                Discount
+              </Link>
+              <Link
+                to="/loyality-point"
+                className="side"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <LoyaltyOutlinedIcon className="m-2" />
+                Loyality Point
+              </Link>
+              <Link
+                to="/promo-code"
+                className="side"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <RedeemOutlinedIcon className="m-2" />
+                Promo code
+              </Link>
+              <Link
+                to="/referral"
+                className="side"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <HubOutlinedIcon className="m-2" />
+                Referral
+              </Link>
+            </ul>
+          </AccordionPanel>
+        </AccordionItem>
 
-  <AccordionItem>
-    <h2>
-      <AccordionButton>
-        <Box as='span' flex='1' textAlign='left'>
-          Section 2 title
-        </Box>
-        <AccordionIcon />
-      </AccordionButton>
-    </h2>
-    <AccordionPanel pb={4}>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat.
-    </AccordionPanel>
-  </AccordionItem>
-</Accordion>
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
+                Section 2 title
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel pb={4}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat.
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
 
       <div className="dropside">
         Notification
@@ -222,7 +236,6 @@ const Sidebar = () => {
             <CrisisAlertOutlinedIcon className="m-2" />
             Alert Notification
           </Link>
-          
         </ul>
       )}
 
@@ -234,8 +247,11 @@ const Sidebar = () => {
       </div>
       {isconfigureOpen && (
         <ul className="ul-side">
-          <Link to="/all-managers" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
-          <BsPersonLinesFill className="m-2 text-[20px]" />
+          <Link
+            to="/all-managers"
+            className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2"
+          >
+            <BsPersonLinesFill className="m-2 text-[20px]" />
             Managers
           </Link>
           <Link to="/roles" className="side">
@@ -265,16 +281,25 @@ const Sidebar = () => {
       </div>
       {isappOpen && (
         <ul className="ul-side">
-          <Link to="/customer-app" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
-          <LuFolderCog className="m-2 text-[25px]" />
+          <Link
+            to="/customer-app"
+            className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2"
+          >
+            <LuFolderCog className="m-2 text-[25px]" />
             Customer App
           </Link>
-          <Link to="/agent-app" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
-          <LuFolderCog className="m-2 text-[25px]" />
+          <Link
+            to="/agent-app"
+            className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2"
+          >
+            <LuFolderCog className="m-2 text-[25px]" />
             Agent App
           </Link>
-          <Link to="/merchant-app" className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2">
-          <LuFolderCog className="m-2 text-[25px] " /> Merchant App
+          <Link
+            to="/merchant-app"
+            className=" hover:bg-cyan-400 hover:text-white flex items-center gap-2"
+          >
+            <LuFolderCog className="m-2 text-[25px] " /> Merchant App
           </Link>
         </ul>
       )}

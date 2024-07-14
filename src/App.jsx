@@ -1,107 +1,141 @@
-import React from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/auth/LoginPage";
-import Signup from "./pages/auth/SignUp";
 
-import Success from "./pages/auth/Success";
-import AddMerchant from "./components/model/MerchantModels/AddMerchant";
-import EditMerchant from "./components/model/MerchantModels/EditMerchant";
-import Merchant from "./pages/admin/merchant/AllMerchant";
-import Tax from "./pages/admin/tax/Tax";
-import Verification from "./pages/auth/Verification";
-import MerchantDetails from "./pages/admin/merchant/MerchantDetails";
-import Settings from "./pages/admin/settings/Settings";
-import Rating from "./components/model/MerchantModels/Rating";
-import AddManager from "./pages/admin/manager/AddManager";
-import UpdateManager from "./pages/admin/manager/UpdateManager";
-import AccountLogs from "./pages/admin/manager/AccountLogs";
-import Managers from "./pages/admin/manager/Managers";
-import PushNotification from "./pages/admin/notifications/PushNotification";
-import AlertNotification from "./pages/admin/notifications/AlertNotification";
-import NotificationSettings from "./pages/admin/notifications/NotificationSettings";
-import LoyalityPoint from "./pages/admin/marketing/LoyalityPoint";
-import Adbanner from "./pages/admin/marketing/Adbanner";
-import Notificationlog from "./pages/admin/notifications/Notificationlog";
-import Agentapp from "./pages/admin/appcustomization/Agentapp";
-import MerchantApp from "./pages/admin/appcustomization/MerchantApp";
-import Referral from "./pages/admin/marketing/Referral";
-import PromoCode from "./pages/admin/marketing/PromoCode";
-import Discount from "./pages/admin/marketing/Discount";
-import CustomerApp from "./pages/admin/apps/CustomerApp";
-import Customers from "./pages/admin/customers/Customers";
-import CustomerDetails from "./pages/admin/customers/CustomerDetails";
-import Commissionlog from "./pages/admin/commission/Commissionlog";
-import Subscriptioncustomer from "./pages/admin/commission/Subscriptioncustomer";
-import CreateOrder from "./pages/admin/order/CreateOrder";
-import Pricing from "./pages/admin/pricing/Pricing";
-import DeliveryAgent from "./pages/admin/agents/DeliveryAgent";
-import AgentDetails from "./pages/admin/agents/AgentDetails";
-
-import OrderDetails from "./pages/admin/orders/OrderDetails";
-import Orders from "./pages/admin/orders/Orders";
-import Products from "./pages/products/Products";
-import Geofence from "./pages/admin/geofence/Geofence";
-import AddGeofence from "./pages/admin/geofence/AddGeofence";
-
-import DeliveryManagement from "./pages/admin/delivery-management/DeliveryManagement";
-import Radio from "./pages/admin/settings/Radio";
-import Commission from "./pages/admin/manager/Commission";
-import Sarath from "./pages/admin/settings/Sarath";
-import HomePage from "./pages/admin/home/HomePage";
-import MyForm from "./pages/admin/order/MyForm";
-
-
+const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
+const Signup = lazy(() => import("./pages/auth/SignUp"));
+const Success = lazy(() => import("./pages/auth/Success"));
+const Merchant = lazy(() => import("./pages/admin/merchant/AllMerchant"));
+const Tax = lazy(() => import("./pages/admin/tax/Tax"));
+const Verification = lazy(() => import("./pages/auth/Verification"));
+const MerchantDetails = lazy(() =>
+  import("./pages/admin/merchant/MerchantDetails")
+);
+const Settings = lazy(() => import("./pages/admin/settings/Settings"));
+const AddManager = lazy(() => import("./pages/admin/manager/AddManager"));
+const UpdateManager = lazy(() => import("./pages/admin/manager/UpdateManager"));
+const AccountLogs = lazy(() => import("./pages/admin/manager/AccountLogs"));
+const Managers = lazy(() => import("./pages/admin/manager/Managers"));
+const PushNotification = lazy(() =>
+  import("./pages/admin/notifications/PushNotification")
+);
+const AlertNotification = lazy(() =>
+  import("./pages/admin/notifications/AlertNotification")
+);
+const NotificationSettings = lazy(() =>
+  import("./pages/admin/notifications/NotificationSettings")
+);
+const LoyalityPoint = lazy(() =>
+  import("./pages/admin/marketing/LoyalityPoint")
+);
+const Adbanner = lazy(() => import("./pages/admin/marketing/Adbanner"));
+const Notificationlog = lazy(() =>
+  import("./pages/admin/notifications/Notificationlog")
+);
+const Agentapp = lazy(() => import("./pages/admin/appcustomization/Agentapp"));
+const MerchantApp = lazy(() =>
+  import("./pages/admin/appcustomization/MerchantApp")
+);
+const Referral = lazy(() => import("./pages/admin/marketing/Referral"));
+const PromoCode = lazy(() => import("./pages/admin/marketing/PromoCode"));
+const Discount = lazy(() => import("./pages/admin/marketing/Discount"));
+const CustomerApp = lazy(() => import("./pages/admin/apps/CustomerApp"));
+const Customers = lazy(() => import("./pages/admin/customers/Customers"));
+const CustomerDetails = lazy(() =>
+  import("./pages/admin/customers/CustomerDetails")
+);
+const Commissionlog = lazy(() =>
+  import("./pages/admin/commission/Commissionlog")
+);
+const Subscriptioncustomer = lazy(() =>
+  import("./pages/admin/commission/Subscriptioncustomer")
+);
+const CreateOrder = lazy(() => import("./pages/admin/order/CreateOrder"));
+const Pricing = lazy(() => import("./pages/admin/pricing/Pricing"));
+const DeliveryAgent = lazy(() => import("./pages/admin/agents/DeliveryAgent"));
+const AgentDetails = lazy(() => import("./pages/admin/agents/AgentDetails"));
+const OrderDetails = lazy(() => import("./pages/admin/order/OrderDetails"));
+const Orders = lazy(() => import("./pages/admin/order/Orders"));
+const Products = lazy(() => import("./pages/admin/products/Products"));
+const Geofence = lazy(() => import("./pages/admin/geofence/Geofence"));
+const AddGeofence = lazy(() => import("./pages/admin/geofence/AddGeofence"));
+const DeliveryManagement = lazy(() =>
+  import("./pages/admin/delivery-management/DeliveryManagement")
+);
+const Commission = lazy(() => import("./pages/admin/manager/Commission"));
+const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/sign-up" element={<Signup />} />
-        <Route path="/success" element={<Success />} />
-        <Route path="/all-merchants" element={<Merchant />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/verify" element={<Verification />} />
-        <Route path="/add-manager" element={<AddManager />} />
-        <Route path="/update-manager" element={<UpdateManager />} />
-        <Route path="/all-tax" element={<Tax />} />
-        <Route path="/account-logs" element={<AccountLogs />} />
-        <Route path="/all-managers" element={<Managers />} />
-        <Route path="/push-notification" element={<PushNotification />} />
-        <Route path="/alert-notification" element={<AlertNotification />} />
-        <Route path="/notification-settings" element={<NotificationSettings />} />
-        <Route path="/loyality-point" element={<LoyalityPoint />} />
-        <Route path="/ad-banner" element={<Adbanner/>} />
-        <Route path="/agent-app" element={<Agentapp/>} />
-        <Route path="/notification-log" element={<Notificationlog/>} />
-        <Route path="/merchant-app" element={<MerchantApp/>} />
-        <Route path="/promo-code" element={<PromoCode />} />
-        <Route path="/referral" element={<Referral />} />
-        <Route path="/discount" element={<Discount />} />
-        <Route path="/customer-app" element={<CustomerApp />} />
-        <Route path="/customers" element={<Customers/>} />
-        <Route path="/customer-detail/:cusomerId" element={<CustomerDetails/>} />
-        <Route path="/view-commission" element={<Commissionlog />} />
-        <Route path="/view-subscription" element={<Subscriptioncustomer/>} />
-        <Route path="/create-order" element={<CreateOrder />} />
-        <Route path="/pricing" element={<Pricing/>} />
-        <Route path="/commission" element={<Commission/>} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/all-agents" element={<DeliveryAgent />} />
-        <Route path="/agent-details/:agentId" element={<AgentDetails />} />
-        <Route path="/order-details/:orderId" element={<OrderDetails />} />
-        <Route path="/all-orders" element= {<Orders />} />
-        <Route path="/products" element= {<Products />} />
-        <Route path="/geofence" element={<Geofence/>} />
-        <Route path="/add-geofence" element={<AddGeofence/>} />
-        <Route path="/delivery-management" element={<DeliveryManagement />} />
-        <Route path="/my-form" element={<MyForm/>} />
-        <Route
-          path="/merchant-detail/:merchantId"
-          element={<MerchantDetails />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/auth">
+              <Route path="login" element={<LoginPage />} />
+              <Route path="sign-up" element={<Signup />} />
+              <Route path="success" element={<Success />} />
+              <Route path="verify" element={<Verification />} />
+            </Route>
+
+            <Route path="/all-orders" element={<Orders />} />
+            <Route path="/order-details/:orderId" element={<OrderDetails />} />
+            <Route path="/all-merchants" element={<Merchant />} />
+            <Route
+              path="/merchant-detail/:merchantId"
+              element={<MerchantDetails />}
+            />
+            <Route path="/add-manager" element={<AddManager />} />
+            <Route path="/update-manager" element={<UpdateManager />} />
+
+            <Route path="/settings" element={<Settings />} />
+
+            <Route path="/all-tax" element={<Tax />} />
+            <Route path="/account-logs" element={<AccountLogs />} />
+            <Route path="/all-managers" element={<Managers />} />
+            <Route path="/push-notification" element={<PushNotification />} />
+            <Route path="/alert-notification" element={<AlertNotification />} />
+            <Route
+              path="/notification-settings"
+              element={<NotificationSettings />}
+            />
+            <Route path="/loyality-point" element={<LoyalityPoint />} />
+            <Route path="/ad-banner" element={<Adbanner />} />
+            <Route path="/agent-app" element={<Agentapp />} />
+            <Route path="/notification-log" element={<Notificationlog />} />
+            <Route path="/merchant-app" element={<MerchantApp />} />
+            <Route path="/promo-code" element={<PromoCode />} />
+            <Route path="/referral" element={<Referral />} />
+            <Route path="/discount" element={<Discount />} />
+            <Route path="/customer-app" element={<CustomerApp />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route
+              path="/customer-detail/:cusomerId"
+              element={<CustomerDetails />}
+            />
+            <Route path="/view-commission" element={<Commissionlog />} />
+            <Route
+              path="/view-subscription"
+              element={<Subscriptioncustomer />}
+            />
+            <Route path="/create-order" element={<CreateOrder />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/commission" element={<Commission />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/all-agents" element={<DeliveryAgent />} />
+            <Route path="/agent-details/:agentId" element={<AgentDetails />} />
+
+            <Route path="/products" element={<Products />} />
+            <Route path="/geofence" element={<Geofence />} />
+            <Route path="/add-geofence" element={<AddGeofence />} />
+            <Route
+              path="/delivery-management"
+              element={<DeliveryManagement />}
+            />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </>
   );
 }
 
