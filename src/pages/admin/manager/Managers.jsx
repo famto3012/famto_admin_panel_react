@@ -11,38 +11,38 @@ import { UserContext } from "../../../context/UserContext";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Managers = () => {
-  const [allManagers, setAllManagers] = useState([]);
+  // const [allManagers, setAllManagers] = useState([]);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const { isLoggedIn } = useContext(UserContext);
+  // const { isLoggedIn } = useContext(UserContext);
 
-  const token = isLoggedIn;
+  // const token = isLoggedIn;
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
+  // useEffect(() => {
+  //   if (!token) {
+  //     navigate("/login");
+  //   }
 
-    const getAllManagers = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/admin/managers`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  //   const getAllManagers = async () => {
+  //     try {
+  //       const response = await axios.get(`${BASE_URL}/admin/managers`, {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        if (response.status === 200) {
-          setAllManagers(response.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in getting all managers: ${err}`);
-      }
-    };
+  //       if (response.status === 200) {
+  //         setAllManagers(response.data.data);
+  //       }
+  //     } catch (err) {
+  //       console.log(`Error in getting all managers: ${err}`);
+  //     }
+  //   };
 
-    getAllManagers();
-  }, [token]);
+  //   getAllManagers();
+  // }, [token]);
 
   const handleChange = (event) => {
     e.preventDefault();
@@ -116,14 +116,14 @@ const Managers = () => {
             </tr>
           </thead>
           <tbody>
-            {allManagers.map((manager) => (
-              <tr className="text-center bg-white h-20" key={manager._id}>
-                <td>{manager._id}</td>
-                <td>{manager.name}</td>
-                <td>{manager.email}</td>
-                <td>{manager.phoneNumber}</td>
-                <td>{manager.role}</td>
-                <td>{manager.geofenceId.name}</td>
+           
+              <tr className="text-center bg-white h-20">
+                <td>Dummy Data</td>
+                <td>Dummy Data</td>
+                <td>Dummy Data</td>
+                <td>Dummy Data</td>
+                <td>Dummy Data</td>
+                <td>Dummy Data</td>
                 <td>
                   <button>
                     <EditOutlined className="bg-gray-200 p-3 mr-2 rounded-lg" />
@@ -131,7 +131,7 @@ const Managers = () => {
                   <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
                 </td>
               </tr>
-            ))}
+       
           </tbody>
         </table>
       </div>
@@ -140,3 +140,22 @@ const Managers = () => {
 };
 
 export default Managers;
+
+
+
+// {allManagers.map((manager) => (
+//   <tr className="text-center bg-white h-20" key={manager._id}>
+//     <td>{manager._id}</td>
+//     <td>{manager.name}</td>
+//     <td>{manager.email}</td>
+//     <td>{manager.phoneNumber}</td>
+//     <td>{manager.role}</td>
+//     <td>{manager.geofenceId.name}</td>
+//     <td>
+//       <button>
+//         <EditOutlined className="bg-gray-200 p-3 mr-2 rounded-lg" />
+//       </button>
+//       <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+//     </td>
+//   </tr>
+// ))}

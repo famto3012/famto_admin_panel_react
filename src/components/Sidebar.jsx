@@ -25,7 +25,14 @@ import ShareLocationOutlinedIcon from '@mui/icons-material/ShareLocationOutlined
 import { BsPersonLinesFill } from "react-icons/bs";
 import { LuFolderCog } from "react-icons/lu";
 import { Link } from "react-router-dom";
-
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Box,
+} from '@chakra-ui/react'
 import "../App.css";
 
 const Sidebar = () => {
@@ -40,7 +47,7 @@ const Sidebar = () => {
 
   const toggleSidebar1 = (e) => {
     e.stopPropagation()
-    setMarketingOpen(!ismarketingOpen);
+    // setMarketingOpen(!ismarketingOpen);
   };
 
   const toggleSidebar2 = () => {
@@ -106,7 +113,7 @@ const Sidebar = () => {
         </ul>
     
 
-      <div className="dropside">
+      {/* <div className="dropside">
         Marketing
         <button onClick={toggleSidebar1}>
           <CaretRightOutlined />
@@ -135,7 +142,61 @@ const Sidebar = () => {
             Referral
           </Link>
         </ul>
-      )}
+      )} */}
+
+<Accordion>
+  <AccordionItem  onClick={(e) => e.stopPropagation()}>
+    <h2>
+      <AccordionButton>
+        <Box as='span' flex='1' textAlign='left'>
+        Marketing
+        </Box>
+        <AccordionIcon />
+      </AccordionButton>
+    </h2>
+    <AccordionPanel pb={4} onClick={(e) => e.stopPropagation()}>
+    <ul className="ul-side">
+          <Link to="/ad-banner" className="side" onClick={(e) => e.stopPropagation()}>
+            <CampaignOutlinedIcon className="m-2" />
+            Ad banner
+          </Link>
+          <Link to="/discount" className="side" onClick={(e) => e.stopPropagation()}>
+            <HomeOutlinedIcon className="m-2" />
+            Discount
+          </Link>
+          <Link to="/loyality-point" className="side" onClick={(e) => e.stopPropagation()}>
+            <LoyaltyOutlinedIcon className="m-2" />
+            Loyality Point
+          </Link>
+          <Link to="/promo-code" className="side" onClick={(e) => e.stopPropagation()}>
+            <RedeemOutlinedIcon className="m-2" />
+            Promo code
+          </Link>
+          <Link to="/referral" className="side" onClick={(e) => e.stopPropagation()}>
+            <HubOutlinedIcon className="m-2" />
+            Referral
+          </Link>
+        </ul>
+    </AccordionPanel>
+  </AccordionItem>
+
+  <AccordionItem>
+    <h2>
+      <AccordionButton>
+        <Box as='span' flex='1' textAlign='left'>
+          Section 2 title
+        </Box>
+        <AccordionIcon />
+      </AccordionButton>
+    </h2>
+    <AccordionPanel pb={4}>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      commodo consequat.
+    </AccordionPanel>
+  </AccordionItem>
+</Accordion>
 
       <div className="dropside">
         Notification
