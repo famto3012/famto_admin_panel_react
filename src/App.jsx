@@ -109,7 +109,7 @@ function App() {
             <Route path="/discount" element={<Discount />} />
             <Route path="/customer-app" element={<CustomerApp />} />
             <Route path="/customers" element={<Customers />} />
-            <Route
+             <Route
               path="/customer-detail/:cusomerId"
               element={<CustomerDetails />}
             />

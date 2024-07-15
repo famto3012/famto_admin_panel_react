@@ -40,7 +40,7 @@ const Agentapp = () => {
   return (
     <>
       <Sidebar />
-      <div className="w-fit min-h-screen pl-[290px] mb-36 bg-gray-100 ">
+      <div className="w-fit pl-[290px] h-screen bg-gray-100 ">
         <div className="flex justify-end p-4 gap-7">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
@@ -204,11 +204,11 @@ const Agentapp = () => {
             Cancel
           </button>
           <button
-            className="bg-teal-700 text-white py-2 px-4 rounded-md "
+            className="bg-teal-800 text-white py-2 px-4 rounded-md "
             type="submit"
             onClick={submitAction}
           >
-            Save
+            Save Changes
           </button>
         </div>
       </div>

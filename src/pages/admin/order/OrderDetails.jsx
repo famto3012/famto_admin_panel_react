@@ -15,6 +15,8 @@ import {
   useSteps,
   Box,
 } from "@chakra-ui/react";
+import map from "/map.svg";
+import avatar from "/avatar.svg"
 
 const OrderDetails = () => {
   const dummyData = [
@@ -348,7 +350,7 @@ const OrderDetails = () => {
         <h1 className="text-[18px] font-semibold m-5">Order Activity log</h1>
         <div className="bg-white mx-5 p-5 rounded-lg flex justify-between gap-20 items-center">
           <div className="bg-gray-200 p-3 rounded-full">
-            <img src="avatar.svg" />
+            <img src={avatar} />
           </div>
           <div className="flex justify-around w-1/4">
             <label className="text-gray-600">Agent Name</label>
@@ -363,7 +365,7 @@ const OrderDetails = () => {
             <p>60 min</p>
           </div>
         </div>
-        <div className="flex m-5 gap-10 mx-10 w-full">
+        <div className="flex m-5 mx-10 ">
           <div className="w-1/2 ">
             <Stepper
               index={activeStep}
@@ -393,8 +395,8 @@ const OrderDetails = () => {
               ))}
             </Stepper>
           </div>
-          <div>
-            <img src="map.svg" alt="map" />
+          <div className="w-1/2">
+            <img src={map} alt="map" />
           </div>
         </div>
       </div>

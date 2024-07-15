@@ -140,7 +140,7 @@ const HomePage = () => {
             <p className="text-[20px] text-gray-500">Designation</p>
           </div>
           <div>
-            <select name="day" className="bg-blue-50 p-3">
+            <select name="day" className="bg-white rounded-lg p-3">
               <option>Today</option>
             </select>
           </div>
@@ -211,7 +211,7 @@ const HomePage = () => {
                   valueFormatter={valueFormatter}
                   yAxisWidth={80}
                   height="300px"
-                  colors={["#5188ff"]}
+                  colors={["#115e59"]}
                 />
               </CardBody>
             </Card>

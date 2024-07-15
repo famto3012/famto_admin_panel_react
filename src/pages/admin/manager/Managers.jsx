@@ -11,6 +11,11 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { Modal } from "antd";
 import { MdOutlineEdit } from "react-icons/md";
 import { FilterAltOutlined } from "@mui/icons-material";
+import { Modal } from "antd";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import { RiDeleteBin6Fill, RiDeleteBinLine, RiEditFill } from "react-icons/ri";
+import { MdOutlineEdit } from "react-icons/md";
+
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -100,7 +105,7 @@ const Managers = () => {
           </div>
           <div className="flex gap-4">
             <p className="mt-2">
-              <FilterAltOutlined className="text-gray-400" />
+              <FilterAltOutlinedIcon className="text-gray-500" />
             </p>
             <input
               type="search"
@@ -146,6 +151,7 @@ const Managers = () => {
                 <div className="flex  justify-center gap-3">
                 <button>
                 <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+
                 </button>
                 <button
                       onClick={showModalDelete}

@@ -8,6 +8,8 @@ import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { MdOutlineModeEdit } from "react-icons/md";
 import { Switch, Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -191,6 +193,35 @@ const Products = () => {
     setIsModalVisibleItemsEdit(false);
   };
 
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+
+  const showModalDelete = () => {
+    setIsShowModalDelete(true);
+  };
+
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false);
+  };
+
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false);
+  };
+
+  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] = useState(false);
+
+  const ShowModalDeleteCustomer = () => {
+    setIsShowModalDeleteCustomer(true);
+  };
+
+  const showModalDeleteOkCustomer = () => {
+    setIsShowModalDeleteCustomer(false);
+  };
+
+  const showModalDeleteCancelCustomer = () => {
+    setIsShowModalDeleteCustomer(false);
+  };
+
+
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
   };
@@ -241,7 +272,7 @@ const Products = () => {
           <select
             name="name"
             value="merchant"
-            className="bg-blue-50 p-2 rounded"
+            className="bg-blue-50 p-2 rounded focus:outline-none outline-none"
           >
             <option value="option 1">Merchant Name</option>
           </select>
@@ -424,13 +455,13 @@ const Products = () => {
               <h1 className="font-semibold flex ml-3 items-center text-[18px]">
                 Shakes
               </h1>
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-5 items-center">
                 Disabled <Switch /> Enable
                 <button
-                  className="bg-zinc-100 p-2 rounded"
+                  className="bg-blue-50 p-2 flex items-center px-5 rounded-lg"
                   onClick={showModalCategory}
                 >
-                  <EditOutlined /> Edit
+                  <MdOutlineModeEdit className="text-xl mr-1" /> Edit
                 </button>
                 <Modal
                   onCancel={showModalCancelCategory}
@@ -502,45 +533,37 @@ const Products = () => {
                         ></input>
                       </div>
                       <div className="flex items-center">
-                        <label className="w-1/3 text-gray-500">
-                          Veg/Non-veg
-                        </label>
-                        <label className="mr-4 ml-[12.5rem] text-teal-700  ">
+                        <label className="w-1/3 text-gray-500">Veg/Non-veg</label>
+                        <div>
                           <input
                             type="radio"
                             name="type"
-                            id="veg"
                             value="veg"
                             checked={category.type === "veg"}
                             onChange={handleCategory}
-                            className="mr-2 text-teal-600 focus:ring-teal-500"
-                          />{" "}
-                          Veg
-                        </label>
-                        <label className="mr-4">
-                          <input
-                            type="radio"
-                            name="type"
-                            id="non-veg"
-                            value="non-veg"
-                            checked={category.type === "non-veg"}
-                            onChange={handleCategory}
-                            className="mr-2  text-teal-600 focus:ring-teal-500"
-                          />{" "}
-                          Non-Veg
-                        </label>
-                        <label className="mr-4">
-                          <input
-                            type="radio"
-                            name="type"
-                            id="both"
-                            value="both"
-                            checked={category.type === "both"}
-                            onChange={handleCategory}
-                            className="mr-2 text-teal-600 focus:ring-teal-500"
-                          />{" "}
-                          Both
-                        </label>
+                            className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
+                          />
+                          <label> Veg</label>
+                        </div>
+                        <input
+                          type="radio"
+                          name="type"
+                          value="non-veg"
+                          checked={category.type === "non-veg"}
+                          onChange={handleCategory}
+                          className="border-2 border-gray-100 ml-5 rounded p-2 mr-3 focus:outline-none"
+                        />
+                        <label>Non-Veg</label>
+
+                        <input
+                          type="radio"
+                          name="type"
+                          value="both"
+                          checked={category.type === "both"}
+                          onChange={handleCategory}
+                          className="border-2 border-gray-100 ml-5 rounded p-2 mr-3 focus:outline-none"
+                        />
+                        <label> Both</label>
                       </div>
                       <div className="flex items-center">
                         <label className=" w-1/3">Photos</label>
@@ -592,9 +615,34 @@ const Products = () => {
                     </div>
                   </form>
                 </Modal>
-                <button className="bg-red-100 p-2 rounded">
-                  <DeleteOutlined /> Delete
+                <button className="bg-red-100 p-2 flex items-center rounded-lg px-3" onClick={showModalDelete}>
+                  <RiDeleteBin6Line className="text-xl mr-1 text-red-700" /> Delete
                 </button>
+                <Modal
+              onOk={showModalDeleteOk}
+              onCancel={showModalDeleteCancel}
+              footer={null}
+              open={isShowModalDelete}
+              centered
+            >
+              <form>
+                <p className="font-bold text-[20px] mb-5">
+                  Are you sure want to delete?
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    className="bg-zinc-200 p-2 rounded-md font-semibold"
+                    onClick={showModalDeleteCancel}
+                  >
+                    Cancel
+                  </button>
+                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
+                    {" "}
+                    Delete
+                  </button>
+                </div>
+              </form>
+            </Modal>
               </div>
             </div>
             <div className="flex">
@@ -1000,11 +1048,11 @@ const Products = () => {
                     Inventory
                     <Switch />
                     <button
-                      className="bg-zinc-100 p-2 rounded"
-                      onClick={showModalItemsEdit}
-                    >
-                      <EditOutlined /> Edit
-                    </button>
+                  className="bg-blue-50 p-2 flex items-center outline-none focus:outline-none px-5 rounded-lg"
+                  onClick={showModalItemsEdit}
+                >
+                  <MdOutlineModeEdit className="text-xl mr-1" /> Edit
+                </button>
                     <Modal
                       onCancel={showModalCancelItemsEdit}
                       onOk={showModalOkItemsEdit}
@@ -1344,9 +1392,34 @@ const Products = () => {
                         </div>
                       </form>
                     </Modal>
-                    <button className="bg-red-100 p-2 rounded">
-                      <DeleteOutlined /> Delete
-                    </button>
+                    <button className="bg-red-100 p-2 flex items-center rounded-lg px-3" onClick={ShowModalDeleteCustomer}>
+                  <RiDeleteBin6Line className="text-xl mr-1 text-red-700" /> Delete
+                </button>
+                <Modal
+              onOk={showModalDeleteOkCustomer}
+              onCancel={showModalDeleteCancelCustomer}
+              footer={null}
+              open={isShowModalDeleteCustomer}
+              centered
+            >
+              <form>
+                <p className="font-bold text-[20px] mb-5">
+                  Are you sure want to delete?
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    className="bg-zinc-200 p-2 rounded-md font-semibold"
+                    onClick={showModalDeleteCancelCustomer}
+                  >
+                    Cancel
+                  </button>
+                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
+                    {" "}
+                    Delete
+                  </button>
+                </div>
+              </form>
+            </Modal>
                   </div>
                 </div>
                 <div>

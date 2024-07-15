@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { Modal, Switch } from "antd";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const DeliveryAgent = () => {
   const [agent, setAgent] = useState([]);
@@ -136,22 +137,9 @@ const DeliveryAgent = () => {
     <>
       <Sidebar />
       <main className="pl-[300px] bg-gray-100 h-screen">
-        <div className="flex items-center gap-[20px] justify-end py-[20px] pe-[30px]">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+        <nav className="p-5"><GlobalSearch/></nav>
 
-        <div className="flex justify-between items-center px-[30px]">
+        <div className="flex justify-between mt-5 items-center px-[30px]">
           <h1 className="text-[18px] font-semibold">Delivery Agent</h1>
           <div className="flex space-x-2 justify-end ">
             <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
@@ -631,11 +619,11 @@ const DeliveryAgent = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-[20px] px-[30px] bg-white mx-5 p-5 rounded-lg">
+        <div className="flex items-center justify-between mt-10 px-[30px] bg-white mx-5 p-5 rounded-lg">
           <div className="flex items-center gap-[20px] bg-white mx-5 rounded-lg">
             <select
               id="status"
-              className="bg-blue-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
               <option selected hidden>
                 Status
@@ -646,7 +634,7 @@ const DeliveryAgent = () => {
 
             <select
               id="vehicleType"
-              className="bg-blue-50 w-32 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
             >
               <option selected hidden>
                 Vehicle Type
@@ -657,7 +645,7 @@ const DeliveryAgent = () => {
 
             <select
               id="geofence"
-              className="bg-blue-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              className="bg-blue-50  w-fit text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
             >
               <option selected hidden>
                 Geofence
@@ -673,7 +661,7 @@ const DeliveryAgent = () => {
             <input
               type="search"
               name="search"
-              placeholder="search Agent id"
+              placeholder="Search Agent ID"
               className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
             />
             <button type="submit" className="absolute right-16 mt-2">

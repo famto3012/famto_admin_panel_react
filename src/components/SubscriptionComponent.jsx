@@ -189,8 +189,8 @@ const SubscriptionComponent = () => {
 
   return (
     <>
-      <div className="pl-[300px] m-5 bg-gray-100">
-        <h1 className="mt-10 font-semibold text-[18px]">Merchant</h1>
+      <div className="pl-[300px] bg-gray-100">
+        <h1 className="mt-10 px-5 pt-5 pb-2 bg-red-100 font-semibold text-[18px]">Merchant</h1>
         <div className="bg-white mx-5 p-5 rounded-lg mt-5">
           <div className="flex w-2/3 justify-between mt-5">
             <p>
@@ -572,7 +572,7 @@ const SubscriptionComponent = () => {
       </div>
 
       <div className="pl-[300px] bg-gray-100">
-        <h1 className="mt-10 m-5 font-semibold text-[18px]">Customer</h1>
+      <h1 className="mt-10 px-5 pt-5 pb-2 bg-red-100 font-semibold text-[18px]">Customer</h1>
         <div className=" mx-5 p-5 rounded-lg mt-5">
           <div className="flex w-2/3 justify-between mt-5">
             <p>
@@ -708,7 +708,7 @@ const SubscriptionComponent = () => {
           </div>
         </div>
 
-        <div className="bg-white mx-5 p-5 rounded-lg mt-5">
+        <div className="bg-white mx-5 p-5 pb-10 rounded-lg mt-5">
           <h1>Apply Subscription</h1>
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>

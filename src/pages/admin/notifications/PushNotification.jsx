@@ -177,7 +177,7 @@ const PushNotification = () => {
           <select
             name="type"
             value={formData.type}
-            className="bg-blue-50 rounded-lg p-3"
+            className="bg-blue-50 rounded-lg p-3 outline-none focus:outline-none"
             onChange={handleInputChange}
           >
             <option hidden selected>

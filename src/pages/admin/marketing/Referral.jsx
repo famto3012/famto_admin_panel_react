@@ -52,16 +52,19 @@ const Referral = () => {
           checkout while placing the order. Note: Referrer - who shares; Referee
           - who receives
         </p>
-        <form onSubmit={submitAction} className="bg-white p-10 rounded-lg">
-          <div>
+        <form onSubmit={submitAction} className="bg-white m-5 p-10 rounded-lg">
+          <div className="flex">
+            <div  className="w-1/2">
             <label>Referral Type</label>
+            </div>
+            <div className="w-2/3">
             <input
               type="radio"
               name="referralType"
               value="Flat-discount"
               checked={formData.referralType === "Flat-discount"}
               onChange={handleChange}
-              className="ml-[260px] mr-5 "
+              className="mr-5 "
             />
             Flat discount
             <input
@@ -73,97 +76,104 @@ const Referral = () => {
               className="ml-10 mr-5 "
             />
             Percentage discount
+            </div>
           </div>
           <div className="flex">
-            <label className="mt-10">Refferer Discount</label>
+            <label className="mt-10 w-1/2">Refferer Discount</label>
             <input
               type="text"
               name="referrerDiscount"
               value={formData.referrerDiscount}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-[240px] mt-10  w-96 p-2 outline-none focus:outline-none"
+              className="border-2 border-gray-300 rounded w-2/3 mt-10 p-2 outline-none focus:outline-none"
             />
           </div>
           <div className="flex">
-            <label className="mt-10">Referrer maximum discount value</label>
+            <label className="mt-10 w-1/2">Referrer maximum discount value</label>
             <input
               type="text"
               name="referrerMaxDiscountValue"
               disabled={formData.referralType === "Flat-discount"}
               value={formData.referrerMaxDiscountValue}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-32 mt-10  w-96 p-2 outline-none focus:outline-none disabled:bg-zinc-300"
+              className="border-2 border-gray-300 rounded mt-10 w-2/3 p-2 outline-none focus:outline-none disabled:bg-zinc-300"
             />
           </div>
           <div className="flex">
-            <label className="mt-10">Referrer App Heading Description</label>
+            <label className="mt-10 w-1/2">Referrer App Heading Description</label>
             <input
               type="text"
               name="referrerAppHeadingAndDescription"
               value={formData.referrerAppHeadingAndDescription}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-32 mt-10  w-96 p-2 outline-none focus:outline-none"
+              className="border-2 border-gray-300 rounded w-2/3 mt-10 p-2 outline-none focus:outline-none"
             />
           </div>
           <div className="flex">
-            <label className="mt-10">Referee discount</label>
+            <label className="mt-10 w-1/2">Referee discount</label>
             <input
               type="text"
               name="refereeDiscount"
               value={formData.refereeDiscount}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-[245px] mt-10  w-96 p-2 outline-none focus:outline-none"
+              className="border-2 border-gray-300 rounded mt-10 w-2/3 p-2 outline-none focus:outline-none"
             />
           </div>
           <div className="flex">
-            <label className="mt-10">Referee maximum discount value</label>
+            <label className="mt-10 w-1/2">Referee maximum discount value</label>
             <input
               type="text"
               name="refereeMaxDiscountValue"
               value={formData.refereeMaxDiscountValue}
               disabled={formData.referralType === "Flat-discount"}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-32 mt-10  w-96 p-2 outline-none focus:outline-none disabled:bg-zinc-300"
+              className="border-2 border-gray-300 rounded mt-10 w-2/3 p-2 outline-none focus:outline-none disabled:bg-zinc-300"
             />
           </div>
           <div className="flex">
-            <label className="mt-10">Minimum order amount</label>
+            <label className="mt-10 w-1/2">Minimum order amount</label>
             <input
               type="text"
               name="minOrderAmount"
               value={formData.minOrderAmount}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-48 mt-10  w-96 p-2 outline-none focus:outline-none"
+              className="border-2 border-gray-300 rounded  mt-10 w-2/3 p-2 outline-none focus:outline-none"
             />
           </div>
 
           <div className="flex">
-            <label className="mt-10">Referee discount</label>
+            <label className="mt-10 w-1/2">Referee discount</label>
             <input
               type="text"
               name="refereeDescription"
               value={formData.refereeDescription}
               onChange={handleChange}
-              className="border-2 border-gray-300 rounded ml-[245px] mt-10  w-96 p-2 outline-none focus:outline-none"
+              className="border-2 border-gray-300 rounded  mt-10 w-2/3 p-2 outline-none focus:outline-none"
             />
           </div>
-          <div className="mt-10">
-            <label>Status</label>
+          <div className="mt-10 flex">
+            <label className="w-1/2">Status</label>
+            <div className="w-2/3">
             <Switch
-              className="ml-80"
+              className=""
               onChange={(checked) => onChange("status", checked)}
               name="status"
             />
+            </div>
           </div>
-          <div className="flex">
-            <label className="mt-10">Referral Code on Customers SignUp</label>
+          <div className="mt-10 flex">
+            <div className="w-1/2">
+            <label >Referral Code on Customers SignUp</label>
+            </div>
+            <div className="w-2/3">
             <Switch
-              className="ml-[108px] mt-10 "
+              className=" "
               onChange={(checked) =>
                 onChange("referalCodeOnCustomerSignUp", checked)
               }
               name="referalCodeOnCustomerSignUp"
             />
+            </div>
           </div>
           <div className="flex justify-end mt-10 mb-10 gap-4">
             <button
