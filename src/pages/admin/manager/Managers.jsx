@@ -1,12 +1,16 @@
 import React, { useContext, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { FunnelPlotOutlined, PlusOutlined } from "@ant-design/icons";
+import { FilterOutlined, FunnelPlotOutlined, PlusOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
+import { RiDeleteBinLine } from "react-icons/ri";
+import { Modal } from "antd";
+import { MdOutlineEdit } from "react-icons/md";
+import { FilterAltOutlined } from "@mui/icons-material";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -50,6 +54,21 @@ const Managers = () => {
     console.log(Account);
   };
 
+
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+
+  const showModalDelete = () => {
+    setIsShowModalDelete(true);
+  };
+
+  const showModalDeleteOk = () => {
+    setIsShowModalDelete(false);
+  };
+
+  const showModalDeleteCancel = () => {
+    setIsShowModalDelete(false);
+  };
+
   return (
     <>
       <Sidebar />
@@ -62,8 +81,8 @@ const Managers = () => {
           <Link to="/add-manager">
             {" "}
             <button className="bg-teal-800 rounded-md py-2 px-5 text-white">
-              <PlusOutlined />
-              {""}Add Manager
+              <PlusOutlined className="mr-2"/>
+            Add Manager
             </button>
           </Link>
         </div>
@@ -72,7 +91,7 @@ const Managers = () => {
             <select
               name="geofence"
               value={""}
-              className="bg-blue-50 p-2 rounded-md"
+              className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
               onChange={handleChange}
             >
               <option value="Option 1">Geofence</option>
@@ -81,7 +100,7 @@ const Managers = () => {
           </div>
           <div className="flex gap-4">
             <p className="mt-2">
-              <FunnelPlotOutlined />
+              <FilterAltOutlined className="text-gray-400" />
             </p>
             <input
               type="search"
@@ -124,10 +143,40 @@ const Managers = () => {
               <td>Dummy Data</td>
               <td>Dummy Data</td>
               <td>
+                <div className="flex  justify-center gap-3">
                 <button>
-                  <EditOutlined className="bg-gray-200 p-3 mr-2 rounded-lg" />
+                <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                 </button>
-                <DeleteOutlined className="bg-gray-200 text-red-600 p-3 rounded-lg" />
+                <button
+                      onClick={showModalDelete}
+                      className="outline-none focus:outline-none"
+                    >
+                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                    </button>
+                    <Modal
+                      onOk={showModalDeleteOk}
+                      onCancel={showModalDeleteCancel}
+                      footer={null}
+                      open={isShowModalDelete}
+                      centered
+                    >
+                      <p className="font-semibold text-[18px] mb-5">
+                        Are you sure want to delete?
+                      </p>
+                      <div className="flex justify-end">
+                        <button
+                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                          onClick={showModalDeleteCancel}
+                        >
+                          Cancel
+                        </button>
+                        <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                          {" "}
+                          Delete
+                        </button>
+                      </div>
+                    </Modal>
+                  </div>
               </td>
             </tr>
           </tbody>

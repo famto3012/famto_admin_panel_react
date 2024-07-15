@@ -22,14 +22,14 @@ const Takeaway = () => {
     const fetchOrder = async () => {
       const dummyData = [
         {
-          item: "Chicken Mandi",
-          quantity: "2",
-          amount: "₹257",
+          item1: "Chicken Mandi",
+          quantity1: "2",
+          amount1: "₹257",
         },
         {
-          item: "Chicken Mandi",
-          quantity: "2",
-          amount: "₹257",
+          item1: "Chicken Mandi",
+          quantity1: "2",
+          amount1: "₹257",
         },
 
         // Add more customers as needed
@@ -65,7 +65,7 @@ const Takeaway = () => {
 
   return (
     <div className="bg-white  mt-5 rounded">
-      <form onSubmit={formSubmit}>
+      <form>
         <div className="flex flex-col gap-6">
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="merchant">
@@ -177,9 +177,9 @@ const Takeaway = () => {
                 <tbody>
                   {order.map((order) => (
                     <tr key={order.id} className="text-left align-middle">
-                      <td className="p-4">{order.item}</td>
-                      <td className="p-4">{order.quantity}</td>
-                      <td className="p-4">{order.amount}</td>
+                      <td className="p-4">{order.item1}</td>
+                      <td className="p-4">{order.quantity1}</td>
+                      <td className="p-4">{order.amount1}</td>
                     </tr>
                   ))}
                 </tbody>

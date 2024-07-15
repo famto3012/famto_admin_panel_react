@@ -574,7 +574,7 @@ const Discount = () => {
                           >
                             Cancel
                           </button>
-                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                          <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
                             {" "}
                             Delete
                           </button>
@@ -1011,7 +1011,7 @@ const Discount = () => {
                           >
                             Cancel
                           </button>
-                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                          <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
                             {" "}
                             Delete
                           </button>

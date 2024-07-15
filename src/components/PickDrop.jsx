@@ -1,5 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { AddOutlined, DeleteOutline } from "@mui/icons-material";
+import { AddOutlined, DeleteOutline, LocationOnOutlined } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { RiDeleteBin2Line, RiDeleteBinLine } from "react-icons/ri";
@@ -19,6 +19,7 @@ const PickDrop = () => {
       paymentType: "",
       subtotal: "",
       items: [],
+      address:[],
     },
     dropdata: {
       firstName: "",
@@ -33,6 +34,7 @@ const PickDrop = () => {
       paymentType: "",
       subtotal: "",
       items: [],
+      address:[],
     },
   });
   const handleInputChange = (e) => {
@@ -130,6 +132,68 @@ const PickDrop = () => {
 
     fetchOrder();
   }, []);
+
+  const [selectedAddress, setSelectedAddress] = useState("");
+
+  const handleAddressChange = (address) => {
+    setSelectedAddress(address);
+  };
+  const [addressData, setAddressData] = useState({
+    fullName: "",
+    phone: "",
+    houseno: "",
+    locality: "",
+    landmark: "",
+  });
+
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [selectedSection, setSelectedSection] = useState("");
+
+  const toggleFormVisibility = (section) => {
+    setIsFormVisible((prev) => !prev);
+    setSelectedSection(section);
+  };
+
+  const handleChangeAddress = (e) => {
+    const { name, value } = e.target;
+    setAddressData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const section = selectedSection;
+    if (section) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [section]: {
+          ...prevData[section],
+          address: [
+            ...prevData[section].address,
+            {
+              fullName: addressData.fullName,
+              phone: addressData.phone,
+              houseno: addressData.houseno,
+              locality: addressData.locality,
+              landmark: addressData.landmark,
+            },
+          ],
+        },
+      }));
+      setAddressData({
+        fullName: "",
+        phone: "",
+        houseno: "",
+        locality: "",
+        landmark: "",
+      });
+      toggleFormVisibility(""); // Hide the form after submission
+    }
+    console.log(addressData)
+  };
+
   return (
     <div>
       <h1 className="bg-teal-800 text-white px-6 py-4 text-xl font-semibold">
@@ -148,7 +212,7 @@ const PickDrop = () => {
               name="pickdata.firstName"
               id="pickdata.firstName"
               placeholder="First Name"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.firstName}
               onChange={handleInputChange}
             />
@@ -162,7 +226,7 @@ const PickDrop = () => {
               name="pickdata.emailId"
               id="pickdata.emailId"
               placeholder="Email Id"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.emailId}
               onChange={handleInputChange}
             />
@@ -176,7 +240,7 @@ const PickDrop = () => {
               name="pickdata.phone"
               id="pickdata.phone"
               placeholder="Phone Number"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.phone}
               onChange={handleInputChange}
             />
@@ -190,11 +254,158 @@ const PickDrop = () => {
               name="pickdata.id"
               id="pickdata.id"
               placeholder="Order ID"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.id}
               onChange={handleInputChange}
             />
           </div>
+          <div className="flex items-center ">
+            <label className="w-1/3 px-6" htmlFor="address">
+              Select Delivery Address
+            </label>
+            {["Home", "Office", "Others"].map((address) => (
+              <button
+                key={address}
+                type="button"
+                className={`py-2 px-4 rounded border ${
+                  selectedAddress === address ? "bg-gray-300" : "bg-white"
+                }`}
+                onClick={() => handleAddressChange(address)}
+              >
+                {address}
+              </button>
+            ))}
+          </div>
+          <div>
+          <div className=" flex">
+                  <label className="w-1/3"></label>
+                  <button
+                    type="button"
+                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                    onClick={() => toggleFormVisibility("pickdata")}
+                    >
+                    <span>Add Address</span>
+                    <PlusOutlined />
+                  </button>
+                </div>
+                {isFormVisible && selectedSection === "pickdata" && (
+                  <div className="flex">
+                    <label className="w-1/3"></label>
+                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
+                      <form on onSubmit={handleSubmit}>
+                        <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-center relative">
+        
+            <div className="relative w-full">
+              <input
+                type="text"
+                name="locationaddress"
+                id="locationaddress"
+                placeholder="Search Location in a map"
+                className="rounded-md px-3 py-2 text-sm border-2 w-full outline-none focus:outline-none"
+                // value={addressData.locationaddress}
+                onChange={handleChangeAddress}
+              />
+              <button
+                type="button"
+                className="absolute right-0 top-0 mt-2 mr-2"
+              >
+                <LocationOnOutlined />
+              </button>
+            </div>
+          </div>
+                          <div className="flex item-center">
+                            <label className="  w-1/3 text-md font-semibold mt-2" htmlFor="fullName">
+                              Full Name *
+                            </label>
+                            <input
+                              type="text"
+                              name="fullName"
+                              placeholder="fullName"
+                              className=" w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
+                              value={addressData.fullName}
+                              onChange={handleAddressChange}
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium">
+                             Phone *
+                            </label>
+                            <input
+                              type="tel"
+                              name="phone"
+                              placeholder="Phone"
+                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
+                              // value={addressData.phone}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium ">
+                            Flat / House no  / Floor *
+                            </label>
+                            <input
+                              type="text"
+                              name="houseno"
+                              placeholder="Flat/House no/Floor"
+                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
+                              // value={addressData.houseno}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium">
+                              Area / Locality *
+                            </label>
+                            <input
+                              type="text"
+                              name="locality"
+                              placeholder="Area/Locality"
+                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                              // value={addressData.locality}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium ">
+                             Nearby Landmark
+                            </label>
+                            <input
+                              type="text"
+                              name="landmark"
+                              placeholder="Landmark"
+                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                              // value={addressData.landmark}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-between mt-5 gap-3">
+                          <button
+                            type="button"
+                            className="bg-cyan-100 px-4 py-2 w-1/2"
+                            onClick={() => toggleFormVisibility("")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
+                            onClick={handleSubmit}
+                          >
+                            Add Address
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+              </div>   
+
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="pickdata.orderTime">
               Order Time
@@ -204,7 +415,7 @@ const PickDrop = () => {
               name="pickdata.orderTime"
               id="pickdata.orderTime"
               placeholder="In scheduled order,it will filled automatically as scheduled"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.orderTime}
               onChange={handleInputChange}
             />
@@ -217,14 +428,15 @@ const PickDrop = () => {
               type="text"
               name="pickdata.instructions"
               id="pickdata.instructions"
-              placeholder="First Name"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              placeholder="Instructions"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.instructions}
               onChange={handleInputChange}
             />
           </div>
-          <h4 className="px-6">Task Specifications</h4>
-          <div className="w-2/3">
+
+          <div className="flex items-center">
+            <label className="w-1/3 px-6"> Task Specifications</label>
             <button
               type="button"
               className="bg-zinc-200 w-1/2 rounded-md p-2"
@@ -319,7 +531,7 @@ const PickDrop = () => {
               Tips
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md  outline-none focus:outline-none"
               type="text"
               placeholder="Tips"
               id="pickdata.tips"
@@ -333,7 +545,7 @@ const PickDrop = () => {
               Delivery Charges
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
               type="text"
               placeholder="Delivery Charges"
               id="pickdata.deliveryCharges"
@@ -351,7 +563,7 @@ const PickDrop = () => {
               name="pickdata.discount"
               id="pickdata.discount"
               placeholder="Discount"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.pickdata.discount}
               onChange={handleInputChange}
             />
@@ -361,7 +573,7 @@ const PickDrop = () => {
               Payment Type
             </label>
             <select
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
               type="text"
               placeholder="Payment Type"
               id="pickdata.paymentType"
@@ -390,7 +602,7 @@ const PickDrop = () => {
               name="pickdata.subtotal"
               id="pickdata.subtotal"
               placeholder="Sub Total"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 outline-none rounded-md focus:outline-none relative"
               value={formData.pickdata.subtotal}
               onChange={handleInputChange}
             />
@@ -419,7 +631,7 @@ const PickDrop = () => {
               name="dropdata.firstName"
               id="dropdatafirstName"
               placeholder="First Name"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.firstName}
               onChange={handleInputChange}
             />
@@ -433,7 +645,7 @@ const PickDrop = () => {
               name="dropdata.emailId"
               id="dropdata.emailId"
               placeholder="Email Id"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.emailId}
               onChange={handleInputChange}
             />
@@ -447,7 +659,7 @@ const PickDrop = () => {
               name="dropdata.phone"
               id="dropdata.phone"
               placeholder="Phone Number"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.phone}
               onChange={handleInputChange}
             />
@@ -461,11 +673,157 @@ const PickDrop = () => {
               name="dropdata.id"
               id="dropdata.id"
               placeholder="Order ID"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.id}
               onChange={handleInputChange}
             />
           </div>
+          <div className="flex items-center ">
+            <label className="w-1/3 px-6" htmlFor="address">
+              Select Delivery Address
+            </label>
+            {["Home", "Office", "Others"].map((address) => (
+              <button
+                key={address}
+                type="button"
+                className={`py-2 px-4 rounded border ${
+                  selectedAddress === address ? "bg-gray-300" : "bg-white"
+                }`}
+                onClick={() => handleAddressChange(address)}
+              >
+                {address}
+              </button>
+            ))}
+          </div>
+          <div>
+          <div className=" flex">
+                  <label className="w-1/3"></label>
+                  <button
+                    type="button"
+                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                      onClick={() => toggleFormVisibility("dropdata")}
+                  >
+                    <span>Add Address</span>
+                    <PlusOutlined />
+                  </button>
+                </div>
+                {isFormVisible && selectedSection === "dropdata" && (
+                  <div className="flex">
+                    <label className="w-1/3"></label>
+                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
+                      <form on onSubmit={handleSubmit}>
+                        <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-center relative">
+        
+            <div className="relative w-full">
+              <input
+                type="text"
+                name="locationaddress"
+                id="locationaddress"
+                placeholder="Search Location in a map"
+                className="rounded-md px-3 py-2 text-sm border-2 w-full outline-none focus:outline-none"
+                // value={addressData.locationaddress}
+                onChange={handleChangeAddress}
+              />
+              <button
+                type="button"
+                className="absolute right-0 top-0 mt-2 mr-2"
+              >
+                <LocationOnOutlined />
+              </button>
+            </div>
+          </div>
+                          <div className="flex item-center">
+                            <label className="  w-1/3 text-md font-semibold mt-2" htmlFor="fullName">
+                              Full Name *
+                            </label>
+                            <input
+                              type="text"
+                              name="fullName"
+                              placeholder="fullName"
+                              className=" w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
+                              // value={addressData.fullName}
+                              onChange={handleAddressChange}
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium">
+                             Phone *
+                            </label>
+                            <input
+                              type="tel"
+                              name="phone"
+                              placeholder="Phone"
+                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
+                              // value={addressData.phone}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium ">
+                            Flat / House no  / Floor *
+                            </label>
+                            <input
+                              type="text"
+                              name="houseno"
+                              placeholder="Flat/House no/Floor"
+                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
+                              // value={addressData.houseno}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium">
+                              Area / Locality *
+                            </label>
+                            <input
+                              type="text"
+                              name="locality"
+                              placeholder="Area/Locality"
+                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                              // value={addressData.locality}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-1/3 text-md font-medium ">
+                             Nearby Landmark
+                            </label>
+                            <input
+                              type="text"
+                              name="landmark"
+                              placeholder="Landmark"
+                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                              // value={addressData.landmark}
+                              onChange={handleAddressChange}
+
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-between mt-5 gap-3">
+                          <button
+                            type="button"
+                            className="bg-cyan-100 px-4 py-2 w-1/2"
+                            onClick={toggleFormVisibility}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
+                           onClick={() => toggleFormVisibility("")}
+                          >
+                            Add Address
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+              </div>  
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="dropdata.orderTime">
               Order Time
@@ -475,7 +833,7 @@ const PickDrop = () => {
               name="dropdata.orderTime"
               id="dropdata.orderTime"
               placeholder="In scheduled order,it will filled automatically as scheduled"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.orderTime}
               onChange={handleInputChange}
             />
@@ -488,20 +846,109 @@ const PickDrop = () => {
               type="text"
               name="dropdata.instructions"
               id="dropdata.instructions"
-              placeholder="First Name"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              placeholder="Instructions"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.instructions}
               onChange={handleInputChange}
             />
           </div>
-          <h4 className="px-6">Task Specifications</h4>
+          <div className="flex items-center">
+            <label className="w-1/3 px-6"> Task Specifications</label>
+            <button
+              type="button"
+              className="bg-zinc-200 w-1/2 rounded-md p-2"
+              onClick={() => handleAddItem("dropdata")}
+            >
+              <AddOutlined /> Add Item
+            </button>
+          </div>
+          <div>
+            {formData.dropdata.items.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4"
+              >
+                <div className="flex">
+                  <label className="w-1/3">Item type</label>
+                  <select
+                    name="type"
+                    value={item.type}
+                    onChange={(e) => handleItemChange("dropdata", index, e)}
+                    className="w-1/2 p-3"
+                  >
+                    <option value="">Select</option>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                  </select>
+                </div>
+                <div className="flex mt-5">
+                  <label className="w-1/3">Dimensions (in cm)</label>
+                  <div className="w-1/2 gap-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        name="length"
+                        value={item.length}
+                        onChange={(e) => handleItemChange("dropdata", index, e)}
+                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
+                        placeholder="Length"
+                      />
+                      <input
+                        type="text"
+                        name="width"
+                        value={item.width}
+                        onChange={(e) => handleItemChange("dropdata", index, e)}
+                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
+                        placeholder="Width"
+                      />
+                      <input
+                        type="text"
+                        name="height"
+                        value={item.height}
+                        onChange={(e) => handleItemChange("dropdata", index, e)}
+                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
+                        placeholder="Height"
+                      />
+                    </div>
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        name="weight"
+                        value={item.weight}
+                        onChange={(e) => handleItemChange("dropdata", index, e)}
+                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-full"
+                        placeholder="Weight (in kg)"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="mx-3 flex justify-between mt-3 gap-3">
+                  <button
+                    type="button"
+                    className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    onClick={() => handleAddItem("dropdata")}
+                  >
+                    <AddOutlined /> Add Item
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    onClick={() => handleRemoveItem("dropdata", index)}
+                  >
+                    <RiDeleteBinLine className="text-red-500 text-[18px]" />{" "}
+                    Delete Item
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
           <h4 className="px-6 mt-5 font-semibold">Pricing Charges</h4>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="dropdata.tips">
               Tips
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
               type="text"
               placeholder="Tips"
               id="dropdata.tips"
@@ -515,7 +962,7 @@ const PickDrop = () => {
               Delivery Charges
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md  outline-none focus:outline-none"
               type="text"
               placeholder="Delivery Charges"
               id="dropdata.deliveryCharges"
@@ -533,7 +980,7 @@ const PickDrop = () => {
               name="dropdata.discount"
               id="dropdata.discount"
               placeholder="Discount"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.discount}
               onChange={handleInputChange}
             />
@@ -543,7 +990,7 @@ const PickDrop = () => {
               Payment Type
             </label>
             <select
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
               type="text"
               placeholder="Payment Type"
               id="dropdata.paymentType"
@@ -572,7 +1019,7 @@ const PickDrop = () => {
               name="dropdata.subtotal"
               id="dropdata.subtotal"
               placeholder="Sub Total"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
+              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
               value={formData.dropdata.subtotal}
               onChange={handleInputChange}
             />
