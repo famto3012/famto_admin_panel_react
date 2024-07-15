@@ -66,6 +66,7 @@ const CreateOrder = () => {
       location: "",
     });
   
+  
   const currentDate = new Date();
   // Set the maximum date to 30 days from now
   const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -367,5 +368,6 @@ const CreateOrder = () => {
     </>
   );
 };
+
 
 export default CreateOrder;
