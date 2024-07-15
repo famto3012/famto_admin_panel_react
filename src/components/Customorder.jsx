@@ -2,8 +2,13 @@ import React, { useEffect, useState } from "react";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import { AddOutlined, DeleteOutline, LocationOnOutlined } from "@mui/icons-material";
+import {
+  AddOutlined,
+  DeleteOutline,
+  LocationOnOutlined,
+} from "@mui/icons-material";
 import { RiDeleteBinLine } from "react-icons/ri";
+import Addresscomponent from "./model/Addresscomponent";
 
 const Customorder = () => {
   const [order, setOrder] = useState([]);
@@ -51,9 +56,8 @@ const Customorder = () => {
     discount: "",
     paymentType: "",
     subtotal: "",
-    item:[],
+    item: [],
   });
-  
 
   const handleAddItem = () => {
     const newItem = { name: "", quantity: "", unit: "" };
@@ -87,45 +91,15 @@ const Customorder = () => {
 
   const handleAddressChange = (address) => {
     setSelectedAddress(address);
-  }
+  };
   const [isFormVisible, setFormVisible] = useState(false);
 
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
   };
-
-  const [addressData, setAddressData] = useState({
-    locationaddress:"",
-    fullName: "",
-    phone: "",
-    houseno:"",
-    locality:"",
-    landmark: "",
-  });
-
-  const handleChangeAddress = (e) => {
-    setAddressData({ ...addressData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(addressData); // Replace with your submission logic
-    // Example: Submit data to server or process locally
-    // Clear form after submission if needed
-    setAddressData({
-      locationaddress:"",
-      fullName: "",
-      phone: "",
-      houseno:"",
-      locality:"",
-      landmark: "",
-    });
-  };
-
-  
   return (
     <div className="bg-white mt-5 rounded">
-      <form>
+      <form onSubmit={formAction}>
         <div className="flex flex-col gap-6">
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="location">
@@ -150,66 +124,74 @@ const Customorder = () => {
             </div>
           </div>
           <h1 className="px-6 mt-5 font-semibold">Add Items</h1>
-          <div>
-          {formData.item.map((item, index) => (
-            <div key={index} className="bg-gray-100 mx-6 p-10 rounded-lg mb-4">
-              <div className="flex">
-                <label className="w-1/3">Item Name</label>
-                <select
-                  name="name"
-                  value={item.name}
-                  onChange={(e) => handleItemChange(index, e)}
-                  className="w-1/2 p-3"
-                >
-                  <option value="">Select</option>
-                  <option value="option1">Option 1</option>
-                  <option value="option2">Option 2</option>
-                </select>
-              </div>
-              <div className="flex items-center">
-                <label className="w-1/3">Quantity</label>
-                <input
-                  name="quantity"
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) => handleItemChange(index, e)}
-                  className="w-1/2 p-3"
-                />
-              </div>
-              <div className="flex items-center">
-                <label className="w-1/3">Unit</label>
-                <input
-                  name="unit"
-                  type="text"
-                  value={item.unit}
-                  onChange={(e) => handleItemChange(index, e)}
-                  className="w-1/2 p-3"
-                />
-              </div>
-              <div className="mx-3 flex justify-between mt-3 gap-3">
-                <button
-                  type="button"
-                  className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                >
-                  <AddOutlined/>Upload Photo
-                </button>
-                <button
-                  type="button"
-                  className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                  onClick={() => handleRemoveItem(index)}
-                >
-                  <RiDeleteBinLine className="text-red-500 text-[18px]" /> Delete Item
-                </button>
-              </div>
-            </div>
-          ))}
-          </div>
           <div className="px-6">
-            <button className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[85%] "
-                          onClick={() => handleAddItem()}>
+            <button
+              className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[85%] "
+              onClick={() => handleAddItem()}
+            >
               <PlusOutlined className="mr-3" /> Add More Items
             </button>
           </div>
+          <div>
+            {formData.item.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4"
+              >
+                <div className="flex">
+                  <label className="w-1/3">Item Name</label>
+                  <select
+                    name="name"
+                    value={item.name}
+                    onChange={(e) => handleItemChange(index, e)}
+                    className="w-1/2 p-3"
+                  >
+                    <option value="">Select</option>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                  </select>
+                </div>
+                <div className="flex items-center">
+                  <label className="w-1/3">Quantity</label>
+                  <input
+                    name="quantity"
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) => handleItemChange(index, e)}
+                    className="w-1/2 p-3"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <label className="w-1/3">Unit</label>
+                  <input
+                    name="unit"
+                    type="text"
+                    value={item.unit}
+                    onChange={(e) => handleItemChange(index, e)}
+                    className="w-1/2 p-3"
+                  />
+                </div>
+                <div className="mx-3 flex justify-between mt-3 gap-3">
+                  <button
+                    type="button"
+                    className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                  >
+                    <AddOutlined />
+                    Upload Photo
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    onClick={() => handleRemoveItem(index)}
+                  >
+                    <RiDeleteBinLine className="text-red-500 text-[18px]" />{" "}
+                    Delete Item
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="agentinstructions">
               Instructions to Delivery Agent
@@ -241,136 +223,21 @@ const Customorder = () => {
               </button>
             ))}
           </div>
-                  <div className=" flex">
-                  <label className="w-1/3"></label>
-                  <button
-                    type="button"
-                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                    onClick={toggleFormVisibility}
-                  >
-                    <span>Add Address</span>
-                    <PlusOutlined />
-                  </button>
-                </div>
-                <div>
-         
-                {isFormVisible && (
-                  <div className="flex">
-                    <label className="w-1/3"></label>
-                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-                      <form on onSubmit={handleSubmit}>
-                        <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-center relative">
-        
-            <div className="relative w-full">
-              <input
-                type="text"
-                name="locationaddress"
-                id="locationaddress"
-                placeholder="Search Location in a map"
-                className="rounded-md px-3 py-2 text-sm border-2 w-full outline-none focus:outline-none"
-                value={addressData.locationaddress}
-                onChange={handleChangeAddress}
-              />
+          <div>
+            <div className=" flex">
+              <label className="w-1/3"></label>
               <button
                 type="button"
-                className="absolute right-0 top-0 mt-2 mr-2"
+                className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                onClick={toggleFormVisibility}
               >
-                <LocationOnOutlined />
+                <span>Add Address</span>
+                <PlusOutlined />
               </button>
             </div>
+
+            {isFormVisible && <Addresscomponent />}
           </div>
-                          <div className="flex item-center">
-                            <label className="  w-1/3 text-md font-semibold mt-2">
-                              Full Name *
-                            </label>
-                            <input
-                              type="text"
-                              name="fullName"
-                              placeholder="fullName"
-                              className=" w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              value={addressData.fullName}
-                              onChange={handleChangeAddress}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                             Phone *
-                            </label>
-                            <input
-                              type="tel"
-                              name="phone"
-                              placeholder="Phone"
-                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              value={addressData.phone}
-                              onChange={handleChangeAddress}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                            Flat / House no  / Floor *
-                            </label>
-                            <input
-                              type="text"
-                              name="houseno"
-                              placeholder="Flat/House no/Floor"
-                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
-                              value={addressData.houseno}
-                              onChange={handleChangeAddress}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                              Area / Locality *
-                            </label>
-                            <input
-                              type="text"
-                              name="locality"
-                              placeholder="Area/Locality"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              value={addressData.locality}
-                              onChange={handleChangeAddress}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                             Nearby Landmark
-                            </label>
-                            <input
-                              type="text"
-                              name="landmark"
-                              placeholder="Landmark"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              value={addressData.landmark}
-                              onChange={handleChangeAddress}
-
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-between mt-5 gap-3">
-                          <button
-                            type="button"
-                            className="bg-cyan-100 px-4 py-2 w-1/2"
-                            onClick={toggleFormVisibility}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
-                            onClick={handleSubmit}
-                          >
-                            Add Address
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                )}
-              </div>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="tips">
               Tips
@@ -452,54 +319,53 @@ const Customorder = () => {
               onChange={handleInputChange}
             />
           </div>
-            </div> 
-          <div className="flex mt-5">
-            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-            <div className="overflow-auo w-2/3">
-              <table className="border-2 border-teal-700  text-left w-[75%]">
-                <thead>
-                  <tr>
-                    {["Item", "Amount"].map((header, index) => (
-                      <th
-                        key={index}
-                        className="bg-teal-700  text-white p-4  border-[#eee]/50"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.map((order) => (
-                    <tr key={order.id} className="text-left">
-                      <td className="p-4">{order.item1}</td>
-                      <td className="p-4">{order.amount}</td>
-                    </tr>
+        </div>
+        <div className="flex mt-5">
+          <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
+          <div className="overflow-auo w-2/3">
+            <table className="border-2 border-teal-700  text-left w-[75%]">
+              <thead>
+                <tr>
+                  {["Item", "Amount"].map((header, index) => (
+                    <th
+                      key={index}
+                      className="bg-teal-700  text-white p-4  border-[#eee]/50"
+                    >
+                      {header}
+                    </th>
                   ))}
-                  <tr className="bg-teal-700 text-white font-semibold text-[18px]">
-                    <td className="p-4">Net Payable Amount</td>
-                    <td className="p-4">₹ 257</td>
+                </tr>
+              </thead>
+              <tbody>
+                {order.map((order) => (
+                  <tr key={order.id} className="text-left">
+                    <td className="p-4">{order.item1}</td>
+                    <td className="p-4">{order.amount}</td>
                   </tr>
-                </tbody>
-              </table>
-            </div>
+                ))}
+                <tr className="bg-teal-700 text-white font-semibold text-[18px]">
+                  <td className="p-4">Net Payable Amount</td>
+                  <td className="p-4">₹ 257</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div className="flex justify-end gap-4 mt-16 mx-10">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-              type="button"
-            >
-              <SaveAltIcon /> Bill
-            </button>
-            <button
-              className="bg-teal-700 text-white py-2 px-4 rounded-md"
-              type="submit"
-              onClick={formAction}
-            >
-              Create Order ₹534
-            </button>
-          </div>
-  
+        </div>
+        <div className="flex justify-end gap-4 mt-16 mx-10">
+          <button
+            className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
+            type="button"
+          >
+            <SaveAltIcon /> Bill
+          </button>
+          <button
+            className="bg-teal-700 text-white py-2 px-4 rounded-md"
+            type="submit"
+            onClick={formAction}
+          >
+            Create Order ₹534
+          </button>
+        </div>
       </form>
     </div>
   );
