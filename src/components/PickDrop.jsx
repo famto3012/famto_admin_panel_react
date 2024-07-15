@@ -3,6 +3,7 @@ import { AddOutlined, DeleteOutline, LocationOnOutlined } from "@mui/icons-mater
 import React, { useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { RiDeleteBin2Line, RiDeleteBinLine } from "react-icons/ri";
+import Addresscomponent from "./model/Addresscomponent";
 
 const PickDrop = () => {
   const [formData, setFormData] = useState({
@@ -138,60 +139,15 @@ const PickDrop = () => {
   const handleAddressChange = (address) => {
     setSelectedAddress(address);
   };
-  const [addressData, setAddressData] = useState({
-    fullName: "",
-    phone: "",
-    houseno: "",
-    locality: "",
-    landmark: "",
-  });
+  const [isFormVisible1, setFormVisible1] = useState(false);
 
-  const [isFormVisible, setIsFormVisible] = useState(false);
-  const [selectedSection, setSelectedSection] = useState("");
-
-  const toggleFormVisibility = (section) => {
-    setIsFormVisible((prev) => !prev);
-    setSelectedSection(section);
+  const toggleFormVisibility1= () => {
+    setFormVisible1(!isFormVisible1);
   };
+  const [isFormVisible2, setFormVisible2] = useState(false);
 
-  const handleChangeAddress = (e) => {
-    const { name, value } = e.target;
-    setAddressData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const section = selectedSection;
-    if (section) {
-      setFormData((prevData) => ({
-        ...prevData,
-        [section]: {
-          ...prevData[section],
-          address: [
-            ...prevData[section].address,
-            {
-              fullName: addressData.fullName,
-              phone: addressData.phone,
-              houseno: addressData.houseno,
-              locality: addressData.locality,
-              landmark: addressData.landmark,
-            },
-          ],
-        },
-      }));
-      setAddressData({
-        fullName: "",
-        phone: "",
-        houseno: "",
-        locality: "",
-        landmark: "",
-      });
-      toggleFormVisibility(""); // Hide the form after submission
-    }
-    console.log(addressData)
+  const toggleFormVisibility2 = () => {
+    setFormVisible2(!isFormVisible2);
   };
 
   return (
@@ -282,127 +238,14 @@ const PickDrop = () => {
                   <button
                     type="button"
                     className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                    onClick={() => toggleFormVisibility("pickdata")}
+                    onClick={toggleFormVisibility1}
                     >
                     <span>Add Address</span>
                     <PlusOutlined />
                   </button>
                 </div>
-                {isFormVisible && selectedSection === "pickdata" && (
-                  <div className="flex">
-                    <label className="w-1/3"></label>
-                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-                      <form on onSubmit={handleSubmit}>
-                        <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-center relative">
-        
-            <div className="relative w-full">
-              <input
-                type="text"
-                name="locationaddress"
-                id="locationaddress"
-                placeholder="Search Location in a map"
-                className="rounded-md px-3 py-2 text-sm border-2 w-full outline-none focus:outline-none"
-                // value={addressData.locationaddress}
-                onChange={handleChangeAddress}
-              />
-              <button
-                type="button"
-                className="absolute right-0 top-0 mt-2 mr-2"
-              >
-                <LocationOnOutlined />
-              </button>
-            </div>
-          </div>
-                          <div className="flex item-center">
-                            <label className="  w-1/3 text-md font-semibold mt-2" htmlFor="fullName">
-                              Full Name *
-                            </label>
-                            <input
-                              type="text"
-                              name="fullName"
-                              placeholder="fullName"
-                              className=" w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              value={addressData.fullName}
-                              onChange={handleAddressChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                             Phone *
-                            </label>
-                            <input
-                              type="tel"
-                              name="phone"
-                              placeholder="Phone"
-                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              // value={addressData.phone}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                            Flat / House no  / Floor *
-                            </label>
-                            <input
-                              type="text"
-                              name="houseno"
-                              placeholder="Flat/House no/Floor"
-                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
-                              // value={addressData.houseno}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                              Area / Locality *
-                            </label>
-                            <input
-                              type="text"
-                              name="locality"
-                              placeholder="Area/Locality"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              // value={addressData.locality}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                             Nearby Landmark
-                            </label>
-                            <input
-                              type="text"
-                              name="landmark"
-                              placeholder="Landmark"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              // value={addressData.landmark}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-between mt-5 gap-3">
-                          <button
-                            type="button"
-                            className="bg-cyan-100 px-4 py-2 w-1/2"
-                            onClick={() => toggleFormVisibility("")}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
-                            onClick={handleSubmit}
-                          >
-                            Add Address
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+                {isFormVisible1 && (
+                  <Addresscomponent/>
                 )}
               </div>   
 
@@ -701,128 +544,15 @@ const PickDrop = () => {
                   <button
                     type="button"
                     className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                      onClick={() => toggleFormVisibility("dropdata")}
+                    onClick={toggleFormVisibility2}
                   >
                     <span>Add Address</span>
                     <PlusOutlined />
                   </button>
                 </div>
-                {isFormVisible && selectedSection === "dropdata" && (
-                  <div className="flex">
-                    <label className="w-1/3"></label>
-                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-                      <form on onSubmit={handleSubmit}>
-                        <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-center relative">
-        
-            <div className="relative w-full">
-              <input
-                type="text"
-                name="locationaddress"
-                id="locationaddress"
-                placeholder="Search Location in a map"
-                className="rounded-md px-3 py-2 text-sm border-2 w-full outline-none focus:outline-none"
-                // value={addressData.locationaddress}
-                onChange={handleChangeAddress}
-              />
-              <button
-                type="button"
-                className="absolute right-0 top-0 mt-2 mr-2"
-              >
-                <LocationOnOutlined />
-              </button>
-            </div>
-          </div>
-                          <div className="flex item-center">
-                            <label className="  w-1/3 text-md font-semibold mt-2" htmlFor="fullName">
-                              Full Name *
-                            </label>
-                            <input
-                              type="text"
-                              name="fullName"
-                              placeholder="fullName"
-                              className=" w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              // value={addressData.fullName}
-                              onChange={handleAddressChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                             Phone *
-                            </label>
-                            <input
-                              type="tel"
-                              name="phone"
-                              placeholder="Phone"
-                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              // value={addressData.phone}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                            Flat / House no  / Floor *
-                            </label>
-                            <input
-                              type="text"
-                              name="houseno"
-                              placeholder="Flat/House no/Floor"
-                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
-                              // value={addressData.houseno}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                              Area / Locality *
-                            </label>
-                            <input
-                              type="text"
-                              name="locality"
-                              placeholder="Area/Locality"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              // value={addressData.locality}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                             Nearby Landmark
-                            </label>
-                            <input
-                              type="text"
-                              name="landmark"
-                              placeholder="Landmark"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              // value={addressData.landmark}
-                              onChange={handleAddressChange}
-
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-between mt-5 gap-3">
-                          <button
-                            type="button"
-                            className="bg-cyan-100 px-4 py-2 w-1/2"
-                            onClick={toggleFormVisibility}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
-                           onClick={() => toggleFormVisibility("")}
-                          >
-                            Add Address
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                )}
+                {isFormVisible2 &&(
+                  <Addresscomponent/>
+                                 )}
               </div>  
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="dropdata.orderTime">

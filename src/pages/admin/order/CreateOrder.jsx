@@ -65,6 +65,7 @@ const CreateOrder = () => {
       address: "",
       location: "",
     });
+  }
   
   
   const currentDate = new Date();
@@ -77,6 +78,7 @@ const CreateOrder = () => {
     const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
     return adjustedDate.toISOString().slice(0, 16);
   };
+
 
   return (
     <>

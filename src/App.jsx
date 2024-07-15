@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Addresscomponent from "./components/model/Addresscomponent";
 
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
@@ -133,6 +134,7 @@ function App() {
               path="/delivery-management"
               element={<DeliveryManagement />}
             />
+          
           </Routes>
         </Suspense>
       </BrowserRouter>
