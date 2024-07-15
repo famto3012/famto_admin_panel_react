@@ -52,17 +52,17 @@ const Customers = () => {
             </button>
           </div>
         </div>
-        <div className="flex items-center justify-between mx-11 mt-5">
+        <div className="flex items-center justify-between mx-8 mt-5">
           <h1 className="text-lg font-bold">Customers</h1>
           <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
             <ArrowDownOutlined /> <span>CSV</span>
           </button>
         </div>
-        <div className="mx-11 rounded-lg mt-5 flex p-4 justify-between">
+        <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
           <select
             name="type"
             defaultValue=""
-            className="bg-cyan-100 px-4 outline-none rounded-lg focus:outline-none "
+            className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none "
           >
             <option hidden value="">
               Geofence
@@ -82,8 +82,8 @@ const Customers = () => {
             <input
               type="search"
               name="search"
-              placeholder="Search alert notification name"
-              className="bg-white h-10 px-5 pr-2 rounded-full ml-8 w-72 text-sm focus:outline-none"
+              placeholder="Search customer ID"
+              className="bg-gray-100 h-10 px-5 pr-2 rounded-full ml-4 w-72 text-sm focus:outline-none"
             />
             <button type="submit" className="absolute right-20 mt-2">
               <SearchOutlined className="text-xl text-gray-500" />

@@ -41,6 +41,18 @@ const CreateOrder = () => {
     setFormVisible(!isFormVisible);
   };
 
+  
+  const currentDate = new Date();
+  // Set the maximum date to 30 days from now
+  const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+  // Format dates to YYYY-MM-DDTHH:MM (for datetime-local input)
+  const formatDateTimeLocal = (date) => {
+    const offset = date.getTimezoneOffset();
+    const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
+    return adjustedDate.toISOString().slice(0, 16);
+  };
+
   return (
     <>
       <Sidebar />
@@ -225,6 +237,8 @@ const CreateOrder = () => {
                     name="datetime"
                     className="h-10 text-sm  px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
                     value={dateTime}
+                    min={formatDateTimeLocal(currentDate)} 
+                    max={formatDateTimeLocal(maxDate)}
                     onChange={handleChange}
                   />
                 </div>

@@ -166,7 +166,7 @@ const Discount = () => {
   return (
     <>
       <Sidebar />
-      <div className="pl-[300px] bg-gray-100">
+      <div className="pl-[300px] bg-gray-100 min-w-fit h-screen">
         <nav className="p-5">
           <GlobalSearch />
         </nav>
@@ -174,7 +174,7 @@ const Discount = () => {
           <select
             value={merchantName}
             name="merchantName"
-            className="bg-blue-50 p-3 rounded-lg"
+            className="bg-blue-50 p-3 rounded-lg outline-none focus:outline-none"
             onChange={handleChange}
           >
             <option value="option 1">Option 1</option>
@@ -195,11 +195,12 @@ const Discount = () => {
             width="700px"
             open={isModalVisible}
             onOk={handleOk}
+            centered
             onCancel={handleCancel}
             footer={null} // Custom footer to include form buttons
           >
-            <form onSubmit={handleDiscountSubmit}>
-              <div className="flex flex-col  gap-4 justify-between">
+            <form onSubmit={handleDiscountSubmit} >
+              <div className="flex flex-col  gap-4 max-h-[30rem] overflow-auto justify-between">
                 <div className="flex gap-4">
                   <label className="w-1/2 text-gray-500">Assign Merchant</label>
                   <select
@@ -339,7 +340,7 @@ const Discount = () => {
         </div>
 
         <div className="w-full">
-          <table className="bg-white mt-[45px] text-center w-full">
+          <table className="bg-teal-800 mt-[45px] text-center w-full">
             <thead>
               <tr>
                 {[
@@ -396,11 +397,12 @@ const Discount = () => {
                           open={isModalVisibleEdit}
                           onOk={handleOkEdit}
                           width="700px"
+                          centered
                           onCancel={handleCancelEdit}
                           footer={null} // Custom footer to include form buttons
                         >
                           <form onSubmit={handleDiscountSubmit}>
-                            <div className="flex flex-col  gap-4 justify-between">
+                            <div className="flex flex-col  gap-4 max-h-[30rem] overflow-auto justify-between">
                               <div className="flex gap-4">
                                 <label className="w-1/2 text-gray-500">
                                   Assign Merchant
@@ -603,11 +605,12 @@ const Discount = () => {
             width="700px"
             open={isModalVisibleProduct}
             onOk={handleOkProduct}
+            centered
             onCancel={handleCancelProduct}
             footer={null} // Custom footer to include form buttons
           >
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col mt-5  gap-4 justify-between">
+              <div className="flex flex-col mt-5 max-h-[30rem] overflow-auto gap-4 justify-between">
                 <div className="flex gap-4">
                   <label className="w-1/2 text-gray-500">Assign Merchant</label>
                   <select
@@ -749,7 +752,7 @@ const Discount = () => {
                     onClick={handleOkProduct}
                     type="submit"
                   >
-                    Save
+                    Add
                   </button>
                 </div>
               </div>
@@ -757,7 +760,7 @@ const Discount = () => {
           </Modal>
         </div>
         <div className="w-full">
-          <table className="bg-white mt-[45px] text-center w-full">
+          <table className="bg-teal-800 mt-[45px] text-center w-full">
             <thead>
               <tr>
                 {[
@@ -814,11 +817,12 @@ const Discount = () => {
                           width="700px"
                           open={isModalVisibleProductEdit}
                           onOk={handleOkProductEdit}
+                          centered
                           onCancel={handleCancelProductEdit}
                           footer={null} // Custom footer to include form buttons
                         >
                           <form onSubmit={handleSubmit}>
-                            <div className="flex flex-col mt-5  gap-4 justify-between">
+                            <div className="flex flex-col mt-5 max-h-[30rem] overflow-auto gap-4 justify-between">
                               <div className="flex gap-4">
                                 <label className="w-1/2 text-gray-500">
                                   Assign Merchant

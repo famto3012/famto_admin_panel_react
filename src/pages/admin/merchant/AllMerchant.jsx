@@ -111,7 +111,7 @@ const Merchant = () => {
   return (
     <>
       <Sidebar />
-      <main className="pl-[300px]">
+      <main className="pl-[300px] bg-gray-100 h-screen">
         <div className="flex items-center gap-[20px] justify-end py-[20px] pe-[30px]">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
@@ -242,11 +242,11 @@ const Merchant = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-[20px] px-[30px]">
+        <div className="flex items-center bg-white p-5 mx-5 rounded-lg justify-between mt-[20px] px-[30px]">
           <div className="flex items-center gap-[20px]">
             <select
               id="serviceable"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
+              className="bg-blue-50 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
             >
               <option selected hidden>
                 Serviceable
@@ -257,7 +257,7 @@ const Merchant = () => {
 
             <select
               id="eofence"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
+              className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
             >
               <option selected hidden>
                 Geofence
@@ -267,7 +267,7 @@ const Merchant = () => {
 
             <select
               id="businessCategory"
-              className="bg-gray-50 border border-gray-300 w-fit text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
+              className="bg-blue-50  w-fit text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
             >
               <option selected hidden>
                 Business category
@@ -281,30 +281,16 @@ const Merchant = () => {
               <FilterAltOutlinedIcon className="mt-2 text-gray-400   " />
             </div>
             <div className="relative w-full">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
-              <input
-                type="text"
-                id="simple-search"
-                className="bg-gray-50 border border-gray-300 outline-none focus:outline-none text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5  "
-                placeholder="Search branch name..."
-                required
-              />
+            <div>
+            <input
+              type="search"
+              name="search"
+              className="bg-gray-100 relative p-2 w-64 rounded-2xl"
+              placeholder="Search merchant name"
+            />
+            <SearchOutlined className="absolute -ml-7 mt-3" />
+          </div>
+              
             </div>
           </div>
         </div>

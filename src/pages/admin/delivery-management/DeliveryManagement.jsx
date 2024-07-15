@@ -129,9 +129,14 @@ const DeliveryManagement = () => {
     setSelectedOption(event.target.value);
   };
 
+  const [prioritize, setPrioritize] = useState("")
+  const handleRadioChange = (event) => {
+    setPrioritize(event.target.value);
+  }
+
   const submitSettings = (e) => {
     e.preventDefault();
-    const data = { settings, selectedOption };
+    const data = { settings, selectedOption, prioritize};
     console.log("data", data);
   };
 
@@ -156,7 +161,7 @@ const DeliveryManagement = () => {
           </div>
           <div className="flex gap-8 items-center">
             <SettingOutlined
-              className="p-4 bg-blue-50 rounded-2xl"
+              className="p-4 bg-gray-200 rounded-2xl"
               onClick={showModal}
             />
             <Modal
@@ -259,7 +264,9 @@ const DeliveryManagement = () => {
                           type="radio"
                           name="prioritize"
                           value="Default"
-                          checked={settings.prioritize === "Default"}
+                          checked={prioritize === "Default"}
+                          onChange={handleRadioChange}
+
                         />
                         <p className="font-semibold text-[16px]">Default</p>
                       </div>
@@ -268,9 +275,9 @@ const DeliveryManagement = () => {
                           type="radio"
                           name="prioritize"
                           value="Montly salaried employees"
-                          checked={
-                            settings.prioritize === "Montly salaried employees"
+                          checked={prioritize === "Montly salaried employees"
                           }
+                          onChange={handleRadioChange}
                         />
                         <p className="font-semibold text-[16px] ml-2">
                           Montly salaried employees{" "}
@@ -296,8 +303,8 @@ const DeliveryManagement = () => {
               </div>
             </Modal>
 
-            <p>
-              Auto Allocation <Switch onChange={onChange} />
+            <p className="font-medium">
+              Auto Allocation <Switch className="ml-2" onChange={onChange} />
             </p>
           </div>
         </div>
@@ -504,7 +511,7 @@ const DeliveryManagement = () => {
                                     </select>
                                   </div>
                                   <div className="flex justify-end gap-5 mt-10">
-                                    <button className="bg-zinc-200 p-2 rounded-md px-4">
+                                    <button className="bg-zinc-200 p-2 rounded-md px-4" onClick={showModalCancelAgent}>
                                       Cancel
                                     </button>
                                     <button className="bg-teal-800 text-white p-2 rounded-md px-4">

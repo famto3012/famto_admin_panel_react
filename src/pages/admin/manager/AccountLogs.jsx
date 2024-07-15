@@ -51,7 +51,7 @@ const AccountLogs = () => {
             <select
               name="AccountType"
               value={""}
-              className="bg-blue-50 p-2 rounded-md"
+              className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
               onChange={handleChange}
             >
               <option value="Option 1">Account Type</option>
@@ -60,7 +60,7 @@ const AccountLogs = () => {
             <select
               name="Status"
               value={""}
-              className="bg-blue-50 p-2 rounded-md"
+              className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
               onChange={handleChange}
             >
               <option value="block">Blocked</option>

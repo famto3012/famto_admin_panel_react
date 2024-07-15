@@ -214,7 +214,7 @@ const CustomerDetails = () => {
                   Cancel
                 </button>
                 <button
-                  className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                  className="bg-teal-800 text-white py-2 px-4 rounded-md"
                   type="submit"
                 >
                   Save
@@ -341,7 +341,7 @@ const CustomerDetails = () => {
             <button
               type="button"
               onClick={showModalRatings}
-              className="bg-teal-700 text-white p-2 rounded-md w-[20rem]"
+              className="bg-teal-800 text-white p-2 rounded-md w-[20rem]"
             >
               Show ratings and reviews
             </button>
@@ -355,13 +355,13 @@ const CustomerDetails = () => {
                 <table className="min-w-full border-collapse block md:table text-center mt-4">
                   <thead className="block md:table-header-group">
                     <tr className="border border-gray-300 md:border-none md:table-row">
-                      <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
+                      <th className="p-2 px-5 border-r-2 bg-teal-800 font-normal text-white">
                         ID
                       </th>
-                      <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
+                      <th className="p-2 px-8 border-r-2 bg-teal-800 font-normal text-white">
                         Name
                       </th>
-                      <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left ">
+                      <th className="px-6 border-r-2 bg-teal-800 font-normal text-white text-left ">
                         Ratings and Review
                       </th>
                     </tr>
@@ -443,7 +443,7 @@ const CustomerDetails = () => {
             Cancel
           </button>
           <button
-            className="bg-teal-700 text-white py-2 px-4 rounded-md"
+            className="bg-teal-800 text-white py-2 px-4 rounded-md"
             type="submit"
             onClick={handleSubmit}
           >
@@ -492,7 +492,7 @@ const CustomerDetails = () => {
                     Cancel
                   </button>
                   <button
-                    className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                    className="bg-teal-800 text-white py-2 px-4 rounded-md"
                     type="submit"
                   >
                     Save
@@ -502,7 +502,7 @@ const CustomerDetails = () => {
             </Modal>
             <div>
               <button
-                className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-2 "
+                className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-2 "
                 onClick={showModal3}
               >
                 <PlusOutlined /> <span>Money to Wallet</span>
@@ -538,7 +538,7 @@ const CustomerDetails = () => {
                       Cancel
                     </button>
                     <button
-                      className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                      className="bg-teal-800 text-white py-2 px-4 rounded-md"
                       type="submit"
                     >
                       Save
@@ -563,7 +563,7 @@ const CustomerDetails = () => {
                 ].map((header, index) => (
                   <th
                     key={index}
-                    className="bg-teal-700 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
+                    className="bg-teal-800 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
                   >
                     {header}
                   </th>
@@ -608,7 +608,7 @@ const CustomerDetails = () => {
                   ].map((header, index) => (
                     <th
                       key={index}
-                      className="bg-teal-700 text-center text-white py-[20px]  border-r-2 border-[#eee]/50"
+                      className="bg-teal-800 text-center text-white py-[20px]  border-r-2 border-[#eee]/50"
                     >
                       {header}
                     </th>

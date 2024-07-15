@@ -276,10 +276,38 @@ const CustomerApp = () => {
     setIsShowModalDelete(false);
   };
 
+  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] = useState(false);
+
+  const ShowModalDeleteCustomer = () => {
+    setIsShowModalDeleteCustomer(true);
+  };
+
+  const showModalDeleteOkCustomer = () => {
+    setIsShowModalDeleteCustomer(false);
+  };
+
+  const showModalDeleteCancelCustomer = () => {
+    setIsShowModalDeleteCustomer(false);
+  };
+
+  const [isShowModalDeletePick, setIsShowModalDeletePick] = useState(false);
+
+  const showModalDeletePick = () => {
+    setIsShowModalDeletePick(true);
+  };
+
+  const showModalDeleteOkPick = () => {
+    setIsShowModalDeletePick(false);
+  };
+
+  const showModalDeleteCancelPick = () => {
+    setIsShowModalDeletePick(false);
+  };
+
   return (
     <>
       <Sidebar />
-      <div className="pl-[300px] bg-gray-100">
+      <div className="pl-[300px] max-w-fit bg-gray-100">
         <nav className="p-5">
           <GlobalSearch />
         </nav>
@@ -337,7 +365,7 @@ const CustomerApp = () => {
                   {" "}
                   Phone No.
                   <Switch
-                    className="ml-5"
+                    className="ml-6"
                     onChange={(checked) => onChange("phoneno", checked)}
                     name="phoneno"
                   />
@@ -780,7 +808,7 @@ const CustomerApp = () => {
                   >
                     Cancel
                   </button>
-                  <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white">
+                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
                     {" "}
                     Delete
                   </button>
@@ -985,10 +1013,35 @@ const CustomerApp = () => {
                 </div>
               </form>
             </Modal>
-            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5">
-              <DeleteOutlined />
+            <button className="bg-red-100 rounded-3xl p-3 text-red-700 ml-5 px-12 mt-5" onClick={ShowModalDeleteCustomer}>
+              <DeleteOutlined />{" "}
               Delete
             </button>
+            <Modal
+              onOk={showModalDeleteOkCustomer}
+              onCancel={showModalDeleteCancelCustomer}
+              footer={null}
+              open={isShowModalDeleteCustomer}
+              centered
+            >
+              <form>
+                <p className="font-bold text-[20px] mb-5">
+                  Are you sure want to delete?
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    className="bg-zinc-200 p-2 rounded-md font-semibold"
+                    onClick={showModalDeleteCancelCustomer}
+                  >
+                    Cancel
+                  </button>
+                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
+                    {" "}
+                    Delete
+                  </button>
+                </div>
+              </form>
+            </Modal>
           </Card>
         </div>
         <div className="mt-10 justify-between flex mx-5">
@@ -1175,10 +1228,35 @@ const CustomerApp = () => {
                 </div>
               </form>
             </Modal>
-            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5">
-              <DeleteOutlined />
+            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5" onClick={showModalDeletePick}>
+              <DeleteOutlined />{" "}
               Delete
             </button>
+            <Modal
+              onOk={showModalDeleteOkPick}
+              onCancel={showModalDeleteCancelPick}
+              footer={null}
+              open={isShowModalDeletePick}
+              centered
+            >
+              <form>
+                <p className="font-bold text-[20px] mb-5">
+                  Are you sure want to delete?
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    className="bg-zinc-200 p-2 rounded-md font-semibold"
+                    onClick={showModalDeleteCancelPick}
+                  >
+                    Cancel
+                  </button>
+                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
+                    {" "}
+                    Delete
+                  </button>
+                </div>
+              </form>
+            </Modal>
           </Card>
         </div>
         <div className="flex justify-end p-10 gap-4">

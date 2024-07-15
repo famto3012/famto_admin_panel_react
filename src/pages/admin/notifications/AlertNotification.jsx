@@ -7,7 +7,8 @@ import React, { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { MdCameraAlt } from "react-icons/md";
-
+import { RiDeleteBinLine } from "react-icons/ri";
+import { Modal } from "antd";
 const AlertNotification = () => {
   const [userType, setUserType] = useState("");
   const [id, setId] = useState("");
@@ -58,10 +59,26 @@ const AlertNotification = () => {
     setNotificationPreviewURL(URL.createObjectURL(file));
   };
 
+  
+  const [isShowModalDelete1, setIsShowModalDelete1] = useState(false);
+
+  const showModalDelete1 = () => {
+    setIsShowModalDelete1(true);
+  };
+
+  const showModalDeleteOk1 = () => {
+    setIsShowModalDelete1(false);
+  };
+
+  const showModalDeleteCancel1 = () => {
+    setIsShowModalDelete1(false);
+  };
+
+
   return (
     <>
       <Sidebar />
-      <div className="w-full h-screen pl-[300px] bg-gray-100">
+      <div className="w-full  pl-[300px] bg-gray-100">
         <div className="flex justify-end p-4 gap-10">
           <BellOutlined className="text-2xl text-gray-500" />
           <div className="relative">
@@ -205,12 +222,13 @@ const AlertNotification = () => {
           </form>
         </div>
         <div>
-          <p className="font-bold mx-[30px]">Alert Notification log</p>
+          <p className="font-bold mt-5 mx-[30px]">Alert Notification log</p>
           <div className="bg-white mx-9 rounded-lg mt-5 flex p-8 justify-between">
             <select
               name="type"
               // value={type}
               // onChange={handleInputChange}
+              className="bg-blue-50 p-3 outline-none focus:outline-none rounded-lg"
               defaultValue=""
             >
               <option hidden value="">
@@ -228,12 +246,12 @@ const AlertNotification = () => {
                 placeholder="Search alert notification name"
                 className="bg-gray-100 h-10 px-5 pr-10 rounded-full ml-5 w-72 text-sm focus:outline-none"
               />
-              <button type="submit" className="absolute right-16 mt-2">
+              <button type="submit" className="absolute right-20 mt-2">
                 <SearchOutlined className="text-xl text-gray-600" />
               </button>
             </div>
           </div>
-          <table className="w-full">
+          <table className="w-full mt-5">
             <thead>
               <tr>
                 {["Title", "ID", "Description", "Image", "Action"].map(
@@ -255,9 +273,36 @@ const AlertNotification = () => {
                 <td>{description}</td>
                 <td></td>
                 <td>
-                  <button>
-                    <DeleteOutlined className="text-red-500" />
-                  </button>
+                 
+                <button
+                        onClick={showModalDelete1}
+                        className="outline-none focus:outline-none"
+                      >
+                        <RiDeleteBinLine className="text-red-700 rounded-lg bg-red-100 p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        onOk={showModalDeleteOk1}
+                        onCancel={showModalDeleteCancel1}
+                        footer={null}
+                        open={isShowModalDelete1}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancel1}
+                          >
+                            Cancel
+                          </button>
+                          <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                            {" "}
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                 </td>
               </tr>
             </tbody>
