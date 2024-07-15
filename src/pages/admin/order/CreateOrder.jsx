@@ -41,6 +41,30 @@ const CreateOrder = () => {
     setFormVisible(!isFormVisible);
   };
 
+  const [customerData, setCustomerData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    location: "",
+  });
+
+  const handleInputChange = (e) => {
+    setCustomerData({ ...customerData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(customerData); // Replace with your submission logic
+    // Example: Submit data to server or process locally
+    // Clear form after submission if needed
+    setCustomerData({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      location: "",
+    });
   
   const currentDate = new Date();
   // Set the maximum date to 30 days from now
@@ -122,10 +146,10 @@ const CreateOrder = () => {
                   <div className="flex">
                     <label className="w-1/3"></label>
                     <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-                      <form>
+                      <form on onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-3">
                           <div className="flex item-center justify-center">
-                            <label className="  w-1/3 text-md font-medium ">
+                            <label className="  w-1/3 text-md font-medium mt-2">
                               Name
                             </label>
                             <input
@@ -133,6 +157,8 @@ const CreateOrder = () => {
                               name="name"
                               placeholder="Name"
                               className=" w-2/3 px-3 py-2 bg-white   rounded focus:outline-none outline-none"
+                              value={customerData.name}
+                              onChange={handleInputChange}
                             />
                           </div>
                           <div className="flex items-center">
@@ -144,6 +170,9 @@ const CreateOrder = () => {
                               name="email"
                               placeholder="Email"
                               className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
+                              value={customerData.email}
+                              onChange={handleInputChange}
+
                             />
                           </div>
                           <div className="flex items-center">
@@ -155,6 +184,9 @@ const CreateOrder = () => {
                               name="phone"
                               placeholder="Phone"
                               className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
+                              value={customerData.phone}
+                              onChange={handleInputChange}
+
                             />
                           </div>
                           <div className="flex items-center">
@@ -166,6 +198,9 @@ const CreateOrder = () => {
                               name="address"
                               placeholder="Address"
                               className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                              value={customerData.address}
+                              onChange={handleInputChange}
+
                             />
                           </div>
                           <div className="flex items-center">
@@ -177,6 +212,9 @@ const CreateOrder = () => {
                               name="location"
                               placeholder="location"
                               className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
+                              value={customerData.location}
+                              onChange={handleInputChange}
+
                             />
                           </div>
                         </div>
@@ -191,6 +229,7 @@ const CreateOrder = () => {
                           <button
                             type="submit"
                             className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
+                            onClick={handleSubmit}
                           >
                             Add Customer
                           </button>

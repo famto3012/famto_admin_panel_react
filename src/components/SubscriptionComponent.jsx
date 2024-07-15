@@ -499,12 +499,12 @@ const SubscriptionComponent = () => {
                           </p>
                           <div className="flex justify-end">
                             <button
-                              className="bg-zinc-200 p-2 rounded-md font-semibold"
+                              className="bg-cyan-100 p-2 rounded-md font-semibold"
                               onClick={showModalDeleteCancel}
                             >
                               Cancel
                             </button>
-                            <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white">
+                            <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
                               {" "}
                               Delete
                             </button>
@@ -883,12 +883,12 @@ const SubscriptionComponent = () => {
                           </p>
                           <div className="flex justify-end">
                             <button
-                              className="bg-zinc-200 p-2 rounded-md font-semibold"
+                              className="bg-cyan-100 p-2 rounded-md font-semibold"
                               onClick={showModalDeleteCancelCustomer}
                             >
                               Cancel
                             </button>
-                            <button className="bg-teal-800 p-2 rounded-md ml-3 px-2 text-white">
+                            <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
                               {" "}
                               Delete
                             </button>

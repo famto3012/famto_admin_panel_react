@@ -1,16 +1,21 @@
 import React, { useContext, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { FunnelPlotOutlined, PlusOutlined } from "@ant-design/icons";
+import { FilterOutlined, FunnelPlotOutlined, PlusOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
+import { RiDeleteBinLine } from "react-icons/ri";
+import { Modal } from "antd";
+import { MdOutlineEdit } from "react-icons/md";
+import { FilterAltOutlined } from "@mui/icons-material";
 import { Modal } from "antd";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { RiDeleteBin6Fill, RiDeleteBinLine, RiEditFill } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
+
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -54,6 +59,7 @@ const Managers = () => {
     console.log(Account);
   };
 
+
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
@@ -80,8 +86,8 @@ const Managers = () => {
           <Link to="/add-manager">
             {" "}
             <button className="bg-teal-800 rounded-md py-2 px-5 text-white">
-              <PlusOutlined />
-              {""}Add Manager
+              <PlusOutlined className="mr-2"/>
+            Add Manager
             </button>
           </Link>
         </div>
@@ -90,7 +96,7 @@ const Managers = () => {
             <select
               name="geofence"
               value={""}
-              className="bg-blue-50 p-2 rounded-md"
+              className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
               onChange={handleChange}
             >
               <option value="Option 1">Geofence</option>
@@ -142,40 +148,41 @@ const Managers = () => {
               <td>Dummy Data</td>
               <td>Dummy Data</td>
               <td>
-                <button><Link to="/update-manager">
-                  <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" /></Link>
+                <div className="flex  justify-center gap-3">
+                <button>
+                <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+
                 </button>
                 <button
                       onClick={showModalDelete}
                       className="outline-none focus:outline-none"
                     >
-                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 ml-2 text-[35px]" />
+                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </button>
-                <Modal
-                  onOk={showModalDeleteOk}
-                  onCancel={showModalDeleteCancel}
-                  footer={null}
-                  open={isShowModalDelete}
-                  centered
-                >
-                  <form>
-                    <p className="font-bold text-[20px] mb-5">
-                      Are you sure want to delete?
-                    </p>
-                    <div className="flex justify-end">
-                      <button
-                        className="bg-zinc-200 p-2 rounded-md font-semibold"
-                        onClick={showModalDeleteCancel}
-                      >
-                        Cancel
-                      </button>
-                      <button className="bg-red-100 text-red-700 p-2 rounded-md ml-3 px-2">
-                        {" "}
-                        Delete
-                      </button>
-                    </div>
-                  </form>
-                </Modal>
+                    <Modal
+                      onOk={showModalDeleteOk}
+                      onCancel={showModalDeleteCancel}
+                      footer={null}
+                      open={isShowModalDelete}
+                      centered
+                    >
+                      <p className="font-semibold text-[18px] mb-5">
+                        Are you sure want to delete?
+                      </p>
+                      <div className="flex justify-end">
+                        <button
+                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                          onClick={showModalDeleteCancel}
+                        >
+                          Cancel
+                        </button>
+                        <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                          {" "}
+                          Delete
+                        </button>
+                      </div>
+                    </Modal>
+                  </div>
               </td>
             </tr>
           </tbody>
