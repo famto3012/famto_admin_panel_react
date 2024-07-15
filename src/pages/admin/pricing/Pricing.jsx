@@ -546,7 +546,7 @@ const Pricing = () => {
               footer={null}
             >
               <form onSubmit={submitAction1}>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col max-h-[30rem] overflow-auto gap-4">
                   <div className="flex items-center">
                     <label className="w-1/3 text-gray-500" htmlFor="ruleName">
                       Rule Name
@@ -777,7 +777,7 @@ const Pricing = () => {
                       </div>
                       <div className="flex items-center">
                         <button onClick={showModalEditAr}>
-                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 outline-none focus:outline-none text-[35px]" />
                         </button>
                         <Modal
                           title=" Edit Agent Pricing"
@@ -788,7 +788,7 @@ const Pricing = () => {
                           footer={null}
                         >
                           <form onSubmit={submitAction1}>
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
                               <div className="flex items-center">
                                 <label
                                   className="w-1/3 text-gray-500"
@@ -1032,7 +1032,7 @@ const Pricing = () => {
               footer={null}
             >
               <form onSubmit={formSubmit1}>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
@@ -1385,7 +1385,7 @@ const Pricing = () => {
               footer={null}
             >
               <form onSubmit={submitAction2}>
-                <div className="flex flex-col gap-4 min-h-100">
+                <div className="flex flex-col gap-4  max-h-[30rem] overflow-auto">
                   <div className="flex items-center">
                     <label className="w-1/3 text-gray-500" htmlFor="ruleName">
                       Rule Name
@@ -1610,7 +1610,7 @@ const Pricing = () => {
                           footer={null}
                         >
                           <form onSubmit={submitAction2}>
-                            <div className="flex flex-col gap-4 min-h-100">
+                            <div className="flex flex-col gap-4  max-h-[30rem] overflow-auto">
                               <div className="flex items-center">
                                 <label
                                   className="w-1/3 text-gray-500"
@@ -1837,7 +1837,7 @@ const Pricing = () => {
               footer={null}
             >
               <form onSubmit={formSubmit2}>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
@@ -2014,7 +2014,7 @@ const Pricing = () => {
                           footer={null}
                         >
                           <form onSubmit={formSubmit2}>
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
                               <div className="flex items-center">
                                 <label
                                   className="w-1/3 text-gray-500"
@@ -2190,7 +2190,7 @@ const Pricing = () => {
               footer={null}
             >
               <form onSubmit={submitAction3}>
-                <div className="flex flex-col gap-4 ">
+                <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">
                   <div className="flex items-center">
                     <label className="w-1/3 text-gray-500" htmlFor="ruleName">
                       Rule Name
@@ -2449,7 +2449,7 @@ const Pricing = () => {
                           footer={null}
                         >
                           <form onSubmit={submitAction3}>
-                            <div className="flex flex-col gap-4 ">
+                            <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">
                               <div className="flex items-center">
                                 <label
                                   className="w-1/3 text-gray-500"
@@ -2710,7 +2710,7 @@ const Pricing = () => {
               footer={null}
             >
               <form onSubmit={formSubmit3}>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
@@ -2887,7 +2887,7 @@ const Pricing = () => {
                           footer={null}
                         >
                           <form onSubmit={formSubmit3}>
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
                               <div className="flex items-center">
                                 <label
                                   className="w-1/3 text-gray-500"

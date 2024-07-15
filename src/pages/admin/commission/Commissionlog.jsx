@@ -59,7 +59,7 @@ const Commissionlog = () => {
           <select
             name="type"
             defaultValue=""
-            className="bg-cyan-100 px-4 outline-none focus:outline-none mr-6"
+            className="bg-cyan-100 px-4 outline-none rounded-lg focus:outline-none mr-6"
           >
             <option hidden value="">
               All Merchants
@@ -74,19 +74,19 @@ const Commissionlog = () => {
               option3
             </option>
           </select>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center ">
             <input
               type="date"
               name="date"
               value={""}
               // onChange={handleChange}
-              className="right-4"
+              className="right-4 p-2"
             />
             <FilterAltOutlined className="text-gray-400 mx-7" />
             <input
               type="search"
               name="search"
-              placeholder="Search user ID"
+              placeholder="Search merchant name"
               className="bg-white h-10 px-5 pr-2 rounded-full  w-72 text-sm focus:outline-none"
             />
             <button type="submit" className="absolute right-14 mt-2 ">

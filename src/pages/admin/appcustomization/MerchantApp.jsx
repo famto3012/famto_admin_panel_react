@@ -185,7 +185,9 @@ const MerchantApp = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-between mt-16 border-t-2 pt-10 border-gray-300">
+       
+       
+        {/* <div className="flex justify-between mt-16 border-t-2 pt-10 border-gray-300">
           <h1 className="mx-10">Merchant login restriction</h1>
           <p className="text-gray-500 mr-[100px]">
             Enable this, to restrict Agent from accessing the platform without
@@ -197,7 +199,9 @@ const MerchantApp = () => {
           <div className="mx-10">
             <Switch />
           </div>
-        </div>
+        </div> */}
+
+
         <div className="flex justify-end gap-4 mt-16 mx-10">
           <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
             Cancel
@@ -207,7 +211,7 @@ const MerchantApp = () => {
             type="submit"
             onClick={submitAction}
           >
-            Save
+            Save Changes
           </button>
         </div>
       </div>
