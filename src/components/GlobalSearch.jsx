@@ -1,10 +1,10 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { FaRegBell } from "react-icons/fa";
+import { CgBell } from "react-icons/cg";
 
 const GlobalSearch = () => {
   return (
     <div className="flex items-center justify-end gap-[20px]">
-      <FaRegBell className="text-gray-500 text-xl" />
+      <CgBell className="text-gray-500 text-xl" />
 
       <div className="relative">
         <input

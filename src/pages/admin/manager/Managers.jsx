@@ -1,9 +1,8 @@
 import React, { useContext, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { FilterOutlined, FunnelPlotOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
@@ -11,10 +10,8 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { Modal } from "antd";
 import { MdOutlineEdit } from "react-icons/md";
 import { FilterAltOutlined } from "@mui/icons-material";
-import { Modal } from "antd";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import { RiDeleteBin6Fill, RiDeleteBinLine, RiEditFill } from "react-icons/ri";
-import { MdOutlineEdit } from "react-icons/md";
+
 
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -110,7 +107,7 @@ const Managers = () => {
             <input
               type="search"
               name="search"
-              placeholder="search Manager id"
+              placeholder="Search Manager ID"
               className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
             />
             <button type="submit" className="absolute right-16 mt-2">
@@ -149,9 +146,9 @@ const Managers = () => {
               <td>Dummy Data</td>
               <td>
                 <div className="flex  justify-center gap-3">
-                <button>
+                <button><Link to={"/update-manager"}>
                 <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-
+                </Link>
                 </button>
                 <button
                       onClick={showModalDelete}
