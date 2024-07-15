@@ -1,7 +1,6 @@
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import { LocationOnOutlined } from "@mui/icons-material";
 import Addresscomponent from "./model/Addresscomponent";
 
 const HomeDelivery = () => {
@@ -17,6 +16,10 @@ const HomeDelivery = () => {
     discount: "",
     paymentType: "",
   });
+  const [order, setOrder] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [isFormVisible, setFormVisible] = useState(false);
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -25,7 +28,7 @@ const HomeDelivery = () => {
     e.preventDefault();
     console.log(formData);
   };
-  const [order, setOrder] = useState([]);
+
   useEffect(() => {
     const fetchOrder = async () => {
       const dummyData = [
@@ -53,7 +56,6 @@ const HomeDelivery = () => {
           item: "GST(inclusive all taxes)",
           amount: "₹257",
         },
-        // Add more customers as needed
       ];
 
       setOrder(dummyData);
@@ -62,16 +64,17 @@ const HomeDelivery = () => {
     fetchOrder();
   }, []);
 
-  const [selectedAddress, setSelectedAddress] = useState("");
-
   const handleAddressChange = (address) => {
+    // e.preventDefault();
     setSelectedAddress(address);
   };
+
   const handleChangeProducts = (e) => {
     setFormData({ ...formData, selectedProducts: e.target.value });
     console.log("before", formData.selectedProducts);
     setValue(e.target.value);
   };
+
   const addition = (e) => {
     e.preventDefault();
     setFormData((prevOrder) => ({
@@ -90,15 +93,10 @@ const HomeDelivery = () => {
     setValue((prevValue) => prevValue + 1);
   };
 
-
-
-  const [isFormVisible, setFormVisible] = useState(false);
-
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
   };
 
- 
   return (
     <div className="bg-white  mt-5 rounded">
       <form onSubmit={formSubmit}>
@@ -211,22 +209,21 @@ const HomeDelivery = () => {
               </button>
             ))}
           </div>
+
           <div>
-          <div className=" flex">
-                  <label className="w-1/3"></label>
-                  <button
-                    type="button"
-                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                    onClick={toggleFormVisibility}
-                  >
-                    <span>Add Address</span>
-                    <PlusOutlined />
-                  </button>
-                </div>
-                {isFormVisible && (
-                  <Addresscomponent />
-                )}
-              </div>     
+            <div className=" flex">
+              <label className="w-1/3"></label>
+              <button
+                type="button"
+                className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                onClick={toggleFormVisibility}
+              >
+                <span>Add Address</span>
+                <PlusOutlined />
+              </button>
+            </div>
+            {isFormVisible && <Addresscomponent />}
+          </div>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="agentinstructions">
               Instructions to Delivery Agent

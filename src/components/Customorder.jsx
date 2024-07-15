@@ -61,7 +61,7 @@ const Customorder = () => {
 
   const handleAddItem = () => {
     const newItem = { name: "", quantity: "", unit: "" };
-    setFormData({ ...formData, items: [...formData.item, newItem] });
+    setFormData({ ...formData, item: [...formData.item, newItem] });
   };
 
   const handleRemoveItem = (index) => {
@@ -127,6 +127,7 @@ const Customorder = () => {
           <div className="px-6">
             <button
               className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[85%] "
+              type="button"
               onClick={() => handleAddItem()}
             >
               <PlusOutlined className="mr-3" /> Add More Items
@@ -136,9 +137,9 @@ const Customorder = () => {
             {formData.item.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4"
+                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4 flex flex-col gap-[20px]"
               >
-                <div className="flex">
+                <div className="flex items-center">
                   <label className="w-1/3">Item Name</label>
                   <select
                     name="name"
@@ -146,11 +147,14 @@ const Customorder = () => {
                     onChange={(e) => handleItemChange(index, e)}
                     className="w-1/2 p-3"
                   >
-                    <option value="">Select</option>
+                    <option defaultValue={"Select one"} hidden>
+                      Select one
+                    </option>
                     <option value="option1">Option 1</option>
                     <option value="option2">Option 2</option>
                   </select>
                 </div>
+
                 <div className="flex items-center">
                   <label className="w-1/3">Quantity</label>
                   <input
@@ -161,6 +165,7 @@ const Customorder = () => {
                     className="w-1/2 p-3"
                   />
                 </div>
+
                 <div className="flex items-center">
                   <label className="w-1/3">Unit</label>
                   <input
@@ -171,6 +176,7 @@ const Customorder = () => {
                     className="w-1/2 p-3"
                   />
                 </div>
+
                 <div className="mx-3 flex justify-between mt-3 gap-3">
                   <button
                     type="button"
@@ -191,7 +197,7 @@ const Customorder = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="agentinstructions">
               Instructions to Delivery Agent

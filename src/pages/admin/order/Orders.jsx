@@ -25,7 +25,7 @@ const Orders = () => {
   const handleApprove = (id) => {
     setOrder((prevOrder) =>
       prevOrder.map((order) =>
-        prder.id === id ? { ...order, registrationApproval: "approved" } : order
+        order.id === id ? { ...order, registrationApproval: "approved" } : order
       )
     );
   };
@@ -163,17 +163,17 @@ const Orders = () => {
             <div>
               <FilterAltOutlinedIcon className="mt-2 text-gray-400   " />
             </div>
-        
+
             <div>
-            <input
-              type="search"
-              name="search"
-              className="bg-gray-100 relative p-3 rounded-3xl"
-              placeholder="Search order id"
-            />
-            <SearchOutlined className="absolute -ml-7 mt-3" />
+              <input
+                type="search"
+                name="search"
+                className="bg-gray-100 relative p-3 rounded-3xl"
+                placeholder="Search order id"
+              />
+              <SearchOutlined className="absolute -ml-7 mt-3" />
+            </div>
           </div>
-    </div>
         </div>
 
         <div className="overflow-auto mt-[20px] w-full">

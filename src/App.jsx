@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Addresscomponent from "./components/model/Addresscomponent";
 
-
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
 const Success = lazy(() => import("./pages/auth/Success"));
@@ -70,7 +69,13 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen">
+              Loading...
+            </div>
+          }
+        >
           <Routes>
             {/* Auth Routes */}
             <Route path="/auth">
@@ -111,7 +116,7 @@ function App() {
             <Route path="/discount" element={<Discount />} />
             <Route path="/customer-app" element={<CustomerApp />} />
             <Route path="/customers" element={<Customers />} />
-             <Route
+            <Route
               path="/customer-detail/:cusomerId"
               element={<CustomerDetails />}
             />
@@ -134,7 +139,6 @@ function App() {
               path="/delivery-management"
               element={<DeliveryManagement />}
             />
-          
           </Routes>
         </Suspense>
       </BrowserRouter>

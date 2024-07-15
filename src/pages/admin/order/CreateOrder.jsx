@@ -65,9 +65,8 @@ const CreateOrder = () => {
       address: "",
       location: "",
     });
-  }
-  
-  
+  };
+
   const currentDate = new Date();
   // Set the maximum date to 30 days from now
   const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -75,10 +74,9 @@ const CreateOrder = () => {
   // Format dates to YYYY-MM-DDTHH:MM (for datetime-local input)
   const formatDateTimeLocal = (date) => {
     const offset = date.getTimezoneOffset();
-    const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
+    const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
     return adjustedDate.toISOString().slice(0, 16);
   };
-
 
   return (
     <>
@@ -107,6 +105,7 @@ const CreateOrder = () => {
             </div>
           </div>
         </div>
+
         <div className="bg-white mx-11 mt-5 p-5 rounded">
           <form onSubmit={formSubmit}>
             <div className="flex flex-col gap-6">
@@ -132,6 +131,7 @@ const CreateOrder = () => {
                   </button>
                 </div>
               </div>
+
               <div className="">
                 <div className=" flex">
                   <label className="w-1/3"></label>
@@ -175,7 +175,6 @@ const CreateOrder = () => {
                               className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
                               value={customerData.email}
                               onChange={handleInputChange}
-
                             />
                           </div>
                           <div className="flex items-center">
@@ -189,7 +188,6 @@ const CreateOrder = () => {
                               className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
                               value={customerData.phone}
                               onChange={handleInputChange}
-
                             />
                           </div>
                           <div className="flex items-center">
@@ -203,7 +201,6 @@ const CreateOrder = () => {
                               className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
                               value={customerData.address}
                               onChange={handleInputChange}
-
                             />
                           </div>
                           <div className="flex items-center">
@@ -217,7 +214,6 @@ const CreateOrder = () => {
                               className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
                               value={customerData.location}
                               onChange={handleInputChange}
-
                             />
                           </div>
                         </div>
@@ -242,6 +238,7 @@ const CreateOrder = () => {
                   </div>
                 )}
               </div>
+
               <div className="flex items-center mt-1">
                 <label className="w-1/3 px-6 text-gray-700">
                   Select Delivery Option
@@ -271,6 +268,7 @@ const CreateOrder = () => {
                   </label>
                 </div>
               </div>
+
               {selectOption === "scheduled" && (
                 <div className="relative flex justify-center my-8 ml-24">
                   <input
@@ -279,7 +277,7 @@ const CreateOrder = () => {
                     name="datetime"
                     className="h-10 text-sm  px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
                     value={dateTime}
-                    min={formatDateTimeLocal(currentDate)} 
+                    min={formatDateTimeLocal(currentDate)}
                     max={formatDateTimeLocal(maxDate)}
                     onChange={handleChange}
                   />
@@ -290,6 +288,7 @@ const CreateOrder = () => {
                 <label className="w-1/3 px-6 text-gray-700">
                   Select Delivery Option
                 </label>
+
                 <div className="flex item-center space-x-2 w-2/3 gap-3">
                   <input
                     type="radio"
@@ -370,6 +369,5 @@ const CreateOrder = () => {
     </>
   );
 };
-
 
 export default CreateOrder;
