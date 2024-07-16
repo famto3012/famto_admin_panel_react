@@ -9,6 +9,7 @@ import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { MdCameraAlt } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Modal } from "antd";
+import GlobalSearch from "../../../components/GlobalSearch";
 const AlertNotification = () => {
   const [userType, setUserType] = useState("");
   const [id, setId] = useState("");
@@ -79,20 +80,9 @@ const AlertNotification = () => {
     <>
       <Sidebar />
       <div className="w-full  pl-[300px] bg-gray-100">
-        <div className="flex justify-end p-4 gap-10">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-white h-10 px-10 pr-10 rounded-full text-sm focus:outline-none mr-3"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+      <nav className="p-5">
+          <GlobalSearch />
+        </nav>
         <div className="flex flex-col mx-[30px] mt-[20px] gap-2">
           <h1 className="font-bold">Alert Notification</h1>
           <h1>

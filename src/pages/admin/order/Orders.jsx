@@ -10,6 +10,7 @@ import {
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link } from "react-router-dom";
 import Sidebar from "../../../components/Sidebar";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const Orders = () => {
   const [order, setOrder] = useState([]);
@@ -92,20 +93,9 @@ const Orders = () => {
     <>
       <Sidebar />
       <main className="pl-[300px] bg-gray-100 h-screen">
-        <div className="flex items-center gap-[20px] justify-end py-[20px] pe-[30px]">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+      <nav className="p-5">
+          <GlobalSearch />
+        </nav>
 
         <div className="flex justify-between items-center px-[30px]">
           <h1 className="text-[18px] font-semibold">Orders</h1>
