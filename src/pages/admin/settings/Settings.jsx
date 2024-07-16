@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const Settings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -57,20 +58,9 @@ const Settings = () => {
       <Sidebar />
 
       <div className="w-full h-screen pl-[300px] bg-gray-100">
-        <div className="flex justify-end p-4 gap-7">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-9">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+      <nav className="p-5">
+          <GlobalSearch />
+        </nav>
 
         <div className="flex items-center justify-between mx-11 mt-[20px]">
           <h1 className="text-xl font-semibold">Settings</h1>

@@ -40,6 +40,7 @@ const MerchantDetails = () => {
     sponsorshipDetail: [],
     availability: {
       type: "",
+      day:{
       sunday: {
         openAllDay: null,
         closedAllDay: null,
@@ -89,6 +90,7 @@ const MerchantDetails = () => {
         startTime: "",
         endTime: "",
       },
+    },
     },
   });
 

@@ -4,7 +4,7 @@ import { CgBell } from "react-icons/cg";
 const GlobalSearch = () => {
   return (
     <div className="flex items-center justify-end gap-[20px]">
-      <CgBell className="text-gray-500 text-xl" />
+      <CgBell className="text-gray-500 text-2xl" />
 
       <div className="relative">
         <input

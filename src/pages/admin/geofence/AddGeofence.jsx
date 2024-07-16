@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const AddGeofence = () => {
   const [geofence, setIsGeofence] = useState({
@@ -27,20 +28,9 @@ const AddGeofence = () => {
     <>
       <Sidebar />
       <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
-        <div className="flex justify-end p-4 gap-7">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-5"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-9">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+        <nav className="p-5">
+          <GlobalSearch />
+        </nav>
         <h1 className="font-bold text-lg mx-10">Geofence</h1>
         <div className="flex justify-between gap-3">
           <div className="mt-8 p-6 bg-white  rounded-lg shadow-sm w-1/3 ms-10">

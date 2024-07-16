@@ -4,6 +4,7 @@ import Sidebar from "../../../components/Sidebar";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
 import { Modal, Switch } from "antd";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const Pricing = () => {
   const [agentpricing, setAgentPricing] = useState([]);
@@ -512,20 +513,9 @@ const Pricing = () => {
     <>
       <Sidebar />
       <div className="w-full h-screen pl-[300px] bg-gray-100">
-        <div className="flex justify-end p-4 gap-10">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-white h-10 px-10 pr-10 rounded-full text-sm focus:outline-none mr-3"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-8">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+      <nav className="p-5">
+          <GlobalSearch />
+        </nav>
         <h1 className="mx-9  text-xl font-bold">Pricing</h1>
         <h1 className="px-9 mt-5 font-bold p-3 bg-gray-300">Agent</h1>
         <div className="flex items-center justify-between mx-9 mt-5">
