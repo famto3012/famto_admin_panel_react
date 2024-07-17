@@ -6,14 +6,32 @@ import { Card, CardBody, CardHeader, Heading } from "@chakra-ui/react";
 import { LineChart } from "@saas-ui/charts";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+
+import { getToken, onMessage } from "firebase/messaging";
+import { messaging } from "../../../firebase";
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
+  const { token, role, userId, fcmToken, setFcmToken } =
+    useContext(UserContext);
+    console.log(fcmToken)
 
-  const { token, role } = useContext(UserContext);
+  const socket = io("http://localhost:5000", {
+    query: {
+      userId: userId,
+      fcmToken: fcmToken,
+    },
+    autoConnect: true,
+    transports: ["websocket"],
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+  });
 
   const navigate = useNavigate();
 
@@ -21,6 +39,51 @@ const HomePage = () => {
     if (!token) {
       navigate("/auth/login");
     }
+
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log("Message received:", payload);
+      // Handle notification display or other actions based on payload
+      const { title, body } = payload.notification;
+      if (Notification.permission === "granted") {
+        new Notification(title, { body });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      // Clean up other listeners as needed
+    };
+  }, []);
+
+  const requestPermission = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BCTdfiFGGBfYA5T5egVXkwTwhZp7Gxv0dYf1zfc7yHLB5Z_0JBJaGQ7fVH9_-mNgn4VMVgmJfatFDknNBseoNbE",
+        });
+        if (token) {
+          console.log("FCM Token:", token);
+          setFcmToken(token);
+          // Send the token to your server and update the UI if necessary
+        } else {
+          console.log("No registration token available.");
+        }
+      } else {
+        console.log("Notification permission not granted");
+      }
+    } catch (err) {
+      console.error("Error retrieving token:", err);
+    }
+  };
+
+  useEffect(() => {
+    requestPermission();
   }, []);
 
   console.log(selectedOption);

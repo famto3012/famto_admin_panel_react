@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 import { Modal, Switch } from "antd";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
@@ -14,6 +14,10 @@ import {
   Box,
 } from "@chakra-ui/react";
 import SidebarDelivery from "../../../components/model/SidebarDelivery";
+import { mappls } from "mappls-web-maps";
+import axios from "axios";
+import { UserContext } from "../../../context/UserContext";
+import { formatDate, formatTime } from "../../../utils/formatter";
 
 const DeliveryManagement = () => {
   const [settings, setSettings] = useState({
@@ -22,6 +26,11 @@ const DeliveryManagement = () => {
     maxRadius: "",
     prioritize: "",
   });
+  const [taskData, setTaskData] = useState([])
+
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+  const { token } = useContext(UserContext);
+
 
   const steps = [
     {
@@ -49,30 +58,32 @@ const DeliveryManagement = () => {
     setSettings({ ...settings, [e.target.name]: e.target.value });
   };
 
-  const data = [
-    {
-      time: "06.00",
-      head: "order",
-      adress: "56, Post office, Pattom, Thiruvallam Lorem Ipsum Lorem Ipsum",
-      phone: "1234",
-    },
-    {
-      time: "06.00",
-      head: "order",
-      adress: "Pattom",
-    },
-    {
-      time: "06.00",
-      head: "order",
-      adress: "Pattom",
-    },
-    {
-      time: "06.00",
-      head: "order",
-      adress: "Pattom",
-    },
-  ];
+  // const data = [
+  //   {
+  //     time: "06.00",
+  //     head: "order",
+  //     adress: "56, Post office, Pattom, Thiruvallam Lorem Ipsum Lorem Ipsum",
+  //     phone: "1234",
+  //   },
+  //   {
+  //     time: "06.00",
+  //     head: "order",
+  //     adress: "Pattom",
+  //   },
+  //   {
+  //     time: "06.00",
+  //     head: "order",
+  //     adress: "Pattom",
+  //   },
+  //   {
+  //     time: "06.00",
+  //     head: "order",
+  //     adress: "Pattom",
+  //   },
+  // ];
   const [value, checkValue] = useState("");
+
+  
 
   const onChange = (checked) => {
     checkValue(checked);
@@ -81,6 +92,15 @@ const DeliveryManagement = () => {
 
   const [task, setTask] = useState("");
   console.log(task);
+  const selectChange = (e) => {
+    const selectedTask = e.target.value;
+    setTask(selectedTask); // Update selected task state immediately
+    if (selectedTask !== '') {
+      handleTaskFilter(selectedTask); // Call filter function with updated value
+    } else {
+      setTaskData([]); // Clear task data when "Select Task" is chosen
+    }
+  };
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -129,21 +149,83 @@ const DeliveryManagement = () => {
     setSelectedOption(event.target.value);
   };
 
-  const [prioritize, setPrioritize] = useState("")
+  const [prioritize, setPrioritize] = useState("");
   const handleRadioChange = (event) => {
     setPrioritize(event.target.value);
-  }
+  };
 
   const submitSettings = (e) => {
     e.preventDefault();
-    const data = { settings, selectedOption, prioritize};
+    const data = { settings, selectedOption, prioritize };
     console.log("data", data);
   };
+
+  const styleMap = { width: '99%', height: '520px', display: 'inline-block' };
+  const mapProps = { 
+    center: [8.528818999999999,76.94310683333333 ], 
+    traffic: true, 
+    zoom: 12, // Adjust zoom level to ensure marker is visible
+    geolocation: true, 
+    clickableIcons: true 
+  };
+
+  const markerProps = {
+    fitbounds: true,
+    fitboundOptions: { padding: 120, duration: 1000 },
+    icon: 'https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.png?alt=media&token=c8b59f27-f9f4-4a4c-be66-d08a055f2689',
+    width: 100,
+    height: 100,
+    clusters: true,
+    clustersOptions: { color: 'blue', bgcolor: 'red' },
+    offset: [0, 10],
+    popupHtml: 'Famto',
+    popupOptions: { openPopup: true, autoClose: true, maxWidth: 500 },
+    draggable: true
+  };
+
+  const mapplsClassObject = new mappls();
+  let mapObject
+  let marker
+  mapplsClassObject.initialize("9a632cda78b871b3a6eb69bddc470fef", () => {
+     mapObject = mapplsClassObject.Map({ id: "map", properties: mapProps });
+
+    mapObject.on("load", () => {
+     marker = mapplsClassObject.Marker({
+        map: mapObject,
+        position: { lat: 8.528818999999999, lng: 76.94310683333333 },
+        properties: markerProps
+      });
+     marker.setIcon("https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af")
+     marker.setPopup("")
+  });
+  });
+
+  
+
+  const handleTaskFilter = async(selectedTask)=>{
+    try {
+      console.log(token)
+      const response = await axios.get(`${BASE_URL}/admin/delivery-management/task`,  {
+        params: { filter: selectedTask }, // Use params object for query parameters
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      }
+      );
+      if (response.status === 201) {
+        // const {data} = response.data;
+        setTaskData(response.data.data)
+      }
+      
+    } catch (err) {
+      console.log("Error in fetching agent: ", err);
+    }
+  }
+  
 
   return (
     <>
       <SidebarDelivery />
-      <div className="p-5 pl-[75px] bg-gray-100">
+      <div className="p-5 pl-[75px] bg-gray-100 h-screen">
         <p className="text-[18px] font-semibold mt-5">
           {" "}
           <ArrowLeftOutlined /> Delivery Management
@@ -266,7 +348,6 @@ const DeliveryManagement = () => {
                           value="Default"
                           checked={prioritize === "Default"}
                           onChange={handleRadioChange}
-
                         />
                         <p className="font-semibold text-[16px]">Default</p>
                       </div>
@@ -274,13 +355,12 @@ const DeliveryManagement = () => {
                         <input
                           type="radio"
                           name="prioritize"
-                          value="Montly salaried employees"
-                          checked={prioritize === "Montly salaried employees"
-                          }
+                          value="Monthly salaried employees"
+                          checked={prioritize === "Monthly salaried employees"}
                           onChange={handleRadioChange}
                         />
                         <p className="font-semibold text-[16px] ml-2">
-                          Montly salaried employees{" "}
+                          Monthly salaried employees{" "}
                         </p>
                       </div>
                     </div>
@@ -312,366 +392,392 @@ const DeliveryManagement = () => {
           <div className="w-1/4 rounded-lg bg-white">
             <div className="bg-teal-800 text-white p-5 rounded-lg">Tasks</div>
             <div className="w-full p-2 mt-4">
-              <select
+              {/* <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
                 name="task"
                 value={task}
-                onChange={(e) => setTask(e.target.value)}
+                onChange={(e) =>{ setTask(e.target.value)
+                  handleTaskFilter()
+                }}
               >
                 <option value="task" hidden selected>
                   Select Task
                 </option>
-                <option value="unassigned">
-                  Unassigned Tasks <span className="bg-teal-800 p-2"> 10</span>
+                <option value="Unassigned">
+                  Unassigned Tasks
                 </option>
-                <option value="assigned">Assigned Tasks</option>
-                <option value="assigned">Completed Tasks</option>
-              </select>
+                <option value="Assigned">Assigned Tasks</option>
+                <option value="Completed">Completed Tasks</option>
+              </select> */}
+              <select
+        className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
+        name="task"
+        value={task}
+        onChange={selectChange} // Update state and call handleTaskFilter
+      >
+        <option value="" hidden disabled>
+          Select Task
+        </option>
+        <option value="Unassigned">Unassigned Tasks</option>
+        <option value="Assigned">Assigned Tasks</option>
+        <option value="Completed">Completed Tasks</option>
+      </select>
               <input
                 type="search"
-                className="border-2 border-zinc-200 bg-white rounded-lg mt-5 p-2 w-full focus:outline-none"
+                className="border-2 border-zinc-200 bg-white rounded-lg mt-5 mb-5 p-2 w-full focus:outline-none"
                 name="search"
                 placeholder="Search order Id"
               />
-            </div>
-            <div className="p-5 bg-white">
-              {task === "unassigned" && (
-                <div>
-                  {data.map((data) => (
-                    <Card className="bg-zinc-100 mt-5">
-                      <CardBody>
-                        <Typography variant="h5" color="" className="">
-                          {data.time}
-                        </Typography>
-                        <Typography>{data.head}</Typography>
-                        <Typography>{data.adress}</Typography>
-                        <Typography className="flex justify-between mt-3">
-                          <Button className=" bg-gray-100 text-black text-[14px] font-semibold">
-                            View on Map
-                          </Button>
+              <div className="p-5 bg-white max-h-[300px] overflow-y-auto">
+                {task === "Unassigned" && (
+                  <div>
+                    {taskData.map((data) => (
+                      <Card className="bg-zinc-100 mt-5" key={data._id}>
+                        <CardBody>
+                          <Typography variant="h5" color="" className="text-[15px]">
+                            {`${formatDate(data.createdAt)} ${formatTime(data.createdAt)}`}
+                          </Typography>
+                          <Typography  className="text-[16px]">{data.pickupDetail.pickupAddress.fullName}</Typography>
+                          <Typography  className="text-[15px]">{data.pickupDetail.pickupAddress.area}</Typography>
+                          <Typography className="flex justify-between mt-3">
+                            <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold">
+                              View on Map
+                            </Button>
 
-                          {value ? (
-                            <div>
-                              <Button
-                                className=" bg-teal-800 text-white text-[14px] font-semibold"
-                                onClick={showModalTask}
-                              >
-                                View Details
-                              </Button>
-                              <Modal
-                                onOk={showOkModalTask}
-                                onCancel={showModalCancelTask}
-                                open={isModalVisibleTask}
-                                width="600px"
-                                centered
-                                title="Task details"
-                                footer={null}
-                              >
-                                <div>
-                                  <div className="flex gap-10 text-[18px] font-normal mt-5">
-                                    <div className="w-1/2 me-3  grid gap-3">
-                                      <div className="flex justify-between">
-                                        <label className="text-gray-500">
-                                          Task Id
-                                        </label>
-                                        <p>12</p>
-                                      </div>
-                                      <div className="flex justify-between ">
-                                        <label className="text-gray-500">
-                                          Delivery Method
-                                        </label>
-                                        <p>Online</p>
-                                      </div>
-                                    </div>
-                                    <div className="w-1/2 grid gap-3">
-                                      <div className="flex justify-between">
-                                        <label className="text-gray-500">
-                                          Agent Name
-                                        </label>
-                                        <p>Name</p>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <label className="text-gray-500">
-                                          Agent ID
-                                        </label>
-                                        <p>12</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <p className="mt-5 text-lg font-semibold">
-                                      Task status
-                                    </p>
-                                    <div className="mt-5">
-                                      <Stepper
-                                        index={activeStep}
-                                        orientation="vertical"
-                                        colorScheme="teal"
-                                        gap="2"
-                                      >
-                                        {steps.map((step, index) => (
-                                          <Step
-                                            key={index}
-                                            className="flex gap-5 size-20"
-                                          >
-                                            <StepIndicator>
-                                              <StepStatus
-                                                complete={
-                                                  <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                    {index + 1}
-                                                  </div>
-                                                }
-                                                incomplete={
-                                                  <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
-                                                    {index + 1}
-                                                  </div>
-                                                }
-                                                active={
-                                                  <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                    {index + 1}
-                                                  </div>
-                                                }
-                                              />
-                                            </StepIndicator>
-                                            <Box
-                                              flexShrink="0"
-                                              className="ml-4"
-                                            >
-                                              <StepTitle className="font-semibold text-[16px]">
-                                                {step.title}
-                                              </StepTitle>
-                                              <StepDescription className="text-sm text-gray-500">
-                                                {step.description}
-                                              </StepDescription>
-                                              <Step className="text-sm text-gray-500">
-                                                {step.adress}
-                                              </Step>
-                                            </Box>
-                                            <Box
-                                              flexShrink="0"
-                                              className="ml-36"
-                                            >
-                                              <Step>
-                                                Expected Time {step.pickup}
-                                              </Step>
-                                              <Step>
-                                                Pick up Time {step.time}
-                                              </Step>
-                                            </Box>
-                                            <StepSeparator className="my-2" />
-                                          </Step>
-                                        ))}
-                                      </Stepper>
-                                    </div>
-                                  </div>
-                                </div>
-                              </Modal>
-                            </div>
-                          ) : (
-                            <div>
-                              <Button
-                                className=" bg-teal-800  text-white text-[13px]  font-semibold"
-                                onClick={showModalAgent}
-                              >
-                                Assign Agent
-                              </Button>
-                              <Modal
-                                title="Assign Agent"
-                                onOk={showOkModalAgent}
-                                onCancel={showModalCancelAgent}
-                                open={isModalVisibleAgent}
-                                footer={null}
-                                width="600px"
-                                centered
-                              >
-                                <div>
-                                  <div className="flex mt-5">
-                                    <label className="w-1/3 text-gray-600">
-                                      Task ID
-                                    </label>
-                                    <p className="font-semibold">123</p>
-                                  </div>
-                                  <div className="flex mt-5">
-                                    <label className="w-1/3 text-gray-600">
-                                      Geofence
-                                    </label>
-                                    <p className="font-semibold">
-                                      <Switch />
-                                    </p>
-                                  </div>
-                                  <div className="flex mt-5 ">
-                                    <label className="w-1/3 text-gray-600">
-                                      Agent
-                                    </label>
-                                    <select
-                                      className="w-2/3 mr-8 p-2 rounded-lg border border-gray-300 outline-none focus:outline-none"
-                                      name="agent"
-                                    >
-                                      <option>Assign Agent</option>
-                                    </select>
-                                  </div>
-                                  <div className="flex justify-end gap-5 mt-10">
-                                    <button className="bg-zinc-200 p-2 rounded-md px-4" onClick={showModalCancelAgent}>
-                                      Cancel
-                                    </button>
-                                    <button className="bg-teal-800 text-white p-2 rounded-md px-4">
-                                      Assign Agent
-                                    </button>
-                                  </div>
-                                </div>
-                              </Modal>
-                            </div>
-                          )}
-                        </Typography>
-                      </CardBody>
-                    </Card>
-                  ))}
-                </div>
-              )}
-
-              {task === "assigned" && (
-                <div>
-                  {data.map((data) => (
-                    <Card className="bg-zinc-100 mt-5">
-                      <CardBody>
-                        <Typography variant="h5" color="blue-gray" className="">
-                          {data.time}
-                        </Typography>
-                        <Typography>{data.head}</Typography>
-                        <Typography>{data.adress}</Typography>
-
-                        <Typography className="flex justify-between mt-3 ">
-                          <Button className=" bg-gray-100 text-black text-[14px] font-semibold">
-                            View on Map
-                          </Button>
-                          <Button
-                            className=" bg-teal-800 text-white text-[14px] font-semibold"
-                            onClick={showModalTask}
-                          >
-                            View Details
-                          </Button>
-                          <Modal
-                            onOk={showOkModalTask}
-                            onCancel={showModalCancelTask}
-                            open={isModalVisibleTask}
-                            width="600px"
-                            centered
-                            title="Task details"
-                            footer={null}
-                          >
-                            <div>
-                              <div className="flex gap-10 text-[18px] font-normal mt-5">
-                                <div className="w-1/2 me-3  grid gap-3">
-                                  <div className="flex justify-between">
-                                    <label className="text-gray-500">
-                                      Task Id
-                                    </label>
-                                    <p>12</p>
-                                  </div>
-                                  <div className="flex justify-between ">
-                                    <label className="text-gray-500">
-                                      Delivery Method
-                                    </label>
-                                    <p>Online</p>
-                                  </div>
-                                </div>
-                                <div className="w-1/2 grid gap-3">
-                                  <div className="flex justify-between">
-                                    <label className="text-gray-500">
-                                      Agent Name
-                                    </label>
-                                    <p>Name</p>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <label className="text-gray-500">
-                                      Agent ID
-                                    </label>
-                                    <p>12</p>
-                                  </div>
-                                </div>
-                              </div>
+                            {value ? (
                               <div>
-                                <p className="mt-5 text-lg font-semibold">
-                                  Task status
-                                </p>
-                                <div className="mt-5">
-                                  <Stepper
-                                    index={activeStep}
-                                    orientation="vertical"
-                                    colorScheme="teal"
-                                    gap="2"
-                                  >
-                                    {steps.map((step, index) => (
-                                      <Step
-                                        key={index}
-                                        className="flex gap-5 size-20"
+                                <Button
+                                  className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
+                                  onClick={showModalTask}
+                                >
+                                  View Details
+                                </Button>
+                                <Modal
+                                  onOk={showOkModalTask}
+                                  onCancel={showModalCancelTask}
+                                  open={isModalVisibleTask}
+                                  width="600px"
+                                  centered
+                                  title="Task details"
+                                  footer={null}
+                                >
+                                  <div>
+                                    <div className="flex gap-10 text-[18px] font-normal mt-5">
+                                      <div className="w-1/2 me-3  grid gap-3">
+                                        <div className="flex justify-between">
+                                          <label className="text-gray-500">
+                                            Task Id
+                                          </label>
+                                          <p>{data._id}</p>
+                                        </div>
+                                        <div className="flex justify-between ">
+                                          <label className="text-gray-500">
+                                            Delivery Method
+                                          </label>
+                                          <p>Online</p>
+                                        </div>
+                                      </div>
+                                      <div className="w-1/2 grid gap-3">
+                                        <div className="flex justify-between">
+                                          <label className="text-gray-500">
+                                            Agent Name
+                                          </label>
+                                          <p>Name</p>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <label className="text-gray-500">
+                                            Agent ID
+                                          </label>
+                                          <p>12</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <p className="mt-5 text-lg font-semibold">
+                                        Task status
+                                      </p>
+                                      <div className="mt-5">
+                                        <Stepper
+                                          index={activeStep}
+                                          orientation="vertical"
+                                          colorScheme="teal"
+                                          gap="2"
+                                        >
+                                          {steps.map((step, index) => (
+                                            <Step
+                                              key={index}
+                                              className="flex gap-5 size-20"
+                                            >
+                                              <StepIndicator>
+                                                <StepStatus
+                                                  complete={
+                                                    <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
+                                                      {index + 1}
+                                                    </div>
+                                                  }
+                                                  incomplete={
+                                                    <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
+                                                      {index + 1}
+                                                    </div>
+                                                  }
+                                                  active={
+                                                    <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
+                                                      {index + 1}
+                                                    </div>
+                                                  }
+                                                />
+                                              </StepIndicator>
+                                              <Box
+                                                flexShrink="0"
+                                                className="ml-4"
+                                              >
+                                                <StepTitle className="font-semibold text-[16px]">
+                                                  {step.title}
+                                                </StepTitle>
+                                                <StepDescription className="text-sm text-gray-500">
+                                                  {step.description}
+                                                </StepDescription>
+                                                <Step className="text-sm text-gray-500">
+                                                  {step.adress}
+                                                </Step>
+                                              </Box>
+                                              <Box
+                                                flexShrink="0"
+                                                className="ml-36"
+                                              >
+                                                <Step>
+                                                  Expected Time {step.pickup}
+                                                </Step>
+                                                <Step>
+                                                  Pick up Time {step.time}
+                                                </Step>
+                                              </Box>
+                                              <StepSeparator className="my-2" />
+                                            </Step>
+                                          ))}
+                                        </Stepper>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Modal>
+                              </div>
+                            ) : (
+                              <div>
+                                <Button
+                                  className=" bg-teal-800  text-white text-[12px] p-4  font-semibold"
+                                  onClick={showModalAgent}
+                                >
+                                  Assign Agent
+                                </Button>
+                                <Modal
+                                  title="Assign Agent"
+                                  onOk={showOkModalAgent}
+                                  onCancel={showModalCancelAgent}
+                                  open={isModalVisibleAgent}
+                                  footer={null}
+                                  width="600px"
+                                  centered
+                                  key={data._id}
+                                >
+                                  <div>
+                                    <div className="flex mt-5">
+                                      <label className="w-1/3 text-gray-600">
+                                        Task ID
+                                      </label>
+                                      <p className="font-semibold">{data._id}</p>
+                                    </div>
+                                    <div className="flex mt-5">
+                                      <label className="w-1/3 text-gray-600">
+                                        Geofence
+                                      </label>
+                                      <p className="font-semibold">
+                                        <Switch />
+                                      </p>
+                                    </div>
+                                    <div className="flex mt-5 ">
+                                      <label className="w-1/3 text-gray-600">
+                                        Agent
+                                      </label>
+                                      <select
+                                        className="w-2/3 mr-8 p-2 rounded-lg border border-gray-300 outline-none focus:outline-none"
+                                        name="agent"
                                       >
-                                        <StepIndicator>
-                                          <StepStatus
-                                            complete={
-                                              <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                {index + 1}
-                                              </div>
-                                            }
-                                            incomplete={
-                                              <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
-                                                {index + 1}
-                                              </div>
-                                            }
-                                            active={
-                                              <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                {index + 1}
-                                              </div>
-                                            }
-                                          />
-                                        </StepIndicator>
-                                        <Box flexShrink="0" className="ml-4">
-                                          <StepTitle className="font-semibold text-[16px]">
-                                            {step.title}
-                                          </StepTitle>
-                                          <StepDescription className="text-sm text-gray-500">
-                                            {step.description}
-                                          </StepDescription>
-                                          <Step className="text-sm text-gray-500">
-                                            {step.adress}
-                                          </Step>
-                                        </Box>
-                                        <Box flexShrink="0" className="ml-36">
-                                          <Step>
-                                            Expected Time {step.pickup}
-                                          </Step>
-                                          <Step>Pick up Time {step.time}</Step>
-                                        </Box>
-                                        <StepSeparator className="my-2" />
-                                      </Step>
-                                    ))}
-                                  </Stepper>
+                                        <option>Assign Agent</option>
+                                      </select>
+                                    </div>
+                                    <div className="flex justify-end gap-5 mt-10">
+                                      <button
+                                        className="bg-zinc-200 p-2 rounded-md px-4"
+                                        onClick={showModalCancelAgent}
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button className="bg-teal-800 text-white p-2 rounded-md px-4">
+                                        Assign Agent
+                                      </button>
+                                    </div>
+                                  </div>
+                                </Modal>
+                              </div>
+                            )}
+                          </Typography>
+                        </CardBody>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {task === "Assigned" && (
+                  <div>
+                    {taskData.map((data) => (
+                      <Card className="bg-zinc-100 mt-5" key={data._id}>
+                        <CardBody>
+                          <Typography
+                            variant="h5"
+                            color="blue-gray"
+                            className="text-[15px]"
+                          >
+                           {`${formatDate(data.createdAt)} ${formatTime(data.createdAt)}`}
+                          </Typography>
+                          <Typography  className="text-[16px]">{data.pickupDetail.pickupAddress.fullName}</Typography>
+                          <Typography  className="text-[15px]">{data.pickupDetail.pickupAddress.area}</Typography>
+
+                          <Typography className="flex justify-between mt-3 ">
+                            <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold">
+                              View on Map
+                            </Button>
+                            <Button
+                              className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
+                              onClick={showModalTask}
+                            >
+                              View Details
+                            </Button>
+                            <Modal
+                              onOk={showOkModalTask}
+                              onCancel={showModalCancelTask}
+                              open={isModalVisibleTask}
+                              width="720px"
+                              centered
+                              title="Task details"
+                              footer={null}
+                            >
+                              <div>
+                                <div className="flex gap-10 text-[18px] font-normal mt-5 ">
+                                  <div className="w-1/2 me-3  grid gap-3">
+                                    <div className="flex justify-between">
+                                      <label className="text-gray-500 text-[17px]">
+                                        Task Id
+                                      </label>
+                                      <p>{data._id}</p>
+                                    </div>
+                                    <div className="flex justify-between ">
+                                      <label className="text-gray-500">
+                                        Delivery Method
+                                      </label>
+                                      <p>Online</p>
+                                    </div>
+                                  </div>
+                                  <div className="w-1/2 grid gap-3">
+                                    <div className="flex justify-between">
+                                      <label className="text-gray-500">
+                                        Agent Name
+                                      </label>
+                                      <p>Name</p>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <label className="text-gray-500">
+                                        Agent ID
+                                      </label>
+                                      <p>12</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <p className="mt-5 text-lg font-semibold">
+                                    Task status
+                                  </p>
+                                  <div className="mt-5">
+                                    <Stepper
+                                      index={activeStep}
+                                      orientation="vertical"
+                                      colorScheme="teal"
+                                      gap="2"
+                                    >
+                                      {steps.map((step, index) => (
+                                        <Step
+                                          key={index}
+                                          className="flex gap-5 size-20"
+                                        >
+                                          <StepIndicator>
+                                            <StepStatus
+                                              complete={
+                                                <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
+                                                  {index + 1}
+                                                </div>
+                                              }
+                                              incomplete={
+                                                <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
+                                                  {index + 1}
+                                                </div>
+                                              }
+                                              active={
+                                                <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
+                                                  {index + 1}
+                                                </div>
+                                              }
+                                            />
+                                          </StepIndicator>
+                                          <Box flexShrink="0" className="ml-4">
+                                            <StepTitle className="font-semibold text-[16px]">
+                                              {step.title}
+                                            </StepTitle>
+                                            <StepDescription className="text-sm text-gray-500">
+                                              {step.description}
+                                            </StepDescription>
+                                            <Step className="text-sm text-gray-500">
+                                              {step.adress}
+                                            </Step>
+                                          </Box>
+                                          <Box flexShrink="0" className="ml-36">
+                                            <Step>
+                                              Expected Time {step.pickup}
+                                            </Step>
+                                            <Step>
+                                              Pick up Time {step.time}
+                                            </Step>
+                                          </Box>
+                                          <StepSeparator className="my-2" />
+                                        </Step>
+                                      ))}
+                                    </Stepper>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </Modal>
-                        </Typography>
-                      </CardBody>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                            </Modal>
+                          </Typography>
+                        </CardBody>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="w-2/4">
-            <img className="w-full" src="map.svg" />
+          <div className="w-2/4 bg-white h-[520px]">
+            {/* <img className="w-full" src="map.svg" /> */}
+            <div id="map" style={styleMap}></div>
           </div>
           <div className="w-1/4 rounded-lg bg-white">
             <div className="bg-teal-800 text-white p-5 rounded-lg">Agents</div>
-            <div className="w-full p-2 bg-white">
+            <div className="w-full p-2 bg-white ">
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
                 name="tasks"
               >
-                <option value="free">Free</option>
-                <option value="busy">Busy</option>
-                <option value="inactive">Inactive</option>
+                <option value="Free">Free</option>
+                <option value="Busy">Busy</option>
+                <option value="Inactive">Inactive</option>
               </select>
               <input
                 type="search"
@@ -680,8 +786,8 @@ const DeliveryManagement = () => {
                 placeholder="Search agents"
               />
             </div>
-            <div className="p-5 ">
-              {data.map((data) => (
+            <div className="p-5 max-h-[300px] overflow-y-auto">
+              {/* {data.map((data) => (
                 <Card className="bg-zinc-100 mt-5 flex">
                   <div className="flex justify-between">
                     <div className="w-2/3">
@@ -700,7 +806,7 @@ const DeliveryManagement = () => {
                     </div>
                   </div>
                 </Card>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>
