@@ -5,8 +5,9 @@ import { BellOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Takeaway from "../../../components/Takeaway";
 import HomeDelivery from "../../../components/HomeDelivery";
 import PickDrop from "../../../components/PickDrop";
-import Customorder from "../../../components/Customorder";
+import CustomOrder from "../../../components/CustomOrder";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const CreateOrder = () => {
   const [customer, setCustomer] = useState("");
@@ -87,23 +88,9 @@ const CreateOrder = () => {
             <ArrowBack className="ml-7" />
             <span className="text-lg font-bold ml-3">Create Order</span>
           </div>
-          <div className="flex justify-end p-4 gap-7">
-            <BellOutlined className="text-2xl text-gray-500" />
-            <div className="relative">
-              <input
-                type="search"
-                name="search"
-                placeholder="Search"
-                className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
-              />
-              <button
-                type="submit"
-                className="absolute right-0 top-0 mt-2 mr-9"
-              >
-                <SearchOutlined className="text-xl text-gray-500" />
-              </button>
-            </div>
-          </div>
+          <nav className="p-5">
+          <GlobalSearch />
+        </nav>
         </div>
 
         <div className="bg-white mx-11 mt-5 p-5 rounded">
@@ -360,7 +347,7 @@ const CreateOrder = () => {
             )}
             {selectedOption === "customorder" && (
               <div className="mt-8">
-                <Customorder />
+                <CustomOrder />
               </div>
             )}
           </form>

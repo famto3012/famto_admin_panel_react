@@ -5,6 +5,7 @@ import { Modal, Switch } from "antd";
 import { SearchOutlined } from "@mui/icons-material";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
+import GlobalSearch from "../../../components/GlobalSearch";
 
 const NotificationSettings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -100,20 +101,9 @@ const NotificationSettings = () => {
     <>
       <Sidebar />
       <div className="w-full h-screen pl-[300px] bg-gray-100">
-        <div className="flex justify-end p-4 gap-10">
-          <BellOutlined className="text-2xl text-gray-500" />
-          <div className="relative">
-            <input
-              type="search"
-              name="search"
-              placeholder="Search"
-              className="bg-white h-10 px-10 pr-10 rounded-full text-sm focus:outline-none mr-3"
-            />
-            <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
+      <nav className="p-5">
+          <GlobalSearch />
+        </nav>
         <div className="flex items-center justify-between mx-[30px] mt-[20px]">
           <h1 className="text-xl font-bold">Notification Settings</h1>
           <div>

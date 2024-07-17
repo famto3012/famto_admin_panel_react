@@ -4,14 +4,29 @@ import { PlusOutlined } from "@ant-design/icons";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import {
   AddOutlined,
-  DeleteOutline,
-  LocationOnOutlined,
 } from "@mui/icons-material";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Addresscomponent from "./model/Addresscomponent";
 
-const Customorder = () => {
+const CustomOrder = () => {
   const [order, setOrder] = useState([]);
+
+  const [formData, setFormData] = useState({
+    location: "",
+    agentinstructions: "",
+    tips: "",
+    deliveryCharges: "",
+    discount: "",
+    paymentType: "",
+    subtotal: "",
+    item: [],
+  });
+
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [adPreviewURL, setAdPreviewURL] = useState(null);
+  const [adFile, setAdFile] = useState(null);
+
   useEffect(() => {
     const fetchOrder = async () => {
       const dummyData = [
@@ -39,7 +54,6 @@ const Customorder = () => {
           item1: "GST(inclusive all taxes)",
           amount: "₹257",
         },
-        // Add more customers as needed
       ];
 
       setOrder(dummyData);
@@ -48,16 +62,6 @@ const Customorder = () => {
     fetchOrder();
   }, []);
 
-  const [formData, setFormData] = useState({
-    location: "",
-    agentinstructions: "",
-    tips: "",
-    deliveryCharges: "",
-    discount: "",
-    paymentType: "",
-    subtotal: "",
-    item: [],
-  });
 
   const handleAddItem = () => {
     const newItem = { name: "", quantity: "", unit: "" };
@@ -85,18 +89,27 @@ const Customorder = () => {
   const formAction = (e) => {
     e.preventDefault();
     console.log(formData);
-    // Add your form submission logic here
+
   };
-  const [selectedAddress, setSelectedAddress] = useState("");
+
 
   const handleAddressChange = (address) => {
     setSelectedAddress(address);
   };
-  const [isFormVisible, setFormVisible] = useState(false);
+
 
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
   };
+
+
+
+  const handleAdImageChange = (e) => {
+    const file = e.target.files[0];
+    setAdFile(file);
+    setAdPreviewURL(URL.createObjectURL(file));
+  };
+
   return (
     <div className="bg-white mt-5 rounded">
       <form onSubmit={formAction}>
@@ -177,14 +190,42 @@ const Customorder = () => {
                   />
                 </div>
 
+
+                <div className="flex items-center gap-[30px]">
+
+
+                  {/* {!adPreviewURL && (
+                                  <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
+                                )} */}
+
+
+                  {adPreviewURL && (
+                    <figure className="mt-3 h-16 w-16 rounded-md relative">
+                      <img
+                        src={adPreviewURL}
+                        alt="profile"
+                        className="w-full rounded h-full object-cover"
+                      />
+                    </figure>
+                  )}
+                </div>
                 <div className="mx-3 flex justify-between mt-3 gap-3">
-                  <button
-                    type="button"
+                  <input
+                    type="file"
+                    name="adImage"
+                    id="adImage"
+                    className="hidden"
+                    onChange={handleAdImageChange}
+                  />
+                  <label
+                    htmlFor="adImage"
                     className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
                   >
                     <AddOutlined />
                     Upload Photo
-                  </button>
+                  </label>
+
+
                   <button
                     type="button"
                     className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
@@ -220,9 +261,8 @@ const Customorder = () => {
               <button
                 key={address}
                 type="button"
-                className={`py-2 px-4  rounded border  ${
-                  selectedAddress === address ? "bg-gray-300" : "bg-white"
-                }`}
+                className={`py-2 px-4  rounded border  ${selectedAddress === address ? "bg-gray-300" : "bg-white"
+                  }`}
                 onClick={() => handleAddressChange(address)}
               >
                 {address}
@@ -377,4 +417,4 @@ const Customorder = () => {
   );
 };
 
-export default Customorder;
+export default CustomOrder;
