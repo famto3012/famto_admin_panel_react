@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LoginImage from "/LoginImage.svg";
 import famtoWhiteLogo from "/famto-white-logo.svg";
 import famtoBlackLogo from "/famto-black-logo.svg";
+import axios from "axios";
+import { UserContext } from "../../context/UserContext";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState({
@@ -13,13 +17,29 @@ const LoginPage = () => {
     role: "",
   });
 
-  const handleInputChange = async (e) => {
+  const { setToken, setRole } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(loginData);
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/sign-in`, loginData);
+
+      if (response.status === 200) {
+        const { token, role } = response.data;
+        setToken(token);
+        setRole(role);
+        navigate("/home");
+      }
+    } catch (err) {
+      console.log("Error in login: ", err);
+    }
   };
 
   return (
@@ -57,12 +77,14 @@ const LoginPage = () => {
               </label>
               <select
                 id="role"
+                name="role" // Ensure this matches the state field
                 className="mt-1 text-gray-500 p-2 w-full border rounded"
                 value={loginData.role}
                 onChange={handleInputChange}
-
-                // to do
               >
+                <option defaultValue={"Select role"} hidden>
+                  Select role
+                </option>
                 <option value={"Admin"}>Admin</option>
                 <option value={"Merchant"}>Merchant</option>
                 <option value={"Manager"}>Manager</option>
@@ -78,7 +100,7 @@ const LoginPage = () => {
                   id="username"
                   name="email"
                   type="email"
-                  placeholder="Email Adress"
+                  placeholder="Email Address"
                   value={loginData.email}
                   onChange={handleInputChange}
                   required

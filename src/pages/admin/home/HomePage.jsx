@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import HomeComponents from "../../../components/HomeComponents";
 import { Card, CardBody, CardHeader, Heading } from "@chakra-ui/react";
 import { LineChart } from "@saas-ui/charts";
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
+
+  const { token, role } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+    }
+  }, []);
 
   console.log(selectedOption);
 

@@ -12,8 +12,6 @@ import { MdOutlineEdit } from "react-icons/md";
 import { FilterAltOutlined } from "@mui/icons-material";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 
-
-
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Managers = () => {
@@ -56,7 +54,6 @@ const Managers = () => {
     console.log(Account);
   };
 
-
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
@@ -83,8 +80,8 @@ const Managers = () => {
           <Link to="/add-manager">
             {" "}
             <button className="bg-teal-800 rounded-md py-2 px-5 text-white">
-              <PlusOutlined className="mr-2"/>
-            Add Manager
+              <PlusOutlined className="mr-2" />
+              Add Manager
             </button>
           </Link>
         </div>
@@ -146,40 +143,41 @@ const Managers = () => {
               <td>Dummy Data</td>
               <td>
                 <div className="flex  justify-center gap-3">
-                <button><Link to={"/update-manager"}>
-                <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                </Link>
-                </button>
-                <button
-                      onClick={showModalDelete}
-                      className="outline-none focus:outline-none"
-                    >
-                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                    </button>
-                    <Modal
-                      onOk={showModalDeleteOk}
-                      onCancel={showModalDeleteCancel}
-                      footer={null}
-                      open={isShowModalDelete}
-                      centered
-                    >
-                      <p className="font-semibold text-[18px] mb-5">
-                        Are you sure want to delete?
-                      </p>
-                      <div className="flex justify-end">
-                        <button
-                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                          onClick={showModalDeleteCancel}
-                        >
-                          Cancel
-                        </button>
-                        <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
-                          {" "}
-                          Delete
-                        </button>
-                      </div>
-                    </Modal>
-                  </div>
+                  <button>
+                    <Link to={"/update-manager"}>
+                      <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                    </Link>
+                  </button>
+                  <button
+                    onClick={showModalDelete}
+                    className="outline-none focus:outline-none"
+                  >
+                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                  </button>
+                  <Modal
+                    onOk={showModalDeleteOk}
+                    onCancel={showModalDeleteCancel}
+                    footer={null}
+                    open={isShowModalDelete}
+                    centered
+                  >
+                    <p className="font-semibold text-[18px] mb-5">
+                      Are you sure want to delete?
+                    </p>
+                    <div className="flex justify-end">
+                      <button
+                        className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                        onClick={showModalDeleteCancel}
+                      >
+                        Cancel
+                      </button>
+                      <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                        {" "}
+                        Delete
+                      </button>
+                    </div>
+                  </Modal>
+                </div>
               </td>
             </tr>
           </tbody>

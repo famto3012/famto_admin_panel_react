@@ -1,11 +1,25 @@
 import { SearchOutlined } from "@ant-design/icons";
+import { IoMdLogOut } from "react-icons/io";
 import { CgBell } from "react-icons/cg";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const GlobalSearch = () => {
+  const { setToken, setRole } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setToken(null);
+    setRole(null);
+
+    navigate("/auth/login");
+  };
+
   return (
     <div className="flex items-center justify-end gap-[20px]">
       <CgBell className="text-gray-500 text-xl" />
-
       <div className="relative">
         <input
           type="search"
@@ -17,6 +31,7 @@ const GlobalSearch = () => {
           <SearchOutlined className="text-xl text-gray-500" />
         </button>
       </div>
+      <IoMdLogOut size={24} onClick={handleLogout} />
     </div>
   );
 };
