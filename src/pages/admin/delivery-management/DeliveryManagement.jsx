@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 import { Modal, Switch } from "antd";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
@@ -26,11 +26,12 @@ const DeliveryManagement = () => {
     maxRadius: "",
     prioritize: "",
   });
-  const [taskData, setTaskData] = useState([])
+  const [taskData, setTaskData] = useState([]);
+  const [agentData, setAgentData] = useState([]);
+  const [allAgentData, setAllAgentData] = useState([]);
 
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const { token } = useContext(UserContext);
-
 
   const steps = [
     {
@@ -83,8 +84,6 @@ const DeliveryManagement = () => {
   // ];
   const [value, checkValue] = useState("");
 
-  
-
   const onChange = (checked) => {
     checkValue(checked);
     console.log(`switch to ${checked}`);
@@ -95,13 +94,22 @@ const DeliveryManagement = () => {
   const selectChange = (e) => {
     const selectedTask = e.target.value;
     setTask(selectedTask); // Update selected task state immediately
-    if (selectedTask !== '') {
+    if (selectedTask !== "") {
       handleTaskFilter(selectedTask); // Call filter function with updated value
     } else {
       setTaskData([]); // Clear task data when "Select Task" is chosen
     }
   };
-
+  const [status, setStatus] = useState("Free");
+  const selectChangeOfStatus = (e) => {
+    const selectedStatus = e.target.value;
+    setStatus(selectedStatus); // Update selected task state immediately
+    if (selectedStatus === "") {
+      handleStatusFilter("Free"); // Call filter function with updated value
+    } else {
+      handleStatusFilter(selectedStatus); // Clear task data when "Select Task" is chosen
+    }
+  };
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
@@ -159,68 +167,214 @@ const DeliveryManagement = () => {
     const data = { settings, selectedOption, prioritize };
     console.log("data", data);
   };
-
-  const styleMap = { width: '99%', height: '520px', display: 'inline-block' };
-  const mapProps = { 
-    center: [8.528818999999999,76.94310683333333 ], 
-    traffic: true, 
-    zoom: 12, // Adjust zoom level to ensure marker is visible
-    geolocation: true, 
-    clickableIcons: true 
-  };
-
-  const markerProps = {
-    fitbounds: true,
-    fitboundOptions: { padding: 120, duration: 1000 },
-    icon: 'https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.png?alt=media&token=c8b59f27-f9f4-4a4c-be66-d08a055f2689',
-    width: 100,
-    height: 100,
-    clusters: true,
-    clustersOptions: { color: 'blue', bgcolor: 'red' },
-    offset: [0, 10],
-    popupHtml: 'Famto',
-    popupOptions: { openPopup: true, autoClose: true, maxWidth: 500 },
-    draggable: true
-  };
-
-  const mapplsClassObject = new mappls();
-  let mapObject
-  let marker
-  mapplsClassObject.initialize("9a632cda78b871b3a6eb69bddc470fef", () => {
-     mapObject = mapplsClassObject.Map({ id: "map", properties: mapProps });
-
-    mapObject.on("load", () => {
-     marker = mapplsClassObject.Marker({
-        map: mapObject,
-        position: { lat: 8.528818999999999, lng: 76.94310683333333 },
-        properties: markerProps
-      });
-     marker.setIcon("https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af")
-     marker.setPopup("")
-  });
-  });
-
-  
-
-  const handleTaskFilter = async(selectedTask)=>{
+  const handleStatusFilter = async (selectedStatus) => {
     try {
-      console.log(token)
-      const response = await axios.get(`${BASE_URL}/admin/delivery-management/task`,  {
-        params: { filter: selectedTask }, // Use params object for query parameters
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      console.log(token);
+      const response = await axios.get(
+        `${BASE_URL}/admin/delivery-management/agent`,
+        {
+          params: { filter: selectedStatus }, // Use params object for query parameters
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       if (response.status === 201) {
         // const {data} = response.data;
-        setTaskData(response.data.data)
+        setAgentData(response.data.data);
       }
-      
     } catch (err) {
       console.log("Error in fetching agent: ", err);
     }
-  }
-  
+  };
+
+  const handleGetAllAgent = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/agents/all-agents`, {
+        // Use params object for query parameters
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        // const {data} = response.data;
+        console.log(response.data.data);
+        setAllAgentData(response.data.data);
+      }
+    } catch (err) {
+      console.log("Error in fetching agent: ", err);
+    }
+  };
+
+  // let styleMap
+  const mapContainerRef = useRef(null);
+  const [mapObject, setMapObject] = useState(null);
+
+  // Initialize the map
+  useEffect(() => {
+    handleStatusFilter("Free");
+    handleGetAllAgent();
+    const mapProps = {
+      center: [8.528818999999999, 76.94310683333333],
+      traffic: true,
+      zoom: 12,
+      geolocation: true,
+      clickableIcons: true,
+    };
+
+    const mapplsClassObject = new mappls();
+    if (allAgentData) {
+      mapplsClassObject.initialize(
+        "9a632cda78b871b3a6eb69bddc470fef",
+        async () => {
+          if (mapContainerRef.current) {
+            console.log("Initializing map...");
+            const map = await mapplsClassObject.Map({
+              id: "map",
+              properties: mapProps,
+            });
+
+            if (map && typeof map.on === "function") {
+              console.log("Map initialized successfully.");
+              map.on("load", () => {
+                console.log("Map loaded.");
+                setMapObject(map); // Save the map object to state
+              });
+            } else {
+              console.error(
+                "mapObject.on is not a function or mapObject is not defined"
+              );
+            }
+          } else {
+            console.error("Map container not found");
+          }
+        }
+      );
+    }
+  }, []);
+
+  // Add markers once agentData is fetched
+  useEffect(() => {
+    if (mapObject && allAgentData) {
+      const markerProps = {
+        fitbounds: true,
+        fitboundOptions: { padding: 120, duration: 1000 },
+        width: 100,
+        height: 100,
+        clusters: true,
+        clustersOptions: { color: "blue", bgcolor: "red" },
+        offset: [0, 10],
+        draggable: true,
+      };
+
+      console.log("Adding markers...");
+      const agentGeoData = {
+        type: "FeatureCollection",
+        features: allAgentData.map((agent) => ({
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${agent._id} \n
+                 Name: ${agent.fullName} \n
+                 Phone: ${agent.phoneNumber} `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: agent.location, // Assuming agent.location is [lat, lng]
+          },
+        })),
+      };
+      const mapplsObject = new mappls();
+      agentGeoData.features.forEach(async (feature) => {
+        const { coordinates } = feature.geometry;
+        const { htmlPopup } = feature.properties;
+
+        try {
+          const agentMarker = await mapplsObject.Marker({
+            map: mapObject,
+            position: { lat: coordinates[0], lng: coordinates[1] },
+            properties: { ...markerProps, popupHtml: htmlPopup },
+          });
+          await agentMarker.setIcon(
+            "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+          );
+          await agentMarker.setPopup(htmlPopup);
+          console.log(`Marker added for location: ${htmlPopup}`);
+        } catch (error) {
+          console.error("Error adding marker:", error);
+        }
+      });
+    }
+  }, [mapObject, allAgentData]);
+
+  const handleTaskFilter = async (selectedTask) => {
+    try {
+      console.log(token);
+      const response = await axios.get(
+        `${BASE_URL}/admin/delivery-management/task`,
+        {
+          params: { filter: selectedTask }, // Use params object for query parameters
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 201) {
+        // const {data} = response.data;
+        setTaskData(response.data.data);
+      }
+    } catch (err) {
+      console.log("Error in fetching agent: ", err);
+    }
+  };
+
+  const showShopLocationOnMap = (coordinates, fullName, Id) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 100,
+      height: 100,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    console.log("Adding markers...");
+    const agentGeoData = {
+      type: "FeatureCollection",
+      features:[ 
+        {
+        type: "Feature",
+        properties: {
+          htmlPopup: `Id:${Id} \n
+               Name: ${fullName} \n `,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: coordinates, // Assuming agent.location is [lat, lng]
+        },
+      }
+      ]
+    };
+    const mapplsObject = new mappls();
+    agentGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const agentMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await agentMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319913.svg?alt=media&token=b57902c6-aa15-45f4-a825-978dce404687"
+        );
+        await agentMarker.setPopup(htmlPopup);
+         mapObject.setView([coordinates[0], coordinates[1]], 17);
+        console.log(`Marker added for location: ${htmlPopup}`);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
 
   return (
     <>
@@ -410,18 +564,18 @@ const DeliveryManagement = () => {
                 <option value="Completed">Completed Tasks</option>
               </select> */}
               <select
-        className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
-        name="task"
-        value={task}
-        onChange={selectChange} // Update state and call handleTaskFilter
-      >
-        <option value="" hidden disabled>
-          Select Task
-        </option>
-        <option value="Unassigned">Unassigned Tasks</option>
-        <option value="Assigned">Assigned Tasks</option>
-        <option value="Completed">Completed Tasks</option>
-      </select>
+                className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
+                name="task"
+                value={task}
+                onChange={selectChange} // Update state and call handleTaskFilter
+              >
+                <option value="" hidden disabled>
+                  Select Task
+                </option>
+                <option value="Unassigned">Unassigned Tasks <span className="bg-teal-800 text-white rounded-full w-[20px] h-[20px]">{taskData.length}</span></option>
+                <option value="Assigned">Assigned Tasks</option>
+                <option value="Completed">Completed Tasks</option>
+              </select>
               <input
                 type="search"
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 mb-5 p-2 w-full focus:outline-none"
@@ -434,13 +588,23 @@ const DeliveryManagement = () => {
                     {taskData.map((data) => (
                       <Card className="bg-zinc-100 mt-5" key={data._id}>
                         <CardBody>
-                          <Typography variant="h5" color="" className="text-[15px]">
-                            {`${formatDate(data.createdAt)} ${formatTime(data.createdAt)}`}
+                          <Typography
+                            variant="h5"
+                            color=""
+                            className="text-[15px]"
+                          >
+                            {`${formatDate(data.createdAt)} ${formatTime(
+                              data.createdAt
+                            )}`}
                           </Typography>
-                          <Typography  className="text-[16px]">{data.pickupDetail.pickupAddress.fullName}</Typography>
-                          <Typography  className="text-[15px]">{data.pickupDetail.pickupAddress.area}</Typography>
+                          <Typography className="text-[16px]">
+                            {data.pickupDetail.pickupAddress.fullName}
+                          </Typography>
+                          <Typography className="text-[15px]">
+                            {data.pickupDetail.pickupAddress.area}
+                          </Typography>
                           <Typography className="flex justify-between mt-3">
-                            <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold">
+                            <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold" onClick={()=> showShopLocationOnMap(data.pickupDetail.pickupLocation,data.pickupDetail.pickupAddress.fullName, data._id)}>
                               View on Map
                             </Button>
 
@@ -584,7 +748,9 @@ const DeliveryManagement = () => {
                                       <label className="w-1/3 text-gray-600">
                                         Task ID
                                       </label>
-                                      <p className="font-semibold">{data._id}</p>
+                                      <p className="font-semibold">
+                                        {data._id}
+                                      </p>
                                     </div>
                                     <div className="flex mt-5">
                                       <label className="w-1/3 text-gray-600">
@@ -637,10 +803,16 @@ const DeliveryManagement = () => {
                             color="blue-gray"
                             className="text-[15px]"
                           >
-                           {`${formatDate(data.createdAt)} ${formatTime(data.createdAt)}`}
+                            {`${formatDate(data.createdAt)} ${formatTime(
+                              data.createdAt
+                            )}`}
                           </Typography>
-                          <Typography  className="text-[16px]">{data.pickupDetail.pickupAddress.fullName}</Typography>
-                          <Typography  className="text-[15px]">{data.pickupDetail.pickupAddress.area}</Typography>
+                          <Typography className="text-[16px]">
+                            {data.pickupDetail.pickupAddress.fullName}
+                          </Typography>
+                          <Typography className="text-[15px]">
+                            {data.pickupDetail.pickupAddress.area}
+                          </Typography>
 
                           <Typography className="flex justify-between mt-3 ">
                             <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold">
@@ -765,8 +937,11 @@ const DeliveryManagement = () => {
           </div>
 
           <div className="w-2/4 bg-white h-[520px]">
-            {/* <img className="w-full" src="map.svg" /> */}
-            <div id="map" style={styleMap}></div>
+            <div
+              id="map"
+              ref={mapContainerRef}
+              style={{ width: "99%", height: "510px", display: "inline-block" }}
+            ></div>
           </div>
           <div className="w-1/4 rounded-lg bg-white">
             <div className="bg-teal-800 text-white p-5 rounded-lg">Agents</div>
@@ -774,6 +949,8 @@ const DeliveryManagement = () => {
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
                 name="tasks"
+                value={status}
+                onChange={selectChangeOfStatus}
               >
                 <option value="Free">Free</option>
                 <option value="Busy">Busy</option>
@@ -787,26 +964,27 @@ const DeliveryManagement = () => {
               />
             </div>
             <div className="p-5 max-h-[300px] overflow-y-auto">
-              {/* {data.map((data) => (
-                <Card className="bg-zinc-100 mt-5 flex">
+              {agentData.map((data) => (
+                <Card className="bg-zinc-100 mt-5 flex" key={data._id}>
                   <div className="flex justify-between">
                     <div className="w-2/3">
                       <CardBody>
-                        <Typography variant="h5" color="blue-gray" className="">
-                          {data.time}
+                        <Typography variant="h5" className="text-[15px]">
+                          {data._id}
                         </Typography>
-                        <Typography>{data.head}</Typography>
-                        <Typography>{data.phone}</Typography>
+                        <Typography>{data.fullName}</Typography>
+                        <Typography>{data.phoneNumber}</Typography>
                       </CardBody>
                     </div>
                     <div className="w-1/3 flex justify-center items-center">
-                      <p className="bg-teal-800 rounded-full p-3 text-white">
-                        10
-                      </p>
+                      <div className="bg-teal-800 rounded-full h-[40px] w-[40px] flex justify-center items-center text-white">
+                        {data.taskCompleted}
+                      </div>
                     </div>
+                    {/* <p className="font-semibold mt-[85px]">Tasks</p> */}
                   </div>
                 </Card>
-              ))} */}
+              ))}
             </div>
           </div>
         </div>
