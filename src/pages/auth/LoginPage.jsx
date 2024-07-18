@@ -36,6 +36,7 @@ const LoginPage = () => {
         setToken(token);
         setRole(role);
         setUserId(_id);
+        console.log("Finished setting");
         navigate("/home");
       }
     } catch (err) {
