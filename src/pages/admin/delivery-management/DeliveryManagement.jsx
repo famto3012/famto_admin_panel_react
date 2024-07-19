@@ -375,6 +375,58 @@ const DeliveryManagement = () => {
       }
     });
   };
+  
+  const showAgentLocationOnMap = (coordinates, fullName, Id, phoneNumber) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 100,
+      height: 100,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    console.log("Adding markers...");
+    const agentGeoData = {
+      type: "FeatureCollection",
+      features:[ 
+        {
+        type: "Feature",
+        properties: {
+          htmlPopup: `Id:${Id} \n
+               Name: ${fullName} \n `,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: coordinates, // Assuming agent.location is [lat, lng]
+        },
+      }
+      ]
+    };
+    const mapplsObject = new mappls();
+    agentGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const agentMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await agentMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+        );
+        await agentMarker.setPopup(htmlPopup);
+         mapObject.setView([coordinates[0], coordinates[1]], 17);
+        console.log(`Marker added for location: ${htmlPopup}`);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
 
   return (
     <>
@@ -544,7 +596,7 @@ const DeliveryManagement = () => {
         </div>
         <div className="flex gap-2 mt-5">
           <div className="w-1/4 rounded-lg bg-white">
-            <div className="bg-teal-800 text-white p-5 rounded-lg">Tasks</div>
+            <div className="bg-teal-800 text-white p-5 rounded-lg flex">Tasks <p className="ms-[240px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">{taskData.length}</p></div>
             <div className="w-full p-2 mt-4">
               {/* <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
@@ -572,7 +624,7 @@ const DeliveryManagement = () => {
                 <option value="" hidden disabled>
                   Select Task
                 </option>
-                <option value="Unassigned">Unassigned Tasks <span className="bg-teal-800 text-white rounded-full w-[20px] h-[20px]">{taskData.length}</span></option>
+                <option value="Unassigned">Unassigned Tasks </option>
                 <option value="Assigned">Assigned Tasks</option>
                 <option value="Completed">Completed Tasks</option>
               </select>
@@ -944,7 +996,7 @@ const DeliveryManagement = () => {
             ></div>
           </div>
           <div className="w-1/4 rounded-lg bg-white">
-            <div className="bg-teal-800 text-white p-5 rounded-lg">Agents</div>
+            <div className="bg-teal-800 text-white p-5 rounded-lg flex">Agents <p className="ms-[230px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">{agentData.length}</p></div>
             <div className="w-full p-2 bg-white ">
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
@@ -965,10 +1017,10 @@ const DeliveryManagement = () => {
             </div>
             <div className="p-5 max-h-[300px] overflow-y-auto">
               {agentData.map((data) => (
-                <Card className="bg-zinc-100 mt-5 flex" key={data._id}>
+                <Card className="bg-zinc-100 mt-5 flex" key={data._id}  onClick={()=>showAgentLocationOnMap(data.location, data.fullName, data._id, data.phoneNumber)}>
                   <div className="flex justify-between">
                     <div className="w-2/3">
-                      <CardBody>
+                      <CardBody >
                         <Typography variant="h5" className="text-[15px]">
                           {data._id}
                         </Typography>
