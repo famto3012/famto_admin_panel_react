@@ -32,6 +32,7 @@ const AddTaxModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
+      console.log("taxData", taxData);
       const response = await axios.post(
         `${BASE_URL}/admin/taxes/add-tax`,
         taxData,
@@ -43,7 +44,7 @@ const AddTaxModal = ({
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         handleCancel();
       }
     } catch (err) {
