@@ -27,3 +27,7 @@
     @apply flex flex-col text-[14px] text-gray-300  mt-[10px] w-full;
   }
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
