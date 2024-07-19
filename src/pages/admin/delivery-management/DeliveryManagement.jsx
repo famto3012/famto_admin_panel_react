@@ -29,6 +29,16 @@ const DeliveryManagement = () => {
   const [taskData, setTaskData] = useState([]);
   const [agentData, setAgentData] = useState([]);
   const [allAgentData, setAllAgentData] = useState([]);
+  const [value, checkValue] = useState("");
+  const [isLoading, setLoading] = useState(false)
+  const [task, setTask] = useState("");
+  const [status, setStatus] = useState("Free");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleAgent, setIsModalVisibleAgent] = useState(false);
+  const [isModalVisibleTask, setIsModalVisibleTask] = useState(false);
+  const [prioritize, setPrioritize] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
+  //const [searchOrderId, setOrderId] = useState("")
 
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const { token } = useContext(UserContext);
@@ -82,14 +92,14 @@ const DeliveryManagement = () => {
   //     adress: "Pattom",
   //   },
   // ];
-  const [value, checkValue] = useState("");
+ 
 
   const onChange = (checked) => {
     checkValue(checked);
     console.log(`switch to ${checked}`);
   };
 
-  const [task, setTask] = useState("");
+
   console.log(task);
   const selectChange = (e) => {
     const selectedTask = e.target.value;
@@ -100,7 +110,7 @@ const DeliveryManagement = () => {
       setTaskData([]); // Clear task data when "Select Task" is chosen
     }
   };
-  const [status, setStatus] = useState("Free");
+
   const selectChangeOfStatus = (e) => {
     const selectedStatus = e.target.value;
     setStatus(selectedStatus); // Update selected task state immediately
@@ -110,8 +120,7 @@ const DeliveryManagement = () => {
       handleStatusFilter(selectedStatus); // Clear task data when "Select Task" is chosen
     }
   };
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
+ 
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -124,7 +133,7 @@ const DeliveryManagement = () => {
     setIsModalVisible(false);
   };
 
-  const [isModalVisibleAgent, setIsModalVisibleAgent] = useState(false);
+ 
 
   const showModalAgent = () => {
     setIsModalVisibleAgent(true);
@@ -138,7 +147,7 @@ const DeliveryManagement = () => {
     setIsModalVisibleAgent(false);
   };
 
-  const [isModalVisibleTask, setIsModalVisibleTask] = useState(false);
+  
 
   const showModalTask = () => {
     setIsModalVisibleTask(true);
@@ -152,12 +161,12 @@ const DeliveryManagement = () => {
     setIsModalVisibleTask(false);
   };
 
-  const [selectedOption, setSelectedOption] = useState("sales");
+
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
 
-  const [prioritize, setPrioritize] = useState("");
+
   const handleRadioChange = (event) => {
     setPrioritize(event.target.value);
   };
@@ -203,6 +212,60 @@ const DeliveryManagement = () => {
       console.log("Error in fetching agent: ", err);
     }
   };
+
+  const handleSearch = async(searchOrderId) => {
+    setLoading(true)
+     try{
+      console.log(searchOrderId)
+      console.log(token)
+      const response = await axios.get(`${BASE_URL}/admin/delivery-management/get-order-id`,{
+        params: {  orderId: searchOrderId }, 
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        // const {data} = response.data;
+        console.log(response.data.data);
+        setTaskData(response.data.data);
+      }
+     }catch(err){
+        console.log(err)
+     }finally{
+      setLoading(false)
+     }
+  }
+  const handleAgentSearch = async(agentName) => {
+    setLoading(true)
+     try{
+      console.log(agentName)
+      console.log(token)
+      const response = await axios.get(`${BASE_URL}/admin/delivery-management/agent-name`,{
+        params: {  fullName: agentName }, 
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        // const {data} = response.data;
+        console.log(response.data);
+        setAgentData(response.data);
+      }
+     }catch(err){
+        console.log(err)
+     }finally{
+      setLoading(false)
+     }
+  }
+
+  // useEffect(() => {
+   
+  //   const timeout = setTimeout(() => {
+  //     handleSearch()
+  //   }, 500);
+
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // }, [])
 
   // let styleMap
   const mapContainerRef = useRef(null);
@@ -634,9 +697,10 @@ const DeliveryManagement = () => {
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 mb-5 p-2 w-full focus:outline-none"
                 name="search"
                 placeholder="Search order Id"
+                onChange={(e)=>{handleSearch(e.target.value)}}
               />
               <div className="px-5 bg-white max-h-[300px] overflow-y-auto">
-                {task === "Unassigned" && (
+                {/* {task === "Unassigned" && ( */}
                   <div>
                     {taskData.map((data) => (
                       <Card className="bg-zinc-100 mt-3" key={data._id}>
@@ -844,9 +908,9 @@ const DeliveryManagement = () => {
                       </Card>
                     ))}
                   </div>
-                )}
+                {/* )} */}
 
-                {task === "Assigned" && (
+                {/* {task === "Assigned" && (
                   <div>
                     {taskData.map((data) => (
                       <Card className="bg-zinc-100 mt-3" key={data._id}>
@@ -984,7 +1048,7 @@ const DeliveryManagement = () => {
                       </Card>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>
@@ -1014,6 +1078,7 @@ const DeliveryManagement = () => {
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 p-2 w-full focus:outline-none"
                 name="search"
                 placeholder="Search agents"
+                onChange={(e)=>{handleAgentSearch(e.target.value)}}
               />
             </div>
             <div className="px-5 max-h-[300px] overflow-y-auto">
