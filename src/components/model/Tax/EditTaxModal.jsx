@@ -42,7 +42,7 @@ const EditTaxModal = ({
     e.preventDefault();
     try {
       const response = await axios.put(
-        `${BASE_URL}/admin/taxes/update-tax`,
+        `${BASE_URL}/admin/taxes/edit-tax/${editTaxData._id}`,
         editTaxData,
         {
           withCredentials: true,
@@ -53,7 +53,7 @@ const EditTaxModal = ({
       );
 
       if (response.status === 200) {
-        handleOk();
+        handleCancel();
       }
     } catch (err) {
       console.log(`Error in updating tax: ${err}`);

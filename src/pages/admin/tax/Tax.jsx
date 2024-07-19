@@ -85,6 +85,7 @@ const Tax = () => {
   };
 
   const showEditModal = async (taxId) => {
+    console.log("Hii");
     setEditModalVisible(true);
     try {
       const response = await axios.get(`${BASE_URL}/admin/taxes/${taxId}`, {
@@ -92,9 +93,13 @@ const Tax = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log("Hello");
+
       if (response.status === 200) {
         setCurrentTax(response.data.data);
       }
+
+      console.log("Bye");
     } catch (err) {
       console.log(`Error in getting tax data: ${err}`);
     }
@@ -109,6 +114,7 @@ const Tax = () => {
     setAddModalVisible(false);
     setEditModalVisible(false);
     setDeleteModalVisible(false);
+    setCurrentTax(null);
   };
 
   const handleToggle = async (taxId) => {
@@ -116,8 +122,8 @@ const Tax = () => {
       const tax = taxData.find((tax) => tax._id === taxId);
       if (tax) {
         const updatedStatus = !tax.status;
-        await axios.put(
-          `${BASE_URL}/admin/taxes/update-tax`,
+        await axios.post(
+          `${BASE_URL}/admin/taxes/change-status/${taxId}`,
           {
             ...tax,
             status: updatedStatus,
@@ -136,6 +142,17 @@ const Tax = () => {
     } catch (err) {
       console.log(`Error in toggling tax status: ${err}`);
     }
+  };
+
+  // New function to remove a tax from the taxData state
+  const removeTax = (taxId) => {
+    setTaxData(taxData.filter((tax) => tax._id !== taxId));
+  };
+
+  // New function to handle confirm delete
+  const handleConfirmDelete = () => {
+    setDeleteModalVisible(false);
+    setCurrentTax(null);
   };
 
   return (
@@ -180,6 +197,7 @@ const Tax = () => {
                   <tr>
                     {[
                       "Tax Id",
+                      "Tax name",
                       "Tax",
                       "Fixed/Percentage",
                       "Assign to Merchant",
@@ -198,21 +216,30 @@ const Tax = () => {
                 <tbody className="bg-white">
                   {taxData.map((tax) => (
                     <tr key={tax._id}>
-                      <td className="py-5 px-4 border-b border-gray-100 underline underline-offset-2">
+                      <td className="py-2 px-4 border-b border-gray-100">
                         {tax._id}
                       </td>
+
+                      <td className="py-2 px-4 border-b border-gray-100">
+                        {tax.taxName}
+                      </td>
+
                       <td className="py-2 px-4 border-b border-gray-100">
                         {tax.tax}
                       </td>
+
                       <td className="py-2 px-4 border-b border-gray-100">
                         {tax.taxType}
                       </td>
+
                       <td className="py-2 px-4 border-b border-gray-100">
                         {tax.assignToBusinessCategoryId.title}
                       </td>
+
                       <td className="py-2 px-4 border-b border-gray-100">
                         {tax.geofenceId.name}
                       </td>
+
                       <td className="py-5 px-4 border-b border-gray-100">
                         <div className="flex justify-center items-center gap-3">
                           <Switch
@@ -223,28 +250,12 @@ const Tax = () => {
                           <button onClick={() => showEditModal(tax._id)}>
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
-                          <EditTaxModal
-                            isVisible={editModalVisible}
-                            handleCancel={handleCancel}
-                            token={token}
-                            BASE_URL={BASE_URL}
-                            allGeofence={allGeofence}
-                            allBusinessCategory={allBusinessCategory}
-                            taxData={currentTax}
-                          />
                           <button
                             onClick={() => showDeleteModal(tax._id)}
                             className="outline-none focus:outline-none"
                           >
                             <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                           </button>
-                          <DeleteTaxModal
-                            isVisible={deleteModalVisible}
-                            handleCancel={handleCancel}
-                            token={token}
-                            BASE_URL={BASE_URL}
-                            taxId={currentTax}
-                          />
                         </div>
                       </td>
                     </tr>
@@ -253,6 +264,30 @@ const Tax = () => {
               </table>
             </div>
           </div>
+          {editModalVisible && (
+            <EditTaxModal
+              isVisible={editModalVisible}
+              handleCancel={handleCancel}
+              token={token}
+              BASE_URL={BASE_URL}
+              currentTax={currentTax}
+              allGeofence={allGeofence}
+              allBusinessCategory={allBusinessCategory}
+              // setModalLoading={setModalLoading}
+            />
+          )}
+          {deleteModalVisible && (
+            <DeleteTaxModal
+              isVisible={deleteModalVisible}
+              handleCancel={handleCancel}
+              handleConfirmDelete={handleConfirmDelete}
+              currentTax={currentTax}
+              token={token}
+              BASE_URL={BASE_URL}
+              removeTax={removeTax}
+              setModalLoading={setModalLoading}
+            />
+          )}
         </>
       )}
     </div>
