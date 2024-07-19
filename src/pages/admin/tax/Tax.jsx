@@ -11,6 +11,7 @@ import AddTaxModal from "../../../components/model/Tax/AddTaxModal";
 import EditTaxModal from "../../../components/model/Tax/EditTaxModal";
 import DeleteTaxModal from "../../../components/model/Tax/DeleteTaxModal";
 import { useNavigate } from "react-router-dom";
+import GIFLoader from "../../../components/GIFLoader";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -21,6 +22,10 @@ const Tax = () => {
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
 
+  // Loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+
   // State for each modal
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -30,67 +35,49 @@ const Tax = () => {
   useEffect(() => {
     if (!token || role !== "Admin") {
       navigate("/auth/login");
+      return;
     }
 
-    const getAllTax = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/admin/taxes/all-tax`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        setIsLoading(true);
 
-        if (response.status === 200) {
-          const { data } = response.data;
-          setTaxData(data);
+        const [taxResponse, geofenceResponse, businessCategoryResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/taxes/all-tax`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(
+              `${BASE_URL}/admin/business-categories/get-all-business-category`,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+          ]);
+
+        if (taxResponse.status === 200) {
+          setTaxData(taxResponse.data.data);
+        }
+        if (geofenceResponse.status === 200) {
+          setAllGeofence(geofenceResponse.data.geofences);
+        }
+        if (businessCategoryResponse.status === 200) {
+          setBusinessCategory(businessCategoryResponse.data.data);
         }
       } catch (err) {
-        console.log(`Error in getting all tax: ${err}`);
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    const getAllGeofence = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/admin/geofence/get-geofence`,
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          const { geofences } = response.data;
-          setAllGeofence(geofences);
-        }
-      } catch (err) {
-        console.log(`Error in getting all geofence: ${err}`);
-      }
-    };
-
-    const getAllBusinessCategory = async () => {
-      const response = await axios.get(
-        `${BASE_URL}/admin/business-categories/get-all-business-category`,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        const { data } = response.data;
-        setBusinessCategory(data);
-      }
-    };
-
-    getAllTax();
-    getAllGeofence();
-    getAllBusinessCategory();
+    fetchData();
   }, [token, role, navigate]);
 
   const showAddModal = () => {
@@ -98,18 +85,15 @@ const Tax = () => {
   };
 
   const showEditModal = async (taxId) => {
+    setEditModalVisible(true);
     try {
       const response = await axios.get(`${BASE_URL}/admin/taxes/${taxId}`, {
         withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
-        const { data } = response.data;
-        setCurrentTax(data); // Update currentTax state with the fetched data
-        setEditModalVisible(true);
+        setCurrentTax(response.data.data);
       }
     } catch (err) {
       console.log(`Error in getting tax data: ${err}`);
@@ -117,6 +101,7 @@ const Tax = () => {
   };
 
   const showDeleteModal = (taxId) => {
+    setCurrentTax(taxId);
     setDeleteModalVisible(true);
   };
 
@@ -126,127 +111,151 @@ const Tax = () => {
     setDeleteModalVisible(false);
   };
 
+  const handleToggle = async (taxId) => {
+    try {
+      const tax = taxData.find((tax) => tax._id === taxId);
+      if (tax) {
+        const updatedStatus = !tax.status;
+        await axios.put(
+          `${BASE_URL}/admin/taxes/update-tax`,
+          {
+            ...tax,
+            status: updatedStatus,
+          },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setTaxData(
+          taxData.map((t) =>
+            t._id === taxId ? { ...t, status: updatedStatus } : t
+          )
+        );
+      }
+    } catch (err) {
+      console.log(`Error in toggling tax status: ${err}`);
+    }
+  };
+
   return (
-    <>
-      <Sidebar />
-      <div className="pl-[300px] w-full">
-        <nav className="p-5">
-          <GlobalSearch />
-        </nav>
-        <div className="flex justify-between mt-5 mx-5">
-          <h1 className="font-bold">Tax</h1>
-          <button
-            onClick={showAddModal}
-            className="bg-teal-700 text-white px-5 rounded-lg p-2"
-          >
-            <PlusOutlined /> Add Tax
-          </button>
-          <AddTaxModal
-            isVisible={addModalVisible}
-            handleCancel={handleCancel}
-            token={token}
-            BASE_URL={BASE_URL}
-            allGeofence={allGeofence}
-            allBusinessCategory={allBusinessCategory}
-          />
-        </div>
-        <p className="ms-5 mt-8 text-gray-500">
-          Make sure that taxes aren't duplicated under the same name on the
-          platform.
-          <span className="text-red-700">
-            {" "}
-            Two taxes under the same name cannot coexist.
-          </span>
-        </p>
-        <div className="w-full">
-          <table className="bg-white mt-[45px] text-center w-full">
-            <thead>
-              <tr>
-                {[
-                  "Tax Id",
-                  // "Tax Name",
-                  "Tax",
-                  "Fixed/Percentage",
-                  "Assign to Merchant",
-                  "Geofence",
-                  "Status",
-                ].map((header) => (
-                  <th
-                    key={header}
-                    className="bg-teal-800 text-center h-[70px] text-white"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              {taxData.map((tax) => (
-                <tr key={tax._id}>
-                  <td className="py-5 px-4 border-b border-gray-100 underline underline-offset-2">
-                    {tax._id}
-                  </td>
-                  {/* <td className="py-2 px-4 border-b border-gray-100">
-                    {tax.taxName}
-                  </td> */}
-                  <td className="py-2 px-4 border-b border-gray-100">
-                    {tax.tax}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-100">
-                    {tax.taxType}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-100">
-                    {tax.assignToBusinessCategoryId.title}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-100">
-                    {tax.geofenceId.name}
-                  </td>
-                  <td className="py-5 px-4 border-b border-gray-100">
-                    <div className="flex justify-center items-center gap-3">
-                      <div>
-                        <Switch
-                          className="text-teal-700 mt-2"
-                          checked={tax.status}
-                          onChange={() => handleToggle(tax._id)}
-                        />
-                      </div>
-                      <div className="flex items-center">
-                        <button onClick={() => showEditModal(tax._id)}>
-                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                        </button>
-                        <EditTaxModal
-                          isVisible={editModalVisible}
-                          handleCancel={handleCancel}
-                          token={token}
-                          BASE_URL={BASE_URL}
-                          allGeofence={allGeofence}
-                          allBusinessCategory={allBusinessCategory}
-                          taxData={currentTax}
-                        />
-                      </div>
-                      <button
-                        onClick={() => showDeleteModal(tax._id)}
-                        className="outline-none focus:outline-none"
+    <div>
+      {isLoading ? (
+        <GIFLoader />
+      ) : (
+        <>
+          <Sidebar />
+          <div className="pl-[300px] w-full">
+            <nav className="p-5">
+              <GlobalSearch />
+            </nav>
+            <div className="flex justify-between mt-5 mx-5">
+              <h1 className="font-bold">Tax</h1>
+              <button
+                onClick={showAddModal}
+                className="bg-teal-700 text-white px-5 rounded-lg p-2"
+              >
+                <PlusOutlined /> Add Tax
+              </button>
+              <AddTaxModal
+                isVisible={addModalVisible}
+                handleCancel={handleCancel}
+                token={token}
+                BASE_URL={BASE_URL}
+                allGeofence={allGeofence}
+                allBusinessCategory={allBusinessCategory}
+              />
+            </div>
+            <p className="ms-5 mt-8 text-gray-500">
+              Make sure that taxes aren't duplicated under the same name on the
+              platform.
+              <span className="text-red-700">
+                {" "}
+                Two taxes under the same name cannot coexist.
+              </span>
+            </p>
+            <div className="w-full">
+              <table className="bg-white mt-[45px] text-center w-full">
+                <thead>
+                  <tr>
+                    {[
+                      "Tax Id",
+                      "Tax",
+                      "Fixed/Percentage",
+                      "Assign to Merchant",
+                      "Geofence",
+                      "Status",
+                    ].map((header) => (
+                      <th
+                        key={header}
+                        className="bg-teal-800 text-center h-[70px] text-white"
                       >
-                        <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                      </button>
-                      <DeleteTaxModal
-                        isVisible={deleteModalVisible}
-                        handleCancel={handleCancel}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        taxId={tax._id}
-                      />
-                    </div>
-                  </td>
-                  <td className="border-b border-gray-300"></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {taxData.map((tax) => (
+                    <tr key={tax._id}>
+                      <td className="py-5 px-4 border-b border-gray-100 underline underline-offset-2">
+                        {tax._id}
+                      </td>
+                      <td className="py-2 px-4 border-b border-gray-100">
+                        {tax.tax}
+                      </td>
+                      <td className="py-2 px-4 border-b border-gray-100">
+                        {tax.taxType}
+                      </td>
+                      <td className="py-2 px-4 border-b border-gray-100">
+                        {tax.assignToBusinessCategoryId.title}
+                      </td>
+                      <td className="py-2 px-4 border-b border-gray-100">
+                        {tax.geofenceId.name}
+                      </td>
+                      <td className="py-5 px-4 border-b border-gray-100">
+                        <div className="flex justify-center items-center gap-3">
+                          <Switch
+                            className="text-teal-700 mt-2"
+                            checked={tax.status}
+                            onChange={() => handleToggle(tax._id)}
+                          />
+                          <button onClick={() => showEditModal(tax._id)}>
+                            <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                          </button>
+                          <EditTaxModal
+                            isVisible={editModalVisible}
+                            handleCancel={handleCancel}
+                            token={token}
+                            BASE_URL={BASE_URL}
+                            allGeofence={allGeofence}
+                            allBusinessCategory={allBusinessCategory}
+                            taxData={currentTax}
+                          />
+                          <button
+                            onClick={() => showDeleteModal(tax._id)}
+                            className="outline-none focus:outline-none"
+                          >
+                            <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                          </button>
+                          <DeleteTaxModal
+                            isVisible={deleteModalVisible}
+                            handleCancel={handleCancel}
+                            token={token}
+                            BASE_URL={BASE_URL}
+                            taxId={currentTax}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
