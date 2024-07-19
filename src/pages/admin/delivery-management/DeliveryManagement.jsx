@@ -396,7 +396,8 @@ const DeliveryManagement = () => {
         type: "Feature",
         properties: {
           htmlPopup: `Id:${Id} \n
-               Name: ${fullName} \n `,
+               Name: ${fullName} \n
+               Phone Number: ${phoneNumber} `,
         },
         geometry: {
           type: "Point",
@@ -634,11 +635,11 @@ const DeliveryManagement = () => {
                 name="search"
                 placeholder="Search order Id"
               />
-              <div className="p-5 bg-white max-h-[300px] overflow-y-auto">
+              <div className="px-5 bg-white max-h-[300px] overflow-y-auto">
                 {task === "Unassigned" && (
                   <div>
                     {taskData.map((data) => (
-                      <Card className="bg-zinc-100 mt-5" key={data._id}>
+                      <Card className="bg-zinc-100 mt-3" key={data._id}>
                         <CardBody>
                           <Typography
                             variant="h5"
@@ -848,7 +849,7 @@ const DeliveryManagement = () => {
                 {task === "Assigned" && (
                   <div>
                     {taskData.map((data) => (
-                      <Card className="bg-zinc-100 mt-5" key={data._id}>
+                      <Card className="bg-zinc-100 mt-3" key={data._id}>
                         <CardBody>
                           <Typography
                             variant="h5"
@@ -1015,9 +1016,9 @@ const DeliveryManagement = () => {
                 placeholder="Search agents"
               />
             </div>
-            <div className="p-5 max-h-[300px] overflow-y-auto">
+            <div className="px-5 max-h-[300px] overflow-y-auto">
               {agentData.map((data) => (
-                <Card className="bg-zinc-100 mt-5 flex" key={data._id}  onClick={()=>showAgentLocationOnMap(data.location, data.fullName, data._id, data.phoneNumber)}>
+                <Card className="bg-zinc-100 mt-3 flex" key={data._id}  onClick={()=>showAgentLocationOnMap(data.location, data.fullName, data._id, data.phoneNumber)}>
                   <div className="flex justify-between">
                     <div className="w-2/3">
                       <CardBody >
