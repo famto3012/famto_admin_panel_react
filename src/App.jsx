@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Addresscomponent from "./components/model/Addresscomponent";
+import GIFLoader from "./components/GIFLoader";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -69,13 +70,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center h-screen">
-              Loading...
-            </div>
-          }
-        >
+        <Suspense fallback={<GIFLoader />}>
           <Routes>
             {/* Auth Routes */}
             <Route path="/auth">

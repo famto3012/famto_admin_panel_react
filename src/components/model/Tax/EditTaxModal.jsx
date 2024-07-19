@@ -24,6 +24,13 @@ const EditTaxModal = ({
     setEditTaxData({ ...editTaxData, [e.target.name]: e.target.value });
   };
 
+  const handleSelectChange = (e) => {
+    setEditTaxData({
+      ...editTaxData,
+      [e.target.name]: { ...editTaxData[e.target.name], _id: e.target.value },
+    });
+  };
+
   const handleRadioChange = (event) => {
     setEditTaxData((tax) => ({
       ...tax,
@@ -112,8 +119,8 @@ const EditTaxModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
-              value={editTaxData.geofenceId.name}
-              onChange={handleInputChange}
+              value={editTaxData.geofenceId._id}
+              onChange={handleSelectChange}
             >
               {allGeofence.map((geofence) => (
                 <option key={geofence._id} value={geofence._id}>
@@ -130,12 +137,9 @@ const EditTaxModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="assignToBusinessCategoryId"
-              value={editTaxData.assignToBusinessCategoryId}
-              onChange={handleInputChange}
+              value={editTaxData.assignToBusinessCategoryId._id}
+              onChange={handleSelectChange}
             >
-              <option defaultValue={"Select business category"} hidden>
-                Select business category
-              </option>
               {allBusinessCategory.map((category) => (
                 <option key={category._id} value={category._id}>
                   {category.title}
