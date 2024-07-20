@@ -33,6 +33,7 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         const { token, role, _id } = response.data;
+        console.log(response.data)
         setToken(token);
         setRole(role);
         setUserId(_id);
