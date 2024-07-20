@@ -12,16 +12,25 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { filter } from "@chakra-ui/react";
+import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
+  const [allGeofence, setAllGeofence] = useState([]);
+  const [geofenceFilter, setGeofenceFilter] = useState("");
+  const [searchfilter,setSearchFilter]= useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token || role !== "Admin") {
       navigate("/auth/login");
       return;
     }
@@ -46,7 +55,94 @@ const Customers = () => {
     fetchCustomers();
   }, [token, role, navigate]);
 
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("/auth/login");
+      return;
+    }
+    const fetchGeofence = async () => {
+      try {
+        setIsLoading(true);
+
+        const [geofenceResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        if (geofenceResponse.status === 200) {
+          setAllGeofence(geofenceResponse.data.geofences);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGeofence();
+  }, [token, role, navigate]);
+
+  const onGeofenceChange = (e) => {
+    const selectedService = e.target.value;
+    setGeofenceFilter(selectedService);
+    if (selectedService !== "") {
+      handleGeofenceFilter(selectedService);
+    } else {
+      setCustomers([]);
+    }
+  };
+  const handleGeofenceFilter = async (selectedService) => {
+    try {
+      console.log(token);
+      const serviceResponse = await axios.get(
+        `${BASE_URL}/admin/customers?`,
+        {
+          params: { filter: selectedService },
+          withCredentials: true,
+          headers: { Authorization: ` Bearer ${token}` },
+        }
+      );
+      if (serviceResponse.status === 200) {
+        setCustomers(serviceResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching customers:${err}`);
+    }
+  };
+  const onSearchChange = (e) => {
+    const selectedSearch = e.target.value;
+    setSearchFilter(selectedSearch);
+    if (selectedSearch !== "") {
+      handleSearchFilter(selectedSearch);
+    } else {
+      setCustomers([]);
+    }
+  };
+  const handleSearchFilter = async (selectedSearch) => {
+    try {
+      console.log(token);
+      const searchResponse = await axios.get(
+        `${BASE_URL}/admin/customers/search?`,
+        {
+          params: { query: selectedSearch },
+          withCredentials: true,
+          headers: { Authorization: ` Bearer ${token}` },
+        }
+      );
+      if (searchResponse.status === 200) {
+        setCustomers(searchResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching customers:${err}`);
+    }
+  };
+
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
     <>
       <Sidebar />
 
@@ -63,16 +159,17 @@ const Customers = () => {
         <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
           <select
             name="type"
-            // value={geofence}
+            value={geofenceFilter}
             className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none "
-            // onChange={selectChange}
+            onChange={onGeofenceChange}
           >
-            <option hidden value="">
-              Geofence
-            </option>
-            <option value="customer" className="bg-white">
-              Searched Customers
-            </option>
+
+          <option hidden value="">Geofence</option>
+            {allGeofence.map((geoFence) => (
+              <option value={geoFence._id} key={geoFence._id}>
+                {geoFence.name}
+              </option>
+            ))}
           </select>
           <div>
             <FilterAltOutlined className="text-gray-400 " />
@@ -81,10 +178,13 @@ const Customers = () => {
               name="search"
               placeholder="Search customer ID"
               className="bg-gray-100 h-10 px-5 pr-2 rounded-full ml-4 w-72 text-sm focus:outline-none"
+              value={searchfilter}
+              onChange={onSearchChange}
             />
             <button type="submit" className="absolute right-20 mt-2">
               <SearchOutlined className="text-xl text-gray-500" />
             </button>
+        
           </div>
         </div>
         <div className="overflow-auto mt-[20px] w-full">
@@ -130,8 +230,7 @@ const Customers = () => {
                   <td>{customer.registrationDate}</td>
                   <td>
                     <StarRating rating={customer.averageRating} />
-                  </td>{" "}
-                  {/* Display Rating as stars */}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -139,6 +238,8 @@ const Customers = () => {
         </div>
       </div>
     </>
+    )}
+    </div>
   );
 };
 
