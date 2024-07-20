@@ -1,0 +1,31 @@
+// Scripts for firebase and firebase messaging
+importScripts('https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js');
+
+// Initialize the Firebase app in the service worker by passing the generated config
+const firebaseConfig = {
+    apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
+    authDomain: "famto-aa73e.firebaseapp.com",
+    projectId: "famto-aa73e",
+    storageBucket: "famto-aa73e.appspot.com",
+    messagingSenderId: "773492185977",
+    appId: "1:773492185977:web:e425f759d3c13e8c2c2da8",
+    measurementId: "G-TZ0J50H36P"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+// Retrieve firebase messaging
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function(payload) {
+  console.log('Received background message ', payload);
+ // Customize notification here
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+  };
+
+  self.registration.showNotification(notificationTitle,
+    notificationOptions);
+});

@@ -30,7 +30,7 @@ const DeliveryManagement = () => {
   const [agentData, setAgentData] = useState([]);
   const [allAgentData, setAllAgentData] = useState([]);
   const [value, checkValue] = useState("");
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false);
   const [task, setTask] = useState("");
   const [status, setStatus] = useState("Free");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -92,13 +92,11 @@ const DeliveryManagement = () => {
   //     adress: "Pattom",
   //   },
   // ];
- 
 
   const onChange = (checked) => {
     checkValue(checked);
     console.log(`switch to ${checked}`);
   };
-
 
   console.log(task);
   const selectChange = (e) => {
@@ -120,7 +118,7 @@ const DeliveryManagement = () => {
       handleStatusFilter(selectedStatus); // Clear task data when "Select Task" is chosen
     }
   };
- 
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -132,8 +130,6 @@ const DeliveryManagement = () => {
   const showModalCancel = () => {
     setIsModalVisible(false);
   };
-
- 
 
   const showModalAgent = () => {
     setIsModalVisibleAgent(true);
@@ -147,25 +143,19 @@ const DeliveryManagement = () => {
     setIsModalVisibleAgent(false);
   };
 
-  
+  const [visibleTaskModal, setVisibleTaskModal] = useState({});
 
-  const showModalTask = () => {
-    setIsModalVisibleTask(true);
+  const showModalTask = (taskId) => {
+    setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
   };
 
-  const showOkModalTask = () => {
-    setIsModalVisibleTask(false);
+  const showModalCancelTask = (taskId) => {
+    setVisibleTaskModal((prev) => ({ ...prev, [taskId]: false }));
   };
-
-  const showModalCancelTask = () => {
-    setIsModalVisibleTask(false);
-  };
-
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
-
 
   const handleRadioChange = (event) => {
     setPrioritize(event.target.value);
@@ -213,51 +203,57 @@ const DeliveryManagement = () => {
     }
   };
 
-  const handleSearch = async(searchOrderId) => {
-    setLoading(true)
-     try{
-      console.log(searchOrderId)
-      console.log(token)
-      const response = await axios.get(`${BASE_URL}/admin/delivery-management/get-order-id`,{
-        params: {  orderId: searchOrderId }, 
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  const handleSearch = async (searchOrderId) => {
+    setLoading(true);
+    try {
+      console.log(searchOrderId);
+      console.log(token);
+      const response = await axios.get(
+        `${BASE_URL}/admin/delivery-management/get-order-id`,
+        {
+          params: { orderId: searchOrderId },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         // const {data} = response.data;
         console.log(response.data.data);
         setTaskData(response.data.data);
       }
-     }catch(err){
-        console.log(err)
-     }finally{
-      setLoading(false)
-     }
-  }
-  const handleAgentSearch = async(agentName) => {
-    setLoading(true)
-     try{
-      console.log(agentName)
-      console.log(token)
-      const response = await axios.get(`${BASE_URL}/admin/delivery-management/agent-name`,{
-        params: {  fullName: agentName }, 
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleAgentSearch = async (agentName) => {
+    setLoading(true);
+    try {
+      console.log(agentName);
+      console.log(token);
+      const response = await axios.get(
+        `${BASE_URL}/admin/delivery-management/agent-name`,
+        {
+          params: { fullName: agentName },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         // const {data} = response.data;
         console.log(response.data);
         setAgentData(response.data);
       }
-     }catch(err){
-        console.log(err)
-     }finally{
-      setLoading(false)
-     }
-  }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // useEffect(() => {
-   
+
   //   const timeout = setTimeout(() => {
   //     handleSearch()
   //   }, 500);
@@ -402,19 +398,19 @@ const DeliveryManagement = () => {
     console.log("Adding markers...");
     const agentGeoData = {
       type: "FeatureCollection",
-      features:[ 
+      features: [
         {
-        type: "Feature",
-        properties: {
-          htmlPopup: `Id:${Id} \n
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} \n
                Name: ${fullName} \n `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+          },
         },
-        geometry: {
-          type: "Point",
-          coordinates: coordinates, // Assuming agent.location is [lat, lng]
-        },
-      }
-      ]
+      ],
     };
     const mapplsObject = new mappls();
     agentGeoData.features.forEach(async (feature) => {
@@ -431,14 +427,14 @@ const DeliveryManagement = () => {
           "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319913.svg?alt=media&token=b57902c6-aa15-45f4-a825-978dce404687"
         );
         await agentMarker.setPopup(htmlPopup);
-         mapObject.setView([coordinates[0], coordinates[1]], 17);
+        mapObject.setView([coordinates[0], coordinates[1]], 17);
         console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
     });
   };
-  
+
   const showAgentLocationOnMap = (coordinates, fullName, Id, phoneNumber) => {
     const markerProps = {
       fitbounds: true,
@@ -454,20 +450,20 @@ const DeliveryManagement = () => {
     console.log("Adding markers...");
     const agentGeoData = {
       type: "FeatureCollection",
-      features:[ 
+      features: [
         {
-        type: "Feature",
-        properties: {
-          htmlPopup: `Id:${Id} \n
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} \n
                Name: ${fullName} \n
                Phone Number: ${phoneNumber} `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+          },
         },
-        geometry: {
-          type: "Point",
-          coordinates: coordinates, // Assuming agent.location is [lat, lng]
-        },
-      }
-      ]
+      ],
     };
     const mapplsObject = new mappls();
     agentGeoData.features.forEach(async (feature) => {
@@ -484,7 +480,7 @@ const DeliveryManagement = () => {
           "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
         );
         await agentMarker.setPopup(htmlPopup);
-         mapObject.setView([coordinates[0], coordinates[1]], 17);
+        mapObject.setView([coordinates[0], coordinates[1]], 17);
         console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
@@ -660,7 +656,12 @@ const DeliveryManagement = () => {
         </div>
         <div className="flex gap-2 mt-5">
           <div className="w-1/4 rounded-lg bg-white">
-            <div className="bg-teal-800 text-white p-5 rounded-lg flex">Tasks <p className="ms-[240px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">{taskData.length}</p></div>
+            <div className="bg-teal-800 text-white p-5 rounded-lg flex">
+              Tasks{" "}
+              <p className="ms-[240px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
+                {taskData.length}
+              </p>
+            </div>
             <div className="w-full p-2 mt-4">
               {/* <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
@@ -697,358 +698,324 @@ const DeliveryManagement = () => {
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 mb-5 p-2 w-full focus:outline-none"
                 name="search"
                 placeholder="Search order Id"
-                onChange={(e)=>{handleSearch(e.target.value)}}
+                onChange={(e) => {
+                  handleSearch(e.target.value);
+                }}
               />
               <div className="px-5 bg-white max-h-[300px] overflow-y-auto">
                 {/* {task === "Unassigned" && ( */}
-                  <div>
-                    {taskData.map((data) => (
-                      <Card className="bg-zinc-100 mt-3" key={data._id}>
-                        <CardBody>
-                          <Typography
-                            variant="h5"
-                            color=""
-                            className="text-[15px]"
+                <div>
+                  {taskData.map((data) => (
+                    <Card className="bg-zinc-100 mt-3" key={data._id}>
+                      <CardBody>
+                        <Typography
+                          variant="h5"
+                          color=""
+                          className="text-[15px]"
+                        >
+                          {`${formatDate(data.createdAt)} ${formatTime(
+                            data.createdAt
+                          )}`}
+                        </Typography>
+                        <Typography className="text-[16px]">
+                          {data.pickupDetail.pickupAddress.fullName}
+                        </Typography>
+                        <Typography className="text-[15px]">
+                          {data.pickupDetail.pickupAddress.area}
+                        </Typography>
+                        <Typography className="flex justify-between mt-3">
+                          <Button
+                            className=" bg-gray-100 text-black text-[12px] p-4 font-semibold"
+                            onClick={() =>
+                              showShopLocationOnMap(
+                                data.pickupDetail.pickupLocation,
+                                data.pickupDetail.pickupAddress.fullName,
+                                data._id
+                              )
+                            }
                           >
-                            {`${formatDate(data.createdAt)} ${formatTime(
-                              data.createdAt
-                            )}`}
-                          </Typography>
-                          <Typography className="text-[16px]">
-                            {data.pickupDetail.pickupAddress.fullName}
-                          </Typography>
-                          <Typography className="text-[15px]">
-                            {data.pickupDetail.pickupAddress.area}
-                          </Typography>
-                          <Typography className="flex justify-between mt-3">
-                            <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold" onClick={()=> showShopLocationOnMap(data.pickupDetail.pickupLocation,data.pickupDetail.pickupAddress.fullName, data._id)}>
-                              View on Map
-                            </Button>
+                            View on Map
+                          </Button>
 
-                            {data.taskStatus === "Assigned" || data.taskStatus === "Completed" ? (
-                              <div>
-                                <Button
-                                  className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
-                                  onClick={showModalTask}
-                                >
-                                  View Details
-                                </Button>
-                                <Modal
-                                  onOk={showOkModalTask}
-                                  onCancel={showModalCancelTask}
-                                  open={isModalVisibleTask}
-                                  width="600px"
-                                  centered
-                                  title="Task details"
-                                  footer={null}
-                                >
-                                  <div>
-                                    <div className="flex gap-10 text-[18px] font-normal mt-5">
-                                      <div className="w-1/2 me-3  grid gap-3">
-                                        <div className="flex justify-between">
-                                          <label className="text-gray-500">
-                                            Task Id
-                                          </label>
-                                          <p>{data._id}</p>
-                                        </div>
-                                        <div className="flex justify-between ">
-                                          <label className="text-gray-500">
-                                            Delivery Method
-                                          </label>
-                                          <p>Online</p>
-                                        </div>
-                                      </div>
-                                      <div className="w-1/2 grid gap-3">
-                                        <div className="flex justify-between">
-                                          <label className="text-gray-500">
-                                            Agent Name
-                                          </label>
-                                          <p>{}</p>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <label className="text-gray-500">
-                                            Agent ID
-                                          </label>
-                                          <p>{data.agentId}</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <p className="mt-5 text-lg font-semibold">
-                                        Task status
-                                      </p>
-                                      <div className="mt-5">
-                                        <Stepper
-                                          index={activeStep}
-                                          orientation="vertical"
-                                          colorScheme="teal"
-                                          gap="2"
-                                        >
-                                          {steps.map((step, index) => (
-                                            <Step
-                                              key={index}
-                                              className="flex gap-5 size-20"
-                                            >
-                                              <StepIndicator>
-                                                <StepStatus
-                                                  complete={
-                                                    <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                      {index + 1}
-                                                    </div>
-                                                  }
-                                                  incomplete={
-                                                    <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
-                                                      {index + 1}
-                                                    </div>
-                                                  }
-                                                  active={
-                                                    <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                      {index + 1}
-                                                    </div>
-                                                  }
-                                                />
-                                              </StepIndicator>
-                                              <Box
-                                                flexShrink="0"
-                                                className="ml-4"
-                                              >
-                                                <StepTitle className="font-semibold text-[16px]">
-                                                  {step.title}
-                                                </StepTitle>
-                                                <StepDescription className="text-sm text-gray-500">
-                                                  {step.description}
-                                                </StepDescription>
-                                                <Step className="text-sm text-gray-500">
-                                                  {step.adress}
-                                                </Step>
-                                              </Box>
-                                              <Box
-                                                flexShrink="0"
-                                                className="ml-36"
-                                              >
-                                                <Step>
-                                                  Expected Time {step.pickup}
-                                                </Step>
-                                                <Step>
-                                                  Pick up Time {step.time}
-                                                </Step>
-                                              </Box>
-                                              <StepSeparator className="my-2" />
-                                            </Step>
-                                          ))}
-                                        </Stepper>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </Modal>
-                              </div>
-                            ) : (
-                              <div>
-                                <Button
-                                  className=" bg-teal-800  text-white text-[12px] p-4  font-semibold"
-                                  onClick={showModalAgent}
-                                >
-                                  Assign Agent
-                                </Button>
-                                <Modal
-                                  title="Assign Agent"
-                                  onOk={showOkModalAgent}
-                                  onCancel={showModalCancelAgent}
-                                  open={isModalVisibleAgent}
-                                  footer={null}
-                                  width="600px"
-                                  centered
-                                  key={data._id}
-                                >
-                                  <div>
-                                    <div className="flex mt-5">
-                                      <label className="w-1/3 text-gray-600">
-                                        Task ID
-                                      </label>
-                                      <p className="font-semibold">
-                                        {data._id}
-                                      </p>
-                                    </div>
-                                    <div className="flex mt-5">
-                                      <label className="w-1/3 text-gray-600">
-                                        Geofence
-                                      </label>
-                                      <p className="font-semibold">
-                                        <Switch />
-                                      </p>
-                                    </div>
-                                    <div className="flex mt-5 ">
-                                      <label className="w-1/3 text-gray-600">
-                                        Agent
-                                      </label>
-                                      <select
-                                        className="w-2/3 mr-8 p-2 rounded-lg border border-gray-300 outline-none focus:outline-none"
-                                        name="agent"
-                                      >
-                                        <option>Assign Agent</option>
-                                      </select>
-                                    </div>
-                                    <div className="flex justify-end gap-5 mt-10">
-                                      <button
-                                        className="bg-zinc-200 p-2 rounded-md px-4"
-                                        onClick={showModalCancelAgent}
-                                      >
-                                        Cancel
-                                      </button>
-                                      <button className="bg-teal-800 text-white p-2 rounded-md px-4">
-                                        Assign Agent
-                                      </button>
-                                    </div>
-                                  </div>
-                                </Modal>
-                              </div>
-                            )}
-                          </Typography>
-                        </CardBody>
-                      </Card>
-                    ))}
-                  </div>
-                {/* )} */}
-
-                {/* {task === "Assigned" && (
-                  <div>
-                    {taskData.map((data) => (
-                      <Card className="bg-zinc-100 mt-3" key={data._id}>
-                        <CardBody>
-                          <Typography
-                            variant="h5"
-                            color="blue-gray"
-                            className="text-[15px]"
-                          >
-                            {`${formatDate(data.createdAt)} ${formatTime(
-                              data.createdAt
-                            )}`}
-                          </Typography>
-                          <Typography className="text-[16px]">
-                            {data.pickupDetail.pickupAddress.fullName}
-                          </Typography>
-                          <Typography className="text-[15px]">
-                            {data.pickupDetail.pickupAddress.area}
-                          </Typography>
-
-                          <Typography className="flex justify-between mt-3 ">
-                            <Button className=" bg-gray-100 text-black text-[12px] p-4 font-semibold">
-                              View on Map
-                            </Button>
-                            <Button
-                              className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
-                              onClick={showModalTask}
-                            >
-                              View Details
-                            </Button>
-                            <Modal
-                              onOk={showOkModalTask}
-                              onCancel={showModalCancelTask}
-                              open={isModalVisibleTask}
-                              width="720px"
-                              centered
-                              title="Task details"
-                              footer={null}
-                            >
-                              <div>
-                                <div className="flex gap-10 text-[18px] font-normal mt-5 ">
-                                  <div className="w-1/2 me-3  grid gap-3">
-                                    <div className="flex justify-between">
-                                      <label className="text-gray-500 text-[17px]">
-                                        Task Id
-                                      </label>
-                                      <p>{data._id}</p>
-                                    </div>
-                                    <div className="flex justify-between ">
-                                      <label className="text-gray-500">
-                                        Delivery Method
-                                      </label>
-                                      <p>Online</p>
-                                    </div>
-                                  </div>
-                                  <div className="w-1/2 grid gap-3">
-                                    <div className="flex justify-between">
-                                      <label className="text-gray-500">
-                                        Agent Name
-                                      </label>
-                                      <p>Name</p>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <label className="text-gray-500">
-                                        Agent ID
-                                      </label>
-                                      <p>12</p>
-                                    </div>
-                                  </div>
-                                </div>
+                          {data.taskStatus === "Assigned" ||
+                          data.taskStatus === "Completed" ? (
+                            <div>
+                              <Button
+                                className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
+                                onClick={() => showModalTask(data._id)}
+                              >
+                                View Details
+                              </Button>
+                              <Modal
+                                onOk={() => showModalCancelTask(data._id)}
+                                onCancel={() => showModalCancelTask(data._id)}
+                                open={visibleTaskModal[data._id] || false}
+                                width="600px"
+                                centered
+                                title="Task details"
+                                footer={null}
+                              >
                                 <div>
-                                  <p className="mt-5 text-lg font-semibold">
-                                    Task status
-                                  </p>
-                                  <div className="mt-5">
-                                    <Stepper
-                                      index={activeStep}
-                                      orientation="vertical"
-                                      colorScheme="teal"
-                                      gap="2"
-                                    >
-                                      {steps.map((step, index) => (
+                                  <div className="flex gap-7 text-[18px] font-normal mt-5">
+                                    <div className="w-1/2 grid gap-3">
+                                      <div className="flex">
+                                        <div className="text-gray-500 text-[16px] w-full">
+                                          Task Id
+                                        </div>
+                                        <p className="text-[15px] ms-[5px]">
+                                          {data._id}
+                                        </p>
+                                      </div>
+                                      <div className="flex">
+                                        <label className="text-gray-500 text-[16px]">
+                                          Delivery Method
+                                        </label>
+                                        <p className="text-[15px] ms-[15px]">
+                                          {
+                                            data.orderId.orderDetail
+                                              .deliveryMode
+                                          }
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="w-1/2 grid gap-3">
+                                      <div className="flex ">
+                                        <label className="text-gray-500 text-[15px]">
+                                          Agent Name
+                                        </label>
+                                        <p className="text-[15px] ms-[15px]">
+                                          {data.agentId.fullName}
+                                        </p>
+                                      </div>
+                                      <div className="flex ">
+                                        <label className="text-gray-500 text-[15px]">
+                                          Agent ID
+                                        </label>
+                                        <p className="text-[15px] ms-[10px]">
+                                          {data.agentId._id}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="mt-5 text-lg font-semibold">
+                                      Task status
+                                    </p>
+                                    <div className="mt-5">
+                                      <Stepper
+                                        index={activeStep}
+                                        orientation="vertical"
+                                        colorScheme="teal"
+                                        gap="2"
+                                      >
                                         <Step
-                                          key={index}
+                                          key={data.orderId.merchantId}
                                           className="flex gap-5 size-20"
                                         >
                                           <StepIndicator>
                                             <StepStatus
                                               complete={
                                                 <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                  {index + 1}
+                                                  1
                                                 </div>
                                               }
                                               incomplete={
                                                 <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
-                                                  {index + 1}
+                                                  1
                                                 </div>
                                               }
                                               active={
                                                 <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                  {index + 1}
+                                                  1
                                                 </div>
                                               }
                                             />
                                           </StepIndicator>
                                           <Box flexShrink="0" className="ml-4">
                                             <StepTitle className="font-semibold text-[16px]">
-                                              {step.title}
+                                              {
+                                                data.orderId.orderDetail
+                                                  .pickupAddress.fullName
+                                              }
                                             </StepTitle>
                                             <StepDescription className="text-sm text-gray-500">
-                                              {step.description}
+                                              By Admin
                                             </StepDescription>
                                             <Step className="text-sm text-gray-500">
-                                              {step.adress}
+                                              {
+                                                data.orderId.orderDetail
+                                                  .pickupAddress.area
+                                              }
                                             </Step>
                                           </Box>
-                                          <Box flexShrink="0" className="ml-36">
+                                          <Box
+                                            flexShrink="0"
+                                            className="mx-[70px]"
+                                          >
                                             <Step>
-                                              Expected Time {step.pickup}
+                                              Expected Time
+                                              {`${formatDate(
+                                                data.orderId.createdAt
+                                              )} ${formatTime(
+                                                data.orderId.createdAt
+                                              )}`}
                                             </Step>
                                             <Step>
-                                              Pick up Time {step.time}
+                                              Pick up Time{" "}
+                                              {`${formatDate(
+                                                data.orderId.createdAt
+                                              )} ${formatTime(
+                                                data.orderId.createdAt
+                                              )}`}
                                             </Step>
                                           </Box>
                                           <StepSeparator className="my-2" />
                                         </Step>
-                                      ))}
-                                    </Stepper>
+                                        <Step
+                                          key={data.orderId.customerId}
+                                          className="flex gap-5 size-20"
+                                        >
+                                          <StepIndicator>
+                                            <StepStatus
+                                              complete={
+                                                <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
+                                                  2
+                                                </div>
+                                              }
+                                              incomplete={
+                                                <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
+                                                  2
+                                                </div>
+                                              }
+                                              active={
+                                                <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
+                                                  2
+                                                </div>
+                                              }
+                                            />
+                                          </StepIndicator>
+                                          <Box flexShrink="0" className="ml-4">
+                                            <StepTitle className="font-semibold text-[16px]">
+                                              {
+                                                data.orderId.orderDetail
+                                                  .deliveryAddress.fullName
+                                              }
+                                            </StepTitle>
+                                            <StepDescription className="text-sm text-gray-500">
+                                              By Admin
+                                            </StepDescription>
+                                            <Step className="text-sm text-gray-500">
+                                              {
+                                                data.orderId.orderDetail
+                                                  .deliveryAddress.flat
+                                              }
+                                              {
+                                                data.orderId.orderDetail
+                                                  .deliveryAddress.area
+                                              }
+                                              {
+                                                data.orderId.orderDetail
+                                                  .deliveryAddress.landMark
+                                              }
+                                            </Step>
+                                          </Box>
+                                          <Box
+                                            flexShrink="0"
+                                            className="mx-[70px]"
+                                          >
+                                            <Step>
+                                              Expected Time{" "}
+                                              {`${formatDate(
+                                                data.orderId.orderDetail
+                                                  .deliveryTime
+                                              )} ${formatTime(
+                                                data.orderId.orderDetail
+                                                  .deliveryTime
+                                              )}`}
+                                            </Step>
+                                            <Step>
+                                              Delivery Time{" "}
+                                              {`${formatDate(
+                                                data.orderId.orderDetail
+                                                  .deliveryTime
+                                              )} ${formatTime(
+                                                data.orderId.orderDetail
+                                                  .deliveryTime
+                                              )}`}
+                                            </Step>
+                                          </Box>
+                                          <StepSeparator className="my-2" />
+                                        </Step>
+                                      </Stepper>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </Modal>
-                          </Typography>
-                        </CardBody>
-                      </Card>
-                    ))}
-                  </div>
-                )} */}
+                              </Modal>
+                            </div>
+                          ) : (
+                            <div>
+                              <Button
+                                className=" bg-teal-800  text-white text-[12px] p-4  font-semibold"
+                                onClick={() => showModalTask(data._id)}
+                              >
+                                Assign Agent
+                              </Button>
+                              <Modal
+                                title="Assign Agent"
+                                onOk={() => showModalCancelTask(data._id)}
+                                onCancel={() => showModalCancelTask(data._id)}
+                                open={visibleTaskModal[data._id] || false}
+                                width="600px"
+                                centered
+                                footer={null}
+                                key={data._id}
+                              >
+                                <div>
+                                  <div className="flex mt-5">
+                                    <label className="w-1/3 text-gray-600">
+                                      Task ID
+                                    </label>
+                                    <p className="font-semibold">{data._id}</p>
+                                  </div>
+                                  <div className="flex mt-5">
+                                    <label className="w-1/3 text-gray-600">
+                                      Geofence
+                                    </label>
+                                    <p className="font-semibold">
+                                      <Switch />
+                                    </p>
+                                  </div>
+                                  <div className="flex mt-5 ">
+                                    <label className="w-1/3 text-gray-600">
+                                      Agent
+                                    </label>
+                                    <select
+                                      className="w-2/3 mr-8 p-2 rounded-lg border border-gray-300 outline-none focus:outline-none"
+                                      name="agent"
+                                    >
+                                      <option>Assign Agent</option>
+                                    </select>
+                                  </div>
+                                  <div className="flex justify-end gap-5 mt-10">
+                                    <button
+                                      className="bg-zinc-200 p-2 rounded-md px-4"
+                                      onClick={showModalCancelAgent}
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button className="bg-teal-800 text-white p-2 rounded-md px-4">
+                                      Assign Agent
+                                    </button>
+                                  </div>
+                                </div>
+                              </Modal>
+                            </div>
+                          )}
+                        </Typography>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1061,7 +1028,12 @@ const DeliveryManagement = () => {
             ></div>
           </div>
           <div className="w-1/4 rounded-lg bg-white">
-            <div className="bg-teal-800 text-white p-5 rounded-lg flex">Agents <p className="ms-[230px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">{agentData.length}</p></div>
+            <div className="bg-teal-800 text-white p-5 rounded-lg flex">
+              Agents{" "}
+              <p className="ms-[230px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
+                {agentData.length}
+              </p>
+            </div>
             <div className="w-full p-2 bg-white ">
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
@@ -1078,15 +1050,28 @@ const DeliveryManagement = () => {
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 p-2 w-full focus:outline-none"
                 name="search"
                 placeholder="Search agents"
-                onChange={(e)=>{handleAgentSearch(e.target.value)}}
+                onChange={(e) => {
+                  handleAgentSearch(e.target.value);
+                }}
               />
             </div>
             <div className="px-5 max-h-[300px] overflow-y-auto">
               {agentData.map((data) => (
-                <Card className="bg-zinc-100 mt-3 flex" key={data._id}  onClick={()=>showAgentLocationOnMap(data.location, data.fullName, data._id, data.phoneNumber)}>
+                <Card
+                  className="bg-zinc-100 mt-3 flex"
+                  key={data._id}
+                  onClick={() =>
+                    showAgentLocationOnMap(
+                      data.location,
+                      data.fullName,
+                      data._id,
+                      data.phoneNumber
+                    )
+                  }
+                >
                   <div className="flex justify-between">
                     <div className="w-2/3">
-                      <CardBody >
+                      <CardBody>
                         <Typography variant="h5" className="text-[15px]">
                           {data._id}
                         </Typography>
