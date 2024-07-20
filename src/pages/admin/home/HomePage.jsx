@@ -18,7 +18,7 @@ const HomePage = () => {
   };
   const { token, role, userId, fcmToken, setFcmToken } =
     useContext(UserContext);
-    console.log(fcmToken)
+  console.log(fcmToken);
 
   const socket = io("http://localhost:5000", {
     query: {
