@@ -4,7 +4,11 @@
 
 @layer components {
   .input {
-    @apply appearance-none  border-b-2 border-gray-300 w-full ml-3  py-4 px-4 text-gray-700 leading-tight focus:outline-none min-w-full;
+    @apply border-b-2 border-gray-300 w-full ml-3 py-4 px-4 text-gray-700 leading-tight focus:outline-none;
+  }
+
+  .input-error {
+    @apply border-b-2 border-red-500 placeholder:text-red-500;
   }
 
   .input1 {
@@ -20,11 +24,15 @@
   }
 
   .dropside {
-    @apply flex items-center justify-between text-white mt-[20px] text-[16px];
+    @apply flex items-center justify-between text-white mt-[20px] text-[16px] px-3 cursor-pointer;
   }
 
   .ul-side {
     @apply flex flex-col text-[14px] text-gray-300  mt-[10px] w-full;
+  }
+
+  .selected-link {
+    @apply bg-cyan-400 text-white;
   }
 }
 

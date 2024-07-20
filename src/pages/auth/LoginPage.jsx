@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import famtoWhiteLogo from "/famto-white-logo.svg";
 import famtoBlackLogo from "/famto-black-logo.svg";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
+import Loader from "../../components/Loader";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -16,8 +17,15 @@ const LoginPage = () => {
     password: "",
     role: "",
   });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    role: "",
+    general: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { setToken, setRole, setUserId } = useContext(UserContext);
+  const { token, setToken, setRole, setUserId } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -25,10 +33,17 @@ const LoginPage = () => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    if (token) {
+      navigate("/home");
+    }
+  }, [token, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(loginData);
+
     try {
+      setIsLoading(true);
       const response = await axios.post(`${BASE_URL}/auth/sign-in`, loginData);
 
       if (response.status === 200) {
@@ -41,6 +56,21 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.log("Error in login: ", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        const { errors } = err.response.data;
+
+        // If errors is an object
+        setErrors({
+          email: errors.email || "",
+          password: errors.password || "",
+          role: errors.role || "",
+          general: errors.general || "",
+        });
+
+        console.log(errors);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,8 +109,10 @@ const LoginPage = () => {
               </label>
               <select
                 id="role"
-                name="role" // Ensure this matches the state field
-                className="mt-1 text-gray-500 p-2 w-full border rounded"
+                name="role"
+                className={`mt-1 text-gray-500 p-2 w-full border rounded appearance-none outline-none focus:outline-none ${
+                  errors.role && `input-error`
+                }`}
                 value={loginData.role}
                 onChange={handleInputChange}
               >
@@ -91,39 +123,60 @@ const LoginPage = () => {
                 <option value={"Merchant"}>Merchant</option>
                 <option value={"Manager"}>Manager</option>
               </select>
+              {errors.role && (
+                <small className="text-red-500 text-start">{errors.role}</small>
+              )}
             </div>
+
             <div className="mb-3 ">
               <div className="mb-2 relative inset-y-0 left-0 flex items-center">
                 <div className="absolute text-teal-700 ">
                   <PersonOutlineOutlinedIcon />
                 </div>
                 <input
-                  className="input"
+                  className={`input ${errors.email && `input-error`}`}
                   id="username"
                   name="email"
                   type="email"
                   placeholder="Email Address"
                   value={loginData.email}
                   onChange={handleInputChange}
-                  required
                 />
               </div>
+              {errors.email && (
+                <small className="text-red-500 text-center">
+                  {errors.email}
+                </small>
+              )}
             </div>
-            <div className="mb-2  relative inset-y-0 left-0 flex items-center">
-              <div className="absolute text-teal-700">
-                <LockOutlinedIcon />
+
+            <div className="mb-3">
+              <div className="mb-2 relative inset-y-0 left-0 flex items-center">
+                <div className="absolute text-teal-700">
+                  <LockOutlinedIcon />
+                </div>
+                <input
+                  className={`input ${errors.email && `input-error`}`}
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  value={loginData.password}
+                  onChange={handleInputChange}
+                />
               </div>
-              <input
-                className="input"
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={loginData.password}
-                onChange={handleInputChange}
-                required
-              />
+              {errors.password && (
+                <small className="text-red-500 text-start">
+                  {errors.password}
+                </small>
+              )}
+              {errors.general && (
+                <small className="text-red-500 text-start">
+                  {errors.general}
+                </small>
+              )}
             </div>
+
             <div className="flex items-center justify-end mb-4 text-teal-700">
               <Link to="/forgot-password">Forgot Password?</Link>
             </div>
@@ -131,7 +184,7 @@ const LoginPage = () => {
               type="submit"
               className="w-full py-2 lg:px-4  bg-teal-700 text-white rounded-xl hover:bg-teal-800"
             >
-              Sign in
+              {isLoading ? "" : `Sign in`}
             </button>
           </form>
           <div className="mt-3 text-center">
