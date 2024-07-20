@@ -92,7 +92,7 @@ const Sidebar = () => {
         <img src={whitelogo} alt="Logo" />
         <h1 className="text-white font-poppins font-medium text-2xl">Famto</h1>
       </div>
-      <div className="dropside">General</div>
+      <div className="dropside ">General</div>
 
       <ul className="ul-side">
         <Link

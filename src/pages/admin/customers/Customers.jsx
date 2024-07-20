@@ -12,52 +12,46 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { filter } from "@chakra-ui/react";
-const BASE_URL= import.meta.env.VITE_APP_BASE_URL;
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
-  const [isLoading,setIsLoading] = useState(false)
-  const {token,role}=useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!token || role !== "Admin"){
+    if (!token) {
       navigate("/auth/login");
       return;
     }
     const fetchCustomers = async () => {
-      try{
+      try {
         setIsLoading(true);
-        const [customersResponse] =
-        await Promise.all([
-          axios.get(`${BASE_URL}/admin/customers/get-all` , {
-            withCredentials:true,
-            headers:{Authorization : `Bearer ${token}`},
+        const [customersResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/customers/get-all`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
           }),
-         ])
-        if(customersResponse.status===200)
-        {
-          setCustomers(customersResponse.data.data)
+        ]);
+        if (customersResponse.status === 200) {
+          setCustomers(customersResponse.data.data);
         }
-      }
-      catch(err){
+      } catch (err) {
         console.error(`Error in fetchingdata:${err}`);
-      }finally{
+      } finally {
         setIsLoading(false);
       }
-     
-    }; fetchCustomers();
-  }, [token,role,navigate]);
+    };
+    fetchCustomers();
+  }, [token, role, navigate]);
 
-
-  
-   
   return (
     <>
       <Sidebar />
 
       <div className="w-full h-screen pl-[290px] bg-gray-100">
-      <nav className="p-5">
+        <nav className="p-5">
           <GlobalSearch />
         </nav>
         <div className="flex items-center justify-between mx-8 mt-5">
@@ -79,7 +73,6 @@ const Customers = () => {
             <option value="customer" className="bg-white">
               Searched Customers
             </option>
-          
           </select>
           <div>
             <FilterAltOutlined className="text-gray-400 " />
