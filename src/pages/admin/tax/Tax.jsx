@@ -33,8 +33,11 @@ const Tax = () => {
   const [currentTax, setCurrentTax] = useState(null);
 
   useEffect(() => {
-    if (!token || role !== "Admin") {
+    if (!token) {
       navigate("/auth/login");
+      return;
+    } else if (token && role === "Merchant") {
+      navigate("/home");
       return;
     }
 
