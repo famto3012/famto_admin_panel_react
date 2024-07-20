@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import {
   ArrowDownOutlined,
@@ -6,34 +6,52 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { FilterAltOutlined } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import StarRating from "../../../components/model/StarRating";
 import GlobalSearch from "../../../components/GlobalSearch";
+import { UserContext } from "../../../context/UserContext";
+import axios from "axios";
+import { filter } from "@chakra-ui/react";
+const BASE_URL= import.meta.env.VITE_APP_BASE_URL;
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
+  const [isLoading,setIsLoading] = useState(false)
+  const {token,role}=useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if(!token || role !== "Admin"){
+      navigate("/auth/login");
+      return;
+    }
     const fetchCustomers = async () => {
-      const dummyData = [
+      try{
+        setIsLoading(true);
+        const [customersResponse] =
+        await Promise.all([
+          axios.get(`${BASE_URL}/admin/customers/get-all` , {
+            withCredentials:true,
+            headers:{Authorization : `Bearer ${token}`},
+          }),
+         ])
+        if(customersResponse.status===200)
         {
-          id: "01",
-          name: "Nandhu",
-          email: "nandhu1806@gmail.com",
-          phone: "9876543210",
-          lastPlatform: "platform",
-          registrationDate: "18/06/2024",
-          rating: 4, // Example rating (dummy data)
-        },
-        // Add more customers as needed
-      ];
+          setCustomers(customersResponse.data.data)
+        }
+      }
+      catch(err){
+        console.error(`Error in fetchingdata:${err}`);
+      }finally{
+        setIsLoading(false);
+      }
+     
+    }; fetchCustomers();
+  }, [token,role,navigate]);
 
-      setCustomers(dummyData);
-    };
 
-    fetchCustomers();
-  }, []);
-
+  
+   
   return (
     <>
       <Sidebar />
@@ -51,21 +69,17 @@ const Customers = () => {
         <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
           <select
             name="type"
-            defaultValue=""
+            // value={geofence}
             className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none "
+            // onChange={selectChange}
           >
             <option hidden value="">
               Geofence
             </option>
             <option value="customer" className="bg-white">
-              option1
+              Searched Customers
             </option>
-            <option value="agent" className="bg-white">
-              option2
-            </option>
-            <option value="merchant" className="bg-white">
-              option3
-            </option>
+          
           </select>
           <div>
             <FilterAltOutlined className="text-gray-400 " />
@@ -105,24 +119,24 @@ const Customers = () => {
             <tbody>
               {customers.map((customer) => (
                 <tr
-                  key={customer.id}
+                  key={customer._id}
                   className="align-middle border-b border-gray-300 text-center"
                 >
                   <td className="p-4">
                     <Link
-                      to={`/customer-detail/${customer.id}`}
+                      to={`/customer-detail/${customer._id}`}
                       className="underline underline-offset-4"
                     >
-                      {customer.id}
+                      {customer._id}
                     </Link>
                   </td>
-                  <td>{customer.name}</td>
+                  <td>{customer.fullName}</td>
                   <td>{customer.email}</td>
-                  <td>{customer.phone}</td>
-                  <td>{customer.lastPlatform}</td>
+                  <td>{customer.phoneNumber}</td>
+                  <td>{customer.lastPlatformUsed}</td>
                   <td>{customer.registrationDate}</td>
                   <td>
-                    <StarRating rating={customer.rating} />
+                    <StarRating rating={customer.averageRating} />
                   </td>{" "}
                   {/* Display Rating as stars */}
                 </tr>
