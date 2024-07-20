@@ -725,7 +725,7 @@ const DeliveryManagement = () => {
                               View on Map
                             </Button>
 
-                            {value ? (
+                            {data.taskStatus === "Assigned" || data.taskStatus === "Completed" ? (
                               <div>
                                 <Button
                                   className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
@@ -763,13 +763,13 @@ const DeliveryManagement = () => {
                                           <label className="text-gray-500">
                                             Agent Name
                                           </label>
-                                          <p>Name</p>
+                                          <p>{}</p>
                                         </div>
                                         <div className="flex justify-between">
                                           <label className="text-gray-500">
                                             Agent ID
                                           </label>
-                                          <p>12</p>
+                                          <p>{data.agentId}</p>
                                         </div>
                                       </div>
                                     </div>
