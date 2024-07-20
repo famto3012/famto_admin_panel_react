@@ -11,6 +11,7 @@ import StarRating from "../../../components/model/StarRating";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
+import { filter } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -18,6 +19,11 @@ const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
   const [allGeofence, setAllGeofence] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [searchfilter,setSearchFilter]= useState("");
@@ -157,6 +163,7 @@ const Customers = () => {
             className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none "
             onChange={onGeofenceChange}
           >
+
           <option hidden value="">Geofence</option>
             {allGeofence.map((geoFence) => (
               <option value={geoFence._id} key={geoFence._id}>

@@ -18,7 +18,7 @@ const HomePage = () => {
   };
   const { token, role, userId, fcmToken, setFcmToken } =
     useContext(UserContext);
-  console.log(fcmToken);
+  // console.log(fcmToken);
 
   const socket = io("http://localhost:5000", {
     query: {
@@ -57,22 +57,26 @@ const HomePage = () => {
       unsubscribe();
       // Clean up other listeners as needed
     };
-  }, []);
+  }, [token, navigate, socket]);
 
   const requestPermission = async () => {
     try {
       const permission = await Notification.requestPermission();
+      console.log("Permission:", permission);
       if (permission === "granted") {
         const token = await getToken(messaging, {
           vapidKey:
             "BCTdfiFGGBfYA5T5egVXkwTwhZp7Gxv0dYf1zfc7yHLB5Z_0JBJaGQ7fVH9_-mNgn4VMVgmJfatFDknNBseoNbE",
         });
+        console.log("Token generated");
         if (token) {
           console.log("FCM Token:", token);
           setFcmToken(token);
           // Send the token to your server and update the UI if necessary
         } else {
-          console.log("No registration token available.");
+          console.log(
+            "No registration token available. Ensure your service worker is registered correctly."
+          );
         }
       } else {
         console.log("Notification permission not granted");
@@ -86,7 +90,7 @@ const HomePage = () => {
     requestPermission();
   }, []);
 
-  console.log(selectedOption);
+  // console.log(selectedOption);
 
   const data = [
     {
