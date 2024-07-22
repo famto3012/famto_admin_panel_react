@@ -1,5 +1,5 @@
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import BlockIcon from "@mui/icons-material/Block";
 import Sidebar from "../../../components/Sidebar";
@@ -7,53 +7,19 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { MdOutlineEdit } from "react-icons/md";
 import GlobalSearch from "../../../components/GlobalSearch";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const CustomerDetails = () => {
-  const [walletDetails, setWalletDetails] = useState([]);
-
-  useEffect(() => {
-    const fetchWalletDetails = async () => {
-      const dummyData = [
-        {
-          closingBalance: "50000",
-          transactionAmount: "30000",
-          transactionId: "3",
-          orderId: "499",
-          datetime: "18/06/2024 10:30 am",
-        },
-      ];
-
-      setWalletDetails(dummyData);
-    };
-
-    fetchWalletDetails();
-  }, []);
-
-  const [orderDetails, setOrderDetails] = useState([]);
-
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      const dummyData = [
-        {
-          orderid: "3",
-          orderStatus: "Approved",
-          merchantName: "Nandhu",
-          deliveryMode: "Online",
-          ordertime: "11.00 am",
-          deliverytime: "11.30 am",
-          paymentMethod: "Online",
-          deliveryOption: "Online",
-          Amount: "1000",
-          paymentStatus: "Approved",
-        },
-      ];
-
-      setOrderDetails(dummyData);
-    };
-
-    fetchOrderDetails();
-  }, []);
-
+  const { customerId } = useParams();
+  const [customer, setCustomer] = useState({});
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  // const [walletDetails, setWalletDetails] = useState([]);
+  // const [orderDetails, setOrderDetails] = useState([]);
   const [reason, setReason] = useState("");
   const [amountdeduct, setAmountDeduct] = useState("");
   const [amountadd, setAmountAdd] = useState("");
@@ -61,6 +27,77 @@ const CustomerDetails = () => {
   const [isModalVisibleDeduct, setIsModalVisibleDeduct] = useState(false);
   const [isModalVisibleAdd, setIsModalVisibleAdd] = useState(false);
   const [isModalRatings, setIsModalRatings] = useState(false);
+
+  // useEffect(() => {
+  //   if (!token) {
+  //     navigate("/auth/login");
+  //     return;
+  //   }
+
+  //   const fetchData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const response = await axios.get(
+  //         `${BASE_URL}/admin/customers/${customerId}`,
+  //         {
+  //           withCredentials: true,
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+
+  //       if (response.status === 200) {
+  //         const { data } = response.data;
+  //         // console.log("data in response is", data);
+  //         setCustomer(data);
+  //         console.log("data in state", customer);
+  //       }
+  //     } catch (err) {
+  //       console.error(`Error in fetching data: ${err}`);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  //   console.log(customer);
+  // }, [token, role, navigate, customerId]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`${BASE_URL}/admin/customers/${customerId}`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (response.status === 200) {
+          // Update customer state with response data
+          setCustomer(response.data.data);
+          // Assuming walletDetails and orderDetails are part of response.data.data
+          // setWalletDetails(response.data.data.walletDetails);
+          // setOrderDetails(response.data.data.orderDetails);
+        }
+
+        console.log("customer", customer);
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    
+  
+    fetchData();
+  }, [token, customerId, navigate]);
+  
+
   const showModal1 = () => {
     setIsModalVisible(true);
   };
@@ -69,10 +106,30 @@ const CustomerDetails = () => {
     setIsModalVisible(false);
   };
 
-  const handleSubmit1 = (e) => {
+  const handleSubmit1 = async(e) => {
     e.preventDefault();
+  
+  try {
+    setIsLoading(true);
+
+    const response = await axios.patch(
+      `${BASE_URL}/admin/customers/block-customer/${customerId}`,{reason},{
+        withCredentials:true,
+        headers:{Authorization: `Bearer${token}`,
+       }
+      }
+      );
+     if(response.status===200) {
+      setReason(response.data.data)
+      console.log(response.data.data)
+     }
     console.log(reason);
-  };
+  } catch {
+    console.error(`Error in fetching data: ${err}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
   const showModal2 = () => {
     setIsModalVisibleDeduct(true);
   };
@@ -162,8 +219,8 @@ const CustomerDetails = () => {
       <Sidebar />
 
       <div className=" pl-[290px] bg-gray-100">
-      <nav className="p-5">
-          <GlobalSearch/>
+        <nav className="p-5">
+          <GlobalSearch />
         </nav>
         <div className="flex items-center justify-between mx-11 mt-5">
           <h1 className="text-lg font-bold">Customer ID</h1>
@@ -220,14 +277,14 @@ const CustomerDetails = () => {
                 <div className="flex gap-6">
                   <div className="p-3 bg-white flex flex-col gap-3">
                     <div className="flex items-center ">
-                      <label htmlFor="name" className="w-1/3 text-sm">
-                        FullName
+                      <label htmlFor="fullName" className="w-1/3 text-sm">
+                        fullName
                       </label>
                       <input
                         type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
+                        id="fullName"
+                        name="fullName"
+                        value={customer.fullName}
                         onChange={handleChange}
                         className="bg-white h-8  px-2 rounded-sm text-sm focus:outline-none mx-3 w-2/3"
                         disabled={!editMode} // Disable input if not in edit mode
@@ -241,7 +298,7 @@ const CustomerDetails = () => {
                         type="email"
                         id="email"
                         name="email"
-                        value={formData.email}
+                        value={customer.email}
                         onChange={handleChange}
                         className="bg-white h-7 px-2 rounded-sm text-sm focus:outline-none mx-3 w-2/3"
                         disabled={!editMode} // Disable input if not in edit mode
@@ -255,7 +312,7 @@ const CustomerDetails = () => {
                         type="text"
                         id="phone"
                         name="phone"
-                        value={formData.phone}
+                        value={customer.phoneNumber}
                         onChange={handleChange}
                         className="bg-white h-8 px-2 rounded-sm text-sm focus:outline-none mx-3 w-2/3"
                         disabled={!editMode} // Disable input if not in edit mode
@@ -265,30 +322,33 @@ const CustomerDetails = () => {
                   <div className="p-3 bg-white flex flex-col gap-3">
                     <div className="flex items-center">
                       <label
-                        htmlFor="registrationdate"
+                        htmlFor="registrationDate"
                         className="w-1/3 text-sm"
                       >
                         Registration Date
                       </label>
                       <input
-                        type="date"
-                        id="registrationdate"
-                        name="registrationdate"
-                        value={formData.registrationdate}
+                        // type="date"
+                        id="registrationDate"
+                        name="registrationDate"
+                        value={customer.registrationDate}
                         onChange={handleChange}
                         className="bg-white h-8 px-2 rounded-sm text-sm focus:outline-none mx-3 w-2/3 "
                         disabled={!editMode} // Disable input if not in edit mode
                       />
                     </div>
                     <div className="flex justify-between">
-                      <label htmlFor="platformUsed" className="w-1/3 text-sm">
+                      <label
+                        htmlFor="lastPlatformUsed"
+                        className="w-1/3 text-sm"
+                      >
                         Platform Used
                       </label>
                       <input
                         type="text"
-                        id="platformUsed"
-                        name="platformUsed"
-                        value={formData.platformUsed}
+                        id="lastPlatformUsed"
+                        name="lastPlatformUsed"
+                        value={customer.lastPlatformUsed}
                         onChange={handleChange}
                         className="bg-white h-8 px-2 rounded-sm text-sm focus:outline-none mx-3 w-2/3  "
                         disabled={!editMode} // Disable input if not in edit mode
@@ -302,7 +362,7 @@ const CustomerDetails = () => {
                         type="text"
                         id="referalcode"
                         name="referalcode"
-                        value={formData.referalcode}
+                        value={customer.referalcode}
                         onChange={handleChange}
                         className="bg-white h-8 px-2 rounded-sm text-sm focus:outline-none mx-3 w-2/3"
                         disabled={!editMode} // Disable input if not in edit mode
@@ -396,12 +456,13 @@ const CustomerDetails = () => {
             <div className="grid grid-cols-3 mx-11 mt-10 w-fit ">
               <div className="w-[200px] px-2">
                 <h2 className="font-semibold">Home</h2>
-                <span className="flex justify-start mt-3">John James</span>
-                <span className="flex justify-start">8087783199</span>
-                <span className="flex justify-start">
-                  Revathi, A18, Lekshmi Nagar, Kesavadasapuram,{" "}
-                </span>
-                <span className="flex justify-start">Trivandrum, 695004</span>
+                <p>{customer}</p>
+
+                {/* <span className="flex justify-start mt-3">{customer.homeAddress.fullName}</span> */}
+                {/* <span className="flex justify-start">{customer.homeAddress.phoneNumber}</span> */}
+                {/* <span className="flex justify-start">{customer.homeAddress.flat}</span> */}
+                {/* <span className="flex justify-start">{customer.homeAddress.area}</span> */}
+                {/* <span className="flex justify-start">{customer.homeAddress.landmark}</span> */}
               </div>
               <div className=" w-[200px] px-2">
                 <h2 className="font-semibold">Office</h2>
@@ -561,7 +622,16 @@ const CustomerDetails = () => {
               </tr>
             </thead>
             <tbody>
-              {walletDetails.map((walletDetails) => (
+              {customer?.walletDetails?.length === 0 && (
+                <tr>
+                  <td colSpan={5}>
+                    <p className="mb-0 text-center">No data</p>
+                  </td>
+                </tr>
+              )}
+
+              {/* {walletDetails?.map((walletDetails) => ( */}
+              {customer?.walletDetails?.map((walletDetails) => (
                 <tr
                   key={walletDetails.id}
                   className="align-middle border-b border-gray-300 text-center"
@@ -606,7 +676,16 @@ const CustomerDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {orderDetails.map((orderDetails) => (
+                {customer?.orderDetails?.length === 0 && (
+                  <tr>
+                    <td colSpan={10}>
+                      <p className="mb-0 text-center">No data</p>
+                    </td>
+                  </tr>
+                )}
+
+                {/* {customer?.orderDetails?.map((orderDetails) => ( */}
+                {customer?.orderDetails?.map((orderDetails) => (
                   <tr
                     key={orderDetails.id}
                     className="align-middle border-b border-gray-300 text-center"

@@ -112,7 +112,7 @@ function App() {
             <Route path="/customer-app" element={<CustomerApp />} />
             <Route path="/customers" element={<Customers />} />
             <Route
-              path="/customer-detail/:cusomerId"
+              path="/customer-detail/:customerId"
               element={<CustomerDetails />}
             />
             <Route path="/view-commission" element={<Commissionlog />} />
