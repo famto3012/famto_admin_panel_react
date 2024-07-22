@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   SearchOutlined,
   BellOutlined,
@@ -8,14 +8,22 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Modal, Switch } from "antd";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
 import GlobalSearch from "../../../components/GlobalSearch";
-
+import { UserContext } from "../../../context/UserContext";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const DeliveryAgent = () => {
   const [agent, setAgent] = useState([]);
+  const [geofence, setGeofence] = useState([]);
+  const [geofenceFilter, setGeofenceFilter] = useState("");
+  const { token, role } = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
 
   const [addData, setAddData] = useState({
     fullName: "",
@@ -49,10 +57,11 @@ const DeliveryAgent = () => {
   const handleToggle = (id) => {
     setAgent((prevAgent) =>
       prevAgent.map((agent) =>
-        agent.id === id ? { ...agent, status: !agent.status } : agent
+        agent._id === id ? { ...agent, status: !agent.status } : agent
       )
     );
   };
+
 
   const handleApprove = (id) => {
     setAgent((prevAgent) =>
@@ -71,24 +80,72 @@ const DeliveryAgent = () => {
   };
 
   useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("/auth/login");
+      return;
+    }
+
     const fetchAgent = async () => {
-      const dummyData = [
-        {
-          id: "01",
-          name: "Merchant One",
-          email: "123@gmail.com",
-          phone: "1234567890",
-          Manager: "adam",
-          geofence: "geofence",
-          status: "Approved",
-          registrationApproval: "Pending",
-        },
-      ];
-      setAgent(dummyData);
+      try {
+        setIsLoading(true);
+
+        const [agentResponse, geofenceResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/agents/all-agents`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+        if (agentResponse.status === 200) 
+          {
+          setAgent(agentResponse.data.data);
+        }
+        if (geofenceResponse.status === 200) {
+          setGeofence(geofenceResponse.data.geofences);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchAgent();
-  }, []);
+  }, [token,role,navigate]);
+
+  const onGeofenceChange = (e) => {
+    const selectedService = e.target.value;
+    setGeofenceFilter(selectedService);
+    if (selectedService !== "") {
+      handleGeofenceFilter(selectedService);
+    } else {
+      setAgent([]);
+    }
+  };
+  const handleGeofenceFilter = async (selectedService) => {
+    try {
+      console.log(token);
+      const serviceResponse = await axios.get(
+        `${BASE_URL}/merchants/admin/filter?`,
+        {
+          params: { geofence: selectedService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (serviceResponse.status === 200) {
+        setAgent(serviceResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching merchant`, err);
+    }
+  };
+
+ 
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -644,14 +701,21 @@ const DeliveryAgent = () => {
             </select>
 
             <select
-              id="geofence"
-              className="bg-blue-50  w-fit text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-            >
-              <option selected hidden>
-                Geofence
-              </option>
-              <option value="US">United States</option>
-            </select>
+                name="type"
+                value={geofenceFilter}
+                className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none"
+                onChange={onGeofenceChange}
+              
+              >
+                <option hidden value="">
+                  Geofence
+                </option>
+                {geofence.map((geoFence) => (
+                  <option value={geoFence._id} key={geoFence._id}>
+                    {geoFence.name}
+                  </option>
+                ))}
+              </select>
           </div>
 
           <div className="flex items-center gap-[30px]">
@@ -696,33 +760,36 @@ const DeliveryAgent = () => {
             <tbody>
               {agent.map((agent) => (
                 <tr
-                  key={agent.id}
+                  key={agent._id}
                   className="align-middle border-b border-gray-300 text-center"
                 >
                   <td className="p-4 text-center">
-                    <Link to={`/agent-details/${agent.id}`}>{agent.id}</Link>
+                    <Link to={`/agent-details/${agent._id}`}>{agent._id}</Link>
                   </td>
-                  <td className="p-4">{agent.name}</td>
+                  <td className="p-4">{agent.fullName}</td>
                   <td className="p-4">{agent.email}</td>
-                  <td className="p-4">{agent.phone}</td>
-                  <td className="p-4">{agent.Manager}</td>
+                  <td className="p-4">{agent.phoneNumber}</td>
+                  <td className="p-4">{agent.manager}</td>
                   <td className="p-4">{agent.geofence}</td>
                   <td className="p-4">
                     <Switch
-                      checked={agent.status}
-                      onChange={() => handleToggle(agent.id)}
+                       checked={
+                       agent.status
+                      }
+                      onChange={() => handleToggle(agent._id)}
                     />
                   </td>
                   <td className="p-4">
                     <div className="flex space-x-10 justify-center">
                       <CheckCircleOutlined
                         className="text-3xl cursor-pointer text-green-500"
-                        onClick={() => handleApprove(agent.id)}
+                        onClick={() => handleApprove(agent._id)}
                       />
                       <CloseCircleOutlined
                         className="text-3xl  cursor-pointer text-red-500"
-                        onClick={() => handleReject(agent.id)}
+                        onClick={() => handleReject(agent._id)}
                       />
+                      
                     </div>
                   </td>
                 </tr>
