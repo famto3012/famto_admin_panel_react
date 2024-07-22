@@ -15,6 +15,7 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
 import axios from "axios";
+import { CSVLink } from "react-csv";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -24,7 +25,7 @@ const Merchant = () => {
   const [business, setBusiness] = useState([]);
   const [service, setService] = useState("");
   const [geofenceFilter, setGeofenceFilter] = useState("");
-  const [searchfilter, setSearchFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   const [businessFilter, setBusinessFilter] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
@@ -153,7 +154,7 @@ const Merchant = () => {
     try {
       console.log(token);
       const serviceResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter?`,
+        `${BASE_URL}/merchants/admin/filter`,
         {
           params: { serviceable: selectedService },
           withCredentials: true,
@@ -182,7 +183,7 @@ const Merchant = () => {
     try {
       console.log(token);
       const serviceResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter?`,
+        `${BASE_URL}/merchants/admin/filter`,
         {
           params: { geofence: selectedService },
           withCredentials: true,
@@ -211,7 +212,7 @@ const Merchant = () => {
     try {
       console.log(token);
       const businessResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter?`,
+        `${BASE_URL}/merchants/admin/filter`,
         {
           params: { businessCategory: businessService },
           withcredentials: true,
@@ -240,7 +241,7 @@ const Merchant = () => {
       try{
           console.log(token);
           const searchResponse = await axios.get(
-            `${BASE_URL}/merchants/admin/search?`,
+            `${BASE_URL}/merchants/admin/search`,
             {
               params: {query : searchService},
               withCredentials: true,
@@ -255,6 +256,15 @@ const Merchant = () => {
       }
     };
 
+    const csvData = [
+      { label: 'Merchant ID', key: '_id' },
+      { label: 'Merchant Name', key: 'merchantName' },
+      { label: 'Phone Number', key: 'phoneNumber' },
+      { label: 'Average Rating', key: 'averageRating' },
+      { label: 'Approved', key: 'isApproved' },
+      { label: 'Serviceable Today', key: 'isServiceableToday' },
+      { label: 'Geofence', key: 'geofence' },
+    ]
 
     return (
       <div>
@@ -272,11 +282,13 @@ const Merchant = () => {
                 <h1 className="text-[18px] font-semibold">Merchants</h1>
                 <div className="flex space-x-2 justify-end ">
                   <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
+                    <CSVLink data={merchant} headers={csvData} filename={"merchantData.csv"}>
                     <ArrowDownOutlined /> <span>CSV</span>
+                    </CSVLink>
                   </button>
                   <div>
                     <button
-                      className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
+                      className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
                       onClick={showModal}
                     >
                       <PlusOutlined /> <span>Add Merchant</span>
@@ -378,7 +390,7 @@ const Merchant = () => {
                               Cancel
                             </button>
                             <button
-                              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                              className="bg-teal-800 text-white py-2 px-4 rounded-md"
                               type="submit"
                               onClick={handleOk}
                             >
@@ -442,9 +454,9 @@ const Merchant = () => {
                       <input
                         type="search"
                         name="search"
-                        value={searchfilter}
+                        value={searchFilter}
                         onChange={onSearchChange}
-                        className="bg-gray-100 relative p-2 w-64 rounded-2xl"
+                        className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none"
                         placeholder="Search merchant name"
                       />
                       <SearchOutlined className="absolute -ml-7 mt-3" />
@@ -470,7 +482,7 @@ const Merchant = () => {
                       ].map((header) => (
                         <th
                           key={header}
-                          className="bg-teal-700 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
+                          className="bg-teal-800 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
                         >
                           {header}
                         </th>
@@ -483,7 +495,7 @@ const Merchant = () => {
                         key={data._id}
                         className="align-middle border-b border-gray-300"
                       >
-                        <td className="p-4">
+                        <td className="p-4 underline underline-offset-4">
                           <Link to={`/merchant-detail/:merchantId${data._id}`}>
                             {data._id}
                           </Link>
