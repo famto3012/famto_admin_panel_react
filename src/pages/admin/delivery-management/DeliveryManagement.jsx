@@ -12,12 +12,19 @@ import {
   Stepper,
   useSteps,
   Box,
+  MenuItem,
+  Image,
+  MenuList,
+  MenuButton,
+  Menu,
+  Select,
 } from "@chakra-ui/react";
 import SidebarDelivery from "../../../components/model/SidebarDelivery";
 import { mappls } from "mappls-web-maps";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { formatDate, formatTime } from "../../../utils/formatter";
+import { ChevronDownIcon } from "@saas-ui/react";
 
 const DeliveryManagement = () => {
   const [settings, setSettings] = useState({
@@ -29,6 +36,7 @@ const DeliveryManagement = () => {
   const [taskData, setTaskData] = useState([]);
   const [agentData, setAgentData] = useState([]);
   const [allAgentData, setAllAgentData] = useState([]);
+  const [geofenceAgentData, setGeofenceAgentData] = useState([]);
   const [value, checkValue] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [task, setTask] = useState("");
@@ -38,6 +46,7 @@ const DeliveryManagement = () => {
   const [isModalVisibleTask, setIsModalVisibleTask] = useState(false);
   const [prioritize, setPrioritize] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
+  const [geofenceToggle, setGeofenceToggle] = useState(false);
   //const [searchOrderId, setOrderId] = useState("")
 
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -325,6 +334,7 @@ const DeliveryManagement = () => {
       };
 
       console.log("Adding markers...");
+      console.log("Geofence", geofenceToggle);
       const agentGeoData = {
         type: "FeatureCollection",
         features: allAgentData.map((agent) => ({
@@ -486,6 +496,36 @@ const DeliveryManagement = () => {
         console.error("Error adding marker:", error);
       }
     });
+  };
+
+  const handleGeofenceSwitch = (taskId) => {
+    setGeofenceToggle((prevToggle) => {
+      const newToggle = !prevToggle;
+      fetchAgentUsingGeofence(taskId, newToggle); // Pass the newToggle value to fetchAgentUsingGeofence
+      return newToggle;
+    });
+  };
+
+  const fetchAgentUsingGeofence = async (taskId, newToggle) => {
+    try {
+      console.log(token);
+      const response = await axios.post(
+        `${BASE_URL}/admin/delivery-management/agents-in-geofence/${taskId}`,
+        {
+          geofenceStatus: newToggle,
+        },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setGeofenceAgentData(response.data.data);
+      }
+      console.log(geofenceAgentData);
+    } catch (err) {
+      console.log("Error in fetching agent: ", err);
+    }
   };
 
   return (
@@ -831,7 +871,10 @@ const DeliveryManagement = () => {
                                               }
                                             />
                                           </StepIndicator>
-                                          <Box flexShrink="0" className="ml-4">
+                                          <Box
+                                            flexShrink="0"
+                                            className="ml-4 w-[200px]"
+                                          >
                                             <StepTitle className="font-semibold text-[16px]">
                                               {
                                                 data.orderId.orderDetail
@@ -850,7 +893,7 @@ const DeliveryManagement = () => {
                                           </Box>
                                           <Box
                                             flexShrink="0"
-                                            className="mx-[70px]"
+                                            className="ml-[70px]"
                                           >
                                             <Step>
                                               Expected Time
@@ -869,8 +912,36 @@ const DeliveryManagement = () => {
                                               )}`}
                                             </Step>
                                           </Box>
-                                          <StepSeparator className="my-2" />
+                                          <StepSeparator className="mt-[18px]" />
                                         </Step>
+
+                                        {/* <div className="w-[60%] border-t border-dotted border-gray-400 my-[5px] mx-[110px]"></div> */}
+                                        <div className="relative flex items-center ml-[60px] my-[5px]">
+                                          {/* Oval container on the left */}
+                                          <div className="absolute left-0 bg-blue-50 w-[110px] h-[24px] flex items-center justify-center rounded-full text-black font-semibold">
+                                            <span className="text-sm">
+                                              In transit
+                                            </span>
+                                          </div>
+
+                                          {/* Dotted separator */}
+                                          <div className="w-[260px] border-t border-dotted border-gray-900 my-[5px] mx-[100px]"></div>
+
+                                          {/* Oval container on the right */}
+                                          <div className="absolute right-0 bg-blue-50 w-[140px] h-[24px] flex items-center justify-center rounded-full text-black ">
+                                            <span className="text-sm font-semibold">
+                                              <span className="text-gray-400 mr-1">
+                                                Distance
+                                              </span>{" "}
+                                              {
+                                                data.orderId.orderDetail
+                                                  .distance
+                                              }
+                                              Kms
+                                            </span>
+                                          </div>
+                                        </div>
+
                                         <Step
                                           key={data.orderId.customerId}
                                           className="flex gap-5 size-20"
@@ -894,7 +965,10 @@ const DeliveryManagement = () => {
                                               }
                                             />
                                           </StepIndicator>
-                                          <Box flexShrink="0" className="ml-4">
+                                          <Box
+                                            flexShrink="0"
+                                            className="ml-4 w-[200px]"
+                                          >
                                             <StepTitle className="font-semibold text-[16px]">
                                               {
                                                 data.orderId.orderDetail
@@ -921,7 +995,7 @@ const DeliveryManagement = () => {
                                           </Box>
                                           <Box
                                             flexShrink="0"
-                                            className="mx-[70px]"
+                                            className="ml-[70px]"
                                           >
                                             <Step>
                                               Expected Time{" "}
@@ -982,21 +1056,33 @@ const DeliveryManagement = () => {
                                       Geofence
                                     </label>
                                     <p className="font-semibold">
-                                      <Switch />
+                                      <Switch
+                                        value={geofenceToggle}
+                                        onClick={() =>
+                                          handleGeofenceSwitch(data._id)
+                                        }
+                                      />
                                     </p>
                                   </div>
                                   <div className="flex mt-5 ">
                                     <label className="w-1/3 text-gray-600">
                                       Agent
                                     </label>
-                                    <select
-                                      className="w-2/3 mr-8 p-2 rounded-lg border border-gray-300 outline-none focus:outline-none"
-                                      name="agent"
+                                    <Select
+                                      rightIcon={<ChevronDownIcon />}
+                                      placeholder="Select agent"
+                                      className="text-gray-400 font-semibold"
                                     >
-                                      <option>Assign Agent</option>
-                                    </select>
+                                      {geofenceAgentData.map((data) => (
+                                        <option key={data._id} value={data._id} className="text-black h-[20px]">
+                                         <span> {data._id}</span><br />
+                                         <span> {data.name}</span><br />
+                                         
+                                        </option>
+                                      ))}
+                                    </Select>
                                   </div>
-                                  <div className="flex justify-end gap-5 mt-10">
+                                  <div className="flex justify-end gap-5 mt-[120px]">
                                     <button
                                       className="bg-zinc-200 p-2 rounded-md px-4"
                                       onClick={showModalCancelAgent}
