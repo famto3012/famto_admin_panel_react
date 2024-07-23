@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 import { Modal, Switch } from "antd";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
@@ -13,11 +13,11 @@ import {
   useSteps,
   Box,
   MenuItem,
-  Image,
   MenuList,
   MenuButton,
   Menu,
-  Select,
+  Badge,
+  useToast,
 } from "@chakra-ui/react";
 import SidebarDelivery from "../../../components/model/SidebarDelivery";
 import { mappls } from "mappls-web-maps";
@@ -27,26 +27,26 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
 
 const DeliveryManagement = () => {
-  const [settings, setSettings] = useState({
-    selectedOption: "",
-    expires: "",
+  const [autoAllocation, setAutoAllocation] = useState({
+    autoAllocationType: "",
+    expireTime: "",
     maxRadius: "",
-    prioritize: "",
+    priorityType: "",
   });
   const [taskData, setTaskData] = useState([]);
   const [agentData, setAgentData] = useState([]);
   const [allAgentData, setAllAgentData] = useState([]);
   const [geofenceAgentData, setGeofenceAgentData] = useState([]);
-  const [value, checkValue] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [task, setTask] = useState("");
   const [status, setStatus] = useState("Free");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalVisibleAgent, setIsModalVisibleAgent] = useState(false);
-  const [isModalVisibleTask, setIsModalVisibleTask] = useState(false);
-  const [prioritize, setPrioritize] = useState("");
-  const [selectedOption, setSelectedOption] = useState("");
   const [geofenceToggle, setGeofenceToggle] = useState(false);
+  const [autoAllocationStatus, setAutoAllocationStatus] = useState(false);
+  const [manualAssign, setManualAssign] = useState("");
+  const mapContainerRef = useRef(null);
+  const [mapObject, setMapObject] = useState(null);
+  const toast = useToast();
   //const [searchOrderId, setOrderId] = useState("")
 
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -75,7 +75,7 @@ const DeliveryManagement = () => {
   });
 
   const handleChange = (e) => {
-    setSettings({ ...settings, [e.target.name]: e.target.value });
+    setAutoAllocation((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   // const data = [
@@ -102,9 +102,39 @@ const DeliveryManagement = () => {
   //   },
   // ];
 
-  const onChange = (checked) => {
-    checkValue(checked);
-    console.log(`switch to ${checked}`);
+  const autoAllocationStatusUpdate = async () => {
+    try {
+      if(autoAllocation.isActive){
+        setAutoAllocationStatus(false)
+      }else{
+        setAutoAllocationStatus(true)
+      }
+      const response = await axios.put(
+        `${BASE_URL}/admin/auto-allocation/update-status`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 201) {
+        // const {data} = response.data;
+        toast({
+          title: "Auto allocation status updated successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error updating auto allocation status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   console.log(task);
@@ -140,18 +170,6 @@ const DeliveryManagement = () => {
     setIsModalVisible(false);
   };
 
-  const showModalAgent = () => {
-    setIsModalVisibleAgent(true);
-  };
-
-  const showOkModalAgent = () => {
-    setIsModalVisibleAgent(false);
-  };
-
-  const showModalCancelAgent = () => {
-    setIsModalVisibleAgent(false);
-  };
-
   const [visibleTaskModal, setVisibleTaskModal] = useState({});
 
   const showModalTask = (taskId) => {
@@ -163,17 +181,53 @@ const DeliveryManagement = () => {
   };
 
   const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+    setAutoAllocation((prev) => ({
+      ...prev,
+      autoAllocationType: event.target.value,
+    }));
   };
 
   const handleRadioChange = (event) => {
-    setPrioritize(event.target.value);
+    setAutoAllocation((prev) => ({
+      ...prev,
+      priorityType: event.target.value,
+    }));
   };
 
-  const submitSettings = (e) => {
+  const submitAutoAllocation = async (e) => {
     e.preventDefault();
-    const data = { settings, selectedOption, prioritize };
-    console.log("data", data);
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/admin/auto-allocation/add`,
+        {
+          autoAllocationType: autoAllocation.autoAllocationType,
+          expireTime: autoAllocation.expireTime,
+          maxRadius: autoAllocation.maxRadius,
+          priorityType: autoAllocation.priorityType,
+        },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 201) {
+        // const {data} = response.data;
+        toast({
+          title: "Auto allocation added successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error adding auto allocation",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
   const handleStatusFilter = async (selectedStatus) => {
     try {
@@ -229,9 +283,21 @@ const DeliveryManagement = () => {
         // const {data} = response.data;
         console.log(response.data.data);
         setTaskData(response.data.data);
+        toast({
+          title: "Order id fetched successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.log(err);
+      toast({
+        title: "Error fetching order id",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -253,33 +319,33 @@ const DeliveryManagement = () => {
         // const {data} = response.data;
         console.log(response.data);
         setAgentData(response.data);
+        toast({
+          title: "Agent fetched successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.log(err);
+      toast({
+        title: "Error fetching agent",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // useEffect(() => {
-
-  //   const timeout = setTimeout(() => {
-  //     handleSearch()
-  //   }, 500);
-
-  //   return () => {
-  //     clearTimeout(timeout);
-  //   };
-  // }, [])
-
   // let styleMap
-  const mapContainerRef = useRef(null);
-  const [mapObject, setMapObject] = useState(null);
 
   // Initialize the map
   useEffect(() => {
     handleStatusFilter("Free");
     handleGetAllAgent();
+    getAutoAllocation();
     const mapProps = {
       center: [8.528818999999999, 76.94310683333333],
       traffic: true,
@@ -521,12 +587,80 @@ const DeliveryManagement = () => {
       );
       if (response.status === 200) {
         setGeofenceAgentData(response.data.data);
+        toast({
+          title: "Agent fetched successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
       console.log(geofenceAgentData);
     } catch (err) {
       console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error fetching  agent",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
+
+  const getAutoAllocation = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/admin/auto-allocation/get`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setAutoAllocation(response.data.data);
+        setAutoAllocationStatus(response.data.data.isActive)
+      }
+      console.log(autoAllocation);
+    } catch (err) {
+      console.log("Error in fetching auto allocation: ", err);
+    }
+  };
+
+  const handleManualAssignChange = (data) => {
+    setManualAssign({ _id: data._id, name: data.name });
+    console.log(data._id);
+  };
+
+  const handleSendNotification = async(taskId)=>{
+    try {
+      console.log(token);
+      const response = await axios.post(
+        `${BASE_URL}/admin/delivery-management/assign-task/${taskId}`,
+        {
+          agentId: manualAssign._id,
+        },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        toast({
+          title: "Notification send successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log("Error in sending notification: ", err);
+      toast({
+        title: "Error sending notification",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
     <>
@@ -561,38 +695,41 @@ const DeliveryManagement = () => {
               footer={null}
             >
               <div>
-                <form onSubmit={submitSettings}>
+                <form onSubmit={submitAutoAllocation}>
                   <div>
-                    <div className="flex justify-between mt-5">
-                      <label className="text-[17px] font-semibold">
+                    <div className="flex mt-5">
+                      <label className="text-[16px] mr-5 font-semibold">
                         Request expires
                       </label>
                       <input
                         type="text"
-                        name="expires"
-                        className="w-2/4 border border-gray-200 rounded-lg outline-none focus:outline-none h-10"
-                        value={settings.expires}
+                        name="expireTime"
+                        className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
+                        value={autoAllocation.expireTime}
                         onChange={handleChange}
                       />
                       <div>
-                        <p className="font-semibold text-[16px]">sec</p>
+                        <p className="font-semibold text-[16px] ml-5">sec</p>
                       </div>
                     </div>
                     <div>
-                      <label className="text-[18px] font-semibold">
-                        set auto allocation
+                      <label className="text-[18px] mb-3 font-semibold">
+                        Set auto allocation
                       </label>
                       <div className="flex items-center ">
                         <input
                           type="radio"
                           id="send-to-all"
-                          name="send-to-all"
-                          value="send-to-all"
+                          name="autoAllocationType"
+                          value="All"
                           onChange={handleOptionChange}
-                          checked={selectedOption === "send-to-all"}
+                          checked={autoAllocation.autoAllocationType === "All"}
                           className=""
                         />
-                        <label htmlFor="send-to-all" className="mx-4">
+                        <label
+                          htmlFor="send-to-all"
+                          className="ml-2 font-semibold"
+                        >
                           Send-to-all
                         </label>
                       </div>
@@ -600,72 +737,79 @@ const DeliveryManagement = () => {
                         <input
                           type="radio"
                           id="nearest-available"
-                          name="nearest-available"
-                          value="nearest-available"
+                          name="autoAllocationType"
+                          value="Nearest"
                           onChange={handleOptionChange}
-                          checked={selectedOption === "nearest-available"}
+                          checked={
+                            autoAllocation.autoAllocationType === "Nearest"
+                          }
                           className=""
                         />
-                        <label htmlFor="nearest-available" className="mx-4">
+                        <label
+                          htmlFor="nearest-available"
+                          className="ml-2 font-semibold"
+                        >
                           Nearest Available
                         </label>
                       </div>
                     </div>
-                    {selectedOption === "send-to-all" && (
+                    {autoAllocation.autoAllocationType === "All" && (
                       <div>
-                        <p className="text-gray-600 mt-5 text-[17px]">
+                        <p className="text-gray-600 mt-5 text-[14px]">
                           Force assigns the task to Agent based on availability
                           and distance
                         </p>
-                        <div className="flex justify-between mt-5">
-                          <label className="text-[17px] font-semibold">
+                        <div className="flex mt-5">
+                          <label className="text-[18px] font-semibold mr-5">
                             Maximum Radius
                           </label>
                           <input
                             type="text"
                             name="maxRadius"
-                            value={settings.maxRadius}
-                            className="w-2/4 border border-gray-200 rounded-lg outline-none focus:outline-none h-10"
+                            value={autoAllocation.maxRadius}
+                            className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
                             onChange={handleChange}
                           />
                           <div>
-                            <p className="font-semibold text-[16px]">Km</p>
+                            <p className="font-semibold text-[16px] ml-5">Km</p>
                           </div>
                         </div>
                       </div>
                     )}
-                    {selectedOption === "nearest-available" && (
+                    {autoAllocation.autoAllocationType === "Nearest" && (
                       <p className="mt-5">
-                        Sends the task request notification to the Agent
-                        (maximum limit: 500 Agent) available in
-                        the task time-slot. task gets assigned to the "Agent who
-                        accepts the task request first. If no Agent accepts
-                        the task, it remains unassigned."
+                        {`Sends the task request notification to the Agent
+                        (maximum limit: 500 Agent) available in
+                        the task time-slot. task gets assigned to the "Agent who
+                        accepts the task request first. If no Agent accepts
+                        the task, it remains unassigned.`}
                       </p>
                     )}
                     <div className="grid">
-                      <label className="text-[18px] mt-5 font-semibold">
+                      <label className="text-[18px] mt-3 font-semibold">
                         Prioritize
                       </label>
-                      <div className="flex mt-3 gap-2">
+                      <div className="flex mt-2 gap-2">
                         <input
                           type="radio"
-                          name="prioritize"
+                          name="priorityType"
                           value="Default"
-                          checked={prioritize === "Default"}
+                          checked={autoAllocation.priorityType === "Default"}
                           onChange={handleRadioChange}
                         />
-                        <p className="font-semibold text-[16px]">Default</p>
+                        <p className="font-semibold text-[15px]">Default</p>
                       </div>
                       <div className="flex">
                         <input
                           type="radio"
-                          name="prioritize"
-                          value="Monthly salaried employees"
-                          checked={prioritize === "Monthly salaried employees"}
+                          name="priorityType"
+                          value="Monthly-salaried"
+                          checked={
+                            autoAllocation.priorityType === "Monthly-salaried"
+                          }
                           onChange={handleRadioChange}
                         />
-                        <p className="font-semibold text-[16px] ml-2">
+                        <p className="font-semibold text-[15px] ml-2">
                           Monthly salaried employees{" "}
                         </p>
                       </div>
@@ -679,6 +823,7 @@ const DeliveryManagement = () => {
                       </button>
                       <button
                         onClick={showOkModal}
+                        type="submit"
                         className="bg-teal-800 text-white p-3 w-1/2 rounded-lg"
                       >
                         Apply Auto Allocation
@@ -690,7 +835,12 @@ const DeliveryManagement = () => {
             </Modal>
 
             <p className="font-medium">
-              Auto Allocation <Switch className="ml-2" onChange={onChange} />
+              Auto Allocation{" "}
+              <Switch
+                className="ml-2"
+                value={autoAllocationStatus}
+                onChange={autoAllocationStatusUpdate}
+              />
             </p>
           </div>
         </div>
@@ -703,23 +853,6 @@ const DeliveryManagement = () => {
               </p>
             </div>
             <div className="w-full p-2 mt-4">
-              {/* <select
-                className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
-                name="task"
-                value={task}
-                onChange={(e) =>{ setTask(e.target.value)
-                  handleTaskFilter()
-                }}
-              >
-                <option value="task" hidden selected>
-                  Select Task
-                </option>
-                <option value="Unassigned">
-                  Unassigned Tasks
-                </option>
-                <option value="Assigned">Assigned Tasks</option>
-                <option value="Completed">Completed Tasks</option>
-              </select> */}
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
                 name="task"
@@ -1068,28 +1201,79 @@ const DeliveryManagement = () => {
                                     <label className="w-1/3 text-gray-600">
                                       Agent
                                     </label>
-                                    <Select
-                                      rightIcon={<ChevronDownIcon />}
-                                      placeholder="Select agent"
-                                      className="text-gray-400 font-semibold"
-                                    >
-                                      {geofenceAgentData.map((data) => (
-                                        <option key={data._id} value={data._id} className="text-black h-[20px]">
-                                         <span> {data._id}</span><br />
-                                         <span> {data.name}</span><br />
-                                         
-                                        </option>
-                                      ))}
-                                    </Select>
+                                    <Menu>
+                                      <MenuButton
+                                        as={Button}
+                                        rightIcon={<ChevronDownIcon />}
+                                        className="text-gray-500 font-normal w-[300px] text-left"
+                                      >
+                                        {manualAssign
+                                          ? manualAssign.name
+                                          : "Select agent"}
+                                      </MenuButton>
+                                      <MenuList className="h-[100px] overflow-y-auto">
+                                        {geofenceAgentData.map((data) => (
+                                          <MenuItem
+                                            key={data._id}
+                                            className="h-[70px]"
+                                            value={data._id}
+                                            onClick={() =>
+                                              handleManualAssignChange(data)
+                                            }
+                                          >
+                                            <div className="justify-between items-center w-[300px]">
+                                              <div className="flex-1 flex justify-between">
+                                                <span className="font-semibold">
+                                                  {data._id}
+                                                  {data.workStructure ===
+                                                  "Fish & Meat" ? (
+                                                    <Badge
+                                                      bg="red.500"
+                                                      className="w-[15px] h-[14px] ml-3"
+                                                    ></Badge>
+                                                  ) : (
+                                                    ""
+                                                  )}
+                                                </span>
+                                                <span
+                                                  className={
+                                                    data.status === "Active"
+                                                      ? "text-green-400 font-semibold"
+                                                      : data.status ===
+                                                        "Inactive"
+                                                      ? "text-gray-500 font-semibold"
+                                                      : data.status === "Busy"
+                                                      ? "text-red-500 font-semibold"
+                                                      : "text-red-500 font-semibold"
+                                                  }
+                                                >
+                                                  {data.status}
+                                                </span>
+                                              </div>
+                                              <div className="flex-1 flex justify-between">
+                                                <span className="font-semibold">
+                                                  {data.name}
+                                                </span>
+                                                <span className="font-semibold">
+                                                  {data.distance} Kms
+                                                </span>
+                                              </div>
+                                            </div>
+                                          </MenuItem>
+                                        ))}
+                                      </MenuList>
+                                    </Menu>
                                   </div>
                                   <div className="flex justify-end gap-5 mt-[120px]">
                                     <button
                                       className="bg-zinc-200 p-2 rounded-md px-4"
-                                      onClick={showModalCancelAgent}
+                                      onClick={() =>
+                                        showModalCancelTask(data._id)
+                                      }
                                     >
                                       Cancel
                                     </button>
-                                    <button className="bg-teal-800 text-white p-2 rounded-md px-4">
+                                    <button className="bg-teal-800 text-white p-2 rounded-md px-4" onClick={()=>handleSendNotification(data._id)}>
                                       Assign Agent
                                     </button>
                                   </div>
