@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
-import { Modal, Switch } from "antd";
+import { Modal, Spin, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
@@ -23,12 +23,16 @@ const Adbanner = () => {
   const [allGeofence, setAllGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
+  const [currentBanner, setCurrentBanner] = useState(null);
+  const [currentBannerEdit, setCurrentEditBanner] = useState(null);
+  const [currentIndBanner, setCurrentIndBanner] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   //States for Modals
 
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [isModalVisibleIndividual, setIsModalVisibleIndividual] =  useState(false);
+  const [isModalVisibleIndividual, setIsModalVisibleIndividual] = useState(false);
   const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] = useState(false);
@@ -85,7 +89,8 @@ const Adbanner = () => {
     setAddModalVisible(true);
   };
 
-  const showModalEdit = () => {
+  const showModalEdit = (bannerId) => {
+    setCurrentEditBanner(bannerId)
     setEditModalVisible(true);
   };
 
@@ -97,11 +102,15 @@ const Adbanner = () => {
     setIsModalVisibleIndividualEdit(true);
   };
 
-  const showModalDelete = () => {
+  const showModalDelete = (bannerId) => {
+    setCurrentBanner(bannerId);
+    console.log(bannerId);
     setIsShowModalDelete(true);
   };
 
-  const showModalDeleteIndividual = () => {
+  const showModalDeleteIndividual = (currentIndBannerId) => {
+    setCurrentIndBanner(currentIndBannerId);
+    console.log(currentIndBannerId)
     setShowModalDeleteIndividual(true);
   };
 
@@ -110,9 +119,79 @@ const Adbanner = () => {
     setEditModalVisible(false);
     setIsModalVisibleIndividual(false);
     setIsModalVisibleIndividualEdit(false);
-    setShowModalDeleteIndividual(false);
+    };
+
+  // New function to remove a Banner from the banner state
+  const removeBanner = (bannerId) => {
+    setBanner(banner.filter((banner) => banner._id !== bannerId));
+  };
+
+  // New function to handle confirm delete
+  const handleConfirmDelete = () => {
     setIsShowModalDelete(false);
-   };
+    setCurrentBanner(null);
+  };
+
+  // api calling to delete Aapp banner..
+
+  const handleBannerDelete = async (currentBanner) => {
+    try {
+      setConfirmLoading(true);
+
+      const deleteResponse = await axios.delete(
+        `${BASE_URL}/admin/app-banner/delete-app-banner/${currentBanner}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (deleteResponse.status === 200) {
+        removeBanner(currentBanner);
+        handleConfirmDelete();
+      } else {
+        console.error(`Unexpected status code: ${deleteResponse.status}`);
+      }
+    } catch (err) {
+      console.error('Error in deleting banner:', err);
+    } finally {
+      setConfirmLoading(false);
+    }
+  }
+
+  const handleConfirmIndBannerDelete = () => {
+    setCurrentIndBanner(null);
+    setShowModalDeleteIndividual(false);
+  }
+
+  const removeIndBanner = (currentIndBannerId) => {
+    setIndividualBanner(individualBanner.filter((individualBanner) => individualBanner._id || currentIndBannerId));
+  }
+
+  //api calling to delete individual app banner..
+
+  const handleIndBannerDelete = async(currentIndBanner) => {
+     try{
+      setConfirmLoading(true);
+      
+      const indDeleteResponse = await axios.delete(
+        `${BASE_URL}/admin/banner/delete-banner/${currentIndBanner}`,{
+          withCredentials:true,
+          headers: {Authorization :  `Bearer ${token}`}
+        }
+      );
+      if(indDeleteResponse === 200) {
+        removeIndBanner(currentIndBanner);
+        handleConfirmIndBannerDelete();
+      }else {
+        console.error(`Unexpected status code: ${indDeleteResponse.status}`);
+      }
+    }catch(err) {
+      console.error(`Error in delete individual banner`,err)
+    }finally {
+      setConfirmLoading(false);
+    }
+  }
 
   const handleToggle = (id) => {
     setBanner((prevBanner) =>
@@ -162,6 +241,7 @@ const Adbanner = () => {
                   isVisible={addModalVisible}
                   handleCancel={handleCancel}
                   BASE_URL={BASE_URL}
+                  token={token}
                   allGeofence={allGeofence}
                 />
               </div>
@@ -193,8 +273,11 @@ const Adbanner = () => {
                       className="text-center bg-white h-20"
                       key={bannerData._id}
                     >
-                      <td className="w-[120px] px-5">
-                        <img src={bannerData.imageUrl} />
+                      {/* className="w-[120px] px-5" */}
+                      <td className=" flex items-center justify-center p-3" >
+                        <figure className="h-[70px] w-[100px]">
+                          <img src={bannerData.imageUrl} className="w-full h-full object-contain" />
+                        </figure>
                       </td>
                       <td>{bannerData.name}</td>
                       <td>{bannerData.merchantId}</td>
@@ -207,20 +290,21 @@ const Adbanner = () => {
                       </td>
                       <td>
                         <div className="flex justify-center items-center gap-3">
-                          <button onClick={showModalEdit}>
+                          <button onClick={() =>showModalEdit(bannerData._id)}>
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
                           <EditBannerModal
                             isVisible={editModalVisible}
                             handleCancel={handleCancel}
                             BASE_URL={BASE_URL}
+                            currentBannerEdit={currentBannerEdit}
                             allGeofence={allGeofence}
                           />
 
                           <button>
                             <RiDeleteBinLine
                               className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
-                              onClick={showModalDelete}
+                              onClick={() => showModalDelete(bannerData._id)}
                             />
                           </button>
                           <Modal
@@ -231,16 +315,19 @@ const Adbanner = () => {
                             centered
                           >
                             <p className="font-semibold text-[18px] mb-5">
-                              Are you sure want to delete?
+                              <Spin spinning={confirmLoading}>
+                                <p>Are you sure you want to delete this tax?</p>
+                              </Spin>
                             </p>
                             <div className="flex justify-end">
                               <button
                                 className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                                onClick={handleCancel}
+                                onClick={handleConfirmDelete}
                               >
                                 Cancel
                               </button>
-                              <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                              <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                                onClick={() => handleBannerDelete(currentBanner)}>
                                 {" "}
                                 Delete
                               </button>
@@ -269,6 +356,7 @@ const Adbanner = () => {
                   isVisible={isModalVisibleIndividual}
                   handleCancel={handleCancel}
                   BASE_URL={BASE_URL}
+                  token={token}
                   allGeofence={allGeofence}
                 />
               </div>
@@ -329,7 +417,7 @@ const Adbanner = () => {
                           <button>
                             <RiDeleteBinLine
                               className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
-                              onClick={showModalDeleteIndividual}
+                              onClick={() => showModalDeleteIndividual(individualBanner._id)}
                             />
                           </button>
                           <Modal
@@ -344,11 +432,13 @@ const Adbanner = () => {
                             <div className="flex justify-end">
                               <button
                                 className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                                onClick={handleCancel}
+                                onClick={handleConfirmIndBannerDelete}
                               >
                                 Cancel
                               </button>
-                              <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                              <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                              onClick={()=>handleIndBannerDelete(currentIndBanner)}
+                              >
                                 {" "}
                                 Delete
                               </button>
