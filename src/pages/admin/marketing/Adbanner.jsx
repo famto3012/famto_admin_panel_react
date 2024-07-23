@@ -4,7 +4,6 @@ import { Modal, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
-import { MdCameraAlt } from "react-icons/md";
 import AddBannerModal from "../../../components/model/AdBannerModels/AddBannerModal";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { useNavigate } from "react-router-dom";
@@ -21,27 +20,20 @@ const Adbanner = () => {
   const [banner, setBanner] = useState([]);
   const [individualBanner, setIndividualBanner] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [allGeofence, setAllGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
 
+  //States for Modals
+
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [isModalVisibleIndividual, setIsModalVisibleIndividual] =  useState(false);
+  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+  const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] = useState(false);
 
-  const showModal = () => {
-    setAddModalVisible(true);
-  };
-
-  const handleConfirm = () => {
-    setAddModalVisible(false);
-  };
-
-  const showModalEdit = () => {
-    setEditModalVisible(true);
-  };
-
-  const handleConfirmEdit = () => {
-    setEditModalVisible(false);
-  };
+  //api connections 
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -53,21 +45,29 @@ const Adbanner = () => {
       try {
         setIsLoading(true);
 
-        const [bannerResponse, individualBannerResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/app-banner/get-app-banner`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/banner/get-banner`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const [bannerResponse, individualBannerResponse, geofenceResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/app-banner/get-app-banner`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/banner/get-banner`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
         if (bannerResponse.status === 200) {
           setBanner(bannerResponse.data.data);
         }
         if (individualBannerResponse.status === 200) {
           setIndividualBanner(individualBannerResponse.data.data);
+        }
+        if (geofenceResponse.status === 200) {
+          setAllGeofence(geofenceResponse.data.geofences);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -79,51 +79,30 @@ const Adbanner = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  const [isModalVisibleIndividual, setIsModalVisibleIndividual] =
-    useState(false);
-  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] =
-    useState(false);
+  //view Modals
+
+  const showModal = () => {
+    setAddModalVisible(true);
+  };
+
+  const showModalEdit = () => {
+    setEditModalVisible(true);
+  };
 
   const showModalIndividual = () => {
     setIsModalVisibleIndividual(true);
-  };
-
-  const handleConfirmIndividual = () => {
-    setIsModalVisibleIndividual(false);
   };
 
   const showModalIndividualEdit = () => {
     setIsModalVisibleIndividualEdit(true);
   };
 
-  const handleConfirmIndividualEdit = () => {
-    setIsModalVisibleIndividualEdit(false);
-  };
-
-  
-  const onChanged = (name, checked) => {
-    setIndTableData({ ...indtableData, [name]: checked });
-  };
-
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-
   const showModalDelete = () => {
     setIsShowModalDelete(true);
   };
 
-  const showModalDeleteOk = () => {
-    setIsShowModalDelete(false);
-  };
-
-  const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] =
-    useState(false);
-
   const showModalDeleteIndividual = () => {
     setShowModalDeleteIndividual(true);
-  };
-
-  const showModalDeleteIndividualOk = () => {
-    setShowModalDeleteIndividual(false);
   };
 
   const handleCancel = () => {
@@ -133,7 +112,7 @@ const Adbanner = () => {
     setIsModalVisibleIndividualEdit(false);
     setShowModalDeleteIndividual(false);
     setIsShowModalDelete(false);
-  };
+   };
 
   const handleToggle = (id) => {
     setBanner((prevBanner) =>
@@ -155,7 +134,9 @@ const Adbanner = () => {
               <GlobalSearch />
             </nav>
             <div className="flex items-center justify-between mx-10 mt-5">
-              <h1 className="text-lg font-bold outline-none focus:outline-none">Ad Banner</h1>
+              <h1 className="text-lg font-bold outline-none focus:outline-none">
+                Ad Banner
+              </h1>
               <Switch />
             </div>
             <p className="mt-5 mx-10 text-[15px] text-gray-500">
@@ -167,10 +148,12 @@ const Adbanner = () => {
               </span>
             </p>
             <div className="flex items-center justify-between mx-10 mt-5">
-              <h1 className="text-lg font-bold outline-none focus:outline-none">App Ad Banner</h1>
+              <h1 className="text-lg font-bold outline-none focus:outline-none">
+                App Ad Banner
+              </h1>
               <div>
                 <button
-                  className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 "
+                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 "
                   onClick={showModal}
                 >
                   <PlusOutlined className="mr-2" /> Add
@@ -179,7 +162,7 @@ const Adbanner = () => {
                   isVisible={addModalVisible}
                   handleCancel={handleCancel}
                   BASE_URL={BASE_URL}
-                  // allGeofence={geofenceId}
+                  allGeofence={allGeofence}
                 />
               </div>
             </div>
@@ -231,7 +214,7 @@ const Adbanner = () => {
                             isVisible={editModalVisible}
                             handleCancel={handleCancel}
                             BASE_URL={BASE_URL}
-                          // allGeofence={geofenceId}
+                            allGeofence={allGeofence}
                           />
 
                           <button>
@@ -241,7 +224,7 @@ const Adbanner = () => {
                             />
                           </button>
                           <Modal
-                            onOk={showModalDeleteOk}
+                            // onOk={showModalDeleteOk}
                             onCancel={handleCancel}
                             footer={null}
                             open={isShowModalDelete}
@@ -277,7 +260,7 @@ const Adbanner = () => {
               </h1>
               <div>
                 <button
-                  className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 "
+                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 "
                   onClick={showModalIndividual}
                 >
                   <PlusOutlined className="mr-2" /> Add
@@ -286,7 +269,7 @@ const Adbanner = () => {
                   isVisible={isModalVisibleIndividual}
                   handleCancel={handleCancel}
                   BASE_URL={BASE_URL}
-                // allGeofence={geofenceId}
+                  allGeofence={allGeofence}
                 />
               </div>
             </div>
@@ -338,10 +321,10 @@ const Adbanner = () => {
                           </button>
 
                           <EditIndividualModal
-                            isVisible={isModalVisibleIndividual}
+                            isVisible={isModalVisibleIndividualEdit}
                             handleCancel={handleCancel}
                             BASE_URL={BASE_URL}
-                          // allGeofence={geofenceId}
+                            allGeofence={allGeofence}
                           />
                           <button>
                             <RiDeleteBinLine
@@ -350,7 +333,6 @@ const Adbanner = () => {
                             />
                           </button>
                           <Modal
-                            onOk={showModalDeleteIndividualOk}
                             onCancel={handleCancel}
                             footer={null}
                             open={isShowModalDeleteIndividual}

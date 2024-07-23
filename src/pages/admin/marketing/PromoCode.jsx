@@ -111,10 +111,11 @@ const PromoCode = () => {
       <Sidebar />
 
       <div className=" pl-[300px] bg-gray-100 w-fit h-fit">
+      <div className="w-[77rem]">
         <nav className="p-5">
           <GlobalSearch />
         </nav>
-
+       
         <div className="mx-5 flex justify-between">
           <h1 className="font-bold text-[20px]">Promo codes</h1>
           <Switch
@@ -369,6 +370,7 @@ const PromoCode = () => {
               </form>
             </div>
           </Modal>
+        </div>
         </div>
         <div className="overflow-x-auto">
           <table className="overflow-x-auto p-5 w-full">
