@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
 
 
 const EditIndividualModal = ({
@@ -12,20 +14,91 @@ const EditIndividualModal = ({
   const [individualdata, SetIndividualData] = useState({
     name: "",
     merchantId: "",
-    geofenceId: "",
-    imageUrl: "",
+    geofence: "",
+    bannerImage: "",
   });
+
+  const [errors, setErrors] = useState({
+    name: "",
+    merchantId: "",
+    geofenceId: "",
+    appBannerImage: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const navigate = useNavigate()
+
+  const formSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+
+      const IndBannerDataToSend = new FormData();
+      IndBannerDataToSend.append("name", individualdata.name);
+      IndBannerDataToSend.append("merchantId", individualdata.merchantId);
+      IndBannerDataToSend.append("geofenceId", individualdata.geofence);
+
+      if (adFile) {
+        IndBannerDataToSend.append("bannerImage", adFile);
+      }
+
+      const IndBannerResponse = await axios.post(
+        `${BASE_URL}/admin/banner/add-banner`,
+        IndBannerDataToSend, // Send FormData directly
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (IndBannerResponse.status === 201) {
+        setNotificationFile(null);
+        setNotificationPreviewURL(null);
+        handleCancelIndividual();
+        toast({
+          title: "Banner Created.",
+          description: "The banner was created successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        navigate(0)
+      }
+    } catch (err) {
+      console.error(`Error in fetch data: ${err.message}`);
+
+      if (err.response && err.response.data && err.response.data.errors) {
+        const { errors } = err.response.data;
+        setErrors({
+          name: errors.name || "",
+          merchantId: errors.merchantId || "",
+          geofenceId: errors.geofenceId || "",
+          appBannerImage: errors.appBannerImage || "",
+        });
+      }
+
+      toast({
+        title: "Error",
+        description: "There was an error creating the banner.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   const handleInputChangeIndividual = (e) => {
     SetIndividualData({ ...individualdata, [e.target.name]: e.target.value });
   };
 
-  const formSubmit = (e) => {
-    e.preventDefault();
-    console.log(individualdata);
-    handleCancelIndividual();
-  };
+ 
 
   const [adFile, setAdFile] = useState(null);
   const [adPreviewURL, setAdPreviewURL] = useState(null);
@@ -145,9 +218,9 @@ const EditIndividualModal = ({
           <button
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
-          //   onClick={}
-          >
-            Save
+            disabled={isLoading}
+            >
+                {isLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>
