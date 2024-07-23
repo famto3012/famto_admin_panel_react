@@ -15,6 +15,8 @@ import { MdCameraAlt } from "react-icons/md";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
+import { filter } from "@chakra-ui/react";
+import { CSVLink } from "react-csv";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const DeliveryAgent = () => {
   const [agent, setAgent] = useState([]);
@@ -22,6 +24,10 @@ const DeliveryAgent = () => {
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const { token, role } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [vehicleType, setVehicleType] = useState([]);
+  const [status, setStatus] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [vehicleTypeFilter, setFilterVehicleType] = useState("");
   const navigate = useNavigate();
 
 
@@ -130,7 +136,7 @@ const DeliveryAgent = () => {
     try {
       console.log(token);
       const serviceResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter?`,
+        `${BASE_URL}/admin/agents/filter`,
         {
           params: { geofence: selectedService },
           withCredentials: true,
@@ -141,10 +147,63 @@ const DeliveryAgent = () => {
         setAgent(serviceResponse.data.data);
       }
     } catch (err) {
-      console.log(`Error in fetching merchant`, err);
+      console.log(`Error in fetching agent`, err);
     }
   };
-
+  const onStatusChange = (e) => {
+    const selectedService = e.target.value;
+    setStatusFilter(selectedService);
+    if (selectedService !== "") {
+      handleStatusFilter(selectedService);
+    } else {
+      setAgent([]);
+    }
+  };
+  const handleStatusFilter = async (selectedService) => {
+    try {
+      console.log(token);
+      const serviceResponse = await axios.get(
+        `${BASE_URL}/admin/agents/filter`,
+        {
+          params: { status: selectedService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (serviceResponse.status === 200) {
+        setAgent(serviceResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching agent`, err);
+    }
+  };
+  const onVehicleTypeChange = (e) => {
+    const selectedService = e.target.value;
+    setFilterVehicleType(selectedService);
+    if (selectedService !== "") {
+      handleVehicleTypeFilter(selectedService);
+    } else {
+      setAgent([]);
+    }
+  };
+  const handleVehicleTypeFilter = async (selectedService) => {
+    try {
+      console.log(token);
+      const serviceResponse = await axios.get(
+        `${BASE_URL}/admin/agents/filter`,
+        {
+          params: { vehicleType : selectedService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (serviceResponse.status === 200) {
+        setAgent(serviceResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching agent`, err);
+    }
+  };
  
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -164,11 +223,32 @@ const DeliveryAgent = () => {
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
   };
-  const signupAction = (e) => {
+  const signupAction = async(e) => {
     e.preventDefault();
-
-    console.log(addData);
+    try {
+      // console.log("hiiii")
+      const response = await axios.post(
+        `${BASE_URL}/admin/agents/add-agents`,
+       { addData },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("hello")
+      if (response.status === 200) {
+        setAddData(response.data.data)
+        handleCancel();
+      }
+      console.log("sugano")
+    } catch (err) {
+      console.log(`Error in adding new agent: ${err}`);
+    }
+    // console.log("Data", addData);
   };
+  
 
   const [businessFile, setBusinessFile] = useState(null);
   const [businessPreviewURL, setBusinessPreviewURL] = useState(null);
@@ -190,6 +270,18 @@ const DeliveryAgent = () => {
     setAgentPreviewURL(URL.createObjectURL(file));
   };
 
+  const csvData = [
+    { label: 'AgentID', key: '_id' },
+    { label: 'FullName', key: 'fullName' },
+    { label: 'Email', key: 'email' },
+    { label: 'Phone', key: 'phoneNumber' },
+    { label: 'Manager', key: 'manager' },
+    { label: 'Geofence', key: 'geofence' },
+    { label: 'Online Status', key: 'status' },
+    // { label: 'Registration Approval', key: 'averageRating' },
+  
+];
+
   return (
     <>
       <Sidebar />
@@ -200,7 +292,9 @@ const DeliveryAgent = () => {
           <h1 className="text-[18px] font-semibold">Delivery Agent</h1>
           <div className="flex space-x-2 justify-end ">
             <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-              <ArrowDownOutlined /> <span>CSV</span>
+            <CSVLink data={agent} headers={csvData} filename={"agentData.csv"}>
+                 <ArrowDownOutlined /> <span>CSV</span>
+                  </CSVLink>
             </button>
             <div>
               <button
@@ -677,23 +771,27 @@ const DeliveryAgent = () => {
         </div>
 
         <div className="flex items-center justify-between mt-10 px-[30px] bg-white mx-5 p-5 rounded-lg">
-          <div className="flex items-center gap-[20px] bg-white mx-5 rounded-lg">
+          <div className="flex items-center justify-evenly gap-3 bg-white  rounded-lg p-6">
             <select
               id="status"
               className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              value={statusFilter}
+              onChange={onStatusChange}
             >
-              <option selected hidden>
+              <option>
                 Status
               </option>
-              <option value="open">Open</option>
-              <option value="closed">Closed</option>
+              <option value="open">true</option>
+              <option value="closed">false</option>
             </select>
 
             <select
               id="vehicleType"
               className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              value={vehicleTypeFilter}
+              onChange={onVehicleTypeChange}
             >
-              <option selected hidden>
+              <option>
                 Vehicle Type
               </option>
               <option value="Scooter">Scooter</option>
@@ -703,7 +801,7 @@ const DeliveryAgent = () => {
             <select
                 name="type"
                 value={geofenceFilter}
-                className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none"
+                className="bg-blue-50 p-2 outline-none rounded-lg focus:outline-none"
                 onChange={onGeofenceChange}
               
               >

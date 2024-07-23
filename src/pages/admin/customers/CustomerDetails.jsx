@@ -120,12 +120,12 @@ const CustomerDetails = () => {
       }
       );
      if(response.status===200) {
-      setReason(response.data.data)
-      console.log(response.data.data)
+      setReason(response.data.message)
+      console.log(response.data.message)
      }
     console.log(reason);
-  } catch {
-    console.error(`Error in fetching data: ${err}`);
+  } catch(err) {
+    // console.error(`Error in fetching data: ${err}`);
   } finally {
     setIsLoading(false);
   }
@@ -456,7 +456,7 @@ const CustomerDetails = () => {
             <div className="grid grid-cols-3 mx-11 mt-10 w-fit ">
               <div className="w-[200px] px-2">
                 <h2 className="font-semibold">Home</h2>
-                <p>{customer}</p>
+                {/* <p>{customer}</p> */}
 
                 {/* <span className="flex justify-start mt-3">{customer.homeAddress.fullName}</span> */}
                 {/* <span className="flex justify-start">{customer.homeAddress.phoneNumber}</span> */}
