@@ -7,6 +7,7 @@ const EditBannerModal = ({
     isVisible,
     handleCancel,
     token,
+    allGeofence,
     BASE_URL
 }) => {
     const [appBanner, SetAppData] = useState({
@@ -107,7 +108,7 @@ const EditBannerModal = ({
                             type="id"
                             placeholder="Merchant ID"
                             id="merchantId"
-                            name="merchant.Id"
+                            name="merchantId"
                             value={appBanner.merchantId}
                             onChange={handleInputChange}
                             className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -117,15 +118,21 @@ const EditBannerModal = ({
                         <label htmlFor="geofenceId" className="w-1/3">
                             Geofence
                         </label>
-                        <input
-                            type="id"
-                            placeholder="Geofence"
-                            id="geofenceId"
+                        <select
+                            className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
                             name="geofenceId"
                             value={appBanner.geofenceId}
                             onChange={handleInputChange}
-                            className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-                        />
+                        >
+                            <option defaultValue={"Select geofence"} hidden>
+                                Select geofence
+                            </option>
+                            {allGeofence.map((geofence) => (
+                                <option key={geofence._id} value={geofence._id}>
+                                    {geofence.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="flex items-center">
                         <label className=" w-1/3">Banner Image (390px x 400px)</label>
