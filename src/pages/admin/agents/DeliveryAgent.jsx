@@ -17,10 +17,13 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { filter } from "@chakra-ui/react";
 import { CSVLink } from "react-csv";
+import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const DeliveryAgent = () => {
   const [agent, setAgent] = useState([]);
   const [geofence, setGeofence] = useState([]);
+  const [salary, setSalary] = useState([]);
+  const [manager, setManager] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const { token, role } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,36 +32,7 @@ const DeliveryAgent = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [vehicleTypeFilter, setFilterVehicleType] = useState("");
   const navigate = useNavigate();
-
-
-  const [addData, setAddData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    adress: "",
-    username: "",
-    Password: "",
-    managerId: "",
-    salaryStructureId: "",
-    geofenceId: "",
-    tag: "",
-    aadharNumber: "",
-    drivingLicenseNumber: "",
-    model: "",
-    type: "",
-    licensePlate: "",
-    accountHolderName: "",
-    accountNumber: "",
-    IFSCCode: "",
-    UPIId: "",
-    rcFrontImage: "",
-    rcBackImage: "",
-    aadharFrontImage: "",
-    aadharBackImage: "",
-    drivingLicenseFrontImage: "",
-    drivingLicenseBackImage: "",
-    agentImage: "",
-  });
+  const [addModalVisible, setAddModalVisible] = useState(false);
 
   const handleToggle = (id) => {
     setAgent((prevAgent) =>
@@ -67,7 +41,6 @@ const DeliveryAgent = () => {
       )
     );
   };
-
 
   const handleApprove = (id) => {
     setAgent((prevAgent) =>
@@ -95,19 +68,33 @@ const DeliveryAgent = () => {
       try {
         setIsLoading(true);
 
-        const [agentResponse, geofenceResponse] =
-          await Promise.all([
-            axios.get(`${BASE_URL}/admin/agents/all-agents`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
-        if (agentResponse.status === 200) 
-          {
+        const [agentResponse, geofenceResponse,salaryResponse,managerResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/agents/all-agents`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(
+            `${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`,{
+            withCredentials:true,
+            headers:{Authorization: `Bearer ${token}`}
+          }),
+          axios.get(
+            `${BASE_URL}/admin/managers`,{
+            withCredentials:true,
+            headers:{Authorization: `Bearer ${token}`}
+          })
+        ]);
+        if (salaryResponse.status === 200) {
+          setSalary(salaryResponse.data.data);
+        }
+        if (managerResponse.status === 200) {
+          setManager(managerResponse.data.data);
+        }
+        if (agentResponse.status === 200) {
           setAgent(agentResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
@@ -121,7 +108,7 @@ const DeliveryAgent = () => {
     };
 
     fetchAgent();
-  }, [token,role,navigate]);
+  }, [token, role, navigate]);
 
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
@@ -192,7 +179,7 @@ const DeliveryAgent = () => {
       const serviceResponse = await axios.get(
         `${BASE_URL}/admin/agents/filter`,
         {
-          params: { vehicleType : selectedService },
+          params: { vehicleType: selectedService },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -204,568 +191,65 @@ const DeliveryAgent = () => {
       console.log(`Error in fetching agent`, err);
     }
   };
- 
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const showAddModal = () => {
+    setAddModalVisible(true);
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    setAddModalVisible(false);
   };
-
-  const handleInputChange = (e) => {
-    setAddData({ ...addData, [e.target.name]: e.target.value });
-  };
-  const signupAction = async(e) => {
-    e.preventDefault();
-    try {
-      // console.log("hiiii")
-      const response = await axios.post(
-        `${BASE_URL}/admin/agents/add-agents`,
-       { addData },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("hello")
-      if (response.status === 200) {
-        setAddData(response.data.data)
-        handleCancel();
-      }
-      console.log("sugano")
-    } catch (err) {
-      console.log(`Error in adding new agent: ${err}`);
-    }
-    // console.log("Data", addData);
-  };
-  
-
-  const [businessFile, setBusinessFile] = useState(null);
-  const [businessPreviewURL, setBusinessPreviewURL] = useState(null);
-
-  const handleBusinessImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setBusinessFile(file);
-    setBusinessPreviewURL(URL.createObjectURL(file));
-  };
-
-  const [agentFile, setAgentFile] = useState(null);
-  const [agentPreviewURL, setAgentPreviewURL] = useState(null);
-
-  const handleAgentImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setAgentFile(file);
-    setAgentPreviewURL(URL.createObjectURL(file));
-  };
-
   const csvData = [
-    { label: 'AgentID', key: '_id' },
-    { label: 'FullName', key: 'fullName' },
-    { label: 'Email', key: 'email' },
-    { label: 'Phone', key: 'phoneNumber' },
-    { label: 'Manager', key: 'manager' },
-    { label: 'Geofence', key: 'geofence' },
-    { label: 'Online Status', key: 'status' },
+    { label: "AgentID", key: "_id" },
+    { label: "FullName", key: "fullName" },
+    { label: "Email", key: "email" },
+    { label: "Phone", key: "phoneNumber" },
+    { label: "Manager", key: "manager" },
+    { label: "Geofence", key: "geofence" },
+    { label: "Online Status", key: "status" },
     // { label: 'Registration Approval', key: 'averageRating' },
-  
-];
+  ];
 
   return (
     <>
       <Sidebar />
       <main className="pl-[300px] bg-gray-100 h-screen">
-        <nav className="p-5"><GlobalSearch/></nav>
+        <nav className="p-5">
+          <GlobalSearch />
+        </nav>
 
         <div className="flex justify-between mt-5 items-center px-[30px]">
           <h1 className="text-[18px] font-semibold">Delivery Agent</h1>
           <div className="flex space-x-2 justify-end ">
             <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-            <CSVLink data={agent} headers={csvData} filename={"agentData.csv"}>
-                 <ArrowDownOutlined /> <span>CSV</span>
-                  </CSVLink>
+              <CSVLink
+                data={agent}
+                headers={csvData}
+                filename={"agentData.csv"}
+              >
+                <ArrowDownOutlined /> <span>CSV</span>
+              </CSVLink>
             </button>
             <div>
               <button
                 className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
-                onClick={showModal}
+                onClick={showAddModal}
               >
                 <PlusOutlined /> <span>Add Agent</span>
               </button>
-              <Modal
-                title="Add Delivery Agent"
-                width="700px"
-                open={isModalVisible}
-                onOk={handleOk}
-                centered
-                onCancel={handleCancel}
-                footer={null}
-              >
-                <form onSubmit={signupAction}>
-                  <div className="flex flex-col gap-4 mt-5 max-h-[30rem] overflow-auto">
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="fullName">
-                        Full Name of owner
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.fullName}
-                        id="fullName"
-                        name="fullName"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="phone">
-                        Phone Number
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="tel"
-                        value={addData.phone}
-                        id="phone"
-                        name="phone"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="email">
-                        Email
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="email"
-                        value={addData.email}
-                        id="email"
-                        name="email"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="adress">
-                        Home Adress
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.adress}
-                        id="adress"
-                        name="adress"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="username">
-                        Username
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.username}
-                        id="username"
-                        name="username"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="Password">
-                        Password
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="password"
-                        value={addData.Password}
-                        id="Password"
-                        name="Password"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <h1 className="font-semibold text-[18px]">
-                      Vehicle Details
-                    </h1>
-                    <div className="flex">
-                      <div className="w-3/4">
-                        <div className="flex items-center ">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="licensePlate"
-                          >
-                            License Plate
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
-                            type="text"
-                            value={addData.licensePlate}
-                            id="licensePlate"
-                            name="licensePlate"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex mt-5 items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="model"
-                          >
-                            Vehicle Model
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
-                            type="text"
-                            value={addData.model}
-                            id="model"
-                            name="model"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex mt-5 gap-4">
-                          <label
-                            className="w-1/2 text-gray-500 "
-                            htmlFor="type"
-                          >
-                            Vehicle Type
-                          </label>
-                          <select
-                            className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5 "
-                            name="type"
-                            id="type"
-                            value={addData.type}
-                            onChange={handleInputChange}
-                          >
-                            <option value="1" hidden selected>
-                              Vehicle Type
-                            </option>
-                            <option value="2">Two wheeler</option>
-                            <option value="3">Three Wheeler</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className=" flex items-center gap-[30px]">
-                        {!businessPreviewURL && (
-                          <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
-                        )}
-                        {businessPreviewURL && (
-                          <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                            <img
-                              src={businessPreviewURL}
-                              alt="profile"
-                              className="w-full rounded h-full object-cover "
-                            />
-                          </figure>
-                        )}
-                        <input
-                          type="file"
-                          name="Image"
-                          id="Image"
-                          className="hidden"
-                          onChange={handleBusinessImageChange}
-                        />
-                        <label htmlFor="Image" className="cursor-pointer ">
-                          <MdCameraAlt
-                            className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                            size={30}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                    <h1 className="font-semibold text-[18px]">Bank Details</h1>
-                    <div className="flex items-center">
-                      <label
-                        className="w-1/3 text-gray-500"
-                        htmlFor="accountHolderName"
-                      >
-                        Account Holder Name
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.accountHolderName}
-                        id="accountHolderName"
-                        name="accountHolderName"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label
-                        className="w-1/3 text-gray-500"
-                        htmlFor="accountNumber"
-                      >
-                        Account Number
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="number"
-                        value={addData.accountNumber}
-                        id="accountNumber"
-                        name="accountNumber"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="IFSCCode">
-                        IFSC Code
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.IFSCCode}
-                        id="IFSCCode"
-                        name="IFSCCode"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="w-1/3 text-gray-500" htmlFor="UPIId">
-                        UPI ID
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.UPIId}
-                        id="UPIId"
-                        name="UPIId"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <h1 className="font-semibold text-[18px]">
-                      GOVERNMENT ID'S
-                    </h1>
-                    <div className="flex">
-                      <div className="flex items-center w-3/4">
-                        <label
-                          className="w-1/3 text-gray-500"
-                          htmlFor="aadharNumber"
-                        >
-                          Aadhar Number
-                        </label>
-                        <input
-                          className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
-                          type="text"
-                          value={addData.aadharNumber}
-                          id="aadharNumber"
-                          name="aadharNumber"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className=" flex items-center gap-[30px]">
-                        {!businessPreviewURL && (
-                          <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
-                        )}
-                        {businessPreviewURL && (
-                          <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                            <img
-                              src={businessPreviewURL}
-                              alt="profile"
-                              className="w-full rounded h-full object-cover "
-                            />
-                          </figure>
-                        )}
-                        <input
-                          type="file"
-                          name="Image"
-                          id="Image"
-                          className="hidden"
-                          onChange={handleBusinessImageChange}
-                        />
-                        <label
-                          htmlFor="buniessImage"
-                          className="cursor-pointer "
-                        >
-                          <MdCameraAlt
-                            className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                            size={30}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <div className="flex items-center w-3/4">
-                        <label
-                          className="w-1/3 text-gray-500"
-                          htmlFor="drivingLicenseNumber"
-                        >
-                          Driving License Number
-                        </label>
-                        <input
-                          className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
-                          type="text"
-                          value={addData.drivingLicenseNumber}
-                          id="drivingLicenseNumber"
-                          name="drivingLicenseNumber"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className=" flex items-center gap-[30px]">
-                        {!businessPreviewURL && (
-                          <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
-                        )}
-                        {businessPreviewURL && (
-                          <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                            <img
-                              src={businessPreviewURL}
-                              alt="profile"
-                              className="w-full rounded h-full object-cover "
-                            />
-                          </figure>
-                        )}
-                        <input
-                          type="file"
-                          name="BusinessImage"
-                          id="BusinessImage"
-                          className="hidden"
-                          onChange={handleBusinessImageChange}
-                        />
-                        <label
-                          htmlFor="BusinessImage"
-                          className="cursor-pointer "
-                        >
-                          <MdCameraAlt
-                            className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                            size={30}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                    <h1 className="font-semibold text-[18px]">
-                      Work Structure
-                    </h1>
-                    <div className="flex mt-5  gap-4">
-                      <label
-                        className="w-1/2 text-gray-500"
-                        htmlFor="managerId"
-                      >
-                        Manager
-                      </label>
-                      <select
-                        name="managerId"
-                        id="managerId"
-                        value={addData.managerId}
-                        onChange={handleInputChange}
-                        className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                      >
-                        <option value="select" hidden selected>
-                          Select Manager
-                        </option>
-                        <option value="Option 1">Option 1</option>
-                      </select>
-                    </div>
-                    <div className="flex mt-5  gap-4">
-                      <label
-                        className="w-1/2 text-gray-500"
-                        htmlFor="salaryStructureId"
-                      >
-                        Salary Structure
-                      </label>
-                      <select
-                        name="salaryStructureId"
-                        id="salaryStructureId"
-                        value={addData.salaryStructureId}
-                        onChange={handleInputChange}
-                        className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                      >
-                        <option value="select" hidden selected>
-                          select salary Structure
-                        </option>
-                        <option value="Option 1">Option 1</option>
-                      </select>
-                    </div>
-                    <div className="flex mt-5  gap-4">
-                      <label
-                        className="w-1/2 text-gray-500"
-                        htmlFor="geofenceId"
-                      >
-                        Geofence
-                      </label>
-                      <select
-                        name="geofenceId"
-                        id="geofenceId"
-                        value={addData.geofenceId}
-                        onChange={handleInputChange}
-                        className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                      >
-                        <option value="select" hidden selected>
-                          Geofence
-                        </option>
-                        <option value="Option 1">Option 1</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center mt-5">
-                      <label className="w-1/3 text-gray-500" htmlFor="tag">
-                        Tags
-                      </label>
-                      <input
-                        className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                        type="text"
-                        value={addData.tag}
-                        id="tag"
-                        name="tag"
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <h1 className="font-semibold text-[18px]">Add Profile</h1>
-                    <div className=" flex items-center gap-[30px]">
-                      {!agentPreviewURL && (
-                        <div className="bg-gray-400 ml-5 mt-5 h-16 w-16 rounded-md" />
-                      )}
-                      {agentPreviewURL && (
-                        <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                          <img
-                            src={agentPreviewURL}
-                            alt="profile"
-                            className="w-full rounded h-full object-cover "
-                          />
-                        </figure>
-                      )}
-                      <input
-                        type="file"
-                        name="agentImage"
-                        id="agentImage"
-                        className="hidden"
-                        onChange={handleAgentImageChange}
-                      />
-                      <label htmlFor="agentImage" className="cursor-pointer ">
-                        <MdCameraAlt
-                          className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                          size={30}
-                        />
-                      </label>
-                    </div>
-
-                    <div className="flex gap-14 ml-8 text-gray-500">
-                      <p>1.PNG</p>
-                      <p>Photo</p>
-                    </div>
-                    <div className="flex justify-end gap-4 mt-6">
-                      <button
-                        className="bg-cyan-50 py-2 px-4 rounded-md"
-                        type="button"
-                        onClick={handleCancel}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
-                        type="submit"
-                        onClick={handleOk}
-                      >
-                        Add Agent
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </Modal>
+            <AddAgentModal
+              isVisible={addModalVisible}
+              handleCancel={handleCancel}
+              token={token}
+              BASE_URL={BASE_URL}
+              geofence={geofence}
+              salary={salary}
+              manager={manager}/>
+              
+            
             </div>
           </div>
         </div>
@@ -778,9 +262,7 @@ const DeliveryAgent = () => {
               value={statusFilter}
               onChange={onStatusChange}
             >
-              <option>
-                Status
-              </option>
+              <option>Status</option>
               <option value="open">true</option>
               <option value="closed">false</option>
             </select>
@@ -791,29 +273,26 @@ const DeliveryAgent = () => {
               value={vehicleTypeFilter}
               onChange={onVehicleTypeChange}
             >
-              <option>
-                Vehicle Type
-              </option>
+              <option>Vehicle Type</option>
               <option value="Scooter">Scooter</option>
               <option value="Bike">Bike</option>
             </select>
 
             <select
-                name="type"
-                value={geofenceFilter}
-                className="bg-blue-50 p-2 outline-none rounded-lg focus:outline-none"
-                onChange={onGeofenceChange}
-              
-              >
-                <option hidden value="">
-                  Geofence
+              name="type"
+              value={geofenceFilter}
+              className="bg-blue-50 p-2 outline-none rounded-lg focus:outline-none"
+              onChange={onGeofenceChange}
+            >
+              <option hidden value="">
+                Geofence
+              </option>
+              {geofence.map((geoFence) => (
+                <option value={geoFence._id} key={geoFence._id}>
+                  {geoFence.name}
                 </option>
-                {geofence.map((geoFence) => (
-                  <option value={geoFence._id} key={geoFence._id}>
-                    {geoFence.name}
-                  </option>
-                ))}
-              </select>
+              ))}
+            </select>
           </div>
 
           <div className="flex items-center gap-[30px]">
@@ -871,9 +350,7 @@ const DeliveryAgent = () => {
                   <td className="p-4">{agent.geofence}</td>
                   <td className="p-4">
                     <Switch
-                       checked={
-                       agent.status
-                      }
+                      checked={agent.status}
                       onChange={() => handleToggle(agent._id)}
                     />
                   </td>
@@ -887,7 +364,6 @@ const DeliveryAgent = () => {
                         className="text-3xl  cursor-pointer text-red-500"
                         onClick={() => handleReject(agent._id)}
                       />
-                      
                     </div>
                   </td>
                 </tr>
