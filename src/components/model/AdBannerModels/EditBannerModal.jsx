@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
@@ -9,14 +9,52 @@ const EditBannerModal = ({
   token,
   allGeofence,
   currentBannerEdit,
-  BASE_URL
+  BASE_URL,
 }) => {
+  // Initialize state with currentBannerEdit details if available
   const [appBanner, setAppData] = useState({
     name: "",
     merchantId: "",
     geofenceId: "",
     appBannerImage: "",
   });
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      console.log("Fetching data for currentBannerEdit:", currentBannerEdit);
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/app-banner/get-app-banner/${currentBannerEdit}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (response.status === 200) {
+          const data = response.data.data;
+          setAppData({
+            name: data.name,
+            merchantId: data.merchantId,
+            geofenceId: data.geofenceId,
+            appBannerImage: data.imageUrl,
+          });
+        }
+      } catch (err) {
+        console.error(`Error in fetching data:`, err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (currentBannerEdit) {
+      fetchData();
+    }
+  }, [currentBannerEdit, token, BASE_URL]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,14 +64,16 @@ const EditBannerModal = ({
     }));
   };
 
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+  setAppData((prev)=>({...prev, appBannerImage: previewURL}))
+  }, [previewURL])
 
   const handleAppBannerImageChange = (e) => {
+    e.preventDefault();
     const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
+    setSelectedFile(file);
+    setPreviewURL(URL.createObjectURL(file));
+    setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
   };
 
   const saveAction = async (e) => {
@@ -46,11 +86,9 @@ const EditBannerModal = ({
       appBannerDataToSend.append("name", appBanner.name);
       appBannerDataToSend.append("merchantId", appBanner.merchantId);
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
-      if (notificationFile) {
-        appBannerDataToSend.append("appBannerImage", notificationFile);
+      if (selectedFile) {
+        appBannerDataToSend.append("appBannerImage", selectedFile);
       }
-
-      console.log("appBannerDataToSend", appBannerDataToSend);
 
       const addBannerResponse = await axios.put(
         `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
@@ -63,17 +101,19 @@ const EditBannerModal = ({
           },
         }
       );
+
       if (addBannerResponse.status === 200) {
         setAppData(addBannerResponse.data.data);
         handleCancel();
+      } else {
+        console.error("Failed to update banner:", addBannerResponse.data);
       }
     } catch (err) {
       console.error(`Error in updating data: ${err}`);
     } finally {
       setIsLoading(false);
+      console.log("edit data", appBanner);
     }
-
-    console.log(appBanner);
   };
 
   return (
@@ -105,7 +145,7 @@ const EditBannerModal = ({
               Merchant ID
             </label>
             <input
-              type="text" // Corrected input type
+              type="text"
               placeholder="Merchant ID"
               id="merchantId"
               name="merchantId"
@@ -124,7 +164,7 @@ const EditBannerModal = ({
               value={appBanner.geofenceId}
               onChange={handleInputChange}
             >
-              <option defaultValue={"Select geofence"} hidden>
+              <option value="" disabled hidden>
                 Select geofence
               </option>
               {allGeofence.map((geofence) => (
@@ -135,26 +175,35 @@ const EditBannerModal = ({
             </select>
           </div>
           <div className="flex items-center">
-            <label className=" w-1/3">Banner Image (390px x 400px)</label>
+            <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              {!notificationPreviewURL && (
-                <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md" />
-              )}
-              {notificationPreviewURL && (
-                <figure className="mt-3 h-16 w-16 rounded-md relative">
+              {/* Render the current banner image only if no new image is selected */}
+
+              {previewURL && (
+                <figure className="mt-3 h-16 w-16 rounded-md">
                   <img
-                    src={notificationPreviewURL}
-                    alt="profile"
+                    src="https://images.unsplash.com/photo-1719937206642-ca0cd57198cc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8"
+                    alt="New Preview"
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
               )}
+
+              { appBanner.appBannerImage && (
+                <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
+                  <img
+                    src={appBanner?.appBannerImage}
+                    alt="Current Banner"
+                    className="w-full h-full"
+                  />
+                </div>
+              )}
+
               <input
                 type="file"
                 name="appBannerImage"
                 id="appBannerImage"
                 className="hidden"
-                // Remove the value property from file input
                 onChange={handleAppBannerImageChange}
               />
               <label htmlFor="appBannerImage" className="cursor-pointer">
@@ -176,10 +225,12 @@ const EditBannerModal = ({
             Cancel
           </button>
           <button
-            className="bg-teal-700 text-white py-2 px-4 rounded-md"
+            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${isLoading ? "opacity-50" : ""
+              }`}
             type="submit"
+            disabled={isLoading}
           >
-            Save
+            {isLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

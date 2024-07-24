@@ -11,11 +11,9 @@ import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Switch } from "antd";
 import Sidebar from "../../../components/Sidebar";
-import { MdCameraAlt } from "react-icons/md";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
-import { filter } from "@chakra-ui/react";
 import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -247,7 +245,8 @@ const DeliveryAgent = () => {
               BASE_URL={BASE_URL}
               geofence={geofence}
               salary={salary}
-              manager={manager}/>
+              manager={manager}
+              />
               
             
             </div>

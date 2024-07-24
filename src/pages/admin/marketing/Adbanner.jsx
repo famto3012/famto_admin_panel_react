@@ -24,6 +24,7 @@ const Adbanner = () => {
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
   const [currentBanner, setCurrentBanner] = useState(null);
+  const [currentBannerEditId, setCurrentBannerEditId] = useState(null);
   const [currentBannerEdit, setCurrentEditBanner] = useState(null);
   const [currentIndBanner, setCurrentIndBanner] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -98,7 +99,8 @@ const Adbanner = () => {
     setIsModalVisibleIndividual(true);
   };
 
-  const showModalIndividualEdit = () => {
+  const showModalIndividualEdit = (bannerEditId) => {
+    setCurrentBannerEditId(bannerEditId)
     setIsModalVisibleIndividualEdit(true);
   };
 
@@ -201,6 +203,11 @@ const Adbanner = () => {
     );
   };
 
+  // console.log("banenr details",individualBanner);
+  // console.log("currently active banner", currentIndBanner)
+  console.log("last",currentBannerEdit)
+
+
   return (
     <div>
       {isLoading ? (
@@ -297,6 +304,8 @@ const Adbanner = () => {
                             isVisible={editModalVisible}
                             handleCancel={handleCancel}
                             BASE_URL={BASE_URL}
+                            token={token}
+                            banner={banner}
                             currentBannerEdit={currentBannerEdit}
                             allGeofence={allGeofence}
                           />
@@ -404,7 +413,7 @@ const Adbanner = () => {
                       </td>
                       <td>
                         <div className="flex justify-center items-center gap-3">
-                          <button onClick={showModalIndividualEdit}>
+                          <button onClick={() => showModalIndividualEdit(individualBanner.data)}>
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
 
@@ -412,6 +421,8 @@ const Adbanner = () => {
                             isVisible={isModalVisibleIndividualEdit}
                             handleCancel={handleCancel}
                             BASE_URL={BASE_URL}
+                            currentIndBanner={currentIndBanner}
+                            token={token}
                             allGeofence={allGeofence}
                           />
                           <button>
