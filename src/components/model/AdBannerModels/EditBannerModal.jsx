@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "antd";
+import { Modal, Spin } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
 
@@ -22,6 +22,7 @@ const EditBannerModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,6 +75,7 @@ const EditBannerModal = ({
     if(previewURL){
       console.log("preview added", previewURL)
     }
+    setPreviewURL(URL.createObjectURL(file));
     // setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
   };
 
@@ -81,7 +83,7 @@ const EditBannerModal = ({
     e.preventDefault(); // Prevent default form submission behavior
 
     try {
-      setIsLoading(true);
+      setConfirmLoading(true);
 
       const appBannerDataToSend = new FormData();
       appBannerDataToSend.append("name", appBanner.name);
@@ -89,6 +91,7 @@ const EditBannerModal = ({
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
       if (selectedFile) {
         appBannerDataToSend.append("appBannerImage", selectedFile);
+        
       }
 
       const addBannerResponse = await axios.put(
@@ -112,7 +115,7 @@ const EditBannerModal = ({
     } catch (err) {
       console.error(`Error in updating data: ${err}`);
     } finally {
-      setIsLoading(false);
+      setConfirmLoading(false);
       console.log("edit data", appBanner);
     }
   };
@@ -226,7 +229,7 @@ const EditBannerModal = ({
             Cancel
           </button>
           <button
-            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${isLoading ? "opacity-50" : ""
+            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${confirmLoading ? "opacity-50" : ""
               }`}
             type="submit"
             disabled={isLoading}

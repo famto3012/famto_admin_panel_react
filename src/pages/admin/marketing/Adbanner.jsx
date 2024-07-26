@@ -16,7 +16,7 @@ import EditIndividualModal from "../../../components/model/AdBannerModels/EditIn
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-const Adbanner = () => {
+  const Adbanner = () => {
   const [banner, setBanner] = useState([]);
   const [individualBanner, setIndividualBanner] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +100,8 @@ const Adbanner = () => {
   };
 
   const showModalIndividualEdit = (bannerEditId) => {
-    setCurrentBannerEditId(bannerEditId)
+    setCurrentIndBanner(bannerEditId);
+    console.log(bannerEditId)
     setIsModalVisibleIndividualEdit(true);
   };
 
@@ -108,6 +109,7 @@ const Adbanner = () => {
     setCurrentBanner(bannerId);
     console.log(bannerId);
     setIsShowModalDelete(true);
+    
   };
 
   const showModalDeleteIndividual = (currentIndBannerId) => {
@@ -121,7 +123,8 @@ const Adbanner = () => {
     setEditModalVisible(false);
     setIsModalVisibleIndividual(false);
     setIsModalVisibleIndividualEdit(false);
-    };
+    setShowModalDeleteIndividual(false);
+  };
 
   // New function to remove a Banner from the banner state
   const removeBanner = (bannerId) => {
@@ -134,7 +137,7 @@ const Adbanner = () => {
     setCurrentBanner(null);
   };
 
-  // api calling to delete Aapp banner..
+  // api calling to delete Aapp banner..      
 
   const handleBannerDelete = async (currentBanner) => {
     try {
@@ -162,8 +165,9 @@ const Adbanner = () => {
   }
 
   const handleConfirmIndBannerDelete = () => {
-    setCurrentIndBanner(null);
     setShowModalDeleteIndividual(false);
+    setCurrentIndBanner(null);
+
   }
 
   const removeIndBanner = (currentIndBannerId) => {
@@ -172,25 +176,25 @@ const Adbanner = () => {
 
   //api calling to delete individual app banner..
 
-  const handleIndBannerDelete = async(currentIndBanner) => {
-     try{
+  const handleIndBannerDelete = async (currentIndBanner) => {
+    try {
       setConfirmLoading(true);
-      
+
       const indDeleteResponse = await axios.delete(
-        `${BASE_URL}/admin/banner/delete-banner/${currentIndBanner}`,{
-          withCredentials:true,
-          headers: {Authorization :  `Bearer ${token}`}
-        }
+        `${BASE_URL}/admin/banner/delete-banner/${currentIndBanner}`, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` }
+      }
       );
-      if(indDeleteResponse === 200) {
+      if (indDeleteResponse === 200) {
         removeIndBanner(currentIndBanner);
         handleConfirmIndBannerDelete();
-      }else {
+      } else {
         console.error(`Unexpected status code: ${indDeleteResponse.status}`);
       }
-    }catch(err) {
-      console.error(`Error in delete individual banner`,err)
-    }finally {
+    } catch (err) {
+      console.error(`Error in delete individual banner`, err)
+    } finally {
       setConfirmLoading(false);
     }
   }
@@ -205,7 +209,7 @@ const Adbanner = () => {
 
   // console.log("banenr details",individualBanner);
   // console.log("currently active banner", currentIndBanner)
-  console.log("last",currentBannerEdit)
+  // console.log("last",currentBannerEdit)
 
 
   return (
@@ -297,7 +301,7 @@ const Adbanner = () => {
                       </td>
                       <td>
                         <div className="flex justify-center items-center gap-3">
-                          <button onClick={() =>showModalEdit(bannerData._id)}>
+                          <button onClick={() => showModalEdit(bannerData._id)}>
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
                           <EditBannerModal
@@ -397,8 +401,10 @@ const Adbanner = () => {
                       className="text-center bg-white h-20"
                       key={individualBanner._id}
                     >
-                      <td className="w-[120px] px-5">
-                        <img src={individualBanner.imageUrl} />
+                      <td className=" flex items-center justify-center p-3" >
+                        <figure className="h-[70px] w-[100px]">
+                        <img src={individualBanner.imageUrl} className="w-full h-full object-contain" />
+                        </figure>
                       </td>
                       <td>{individualBanner.name}</td>
                       <td>{individualBanner.merchantId}</td>
@@ -413,7 +419,7 @@ const Adbanner = () => {
                       </td>
                       <td>
                         <div className="flex justify-center items-center gap-3">
-                          <button onClick={() => showModalIndividualEdit(individualBanner.data)}>
+                          <button onClick={() => showModalIndividualEdit(individualBanner._id)}>
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
 
@@ -438,7 +444,9 @@ const Adbanner = () => {
                             centered
                           >
                             <p className="font-semibold text-[18px] mb-5">
-                              Are you sure want to delete?
+                              <Spin spinning={confirmLoading}>
+                                <p>Are you sure you want to delete this tax?</p>
+                              </Spin>
                             </p>
                             <div className="flex justify-end">
                               <button
@@ -448,7 +456,7 @@ const Adbanner = () => {
                                 Cancel
                               </button>
                               <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                              onClick={()=>handleIndBannerDelete(currentIndBanner)}
+                                onClick={() => handleIndBannerDelete(currentIndBanner)}
                               >
                                 {" "}
                                 Delete

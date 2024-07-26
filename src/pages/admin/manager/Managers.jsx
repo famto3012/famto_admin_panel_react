@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { PlusOutlined } from "@ant-design/icons";
 import { SearchOutlined } from "@ant-design/icons";
@@ -7,10 +7,11 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { Modal } from "antd";
+import { Modal, Spin } from "antd";
 import { MdOutlineEdit } from "react-icons/md";
 import { FilterAltOutlined } from "@mui/icons-material";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -48,6 +49,113 @@ const Managers = () => {
   //   getAllManagers();
   // }, [token]);
 
+
+  const[manager,setManager] = useState([]);
+  const [currentManager, setCurrentManager] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const[geofence,setGeofence] = useState([])
+  const [geofenceFilter, setGeofenceFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const[isLoading,setIsLoading]=useState(false);
+  const { token, role } = useContext(UserContext);
+  const toast=useToast()
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const [managerResponse, geofenceResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/managers`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),  
+          ]);
+        if (managerResponse.status === 200) {
+          setManager(managerResponse.data.data);
+        }
+        if (geofenceResponse.status === 200) {
+          setGeofence(geofenceResponse.data.geofences);
+          console.log(geofence)
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token, role, navigate]);
+  
+
+  const onGeofenceChange = (e) => {
+    const selectedService = e.target.value;
+    setGeofenceFilter(selectedService);
+    if (selectedService !== "") {
+      handleGeofenceFilter(selectedService);
+    } else {
+      setManager([]);
+    }
+  };
+
+  const handleGeofenceFilter = async (selectedService) => {
+    try {
+      console.log(token);
+      const serviceResponse = await axios.get(
+        `${BASE_URL}/admin/managers/filter`,
+        {
+          params: { query: selectedService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (serviceResponse.status === 200) {
+        setManager(serviceResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching manager`, err);
+    }
+  };
+  const onSearchChange = (e) => {
+    const searchService = e.target.value;
+    setSearchFilter(searchService);
+    if(searchService !== "") {
+      handleSearchChangeFilter(searchService);
+    }else {
+      setManager([]);
+    }
+  };
+
+  const handleSearchChangeFilter = async(searchService) => {
+    try{
+        console.log(token);
+        const searchResponse = await axios.get(
+          `${BASE_URL}/admin/managers/search`,
+          {
+            params: {query : searchService},
+            withCredentials: true,
+            headers: {Authorization: `Bearer ${token}`}
+          }
+        );
+        if(searchResponse.status === 200) {
+          setManager(searchResponse.data.data);
+        }
+    }catch (err) {
+      console.log(`Error in fetching manager`, err);
+    }
+  };
+
   const handleChange = (event) => {
     e.preventDefault();
 
@@ -56,17 +164,56 @@ const Managers = () => {
 
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
-  const showModalDelete = () => {
+   const showModalDelete = (managerId) => {
+    setCurrentManager(managerId);
+    console.log(managerId);
     setIsShowModalDelete(true);
+    
   };
 
-  const showModalDeleteOk = () => {
-    setIsShowModalDelete(false);
+  const removeBanner = (managerId) => {
+    setManager(manager.filter((manager) => manager._id !== managerId));
   };
 
-  const showModalDeleteCancel = () => {
+  // New function to handle confirm delete
+  const handleConfirmDelete = () => {
+    setIsShowModalDelete(false);
+    setCurrentManager(null);
+  };
+
+  const handleCancel = () => {
     setIsShowModalDelete(false);
   };
+  const handleDelete = async (currentManager) => {
+    try {
+      setConfirmLoading(true);
+
+      const deleteResponse = await axios.delete(
+        `${BASE_URL}/admin/managers/delete-manager/${currentManager}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (deleteResponse.status === 200) {
+        removeBanner(currentManager);
+
+        toast({
+          title: "Manager Deleted",
+          description: "Manager deleted successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+      });
+      handleConfirmDelete();
+    }
+    } catch (err) {
+      console.error('Error in deleting banner:', err);
+    } finally {
+      setConfirmLoading(false);
+    }
+  }
 
   return (
     <>
@@ -88,13 +235,21 @@ const Managers = () => {
         <div className="bg-white p-5 mx-5 mb-5 mt-5 rounded-lg flex justify-between">
           <div className="flex gap-10">
             <select
-              name="geofence"
-              value={""}
+              name="type"
+              value={geofenceFilter}
               className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
-              onChange={handleChange}
+              onChange={onGeofenceChange}
+             
             >
-              <option value="Option 1">Geofence</option>
-              <option value="optioon 2">Tvm</option>
+                <option hidden value="">
+                  Geofence
+                </option>
+               {geofence.map((geoFence) => (
+                  <option value={geoFence._id} key={geoFence._id}>
+                    {geoFence.name}
+                  </option>
+                ))}
+
             </select>
           </div>
           <div className="flex gap-4">
@@ -104,14 +259,18 @@ const Managers = () => {
             <input
               type="search"
               name="search"
-              placeholder="Search Manager ID"
+              placeholder="Search Manager Name"
               className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
-            />
+              value={searchFilter}
+              onChange={onSearchChange}
+              
+             />
             <button type="submit" className="absolute right-16 mt-2">
               <SearchOutlined className="text-xl text-gray-600" />
             </button>
           </div>
-        </div>
+        </div >
+        <div className="mb-24">
         <table className="w-full">
           <thead>
             <tr>
@@ -134,45 +293,50 @@ const Managers = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="text-center bg-white h-20">
-              <td>Dummy Data</td>
-              <td>Dummy Data</td>
-              <td>Dummy Data</td>
-              <td>Dummy Data</td>
-              <td>Dummy Data</td>
-              <td>Dummy Data</td>
+          {manager.map((manager) => (
+            <tr 
+            key={manager._id}
+            className="text-center bg-white h-20">
+              <td>{manager._id}</td>
+              <td>{manager.name}</td>
+              <td>{manager.email}</td>
+              <td>{manager.phoneNumber}</td>
+              <td>{manager.role}</td>
+              <td>{manager.geofenceId.name}</td>
               <td>
                 <div className="flex  justify-center gap-3">
                   <button>
-                    <Link to={"/update-manager"}>
+                  <Link to={`/update-manager/${manager._id}`}>
+
                       <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                     </Link>
                   </button>
                   <button
-                    onClick={showModalDelete}
                     className="outline-none focus:outline-none"
+                    onClick={() => showModalDelete(manager._id)}
                   >
                     <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                   </button>
                   <Modal
-                    onOk={showModalDeleteOk}
-                    onCancel={showModalDeleteCancel}
+                    onCancel={handleCancel}
                     footer={null}
                     open={isShowModalDelete}
                     centered
                   >
                     <p className="font-semibold text-[18px] mb-5">
+                    <Spin spinning={confirmLoading}>
                       Are you sure want to delete?
+                      </Spin>
                     </p>
                     <div className="flex justify-end">
                       <button
                         className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                        onClick={showModalDeleteCancel}
+                        onClick={handleCancel}
                       >
                         Cancel
                       </button>
-                      <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
-                        {" "}
+                      <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                       onClick={() => handleDelete(currentManager)}>
                         Delete
                       </button>
                     </div>
@@ -180,8 +344,10 @@ const Managers = () => {
                 </div>
               </td>
             </tr>
+          ))}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );

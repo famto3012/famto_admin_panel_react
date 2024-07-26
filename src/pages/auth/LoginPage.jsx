@@ -185,7 +185,7 @@ const LoginPage = () => {
               type="submit"
               className="w-full py-2 lg:px-4  bg-teal-700 text-white rounded-xl hover:bg-teal-800"
             >
-              {isLoading ? "" : `Sign in`}
+              {isLoading ? "Loading..." : `Sign in`}
             </button>
           </form>
           <div className="mt-3 text-center">

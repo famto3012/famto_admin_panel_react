@@ -3,20 +3,66 @@ import {
   DeleteOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { MdCameraAlt } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Modal } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AlertNotification = () => {
-  const [userType, setUserType] = useState("");
-  const [id, setId] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [imageUrl, setUrl] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [alert,setAlert] = useState([])
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [isLoading,setIsLoading] = useState(false)
+
+  const [state, setState] = useState({
+    userType: "",
+    id: "",
+    title: "",
+    description: "",
+    imageUrl: "",
+    suggestions: [],
+  });
+
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const [alertResponse,typeResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/notification/alert-notification`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+              axios.get(`${BASE_URL}admin/notification/alert-notification/merchant9`, {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            
+          ]);
+        if (alertResponse.status === 200) {
+          setAlert(alertResponse.data.data);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token, role, navigate]);
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
 
@@ -27,31 +73,47 @@ const AlertNotification = () => {
   };
 
   const handleTypeChange = (e) => {
-    setUserType(e.target.value);
+    const userType = e.target.value;
+    setState((prevState) => ({
+      ...prevState,
+      userType,
+      suggestions: mockSuggestions[userType] || [],
+    }));
   };
 
-  const handleInputChange = (setter) => (e) => {
-    setter(e.target.value);
+  const handleInputChange = (name) => (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      [name]: e.target.value,
+    }));
   };
 
   const handleIdChange = (e) => {
-    setId(e.target.value);
-    setSuggestions(mockSuggestions[userType] || []);
+    const id = e.target.value;
+    setState((prevState) => ({
+      ...prevState,
+      id,
+      suggestions: mockSuggestions[prevState.userType] || [],
+    }));
   };
+
 
   const handleConfirm = (e) => {
     e.preventDefault();
-    const payload = { userType, id, title, description, imageUrl };
-    console.log("Confirmed Payload", payload);
+    const { userType, id, title, description, imageUrl } = state;
+    console.log("Confirmed Payload",state );
   };
 
   const handleCancel = () => {
-    setUserType("");
-    setId("");
-    setTitle("");
-    setDescription("");
+    setState({
+      userType: "",
+      id: "",
+      title: "",
+      description: "",
+      imageUrl: "",
+      suggestions: [],
+    });
     setUrl("");
-    setSuggestions([]);
   };
 
   const handleNotificationImageChange = (e) => {
@@ -102,7 +164,7 @@ const AlertNotification = () => {
                         type="radio"
                         name="userType"
                         value={type}
-                        checked={userType === type}
+                        checked={state.userType === type}
                         onChange={handleTypeChange}
                         className="form-radio"
                       />
@@ -120,16 +182,12 @@ const AlertNotification = () => {
                   type="text"
                   id="id"
                   name="id"
-                  value={id}
+                  value={state.id}
                   onChange={handleIdChange}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] ml-[200px] outline-none focus:outline-none"
-                  list="suggestions"
+                  
                 />
-                <datalist id="suggestions">
-                  {suggestions.map((suggestion, index) => (
-                    <option key={index} value={suggestion} />
-                  ))}
-                </datalist>
+                
               </div>
 
               <div className="flex items-center">
@@ -140,8 +198,8 @@ const AlertNotification = () => {
                   type="text"
                   id="title"
                   name="title"
-                  value={title}
-                  onChange={handleInputChange(setTitle)}
+                  value={state.title}
+                  onChange={handleInputChange("title")}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] ml-[185px] outline-none focus:outline-none"
                 />
               </div>
@@ -156,8 +214,8 @@ const AlertNotification = () => {
                 <textarea
                   id="description"
                   name="description"
-                  value={description}
-                  onChange={handleInputChange(setDescription)}
+                  value={state.description}
+                  onChange={handleInputChange("description")}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                 />
               </div>
@@ -257,13 +315,17 @@ const AlertNotification = () => {
               </tr>
             </thead>
             <tbody>
+            {alert.map((alert) => (
               <tr className="text-center bg-white h-20">
-                <td>{title}</td>
-                <td>{id}</td>
-                <td>{description}</td>
-                <td></td>
-                <td>
-                 
+                <td>{alert.title}</td>
+                <td>{alert._id}</td>
+                <td>{alert.description}</td>
+                <td className=" flex items-center justify-center p-3" >
+                        <figure className="h-[70px] w-[100px]">
+                          <img src={alert.imageUrl} className="w-full h-full object-contain" />
+                        </figure>
+                      </td>
+                <td> 
                 <button
                         onClick={showModalDelete1}
                         className="outline-none focus:outline-none"
@@ -295,6 +357,7 @@ const AlertNotification = () => {
                       </Modal>
                 </td>
               </tr>
+            ))}
             </tbody>
           </table>
         </div>
