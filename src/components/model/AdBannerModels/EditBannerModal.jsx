@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "antd";
+import { Modal, Spin } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
 
@@ -22,6 +22,7 @@ const EditBannerModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,14 +74,14 @@ const EditBannerModal = ({
     const file = e.target.files[0];
     setSelectedFile(file);
     setPreviewURL(URL.createObjectURL(file));
-    setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
+    // setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
   };
 
   const saveAction = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
     try {
-      setIsLoading(true);
+      setConfirmLoading(true);
 
       const appBannerDataToSend = new FormData();
       appBannerDataToSend.append("name", appBanner.name);
@@ -88,6 +89,7 @@ const EditBannerModal = ({
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
       if (selectedFile) {
         appBannerDataToSend.append("appBannerImage", selectedFile);
+        
       }
 
       const addBannerResponse = await axios.put(
@@ -111,7 +113,7 @@ const EditBannerModal = ({
     } catch (err) {
       console.error(`Error in updating data: ${err}`);
     } finally {
-      setIsLoading(false);
+      setConfirmLoading(false);
       console.log("edit data", appBanner);
     }
   };
@@ -182,14 +184,14 @@ const EditBannerModal = ({
               {previewURL && (
                 <figure className="mt-3 h-16 w-16 rounded-md">
                   <img
-                    src="https://images.unsplash.com/photo-1719937206642-ca0cd57198cc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8"
+                    src={previewURL}
                     alt="New Preview"
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
               )}
 
-              { appBanner.appBannerImage && (
+              {!previewURL && appBanner.appBannerImage && (
                 <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
                   <img
                     src={appBanner?.appBannerImage}
@@ -225,7 +227,7 @@ const EditBannerModal = ({
             Cancel
           </button>
           <button
-            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${isLoading ? "opacity-50" : ""
+            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${confirmLoading ? "opacity-50" : ""
               }`}
             type="submit"
             disabled={isLoading}

@@ -24,7 +24,7 @@ const CommissionComponent = () => {
   };
 
   return (
-    <div className="flex m-20 h-screen ">
+    <div className="flex m-20 h-screen min-w-fit">
       <form className=" rounded w-fit pl-[300px] mx-5" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-8 ">
           <div className="flex items-center">
