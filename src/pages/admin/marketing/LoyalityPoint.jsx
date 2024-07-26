@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { Switch } from "antd";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { RiEqualFill } from "react-icons/ri";
 import CurrencyRupeeOutlined from "@mui/icons-material/CurrencyRupeeOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
-
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const LoyalityPoint = () => {
-  const [loyalityData, setLoyalityData] = useState({
+  const [isLoading,setIsLoading] = useState(false)
+  const { token, role } = useContext(UserContext);
+  const navigate =useNavigate()
+  const [loyaltyData, setLoyaltyData] = useState({
     earningCriteriaRupee: "",
     earningCriteriaPoint: "",
     minOrderAmountForEarning: "",
@@ -20,17 +26,65 @@ const LoyalityPoint = () => {
     maxRedemptionAmountPercentage: "",
   });
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response =
+        await
+        axios.get(
+          `${BASE_URL}/admin/loyalty-point`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+      
+      if (response.status === 200) {
+        setLoyaltyData(response.data.data);
+        console.log(response.data.data);
+      }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [token, role, navigate]);
+
   const handleInputChange = (e) => {
-    setLoyalityData({ ...loyalityData, [e.target.name]: e.target.value });
+    setLoyaltyData({ ...loyaltyData, [e.target.name]: e.target.value });
   };
 
   const formSubmit = (e) => {
     e.preventDefault();
-    console.log(loyalityData);
+    console.log(loyaltyData);
+  };
+  const onChange = async(name, checked) => {
+    setLoyaltyData({ ...loyaltyData, [name]: checked });
+    try{
+       const statusResponse = await axios.patch(
+        `${BASE_URL}/admin/loyalty-point`,{},{
+          withCredentials:true,
+          headers:{Authorization:`Bearer ${token}`}
+        }
+       )
+      if(statusResponse.status==200){
+        setLoyaltyData(statusResponse.data.data)
+      }
+    }catch{
+      console.error(`Error in fetching data: ${err}`);
+    }
   };
 
   const handleCancel = () => {
-    setLoyalityData({
+    setLoyaltyData({
       earningCriteriaRupee: "",
       earningCriteriaPoint: "",
       minOrderAmountForEarning: "",
@@ -53,7 +107,10 @@ const LoyalityPoint = () => {
         </nav>
         <div className="flex items-center justify-between mx-10 mt-5">
           <h1 className="text-xl font-semibold">Loyality Point</h1>
-          <Switch />
+          <Switch 
+           onChange={(checked) => onChange("status", checked)}
+           name="status"
+           checked={loyaltyData.status}/>
         </div>
         <p className="mt-5 mx-10 text-[17px] text-gray-500">
           Loyalty points are a bonus incentive scheme used to keep customers
@@ -76,7 +133,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 pl-8 ml-[80px] outline-none focus:outline-none w-[25rem] "
                   type="text"
-                  value={loyalityData.earningCriteriaRupee}
+                  value={loyaltyData.earningCriteriaRupee}
                   id="earningCriteriaRupee"
                   name="earningCriteriaRupee"
                   onChange={handleInputChange}
@@ -90,7 +147,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-[25rem]"
                   type="text"
-                  value={loyalityData.earningCriteriaPoint}
+                  value={loyaltyData.earningCriteriaPoint}
                   id="earningCriteriaPoint"
                   name="earningCriteriaPoint"
                   onChange={handleInputChange}
@@ -107,7 +164,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3"
                   type="text"
-                  value={loyalityData.minOrderAmountForEarning}
+                  value={loyaltyData.minOrderAmountForEarning}
                   id="minOrderAmountForEarning"
                   name="minOrderAmountForEarning"
                   onChange={handleInputChange}
@@ -123,7 +180,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3 "
                   type="text"
-                  value={loyalityData.maxEarningPoint}
+                  value={loyaltyData.maxEarningPoint}
                   id="maxEarningPoint"
                   name="maxEarningPoint"
                   onChange={handleInputChange}
@@ -136,7 +193,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3 "
                   type="text"
-                  value={loyalityData.expiryDuration}
+                  value={loyaltyData.expiryDuration}
                   id="expiryDuration"
                   name="expiryDuration"
                   onChange={handleInputChange}
@@ -153,7 +210,7 @@ const LoyalityPoint = () => {
                   <input
                     className="border-2 border-gray-300 rounded p-2 ml-[85px] mr-[10px] outline-none focus:outline-none w-[25rem] "
                     type="text"
-                    value={loyalityData.redemptionCriteriaPoint}
+                    value={loyaltyData.redemptionCriteriaPoint}
                     id="redemptionCriteriaPoint"
                     name="redemptionCriteriaPoint"
                     onChange={handleInputChange}
@@ -165,7 +222,7 @@ const LoyalityPoint = () => {
                   <input
                     className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
                     type="text"
-                    value={loyalityData.redemptionCriteriaRupee}
+                    value={loyaltyData.redemptionCriteriaRupee}
                     id="redemptionCriteriaRupee"
                     name="redemptionCriteriaRupee"
                     onChange={handleInputChange}
@@ -183,7 +240,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
                   type="text"
-                  value={loyalityData.minOrderAmountForRedemption}
+                  value={loyaltyData.minOrderAmountForRedemption}
                   id="minOrderAmountForRedemption"
                   name="minOrderAmountForRedemption"
                   onChange={handleInputChange}
@@ -199,7 +256,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
                   type="text"
-                  value={loyalityData.minLoyaltyPointForRedemption}
+                  value={loyaltyData.minLoyaltyPointForRedemption}
                   id="minLoyaltyPointForRedemption"
                   name="minLoyaltyPointForRedemption"
                   onChange={handleInputChange}
@@ -215,7 +272,7 @@ const LoyalityPoint = () => {
                 <input
                   className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
                   type="text"
-                  value={loyalityData.maxRedemptionAmountPercentage}
+                  value={loyaltyData.maxRedemptionAmountPercentage}
                   id="maxRedemptionAmountPercentage"
                   name="maxRedemptionAmountPercentage"
                   onChange={handleInputChange}

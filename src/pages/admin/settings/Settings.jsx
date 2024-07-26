@@ -1,11 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
-
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+import GIFLoader from "../../../components/GIFLoader";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const Settings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+ const [isLoading,setIsLoading] = useState(false)
+ const { token, role } = useContext(UserContext);
+ const navigate =useNavigate()
+ const toast=useToast()
+
+
+ const [addData, setAddData] = useState({
+  currentPassword: "",
+  newPassword: "",
+});
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -14,46 +28,121 @@ const Settings = () => {
   const handleModalClose = () => {
     setIsModalVisible(false);
   };
-
-  const [addData, setAddData] = useState({
-    currentpassword: "",
-    newpassword: "",
-  });
-
+  
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
   };
 
-  const signupAction = (e) => {
+  const signupAction = async(e) => {
     e.preventDefault();
+    try {
+      const passwordResponse = await axios.patch(
+       `${BASE_URL}/settings/change-password`,
+       addData,
+       {
+         withCredentials: true,
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
+
+     if (passwordResponse.status === 200) {
+       console.log("PASSWORD",passwordResponse.data.message)
+       toast({
+         title: "Change Password",
+         description: "Admin Password Changed Successfully",
+         status: "success",
+         duration: 9000,
+         isClosable: true,
+     });
+     }
+   } catch (err) {
+    console.error(`Error in fetching data: ${err}`);
+   }
+
     console.log(addData);
     handleModalClose(); // Close the modal after submitting the form
   };
 
   const [settingsData, setSettingsData] = useState({
     id: "",
-    name: "",
+    fullName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
   });
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const settingResponse =
+        await
+        axios.get(
+          `${BASE_URL}/settings`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+      
+      if (settingResponse.status === 200) {
+        setSettingsData(settingResponse.data.data);
+        console.log(settingResponse.data.data);
+      }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [token, role, navigate]);
 
   const inputChange = (e) => {
     setSettingsData({ ...settingsData, [e.target.name]: e.target.value });
   };
-  const formSubmit = (e) => {
+  const formSubmit = async(e) => {
     e.preventDefault();
+    try {
+      console.log("settingsData", settingsData);
+      const updateResponse = await axios.put(
+       `${BASE_URL}/settings/update-settings`,
+       settingsData,
+       {
+         withCredentials: true,
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
+
+     if (updateResponse.status === 200) {
+       console.log("update data",updateResponse.data.message)
+       toast({
+         title: "Updated",
+         description: "Updated successfully.",
+         status: "success",
+         duration: 9000,
+         isClosable: true,
+     });
+     }
+   } catch (err) {
+    console.error(`Error in fetching data: ${err}`);
+   }
     console.log(settingsData);
   };
-  const handleSettingsCancel = () => {
-    setSettingsData({
-      id: "",
-      name: "",
-      email: "",
-      phone: "",
-    });
-  };
+  
 
   return (
+      <div>
+        {isLoading ? (
+          <GIFLoader />
+        ) : (
     <>
       <Sidebar />
 
@@ -84,32 +173,32 @@ const Settings = () => {
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
-                      htmlFor="currentpassword"
+                      htmlFor="currentPassword"
                     >
                       Current Password
                     </label>
                     <input
                       className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
                       type="password"
-                      value={addData.currentpassword}
-                      id="currentpassword"
-                      name="currentpassword"
+                      value={addData.currentPassword}
+                      id="currentPassword"
+                      name="currentPassword"
                       onChange={handleInputChange}
                     />
                   </div>
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
-                      htmlFor="newpassword"
+                      htmlFor="newPassword"
                     >
                       New Password
                     </label>
                     <input
                       className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
                       type="password"
-                      value={addData.newpassword}
-                      id="newpassword"
-                      name="newpassword"
+                      value={addData.newPassword}
+                      id="newPassword"
+                      name="newPassword"
                       onChange={handleInputChange}
                     />
                   </div>
@@ -145,23 +234,23 @@ const Settings = () => {
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="text"
                   placeholder="ID"
-                  value={""}
+                  value={settingsData._id}
                   id="id"
                   name="id"
                   disabled
                 />
               </div>
               <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="name">
+                <label className="w-1/3 text-gray-500" htmlFor="fullName">
                   Name
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="text"
                   placeholder="Name"
-                  value={settingsData.name}
-                  id="name"
-                  name="name"
+                  value={settingsData.fullName}
+                  id="fullName"
+                  name="fullName"
                   onChange={inputChange}
                 />
               </div>
@@ -180,16 +269,16 @@ const Settings = () => {
                 />
               </div>
               <div className="flex items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="phone">
+                <label className="w-1/3 text-gray-500" htmlFor="phoneNumber">
                   Phone
                 </label>
                 <input
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                   type="tel"
                   placeholder="Phone"
-                  value={settingsData.phone}
-                  id="phone"
-                  name="phone"
+                  value={settingsData.phoneNumber}
+                  id="phoneNumber"
+                  name="phoneNumber"
                   onChange={inputChange}
                 />
               </div>
@@ -197,7 +286,7 @@ const Settings = () => {
                 <button
                   className="bg-cyan-50 py-2 px-8 rounded-md"
                   type="button"
-                  onClick={handleSettingsCancel}
+                  onClick={()=>navigate("/home")}
                 >
                   Cancel
                 </button>
@@ -214,6 +303,8 @@ const Settings = () => {
         </div>
       </div>
     </>
+        )}
+        </div>
   );
 };
 

@@ -106,6 +106,7 @@ const Adbanner = () => {
     setCurrentBanner(bannerId);
     console.log(bannerId);
     setIsShowModalDelete(true);
+    
   };
 
   const showModalDeleteIndividual = (currentIndBannerId) => {

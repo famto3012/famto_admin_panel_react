@@ -88,7 +88,9 @@ function App() {
               element={<MerchantDetails />}
             />
             <Route path="/add-manager" element={<AddManager />} />
-            <Route path="/update-manager" element={<UpdateManager />} />
+            {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
+            <Route path="/update-manager/:managerId" element={<UpdateManager />} />
+
 
             <Route path="/settings" element={<Settings />} />
 
