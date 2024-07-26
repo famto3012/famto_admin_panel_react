@@ -5,7 +5,7 @@ import { BellOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Takeaway from "../../../components/Takeaway";
 import HomeDelivery from "../../../components/HomeDelivery";
 import PickDrop from "../../../components/PickDrop";
-import CustomOrder from "../../../components/CustomOrder";
+import CustomOrder from "../../../components/Customorder"
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
 
@@ -136,7 +136,7 @@ const CreateOrder = () => {
                   <div className="flex">
                     <label className="w-1/3"></label>
                     <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-                      <form on onSubmit={handleSubmit}>
+                      <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-3">
                           <div className="flex item-center justify-center">
                             <label className="  w-1/3 text-md font-medium mt-2">
