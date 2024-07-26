@@ -1,18 +1,62 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import GlobalSearch from "../../../components/GlobalSearch";
+import { mappls } from "mappls-web-maps";
 
 const Geofence = () => {
+  const mapContainerRef = useRef(null);
+  const [mapObject, setMapObject] = useState(null);
   const data = [
     {
       time: "Lorem Ipsum",
       head: "lorem ipsum",
     },
   ];
+
+  useEffect(() => {
+   
+    const mapProps = {
+      center: [8.528818999999999, 76.94310683333333],
+      traffic: true,
+      zoom: 12,
+      geolocation: true,
+      clickableIcons: true,
+    };
+
+    const mapplsClassObject = new mappls();
+    
+      mapplsClassObject.initialize(
+        "9a632cda78b871b3a6eb69bddc470fef",
+        async () => {
+          if (mapContainerRef.current) {
+            console.log("Initializing map...");
+            const map = await mapplsClassObject.Map({
+              id: "map",
+              properties: mapProps,
+            });
+
+            if (map && typeof map.on === "function") {
+              console.log("Map initialized successfully.");
+              map.on("load", () => {
+                console.log("Map loaded.");
+                setMapObject(map); // Save the map object to state
+              });
+            } else {
+              console.error(
+                "mapObject.on is not a function or mapObject is not defined"
+              );
+            }
+          } else {
+            console.error("Map container not found");
+          }
+        }
+      );
+    
+  }, []);
 
   return (
     <>
@@ -57,8 +101,12 @@ const Geofence = () => {
               </Card>
             ))}
           </div>
-          <div className="flex  mb-24">
-            <img src="geoFence.svg" />
+          <div className="w-3/4 bg-white h-[520px]">
+            <div
+              id="map"
+              ref={mapContainerRef}
+              style={{ width: "99%", height: "510px", display: "inline-block" }}
+            ></div>
           </div>
         </div>
       </div>

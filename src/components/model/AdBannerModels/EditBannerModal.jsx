@@ -65,14 +65,16 @@ const EditBannerModal = ({
     }));
   };
 
-  useEffect(() => {
-  setAppData((prev)=>({...prev, appBannerImage: previewURL}))
-  }, [previewURL])
+  
 
-  const handleAppBannerImageChange = (e) => {
+  const handleAppBannerImageChange = async(e) => {
     e.preventDefault();
     const file = e.target.files[0];
     setSelectedFile(file);
+    await setPreviewURL(URL.createObjectURL(file));
+    if(previewURL){
+      console.log("preview added", previewURL)
+    }
     setPreviewURL(URL.createObjectURL(file));
     // setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
   };
@@ -181,7 +183,7 @@ const EditBannerModal = ({
             <div className="flex items-center gap-[30px]">
               {/* Render the current banner image only if no new image is selected */}
 
-              {previewURL && (
+              {previewURL && appBanner.appBannerImage &&(
                 <figure className="mt-3 h-16 w-16 rounded-md">
                   <img
                     src={previewURL}
@@ -194,7 +196,7 @@ const EditBannerModal = ({
               {!previewURL && appBanner.appBannerImage && (
                 <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
                   <img
-                    src={appBanner?.appBannerImage}
+                    src={appBanner.appBannerImage}
                     alt="Current Banner"
                     className="w-full h-full"
                   />

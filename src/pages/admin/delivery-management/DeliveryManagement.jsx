@@ -398,12 +398,14 @@ const DeliveryManagement = () => {
         offset: [0, 10],
         draggable: true,
       };
-
+   
       console.log("Adding markers...");
+      const approvedAgents = allAgentData.filter(agent=> agent.isApproved === "Approved")
       console.log("Geofence", geofenceToggle);
+      console.log("Approved agents", approvedAgents);
       const agentGeoData = {
         type: "FeatureCollection",
-        features: allAgentData.map((agent) => ({
+        features: approvedAgents.map((agent) => ({
           type: "Feature",
           properties: {
             htmlPopup: `Id:${agent._id} \n
@@ -797,7 +799,7 @@ const DeliveryManagement = () => {
                           checked={autoAllocation.priorityType === "Default"}
                           onChange={handleRadioChange}
                         />
-                        <p className="font-semibold text-[15px]">Default</p>
+                        <label className="font-semibold">Default</label>
                       </div>
                       <div className="flex">
                         <input
@@ -809,9 +811,9 @@ const DeliveryManagement = () => {
                           }
                           onChange={handleRadioChange}
                         />
-                        <p className="font-semibold text-[15px] ml-2">
+                        <label className="font-semibold ml-2">
                           Monthly salaried employees{" "}
-                        </p>
+                        </label>
                       </div>
                     </div>
                     <div className="flex gap-4 mt-5">
