@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Addresscomponent from "./components/model/Addresscomponent";
 import GIFLoader from "./components/GIFLoader";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));

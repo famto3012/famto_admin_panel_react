@@ -62,6 +62,7 @@ const AddAgentModal = ({
 
   const [rcFrontFile, setRcFrontFile] = useState(null);
   const [rcFrontPreviewURL, setRcFrontPreviewURL] = useState(null);
+
   const [rcBackFile, setRcBackFile] = useState(null);
   const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
 
@@ -134,7 +135,7 @@ const AddAgentModal = ({
         setDriFrontPreviewURL(null);
         setRcBackPreviewURL(null);
         setRcFrontPreviewURL(null);
-        console.log(addAgentResponse.data.message);
+        console.log("MESSAGE:",addAgentResponse.data.message);
         handleCancel();
       }
     } catch (err) {
@@ -146,7 +147,8 @@ const AddAgentModal = ({
 
   console.log("testing token", token);
   console.log("testing url", BASE_URL);
-   return (
+
+  return (
     <Modal
       title="Add Agent"
       open={isVisible}
