@@ -1,3 +1,49 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input {
+    @apply border-b-2 border-gray-300 w-full ml-3 py-4 px-4 text-gray-700 leading-tight focus:outline-none;
+  }
+
+  .input-error {
+    @apply border-b-2 border-red-500 placeholder:text-red-500;
+  }
+
+  .input1 {
+    @apply border-b-2 border-gray-300 p-2 w-full min-w-full focus:outline-none text-[14px];
+  }
+
+  .icon {
+    @apply text-[25px] text-teal-700 md:hidden;
+  }
+
+  .side {
+    @apply hover:bg-cyan-400 hover:text-white;
+  }
+
+  .dropside {
+    @apply flex items-center justify-between text-white mt-[20px] text-[16px] px-3 cursor-pointer border-s-4 border-white;
+  }
+
+  .ul-side {
+    @apply flex flex-col text-[14px] text-gray-300  mt-[10px] w-full;
+  }
+
+  .selected-link {
+    @apply bg-cyan-400 text-white;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+} */
+
+
+
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

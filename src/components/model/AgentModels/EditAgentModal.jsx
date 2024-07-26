@@ -1,26 +1,97 @@
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
-
-const AddAgentModal = ({
+import { useNavigate, useParams } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+const EditAgentModal = ({
   isVisible,
   handleCancel,
-  token,
-  geofence,
-  salary,
-  manager,
-  BASE_URL,
 }) => {
-  const [addData, setAddData] = useState({
-    fullName: "",
+  const { agentId } = useParams();
+const [agent, setAgent] = useState({});
+const { token, role } = useContext(UserContext);
+const [isLoading,setIsLoading] = useState(false);
+const [geofence, setGeofence] = useState([]);
+const [salary, setSalary] = useState([]);
+const [manager, setManager] = useState([]);
+const navigate = useNavigate();
+
+useEffect(() => {
+  if (!token) {
+    navigate("/auth/login");
+    return;
+  }
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [agentResponse,geofenceResponse,managerResponse,salaryResponse] =
+      await Promise.all([
+      axios.get(
+        `${BASE_URL}/admin/agents/${agentId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      ),
+      axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      axios.get(
+        `${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`,{
+        withCredentials:true,
+        headers:{Authorization: `Bearer ${token}`}
+      }),
+      axios.get(
+        `${BASE_URL}/admin/managers`,{
+        withCredentials:true,
+        headers:{Authorization: `Bearer ${token}`}
+      }),
+    ]);
+    if (salaryResponse.status === 200) {
+      setSalary(salaryResponse.data.data);
+      console.log("salary",salary)
+    }
+    if (managerResponse.status === 200) {
+      setManager(managerResponse.data.data);
+      console.log("managers",manager)
+    }
+    if (geofenceResponse.status === 200) {
+      setGeofence(geofenceResponse.data.geofences);
+    }
+      if (agentResponse.status === 200) {
+        // const { data } = agentResponse.data;
+        console.log("data in response is", agentResponse.data.data);
+        setAddData(agentResponse.data.data);
+        
+      }
+    } catch (err) {
+      console.error(`Error in fetching data: ${err}`);
+    } finally {
+      setIsLoading(false);
+      // console.log("data in state", agent);
+    }
+  };
+
+  fetchData();
+  console.log("agent", agent);
+}, [token, role, navigate, agentId]);
+  
+console.log("agent",agent)
+  // console.log("agent data in modal", agent);
+  const [addData, setAddData] = useState(
+    {
+    fullName:"",
     phoneNumber: "",
     email: "",
     managerId: "",
     geofenceId: "",
-    salaryStructureId: "",
-    tag: "",
-    accountHolderName: "",
+    salaryStructureId:"",
+    tag:"",
+    accountHolderName:"",
     accountNumber: "",
     IFSCCode: "",
     UPIId: "",
@@ -36,8 +107,12 @@ const AddAgentModal = ({
     drivingLicenseFrontImage: null,
     drivingLicenseBackImage: null,
     agentImage: null,
-  });
-  const [isLoading, setIsLoading] = useState(false);
+    
+  }
+);
+
+
+console.log("da",addData)
 
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
@@ -62,7 +137,6 @@ const AddAgentModal = ({
 
   const [rcFrontFile, setRcFrontFile] = useState(null);
   const [rcFrontPreviewURL, setRcFrontPreviewURL] = useState(null);
-
   const [rcBackFile, setRcBackFile] = useState(null);
   const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
 
@@ -113,9 +187,8 @@ const AddAgentModal = ({
       console.log("here");
       console.log("data for test", addagentToSend);
 
-
-      const addAgentResponse = await axios.post(
-        `${BASE_URL}/admin/agents/add-agents`,
+      const addAgentResponse = await axios.put(
+        `${BASE_URL}/admin/agents/edit-agent/${agentId}`,
         addagentToSend,
         {
           withCredentials: true,
@@ -127,6 +200,7 @@ const AddAgentModal = ({
       );
  
       if (addAgentResponse.status === 200) {
+        setAddData(addAgentResponse.data.data)
         setAadharBackPreviewURL(null);
         setAadharFrontPreviewURL(null);
         setAgentFile(null);
@@ -135,11 +209,11 @@ const AddAgentModal = ({
         setDriFrontPreviewURL(null);
         setRcBackPreviewURL(null);
         setRcFrontPreviewURL(null);
-        console.log("MESSAGE:",addAgentResponse.data.message);
+        console.log(addAgentResponse.data.message);
         handleCancel();
       }
     } catch (err) {
-      console.error(`Error in fetch datas : ${err.message}`);
+      console.error(`Error in fetch datas : ${addAgentResponse.data.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -147,10 +221,10 @@ const AddAgentModal = ({
 
   console.log("testing token", token);
   console.log("testing url", BASE_URL);
-
-  return (
+  
+   return (
     <Modal
-      title="Add Agent"
+      title="Edit Agent"
       open={isVisible}
       width="700px"
       centered
@@ -209,7 +283,7 @@ const AddAgentModal = ({
                 <input
                   className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                   type="text"
-                  value={addData.licensePlate}
+                  // value={addData.vehicleDetail[0].licensePlate}
                   id="licensePlate"
                   name="licensePlate"
                   onChange={handleInputChange}
@@ -222,7 +296,7 @@ const AddAgentModal = ({
                 <input
                   className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                   type="text"
-                  value={addData.model}
+                  // value={addData?.vehicleDetail[0].model}
                   id="model"
                   name="model"
                   onChange={handleInputChange}
@@ -236,7 +310,7 @@ const AddAgentModal = ({
                   className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5 "
                   name="type"
                   id="type"
-                  value={addData.type}
+                  // value={addData?.vehicleDetail[0].type}
                   onChange={handleInputChange}
                 >
                   <option value="" hidden>
@@ -309,7 +383,7 @@ const AddAgentModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.accountHolderName}
+              value={addData?.bankDetail?.accountHolderName}
               id="accountHolderName"
               name="accountHolderName"
               onChange={handleInputChange}
@@ -322,7 +396,7 @@ const AddAgentModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="number"
-              value={addData.accountNumber}
+              value={addData?.bankDetail?.accountNumber}
               id="accountNumber"
               name="accountNumber"
               onChange={handleInputChange}
@@ -336,7 +410,7 @@ const AddAgentModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.IFSCCode}
+              value={addData?.bankDetail?.IFSCCode}
               id="IFSCCode"
               name="IFSCCode"
               onChange={handleInputChange}
@@ -349,7 +423,7 @@ const AddAgentModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.UPIId}
+              value={addData?.bankDetail?.UPIId}
               id="UPIId"
               name="UPIId"
               onChange={handleInputChange}
@@ -364,7 +438,7 @@ const AddAgentModal = ({
               <input
                 className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                 type="text"
-                value={addData.aadharNumber}
+                value={addData?.governmentCertificateDetail?.aadharNumber}
                 id="aadharNumber"
                 name="aadharNumber"
                 onChange={handleInputChange}
@@ -381,10 +455,10 @@ const AddAgentModal = ({
 
                 />
                 <label htmlFor="aadharFrontImage" className="cursor-pointer">
-                  {aadharFrontPreviewURL ? (
+                  {addData?.governmentCertificateDetail?.aadharFrontImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={aadharFrontPreviewURL}
+                        src={addData?.governmentCertificateDetail?.aadharFrontImageURL}
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -407,10 +481,10 @@ const AddAgentModal = ({
 
                 />
                 <label htmlFor="aadharBackImage" className="cursor-pointer">
-                  {aadharBackPreviewURL ? (
+                  { addData?.governmentCertificateDetail?.aadharBackImageURL? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={aadharBackPreviewURL}
+                        src={addData?.governmentCertificateDetail?.aadharBackImageURL}
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -436,7 +510,7 @@ const AddAgentModal = ({
               <input
                 className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                 type="text"
-                value={addData.drivingLicenseNumber}
+                value={addData?.governmentCertificateDetail?.drivingLicenseNumber}
                 id="drivingLicenseNumber"
                 name="drivingLicenseNumber"
                 onChange={handleInputChange}
@@ -452,10 +526,10 @@ const AddAgentModal = ({
                   onChange={(e) => handleImageChange(e, setDriFrontFile, setDriFrontPreviewURL)}
                 />
                 <label htmlFor="drivingLicenseFrontImage" className="cursor-pointer">
-                  {driFrontPreviewURL ? (
+                  {addData?.governmentCertificateDetail?.drivingLicenseFrontImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={driFrontPreviewURL}
+                        src={addData?.governmentCertificateDetail?.drivingLicenseFrontImageURL}
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -477,10 +551,10 @@ const AddAgentModal = ({
                   onChange={(e) => handleImageChange(e, setDriBackFile, setDriBackPreviewURL)}
                 />
                 <label htmlFor="drivingLicenseBackImage" className="cursor-pointer">
-                  {driBackPreviewURL ? (
+                  {addData?.governmentCertificateDetail?.drivingLicenseBackImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={driBackPreviewURL}
+                        src={addData?.governmentCertificateDetail?.drivingLicenseBackImageURL}
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -503,18 +577,19 @@ const AddAgentModal = ({
             <select
               name="managerId"
               id="managerId"
-              value={addData.managerId}
+              // value={addData?.workStructure?.managerId?.name}
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
               <option hidden value="">
-                Managers
+              {addData?.workStructure?.managerId?.name} 
               </option>
               {manager.map((managers) => (
-                <option value={managers._id} key={managers._id}>
-                  {managers.name}
+                <option value={managers?._id} key={managers?._id}>
+                  {managers?.name}
                 </option>
               ))}
+          
             </select>
           </div>
           <div className="flex mt-5  gap-4">
@@ -524,33 +599,34 @@ const AddAgentModal = ({
             <select
               name="salaryStructureId"
               id="salaryStructureId"
-              value={addData.salaryStructureId}
+              // value={addData?.workStructure?.salaryStructureId?.ruleName}
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option hidden value="">
-                Salary Structure
+                <option hidden value="">
+                {addData?.workStructure?.salaryStructureId?.ruleName}
               </option>
-              {salary.map((salary) => (
+               {salary.map((salary) => (
                 <option value={salary._id} key={salary._id}>
                   {salary.ruleName}
                 </option>
               ))}
+          
             </select>
           </div>
           <div className="flex mt-5  gap-4">
-            <label className="w-1/2 text-gray-500" htmlFor="geofenceId">
+            <label className="w-1/2 text-gray-500" htmlFor="geofencename">
               Geofence
             </label>
             <select
-              name="geofenceId"
-              id="geofenceId"
-              value={addData.geofenceId}
+              name="geofencename"
+              id="geofencename"
+              // value={addData?.geofenceId?.name}
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
               <option hidden value="">
-                Geofence
+              {addData?.geofenceId?.name}
               </option>
               {geofence.map((geoFence) => (
                 <option value={geoFence._id} key={geoFence._id}>
@@ -566,7 +642,7 @@ const AddAgentModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.tag}
+              value={addData?.workStructure?.tag}
               id="tag"
               name="tag"
               onChange={handleInputChange}
@@ -577,6 +653,13 @@ const AddAgentModal = ({
             {!agentPreviewURL && (
               <div className="bg-cyan-100 ml-5 mt-5 h-16 w-16 rounded-md" />
             )}
+            <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
+                <img
+                  src={addData?.agentImageURL}
+                  alt="profile"
+                  className="w-full rounded h-full object-cover "
+                />
+              </figure> 
             {agentPreviewURL && (
               <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
                 <img
@@ -627,4 +710,4 @@ const AddAgentModal = ({
   );
 };
 
-export default AddAgentModal;
+export default EditAgentModal;
