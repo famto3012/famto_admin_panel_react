@@ -81,7 +81,7 @@ const Geofence = () => {
         <div className="flex justify-between mt-10 gap-5 mx-10">
           <div className="w-1/3">
             {data.map((data) => (
-              <Card className="bg-zinc-100 mt-5 flex hover:bg-teal-800 hover:text-white">
+              <Card className="bg-zinc-100 mt-5 flex hover:bg-teal-800 hover:text-white" key={data._id}>
                 <div className="flex justify-evenly mx-5">
                   <div className=" flex items-center">
                     <p className="bg-cyan-200 rounded-full p-4 text-white "></p>
