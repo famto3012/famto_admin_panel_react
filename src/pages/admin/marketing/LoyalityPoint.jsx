@@ -8,11 +8,13 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const LoyalityPoint = () => {
   const [isLoading,setIsLoading] = useState(false)
   const { token, role } = useContext(UserContext);
   const navigate =useNavigate()
+  const toast=useToast()
   const [loyaltyData, setLoyaltyData] = useState({
     earningCriteriaRupee: "",
     earningCriteriaPoint: "",
@@ -62,8 +64,34 @@ const LoyalityPoint = () => {
     setLoyaltyData({ ...loyaltyData, [e.target.name]: e.target.value });
   };
 
-  const formSubmit = (e) => {
+  const formSubmit = async(e) => {
     e.preventDefault();
+    try {
+      console.log("loyaltyData", loyaltyData);
+      const updateResponse = await axios.post(
+       `${BASE_URL}/admin/loyalty-point/add-loyalty-point`,
+       loyaltyData,
+       {
+         withCredentials: true,
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
+
+     if (updateResponse.status === 201) {
+       console.log("update data",updateResponse.data.message)
+       toast({
+         title: "Updated",
+         description: "Updated successfully.",
+         status: "success",
+         duration: 9000,
+         isClosable: true,
+     });
+     }
+   } catch (err) {
+    console.error(`Error in fetching data: ${err}`);
+   }
     console.log(loyaltyData);
   };
   const onChange = async(name, checked) => {

@@ -352,12 +352,7 @@ const AgentDetails = () => {
               <EditAgentModal
               isVisible={editModalVisible}
               handleCancel={handleCancel1}
-              token={token}
-              BASE_URL={BASE_URL}
-              geofence={geofence}
-              salary={salary}
-              manager={manager}
-              agent={agent}/>
+            />
               
               {/* <Modal
                 title="Edit Delivery Agent"
