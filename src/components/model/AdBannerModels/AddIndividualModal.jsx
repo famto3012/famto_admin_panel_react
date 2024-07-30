@@ -61,7 +61,7 @@ const AddIndividualModal = ({
             if (IndBannerResponse.status === 200) {
                 setAdFile(null);
                 setAdPreviewURL(null);
-                handleCancelIndividual();
+                handleCancel();
                 toast({
                     title: "Banner Created.",
                     description: "The banner was created successfully.",

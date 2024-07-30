@@ -49,6 +49,7 @@ const AddBannerModal = ({
         }
     };
 
+    console.log("image",notificationFile)
     const saveAction = async (e) => {
         e.preventDefault();
 
@@ -59,7 +60,6 @@ const AddBannerModal = ({
             appBannerDataToSend.append("name", appBanner.name);
             appBannerDataToSend.append("merchantId", appBanner.merchantId);
             appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
-
             if (notificationFile) {
                 appBannerDataToSend.append("appBannerImage", notificationFile);
             }
@@ -113,6 +113,8 @@ const AddBannerModal = ({
             setIsLoading(false);
         }
     };
+
+    console.log(appBanner)
 
     return (
         <Modal

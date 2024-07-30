@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
   const [formData, setFormData] = useState({
@@ -12,21 +13,31 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
     description: "",
     fromDate: "",
     toDate: "",
-    // promoApplicationMode: "",
+    applicationMode: "",
     maxDiscountValue: "",
     minOrderAmount: "",
     maxAllowedUsers: "",
     appliedOn: "",
     merchantId: "",
     geofenceId: "",
-    promoImage: "",
+    imageUrl: "",
   });
 
-  console.log(formData);
 
   const [geofence, setGeofence] = useState([]);
   const [merchant, setMerchant] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [notificationFile, setNotificationFile] = useState(null);
+  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
+  const toast = useToast();
+
+  const handleNotificationImageChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          setNotificationFile(file);
+          setNotificationPreviewURL(URL.createObjectURL(file));
+      }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,54 +78,85 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     setIsLoading(true);
+  
     try {
       const addPromoToSend = new FormData();
-      addPromoToSend.append = ("promoCode", formData.promoCode);
-      addPromoToSend.append = ("promoType", formData.promoType);
-      addPromoToSend.append = ("discount", formData.discount);
-      addPromoToSend.append = ("description", formData.description);
-      addPromoToSend.append = ("fromDate", formData.fromDate);
-      addPromoToSend.append = ("toDate", formData.toDate);
-      addPromoToSend.append =
-        ("promoApplicationMode", formData.promoApplicationMode);
-      addPromoToSend.append = ("maxDiscountValue", formData.maxDiscountValue);
-      addPromoToSend.append = ("minOrderAmount", formData.minOrderAmount);
-      addPromoToSend.append = ("maxAllowedUsers", formData.maxAllowedUsers);
-      addPromoToSend.append = ("appliedOn", formData.appliedOn);
-      addPromoToSend.append = ("merchantId", formData.merchantId);
-      addPromoToSend.append = ("geofenceId", formData.geofenceId);
-      addPromoToSend.append = ("promoImage", notificationFile);
-
+      addPromoToSend.append("promoCode", formData.promoCode);
+      addPromoToSend.append("promoType", formData.promoType);
+      addPromoToSend.append("discount", formData.discount);
+      addPromoToSend.append("description", formData.description);
+      addPromoToSend.append("fromDate", formData.fromDate);
+      addPromoToSend.append("toDate", formData.toDate);
+      addPromoToSend.append("applicationMode", formData.applicationMode);
+      addPromoToSend.append("maxDiscountValue", formData.maxDiscountValue);
+      addPromoToSend.append("minOrderAmount", formData.minOrderAmount);
+      addPromoToSend.append("maxAllowedUsers", formData.maxAllowedUsers);
+      addPromoToSend.append("appliedOn", formData.appliedOn);
+      addPromoToSend.append("merchantId", formData.merchantId);
+      addPromoToSend.append("geofenceId", formData.geofenceId);
+  
+      if (notificationFile) {
+        addPromoToSend.append("promoImage", notificationFile);
+      }
+  
       const response = await axios.post(
         `${BASE_URL}/admin/promocode/add-promocode`,
         addPromoToSend,
         {
           withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
+  
       if (response.status === 201) {
         setNotificationFile(null);
         setNotificationPreviewURL(null);
+        handleCancel();
+        toast({
+          title : "Promo Code Created",
+          description : "Successfully created Promo code..",
+          status:"success",
+          isClosable:true,
+          duration:9000
+        })
+        // You may want to clear the form here
+        setFormData({
+          promoCode: "",
+          promoType: "",
+          discount: "",
+          description: "",
+          fromDate: "",
+          toDate: "",
+          applicationMode: "",
+          maxDiscountValue: "",
+          minOrderAmount: "",
+          maxAllowedUsers: "",
+          appliedOn: "",
+          merchantId: "",
+          geofenceId: "",
+          imageUrl: "",
+        });
       }
     } catch (err) {
-      console.log(`Error in add data ${err}`);
+      console.log(`Error in adding data: ${err.message}`);
+      toast({
+        title:"Error while Creating..",
+        description:"Error in creating Promo Code.",
+        status:"failed",
+        isClosable:true,
+        duration:9000
+      })
     } finally {
       setIsLoading(false);
     }
   };
+  
 
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-
-  const handleNotificationImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
-  };
 
   return (
     <Modal
@@ -175,6 +217,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <input
               type="text"
               name="description"
+              maxLength={150}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               value={formData.description}
               onChange={handleChange}
@@ -201,24 +244,25 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               onChange={handleChange}
             />
           </div>
-          {/* <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
               Promo Application Mode
             </label>
             <select
-              name="promoApplicationMode"
-              value={formData.promoApplicationMode}
+              name="applicationMode"
+              value={formData.applicationMode}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
+              <option defaultValue={""} selected hidden>Select Application Mode</option>
+              <option value="Public">Public</option>
+              <option value="Hidden">Hidden</option>
             </select>
-          </div> */}
+          </div>
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">Max discount value</label>
             <input
-              type="text"
+              type="number"
               name="maxDiscountValue"
               value={formData.maxDiscountValue}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
@@ -240,7 +284,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               Maximum number of allowed users
             </label>
             <input
-              type="text"
+              type="number"
               name="maxAllowedUsers"
               value={formData.maxAllowedUsers}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
@@ -261,12 +305,12 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <input
               type="radio"
               name="appliedOn"
-              value="Deliver-charge"
+              value="Delivery-charge"
               className="ml-4 mr-1"
-              checked={formData.appliedOn === "Deliver-charge"}
+              checked={formData.appliedOn === "Delivery-charge"}
               onChange={handleChange}
             />
-            Deliver charge
+            Delivery charge
           </div>
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">Assign Merchant</label>
@@ -276,7 +320,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               value={formData.merchantId}
               onChange={handleChange}
             >
-              <option defaultValue={""} hidden>Select Merchant</option>
+              <option defaultValue={"Select merchant"} hidden>Select Merchant</option>
               {merchant.map((data) => (
                 <option value={data._id} key={data._id}>{data.merchantName}</option>
               ))}
@@ -316,12 +360,12 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               )}
               <input
                 type="file"
-                name="promoImage"
-                id="promoImage"
+                name="imageUrl"
+                id="imageUrl"
                 className="hidden"
                 onChange={handleNotificationImageChange}
               />
-              <label htmlFor="promoImage" className="cursor-pointer ">
+              <label htmlFor="imageUrl" className="cursor-pointer ">
                 <MdCameraAlt
                   className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-10 rounded"
                   size={30}
@@ -341,7 +385,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
               type="submit"
             >
-              Save
+             {isLoading ? "Saving....": "save"}
             </button>
           </div>
         </form>

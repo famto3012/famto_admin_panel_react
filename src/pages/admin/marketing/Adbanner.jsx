@@ -13,6 +13,7 @@ import GIFLoader from "../../../components/GIFLoader";
 import EditBannerModal from "../../../components/model/AdBannerModels/EditBannerModal";
 import AddIndividualModal from "../../../components/model/AdBannerModels/AddIndividualModal";
 import EditIndividualModal from "../../../components/model/AdBannerModels/EditIndividualModal";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -24,10 +25,10 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
   const [currentBanner, setCurrentBanner] = useState(null);
-  const [currentBannerEditId, setCurrentBannerEditId] = useState(null);
   const [currentBannerEdit, setCurrentEditBanner] = useState(null);
   const [currentIndBanner, setCurrentIndBanner] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const toast = useToast();
 
   //States for Modals
 
@@ -154,6 +155,13 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
       if (deleteResponse.status === 200) {
         removeBanner(currentBanner);
         handleConfirmDelete();
+        toast({
+          title:"Banner Deleted",
+          description:"The Banner Deleted Successfully.",
+          status:"success",
+          duration:9000,
+          isClosable:"true"
+        })
       } else {
         console.error(`Unexpected status code: ${deleteResponse.status}`);
       }
@@ -189,6 +197,13 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
       if (indDeleteResponse === 200) {
         removeIndBanner(currentIndBanner);
         handleConfirmIndBannerDelete();
+        toast({
+          title:"Banner Deleted",
+          description:"The Banner Deleted Successfully.",
+          status:"success",
+          duration:9000,
+          isClosable:"true"
+        })
       } else {
         console.error(`Unexpected status code: ${indDeleteResponse.status}`);
       }
@@ -260,7 +275,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
             <div className="overflow-x-auto">
               <table className="overflow-x-auto p-4 w-full mt-7">
                 <thead>
-                  <tr className="p-5 w-full">
+                  <tr className="p-5 w-full" >
                     {[
                       "Image",
                       "Name",
@@ -279,9 +294,11 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                   </tr>
                 </thead>
                 <tbody>
-                  {banner.map((bannerData) => (
+                  {banner.map((bannerData,index) => (
                     <tr
-                      className="text-center bg-white h-20"
+                      className="text-center bg-white h-20" style={{
+                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
+                      }}
                       key={bannerData._id}
                     >
                       {/* className="w-[120px] px-5" */}
@@ -396,9 +413,11 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                   </tr>
                 </thead>
                 <tbody>
-                  {individualBanner.map((individualBanner) => (
+                  {individualBanner.map((individualBanner, index) => (
                     <tr
-                      className="text-center bg-white h-20"
+                      className="text-center bg-white h-20" style={{
+                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
+                      }}
                       key={individualBanner._id}
                     >
                       <td className=" flex items-center justify-center p-3" >
