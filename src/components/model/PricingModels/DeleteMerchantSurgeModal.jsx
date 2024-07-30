@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Spin } from "antd";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const DeleteMerchantSurgeModal = ({
   isVisible,
@@ -12,7 +13,7 @@ const DeleteMerchantSurgeModal = ({
   removeMs,
 }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
-
+  const toast = useToast();
   const handleOk = async () => {
     setConfirmLoading(true);
     try {
@@ -26,9 +27,23 @@ const DeleteMerchantSurgeModal = ({
       if (response.status === 200) {
         removeMs(currentDeleteMs);
         handleConfirmDeleteMs();
+        toast({
+          title: "Deleted",
+          description: "Merchant Surge Deleted successfully.",
+          status: "success",
+          duration: 1000,
+          isClosable: true,
+      });
       }
     } catch (error) {
       console.error("Error deleting surge:", error);
+      toast({
+        title: "Error",
+        description: "There was an error occured.",
+        status: "error",
+        duration: 1000,
+        isClosable: true,
+    });
     } finally {
       setConfirmLoading(false);
     }
