@@ -13,8 +13,8 @@ const EditAgentPricingModal = ({
   currentEditAr,
 }) => {
   const toast = useToast();
-  const navigate =useNavigate()
-  const[isLoading,setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [apricing, setApricing] = useState({
     ruleName: "",
     baseFare: "",
@@ -27,7 +27,7 @@ const EditAgentPricingModal = ({
     geofenceId: "",
   });
   useEffect(() => {
-    console.log(currentEditAr)
+    // console.log(currentEditAr)
     if (!token) {
       navigate("/auth/login");
       return;
@@ -36,23 +36,16 @@ const EditAgentPricingModal = ({
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [addResponse] =
-        await Promise.all([
-        axios.get(
-          `${BASE_URL}/admin/agent-pricing/${currentEditAr}`,
-          {
+        const [addResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/agent-pricing/${currentEditAr}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
-          }
-        ),
-       
-        
-      ]);
+          }),
+        ]);
         if (addResponse.status === 200) {
           console.log("data in response is", addResponse.data.data);
           setApricing(addResponse.data.data);
-          console.log(addResponse.data.message)
-          
+          console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -62,9 +55,9 @@ const EditAgentPricingModal = ({
     };
 
     if (currentEditAr) {
-        fetchData();
-      }
-  }, [token, navigate,currentEditAr ,BASE_URL]);
+      fetchData();
+    }
+  }, [token, navigate, currentEditAr, BASE_URL]);
 
   const handleInputChange = (e) => {
     setApricing({ ...apricing, [e.target.name]: e.target.value });
@@ -73,40 +66,40 @@ const EditAgentPricingModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-        console.log("apricing", apricing);
-       const editResponse = await axios.put(
-         `${BASE_URL}/admin/agent-pricing/edit-agent-pricing/${currentEditAr}`,
-         apricing,
-         {
-           withCredentials: true,
-           headers: {
-             Authorization: `Bearer ${token}`,
-           },
-         }
-       );
- 
-       if (editResponse.status === 200) {
+      console.log("apricing", apricing);
+      const editResponse = await axios.put(
+        `${BASE_URL}/admin/agent-pricing/edit-agent-pricing/${currentEditAr}`,
+        apricing,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (editResponse.status === 200) {
         toast({
           title: "Updated",
           description: "Agent Pricing Updated successfully.",
           status: "success",
           duration: 1000,
           isClosable: true,
-      });
-        console.log(editResponse.data.message)
-       }
-     } catch (err) {
+        });
+        console.log(editResponse.data.message);
+      }
+    } catch (err) {
       toast({
         title: "Error",
         description: "There was an error occured",
         status: "error",
         duration: 1000,
         isClosable: true,
-    });
-        console.log(`Error in fetching data:${err}`)
-     }
-     console.log(apricing)
-  }
+      });
+      console.log(`Error in fetching data:${err}`);
+    }
+    console.log(apricing);
+  };
   return (
     <Modal
       title="Agent Pricing"

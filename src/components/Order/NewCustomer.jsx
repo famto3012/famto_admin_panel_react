@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const NewCustomer = ({ toggleNewCustomerForm, onAddCustomer }) => {
   const [newCustomer, setNewCustomer] = useState({
@@ -14,7 +14,6 @@ const NewCustomer = ({ toggleNewCustomerForm, onAddCustomer }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("New Customer:", newCustomer);
     onAddCustomer(newCustomer);
   };
 

@@ -4,15 +4,19 @@ import { useContext, useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-const TakeAway = () => {
-  const [formData, setFormData] = useState({
+const TakeAway = ({ data }) => {
+  const [takeAwayData, setTakeAwayData] = useState({
+    ...data,
     merchantId: null,
     items: [],
     instructionToMerchant: "",
   });
+
+  const [cartData, setCartData] = useState({});
 
   const [merchantName, setMerchantName] = useState("");
   const [productName, setProductName] = useState("");
@@ -21,8 +25,13 @@ const TakeAway = () => {
 
   const [isMerchantLoading, setIsMerchantLoading] = useState(false);
   const [isProductLoading, setIsProductLoading] = useState(false);
+  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
+  const [isOrderLoading, setIsOrderLoading] = useState(false);
 
-  const { token, role } = useContext(UserContext);
+  const [paymentMode, setPaymentMode] = useState("");
+
+  const { token } = useContext(UserContext);
+  const toast = useToast();
 
   useEffect(() => {
     if (!token) {
@@ -65,12 +74,12 @@ const TakeAway = () => {
     const query = e.target.value;
     setProductName(query);
 
-    if (query.length >= 3 && formData.merchantId) {
+    if (query.length >= 3 && takeAwayData.merchantId) {
       setIsProductLoading(true);
 
       try {
         const response = await axios.get(
-          `${BASE_URL}/customers/search-products/${formData.merchantId}?query=${query}`,
+          `${BASE_URL}/customers/search-products/${takeAwayData.merchantId}?query=${query}`,
           {
             withCredentials: true,
             headers: {
@@ -93,15 +102,15 @@ const TakeAway = () => {
   };
 
   const selectProduct = (product) => {
-    const existingProduct = formData.items.find(
+    const existingProduct = takeAwayData.items.find(
       (item) => item.productId === product._id
     );
 
     if (existingProduct) {
       // If the product already exists, increase its quantity
-      setFormData({
-        ...formData,
-        items: formData.items.map((item) =>
+      setTakeAwayData({
+        ...takeAwayData,
+        items: takeAwayData.items.map((item) =>
           item.productId === product._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
@@ -109,16 +118,16 @@ const TakeAway = () => {
       });
     } else {
       // If the product does not exist, add it to the items array
-      setFormData({
-        ...formData,
+      setTakeAwayData({
+        ...takeAwayData,
         items: [
-          ...formData.items,
+          ...takeAwayData.items,
           {
             productName: product.productName,
             productId: product._id,
             price: product.price,
             quantity: 1,
-            allVariants: product.variants.map((variant) => ({
+            variants: product.variants.map((variant) => ({
               variantName: variant.variantName,
               variantTypes: variant.variantTypes.map((type) => ({
                 typeName: type.typeName,
@@ -137,69 +146,156 @@ const TakeAway = () => {
   };
 
   const selectMerchant = (merchant) => {
-    setFormData({ ...formData, merchantId: merchant._id });
+    setTakeAwayData({ ...takeAwayData, merchantId: merchant._id });
     setMerchantName(merchant.merchantName);
     setMerchantResults([]);
   };
 
   const decreaseQuantity = (productId, e) => {
     e.preventDefault();
-    setFormData({
-      ...formData,
-      items: formData.items
+    setTakeAwayData({
+      ...takeAwayData,
+      items: takeAwayData.items
         .map((item) =>
           item.productId === productId
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
-        .filter((item) => item.quantity > 0), // Remove products with quantity less than 1
+        .filter((item) => item.quantity > 0),
     });
   };
 
   const increaseQuantity = (productId, e) => {
     e.preventDefault();
-    setFormData({
-      ...formData,
-      items: formData.items.map((item) =>
+    setTakeAwayData({
+      ...takeAwayData,
+      items: takeAwayData.items.map((item) =>
         item.productId === productId
-          ? { ...item, quantity: item.quantity + 1 } // Increase quantity
+          ? { ...item, quantity: item.quantity + 1 }
           : item
       ),
     });
   };
 
-  const handleVariantChange = (productId, variantTypeId) => {
-    setFormData({
-      ...formData,
-      items: formData.items.map((item) =>
+  const handleVariantChange = (productId, variantTypeId, variantIndex) => {
+    setTakeAwayData({
+      ...takeAwayData,
+      items: takeAwayData.items.map((item) =>
         item.productId === productId
           ? {
               ...item,
-              variants: item.variants.map((variant) => ({
-                ...variant,
-                variantId: variant.variantTypes.some(
-                  (type) => type._id === variantTypeId
-                )
-                  ? variantTypeId
-                  : variant.variantId,
-              })),
+              variants: item.variants.map((variant, index) =>
+                index === variantIndex
+                  ? { ...variant, variantId: variantTypeId }
+                  : variant
+              ),
             }
           : item
       ),
     });
   };
 
-  const createOrder = (e) => {
+  const createOrder = async (e) => {
     e.preventDefault();
+    try {
+      setIsOrderLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order`,
+        {
+          paymentMode,
+          cartId: cartData.cartId,
+          deliveryMode: cartData.deliveryMode,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        toast({
+          title: "Order created",
+          description: "Prder created successfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setIsOrderLoading(false);
+    }
   };
 
   const createInvoice = async (e) => {
     e.preventDefault();
+
+    // Format the items to include the selected variantId
+    const formattedItems = takeAwayData.items.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.price,
+      variantId: item.variants.length > 0 ? item.variants[0].variantId : null,
+    }));
+
+    const invoiceData = {
+      customerId: data.customerId,
+      newCustomer: data.newCustomer,
+      deliveryOption: data.deliveryOption,
+      deliveryMode: data.deliveryMode,
+      items: formattedItems,
+      instructionToMerchant: takeAwayData.instructionToMerchant,
+      merchantId: takeAwayData.merchantId,
+    };
+
     try {
-      console.log(formData);
-      // Implement invoice creation logic here
+      setIsInvoiceLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order-invoice`,
+        invoiceData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const { data } = response.data;
+        console.log(data);
+        setCartData(data);
+        toast({
+          title: "Invoice",
+          description: "Invoice created successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (err) {
       console.log(`Error in creating Take away invoice: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsInvoiceLoading(false);
     }
   };
 
@@ -283,88 +379,90 @@ const TakeAway = () => {
                       className="p-2 hover:bg-gray-200 cursor-pointer"
                       onClick={() => selectProduct(result)}
                     >
-                      {result.productName} - {result.variantName}
+                      {result.productName}
                     </li>
                   ))}
                 </ul>
               )}
             </div>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 px-6">Selected Products</label>
-            <div className="flex gap-5 overflow-x-auto">
-              {formData.items.length > 0 &&
-                formData.items.map((item, index) => (
-                  <div
-                    className="flex gap-7 w-[20rem] bg-gray-200 p-5 rounded-md"
-                    key={index}
-                  >
-                    <div className="flex flex-col">
-                      <span className="mb-2">{item.productName}</span>
-                      <span>
-                        {item?.variants.length === 0 && `${item.price}`}
-                      </span>
-                      {item.variants.length > 0 && (
-                        <div className="flex flex-col gap-2">
-                          {item.variants.map((variant) => (
-                            <div key={variant._id}>
-                              <label className="me-[10px]">
-                                {variant.variantName}
-                              </label>
-                              <select
-                                className="outline-none focus:outline-none"
-                                value={variant.variantId}
-                                onChange={(e) =>
-                                  handleVariantChange(
-                                    item.productId,
-                                    e.target.value
-                                  )
-                                }
-                              >
-                                {variant.variantTypes.map((type) => (
-                                  <option key={type._id} value={type._id}>
-                                    {type.typeName} - Rs {type.price}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+            <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
+              {takeAwayData.items.map((item, itemIndex) => (
+                <div
+                  key={item.productId}
+                  className="flex items-center gap-3 py-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
+                >
+                  <div>
+                    <div>
+                      <p className="text-gray-600 mb-2 w-[100px] truncate">
+                        {item.productName}
+                      </p>
+                      <p className="text-gray-600">
+                        {item?.variants?.length === 0 && `${item.price}`}
+                      </p>
+                    </div>
+
+                    <div>
+                      {item.variants.map((variant, variantIndex) => (
+                        <select
+                          className="outline-none focus:outline-none bg-white p-2"
+                          key={variant.variantId}
+                          value={variant.variantId}
+                          onChange={(e) =>
+                            handleVariantChange(
+                              item.productId,
+                              e.target.value,
+                              variantIndex
+                            )
+                          }
+                        >
+                          {variant.variantTypes.map((type) => (
+                            <option key={type._id} value={type._id}>
+                              {type.typeName} - Rs {type.price}
+                            </option>
                           ))}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-3 mt-2">
-                        <button
-                          className="bg-gray-300 px-3 py-1 rounded-md"
-                          onClick={(e) => decreaseQuantity(item.productId, e)}
-                        >
-                          -
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          className="bg-gray-300 px-3 py-1 rounded-md"
-                          onClick={(e) => increaseQuantity(item.productId, e)}
-                        >
-                          +
-                        </button>
-                      </div>
+                        </select>
+                      ))}
                     </div>
                   </div>
-                ))}
+                  <div className="flex items-center border-2 border-gray-300 px-2">
+                    <button
+                      className="text-red-400 text-xl"
+                      onClick={(e) => decreaseQuantity(item.productId, e)}
+                    >
+                      -
+                    </button>
+                    <span className="mx-2">{item.quantity}</span>
+                    <button
+                      className="text-green-400 text-xl"
+                      onClick={(e) => increaseQuantity(item.productId, e)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="instructionToMerchant">
-              Instructions to Merchants
+              Instruction to Merchant
             </label>
-            <input
-              className="h-10 px-5 text-sm border-2 w-1/2 outline-none focus:outline-none"
-              type="text"
-              placeholder="Merchant Instructions"
-              id="instructionToMerchant"
+            <textarea
               name="instructionToMerchant"
-              value={formData.instructionToMerchant}
+              id="instructionToMerchant"
+              placeholder="Instruction to Merchant"
+              className="h-20 text-sm ps-3 pt-2 border-2 w-1/2 outline-none focus:outline-none resize-y overflow-y-auto"
+              value={takeAwayData.instructionToMerchant}
               onChange={(e) =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
+                setTakeAwayData({
+                  ...takeAwayData,
+                  instructionToMerchant: e.target.value,
+                })
               }
             />
           </div>
@@ -373,54 +471,79 @@ const TakeAway = () => {
             type="submit"
             className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize"
           >
-            Create invoice
+            {isInvoiceLoading ? `Creating invoice...` : `Create invoice`}
           </button>
         </div>
       </form>
 
-      <div className="flex mt-5">
-        <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-        <div className="overflow-auto w-1/2">
-          <table className="border-2 border-teal-700 w-full text-left ">
-            <thead>
-              <tr>
-                {["Item", " Quantity", "Amount"].map((header, index) => (
-                  <th
-                    key={index}
-                    className="bg-teal-700 text-white p-4 border-[#eee]/50"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {/* {order.map((order) => (
-                <tr key={order.id} className="text-left align-middle">
-                  <td className="p-4">{order.item1}</td>
-                  <td className="p-4">{order.quantity1}</td>
-                  <td className="p-4">{order.amount1}</td>
-                </tr>
-              ))} */}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div className="flex justify-end gap-4 mt-16 mx-10">
-        <button
-          className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-          type="button"
-        >
-          <SaveAltIcon /> Bill
-        </button>
-        <button
-          className="bg-teal-700 text-white py-2 px-4 rounded-md"
-          type="submit"
-          onClick={createOrder}
-        >
-          Create Order
-        </button>
-      </div>
+      {cartData?.items && (
+        <>
+          <div className="flex my-5">
+            <h1 className="px-6 w-1/3 font-semibold">Payment mode</h1>
+            <div className=" w-1/2">
+              <select
+                name="paymentMode"
+                value={paymentMode}
+                className="w-full py-2 ps-3 outline-none focus:outline-none border-2"
+                onChange={(e) => setPaymentMode(e.target.value)}
+              >
+                <option defaultValue="Select payment mode" hidden>
+                  Select payment mode
+                </option>
+                <option value="Online-payment">Online payment</option>
+                <option value="Cash-on-delivery">Cash on delivery</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex mt-5">
+            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
+            <div className="overflow-auto w-1/2">
+              <table className="border-2 border-teal-700 w-full text-left ">
+                <thead>
+                  <tr>
+                    {["Item", " Quantity", "Amount"].map((header, index) => (
+                      <th
+                        key={index}
+                        className="bg-teal-700 text-white p-4 border-[#eee]/50"
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {cartData?.items?.map((data) => (
+                    <tr key={data.index} className="text-left align-middle">
+                      <td className="p-4">{data.itemName}</td>
+                      <td className="p-4">{data.quantity}</td>
+                      <td className="p-4">{data.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4 mt-16 mx-10">
+            <button
+              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
+              type="button"
+            >
+              <SaveAltIcon /> Bill
+            </button>
+            <button
+              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+              type="submit"
+              onClick={createOrder}
+            >
+              {isOrderLoading
+                ? "Creating order..."
+                : `Create Order ${cartData?.billDetail?.itemTotal || ""}`}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
