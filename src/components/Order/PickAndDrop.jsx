@@ -1,11 +1,11 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { AddOutlined, DeleteOutline, LocationOnOutlined } from "@mui/icons-material";
+import { AddOutlined } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import { RiDeleteBin2Line, RiDeleteBinLine } from "react-icons/ri";
-import Addresscomponent from "./model/Addresscomponent";
+import { RiDeleteBinLine } from "react-icons/ri";
+import NewAddress from "./NewAddress";
 
-const PickDrop = () => {
+const PickAndDrop = () => {
   const [formData, setFormData] = useState({
     pickdata: {
       firstName: "",
@@ -20,7 +20,7 @@ const PickDrop = () => {
       paymentType: "",
       subtotal: "",
       items: [],
-      address:[],
+      address: [],
     },
     dropdata: {
       firstName: "",
@@ -35,7 +35,7 @@ const PickDrop = () => {
       paymentType: "",
       subtotal: "",
       items: [],
-      address:[],
+      address: [],
     },
   });
   const handleInputChange = (e) => {
@@ -141,7 +141,7 @@ const PickDrop = () => {
   };
   const [isFormVisible1, setFormVisible1] = useState(false);
 
-  const toggleFormVisibility1= () => {
+  const toggleFormVisibility1 = () => {
     setFormVisible1(!isFormVisible1);
   };
   const [isFormVisible2, setFormVisible2] = useState(false);
@@ -233,21 +233,19 @@ const PickDrop = () => {
             ))}
           </div>
           <div>
-          <div className=" flex">
-                  <label className="w-1/3"></label>
-                  <button
-                    type="button"
-                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                    onClick={toggleFormVisibility1}
-                    >
-                    <span>Add Address</span>
-                    <PlusOutlined />
-                  </button>
-                </div>
-                {isFormVisible1 && (
-                  <Addresscomponent/>
-                )}
-              </div>   
+            <div className=" flex">
+              <label className="w-1/3"></label>
+              <button
+                type="button"
+                className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                onClick={toggleFormVisibility1}
+              >
+                <span>Add Address</span>
+                <PlusOutlined />
+              </button>
+            </div>
+            {isFormVisible1 && <NewAddress />}
+          </div>
 
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="pickdata.orderTime">
@@ -539,21 +537,19 @@ const PickDrop = () => {
             ))}
           </div>
           <div>
-          <div className=" flex">
-                  <label className="w-1/3"></label>
-                  <button
-                    type="button"
-                    className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                    onClick={toggleFormVisibility2}
-                  >
-                    <span>Add Address</span>
-                    <PlusOutlined />
-                  </button>
-                </div>
-                {isFormVisible2 &&(
-                  <Addresscomponent/>
-                                 )}
-              </div>  
+            <div className=" flex">
+              <label className="w-1/3"></label>
+              <button
+                type="button"
+                className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
+                onClick={toggleFormVisibility2}
+              >
+                <span>Add Address</span>
+                <PlusOutlined />
+              </button>
+            </div>
+            {isFormVisible2 && <NewAddress />}
+          </div>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="dropdata.orderTime">
               Order Time
@@ -812,4 +808,4 @@ const PickDrop = () => {
   );
 };
 
-export default PickDrop;
+export default PickAndDrop;
