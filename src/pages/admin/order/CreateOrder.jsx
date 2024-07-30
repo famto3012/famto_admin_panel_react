@@ -1,46 +1,101 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { ArrowBack } from "@mui/icons-material";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import GlobalSearch from "../../../components/GlobalSearch";
 import NewCustomer from "../../../components/Order/NewCustomer";
 import TakeAway from "../../../components/Order/TakeAway";
 import HomeDelivery from "../../../components/Order/HomeDelivery";
 import PickAndDrop from "../../../components/Order/PickAndDrop";
 import CustomOrder from "../../../components/Order/CustomOrder";
+import axios from "axios";
+import { UserContext } from "../../../context/UserContext";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const CreateOrder = () => {
-  const [customer, setCustomer] = useState("");
-  const [selectedOption, setSelectedOption] = useState("Take Away");
-  const [selectOption, setSelectOption] = useState("On-demand");
+  const [customerName, setCustomerName] = useState("");
+  const [customerId, setCustomerId] = useState("");
+
+  const [deliveryMode, setDeliveryMode] = useState("Take Away");
+  const [deliveryOption, setDeliveryOption] = useState("On-demand");
+  const [customerResults, setCustomerResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFormVisible, setFormVisible] = useState(false);
 
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+  const { token, role } = useContext(UserContext);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+    }
+  }, [token]);
+
+  const handleChangeDeliveryMode = (event) => {
+    setDeliveryMode(event.target.value);
   };
 
-  const handleOptionChange1 = (event) => {
-    setSelectOption(event.target.value);
-    if (event.target.value === "Scheduled") {
+  const handleChangeDeliveryOption = (e) => {
+    setDeliveryOption(e.target.value);
+    if (e.target.value === "Scheduled") {
       showModal();
     }
   };
 
   const [dateTime, setDateTime] = useState("");
 
-  const handleChange = (event) => {
-    setDateTime(event.target.value);
+  const handleChange = (e) => {
+    setDateTime(e.target.value);
   };
 
   const formSubmit = (e) => {
     e.preventDefault();
-    console.log("Selected Customer:", customer);
-    console.log("Selected Option:", selectedOption);
+    console.log("Selected Customer ID:", customerId);
+    console.log("Selected Customer Name:", customerName);
+    console.log("Selected Option:", deliveryMode);
     console.log("Scheduled DateTime:", dateTime);
   };
 
   const toggleNewCustomerForm = () => {
     setFormVisible(!isFormVisible);
+  };
+
+  const handleSearchCustomer = async (e) => {
+    const query = e.target.value;
+
+    setCustomerName(query);
+
+    if (query.length >= 3) {
+      setIsLoading(true);
+
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/customers/search?query=${query}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setCustomerResults(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in searching customer: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setCustomerResults([]);
+    }
+  };
+
+  const selectCustomer = (customer) => {
+    setCustomerId(customer._id);
+    setCustomerName(customer.fullName);
+    setCustomerResults([]);
   };
 
   // Set the maximum date to 30 days from now
@@ -77,15 +132,24 @@ const CreateOrder = () => {
                     name="customer"
                     placeholder="Search Customer"
                     className="h-10 px-5 text-sm border-2 w-full outline-none focus:outline-none"
-                    value={customer}
-                    onChange={(e) => setCustomer(e.target.value)}
+                    value={customerName}
+                    onChange={handleSearchCustomer}
                   />
-                  <button
-                    type="submit"
-                    className="absolute right-0 top-0 mt-2 mr-2"
-                  >
-                    <SearchOutlined className="text-xl text-gray-500" />
-                  </button>
+
+                  {isLoading && <p>Loading...</p>}
+                  {customerResults.length > 0 && (
+                    <ul className="absolute bg-white border w-full mt-1">
+                      {customerResults.map((result) => (
+                        <li
+                          key={result._id}
+                          className="p-2 hover:bg-gray-200 cursor-pointer"
+                          onClick={() => selectCustomer(result)}
+                        >
+                          {result.fullName} - {result.email}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
 
@@ -116,8 +180,8 @@ const CreateOrder = () => {
                     type="radio"
                     name="deliveryOption"
                     value="On-demand"
-                    checked={selectOption === "On-demand"}
-                    onChange={handleOptionChange1}
+                    checked={deliveryOption === "On-demand"}
+                    onChange={handleChangeDeliveryOption}
                   />
                   <label htmlFor="On-demand" className="mr-4">
                     On-demand
@@ -126,8 +190,8 @@ const CreateOrder = () => {
                     type="radio"
                     name="deliveryOption"
                     value="Scheduled"
-                    checked={selectOption === "Scheduled"}
-                    onChange={handleOptionChange1}
+                    checked={deliveryOption === "Scheduled"}
+                    onChange={handleChangeDeliveryOption}
                   />
                   <label htmlFor="Scheduled" className="mr-4">
                     Scheduled
@@ -135,7 +199,7 @@ const CreateOrder = () => {
                 </div>
               </div>
 
-              {selectOption === "Scheduled" && (
+              {deliveryOption === "Scheduled" && (
                 <div className="relative flex justify-center my-8 ml-24">
                   <input
                     type="datetime-local"
@@ -160,8 +224,8 @@ const CreateOrder = () => {
                     type="radio"
                     name="deliveryMode"
                     value="Take Away"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "Take Away"}
+                    onChange={handleChangeDeliveryMode}
+                    checked={deliveryMode === "Take Away"}
                   />
                   <label htmlFor="Take Away" className="mr-4">
                     Take Away
@@ -171,8 +235,8 @@ const CreateOrder = () => {
                     type="radio"
                     name="deliveryMode"
                     value="Home Delivery"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "Home Delivery"}
+                    onChange={handleChangeDeliveryMode}
+                    checked={deliveryMode === "Home Delivery"}
                   />
                   <label htmlFor="Home Delivery" className="mr-4">
                     Home Delivery
@@ -182,8 +246,8 @@ const CreateOrder = () => {
                     type="radio"
                     name="deliveryMode"
                     value="Pick and Drop"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "Pick and Drop"}
+                    onChange={handleChangeDeliveryMode}
+                    checked={deliveryMode === "Pick and Drop"}
                     className="mr-2"
                   />
                   <label htmlFor="Pick and Drop">Pick & Drop</label>
@@ -192,8 +256,8 @@ const CreateOrder = () => {
                     type="radio"
                     name="deliveryMode"
                     value="Custom Order"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "Custom Order"}
+                    onChange={handleChangeDeliveryMode}
+                    checked={deliveryMode === "Custom Order"}
                     className="mr-2"
                   />
                   <label htmlFor="Custom Order" className="mr-4">
@@ -203,27 +267,36 @@ const CreateOrder = () => {
               </div>
             </div>
 
-            {selectedOption === "Take Away" && (
+            {deliveryMode === "Take Away" && (
               <div className="mt-8">
                 <TakeAway />
               </div>
             )}
 
-            {selectedOption === "Home Delivery" && (
+            {deliveryMode === "Home Delivery" && (
               <div className="mt-8">
                 <HomeDelivery />
               </div>
             )}
-            {selectedOption === "Pick and Drop" && (
+            {deliveryMode === "Pick and Drop" && (
               <div className="mt-8">
                 <PickAndDrop />
               </div>
             )}
-            {selectedOption === "Custom Order" && (
+            {deliveryMode === "Custom Order" && (
               <div className="mt-8">
                 <CustomOrder />
               </div>
             )}
+
+            <div className="flex justify-center mt-16">
+              <button
+                type="submit"
+                className="py-2 px-20 text-white rounded-lg bg-primary-green-0"
+              >
+                Create Order
+              </button>
+            </div>
           </form>
         </div>
       </div>
