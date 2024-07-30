@@ -10,13 +10,14 @@ import PickAndDrop from "../../../components/Order/PickAndDrop";
 import CustomOrder from "../../../components/Order/CustomOrder";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
+import ClipLoader from "react-spinners/ClipLoader";
+import { SearchOutlined } from "@ant-design/icons";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const CreateOrder = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerId, setCustomerId] = useState("");
-
   const [deliveryMode, setDeliveryMode] = useState("Take Away");
   const [deliveryOption, setDeliveryOption] = useState("On-demand");
   const [customerResults, setCustomerResults] = useState([]);
@@ -24,6 +25,8 @@ const CreateOrder = () => {
   const [isFormVisible, setFormVisible] = useState(false);
 
   const { token, role } = useContext(UserContext);
+
+  console.log();
 
   useEffect(() => {
     if (!token) {
@@ -46,14 +49,6 @@ const CreateOrder = () => {
 
   const handleChange = (e) => {
     setDateTime(e.target.value);
-  };
-
-  const formSubmit = (e) => {
-    e.preventDefault();
-    console.log("Selected Customer ID:", customerId);
-    console.log("Selected Customer Name:", customerName);
-    console.log("Selected Option:", deliveryMode);
-    console.log("Scheduled DateTime:", dateTime);
   };
 
   const toggleNewCustomerForm = () => {
@@ -98,6 +93,12 @@ const CreateOrder = () => {
     setCustomerResults([]);
   };
 
+  const handleAddCustomer = (newCustomer) => {
+    setCustomerId(newCustomer._id);
+    setCustomerName(newCustomer.fullName);
+    setFormVisible(false);
+  };
+
   // Set the maximum date to 30 days from now
   const currentDate = new Date().toISOString().slice(0, 16); // Format for input type datetime-local
   const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -119,7 +120,7 @@ const CreateOrder = () => {
         </div>
 
         <div className="bg-white mx-11 mt-5 p-5 rounded">
-          <form onSubmit={formSubmit}>
+          <div>
             <div className="flex flex-col gap-6">
               <div className="flex items-center relative">
                 <label className="w-1/3 px-6" htmlFor="customer">
@@ -127,16 +128,26 @@ const CreateOrder = () => {
                 </label>
                 <div className="relative w-1/2">
                   <input
-                    type="search"
+                    type="text"
                     id="customer"
                     name="customer"
                     placeholder="Search Customer"
-                    className="h-10 px-5 text-sm border-2 w-full outline-none focus:outline-none"
+                    className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
                     value={customerName}
                     onChange={handleSearchCustomer}
                   />
 
-                  {isLoading && <p>Loading...</p>}
+                  {isLoading && (
+                    <ClipLoader
+                      size={15}
+                      className="absolute top-[30%] right-[10px]"
+                    />
+                  )}
+
+                  {!isLoading && (
+                    <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+                  )}
+
                   {customerResults.length > 0 && (
                     <ul className="absolute bg-white border w-full mt-1">
                       {customerResults.map((result) => (
@@ -167,7 +178,10 @@ const CreateOrder = () => {
                 </div>
 
                 {isFormVisible && (
-                  <NewCustomer toggleNewCustomerForm={toggleNewCustomerForm} />
+                  <NewCustomer
+                    toggleNewCustomerForm={toggleNewCustomerForm}
+                    onAddCustomer={handleAddCustomer}
+                  />
                 )}
               </div>
 
@@ -260,44 +274,18 @@ const CreateOrder = () => {
                     checked={deliveryMode === "Custom Order"}
                     className="mr-2"
                   />
-                  <label htmlFor="Custom Order" className="mr-4">
-                    Custom Order
-                  </label>
+                  <label htmlFor="Custom Order">Custom Order</label>
                 </div>
               </div>
+
+              <div>
+                {deliveryMode === "Take Away" && <TakeAway />}
+                {deliveryMode === "Home Delivery" && <HomeDelivery />}
+                {deliveryMode === "Pick and Drop" && <PickAndDrop />}
+                {deliveryMode === "Custom Order" && <CustomOrder />}
+              </div>
             </div>
-
-            {deliveryMode === "Take Away" && (
-              <div className="mt-8">
-                <TakeAway />
-              </div>
-            )}
-
-            {deliveryMode === "Home Delivery" && (
-              <div className="mt-8">
-                <HomeDelivery />
-              </div>
-            )}
-            {deliveryMode === "Pick and Drop" && (
-              <div className="mt-8">
-                <PickAndDrop />
-              </div>
-            )}
-            {deliveryMode === "Custom Order" && (
-              <div className="mt-8">
-                <CustomOrder />
-              </div>
-            )}
-
-            <div className="flex justify-center mt-16">
-              <button
-                type="submit"
-                className="py-2 px-20 text-white rounded-lg bg-primary-green-0"
-              >
-                Create Order
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </>
