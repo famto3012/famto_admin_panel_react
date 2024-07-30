@@ -107,7 +107,9 @@ const Sidebar = () => {
         <Link
           to="/all-orders"
           className={`ps-4 side ${
-            selectedLink === "/all-orders" ? "selected-link" : ""
+            selectedLink === "/all-orders" || selectedLink === "/create-order"
+              ? "selected-link"
+              : ""
           }`}
         >
           <BookOutlinedIcon className="m-2" />

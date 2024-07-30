@@ -3,7 +3,7 @@ import { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import LocationOnOutlined from "@mui/icons-material/LocationOnOutlined";
 
-const Addresscomponent = () => {
+const NewAddress = () => {
   const [addressData, setAddressData] = useState({
     locationaddress: "",
     fullName: "",
@@ -177,4 +177,4 @@ const Addresscomponent = () => {
   );
 };
 
-export default Addresscomponent;
+export default NewAddress;

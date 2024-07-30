@@ -2,13 +2,14 @@ import { SearchOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
-const Takeaway = () => {
+const TakeAway = () => {
   const [formData, setFormData] = useState({
     merchant: "",
     product: "",
     selectedProducts: 1,
     merchantinstructions: "",
   });
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -17,29 +18,7 @@ const Takeaway = () => {
     e.preventDefault();
     console.log(formData);
   };
-  const [order, setOrder] = useState([]);
-  useEffect(() => {
-    const fetchOrder = async () => {
-      const dummyData = [
-        {
-          item1: "Chicken Mandi",
-          quantity1: "2",
-          amount1: "₹257",
-        },
-        {
-          item1: "Chicken Mandi",
-          quantity1: "2",
-          amount1: "₹257",
-        },
 
-        // Add more customers as needed
-      ];
-
-      setOrder(dummyData);
-    };
-
-    fetchOrder();
-  }, []);
   const handleChangeProducts = (e) => {
     setFormData({ ...formData, selectedProducts: e.target.value });
     console.log("before", formData.selectedProducts);
@@ -63,9 +42,19 @@ const Takeaway = () => {
     setValue((prevValue) => prevValue + 1);
   };
 
+  const createInvoice = async (e) => {
+    e.preventDefault();
+
+    try {
+    } catch (err) {
+      console.log(`Error in creating Tke away invoice: ${err}`);
+    } finally {
+    }
+  };
+
   return (
     <div className="bg-white  mt-5 rounded">
-      <form>
+      <form onSubmit={createInvoice}>
         <div className="flex flex-col gap-6">
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="merchant">
@@ -158,53 +147,57 @@ const Takeaway = () => {
             />
           </div>
 
-          <div className="flex mt-5">
-            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-            <div className="overflow-auo w-1/2">
-              <table className="border-2 border-teal-700 w-full text-left ">
-                <thead>
-                  <tr>
-                    {["Item", " Quantity", "Amount"].map((header, index) => (
-                      <th
-                        key={index}
-                        className="bg-teal-700  text-white p-4 border-[#eee]/50"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.map((order) => (
-                    <tr key={order.id} className="text-left align-middle">
-                      <td className="p-4">{order.item1}</td>
-                      <td className="p-4">{order.quantity1}</td>
-                      <td className="p-4">{order.amount1}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="flex justify-end gap-4 mt-16 mx-10">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-              type="button"
-            >
-              <SaveAltIcon /> Bill
-            </button>
-            <button
-              className="bg-teal-700 text-white py-2 px-4 rounded-md"
-              type="submit"
-              onClick={formSubmit}
-            >
-              Create Order ₹534
-            </button>
+          <div className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize">
+            Create invoice
           </div>
         </div>
       </form>
+
+      <div className="flex mt-5">
+        <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
+        <div className="overflow-auo w-1/2">
+          <table className="border-2 border-teal-700 w-full text-left ">
+            <thead>
+              <tr>
+                {["Item", " Quantity", "Amount"].map((header, index) => (
+                  <th
+                    key={index}
+                    className="bg-teal-700  text-white p-4 border-[#eee]/50"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {/*{order.map((order) => (
+                <tr key={order.id} className="text-left align-middle">
+                  <td className="p-4">{order.item1}</td>
+                  <td className="p-4">{order.quantity1}</td>
+                  <td className="p-4">{order.amount1}</td>
+                </tr>
+              ))}*/}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="flex justify-end gap-4 mt-16 mx-10">
+        <button
+          className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
+          type="button"
+        >
+          <SaveAltIcon /> Bill
+        </button>
+        <button
+          className="bg-teal-700 text-white py-2 px-4 rounded-md"
+          type="submit"
+          onClick={formSubmit}
+        >
+          Create Order ₹534
+        </button>
+      </div>
     </div>
   );
 };
 
-export default Takeaway;
+export default TakeAway;

@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { ArrowBack } from "@mui/icons-material";
-import { BellOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import Takeaway from "../../../components/Takeaway";
-import HomeDelivery from "../../../components/HomeDelivery";
-import PickDrop from "../../../components/PickDrop";
-import CustomOrder from "../../../components/Customorder"
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import GlobalSearch from "../../../components/GlobalSearch";
+import NewCustomer from "../../../components/Order/NewCustomer";
+import TakeAway from "../../../components/Order/TakeAway";
+import HomeDelivery from "../../../components/Order/HomeDelivery";
+import PickAndDrop from "../../../components/Order/PickAndDrop";
+import CustomOrder from "../../../components/Order/CustomOrder";
 
 const CreateOrder = () => {
   const [customer, setCustomer] = useState("");
-  const [selectedOption, setSelectedOption] = useState("takeaway");
-  const [selectOption, setSelectOption] = useState("ondemand");
+  const [selectedOption, setSelectedOption] = useState("Take Away");
+  const [selectOption, setSelectOption] = useState("On-demand");
+  const [isFormVisible, setFormVisible] = useState(false);
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -20,7 +21,7 @@ const CreateOrder = () => {
 
   const handleOptionChange1 = (event) => {
     setSelectOption(event.target.value);
-    if (event.target.value === "scheduled") {
+    if (event.target.value === "Scheduled") {
       showModal();
     }
   };
@@ -33,51 +34,20 @@ const CreateOrder = () => {
 
   const formSubmit = (e) => {
     e.preventDefault();
-    console.log(customer);
+    console.log("Selected Customer:", customer);
+    console.log("Selected Option:", selectedOption);
+    console.log("Scheduled DateTime:", dateTime);
   };
 
-  const [isFormVisible, setFormVisible] = useState(false);
-
-  const toggleFormVisibility = () => {
+  const toggleNewCustomerForm = () => {
     setFormVisible(!isFormVisible);
   };
 
-  const [customerData, setCustomerData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    location: "",
-  });
-
-  const handleInputChange = (e) => {
-    setCustomerData({ ...customerData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(customerData); // Replace with your submission logic
-    // Example: Submit data to server or process locally
-    // Clear form after submission if needed
-    setCustomerData({
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      location: "",
-    });
-  };
-
-  const currentDate = new Date();
   // Set the maximum date to 30 days from now
-  const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-  // Format dates to YYYY-MM-DDTHH:MM (for datetime-local input)
-  const formatDateTimeLocal = (date) => {
-    const offset = date.getTimezoneOffset();
-    const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
-    return adjustedDate.toISOString().slice(0, 16);
-  };
+  const currentDate = new Date().toISOString().slice(0, 16); // Format for input type datetime-local
+  const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 16);
 
   return (
     <>
@@ -89,8 +59,8 @@ const CreateOrder = () => {
             <span className="text-lg font-bold ml-3">Create Order</span>
           </div>
           <nav className="p-5">
-          <GlobalSearch />
-        </nav>
+            <GlobalSearch />
+          </nav>
         </div>
 
         <div className="bg-white mx-11 mt-5 p-5 rounded">
@@ -119,13 +89,13 @@ const CreateOrder = () => {
                 </div>
               </div>
 
-              <div className="">
-                <div className=" flex">
+              <div>
+                <div className="flex">
                   <label className="w-1/3"></label>
                   <button
                     type="button"
                     className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                    onClick={toggleFormVisibility}
+                    onClick={toggleNewCustomerForm}
                   >
                     <span>Add Customer</span>
                     <PlusOutlined />
@@ -133,96 +103,7 @@ const CreateOrder = () => {
                 </div>
 
                 {isFormVisible && (
-                  <div className="flex">
-                    <label className="w-1/3"></label>
-                    <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
-                      <form onSubmit={handleSubmit}>
-                        <div className="flex flex-col gap-3">
-                          <div className="flex item-center justify-center">
-                            <label className="  w-1/3 text-md font-medium mt-2">
-                              Name
-                            </label>
-                            <input
-                              type="text"
-                              name="name"
-                              placeholder="Name"
-                              className=" w-2/3 px-3 py-2 bg-white   rounded focus:outline-none outline-none"
-                              value={customerData.name}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              name="email"
-                              placeholder="Email"
-                              className="w-2/3 px-3 py-2 bg-white rounded focus:outline-none outline-none"
-                              value={customerData.email}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                              Phone
-                            </label>
-                            <input
-                              type="text"
-                              name="phone"
-                              placeholder="Phone"
-                              className=" w-2/3 px-3 py-2  bg-white   rounded focus:outline-none outline-none"
-                              value={customerData.phone}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium">
-                              Address
-                            </label>
-                            <input
-                              type="text"
-                              name="address"
-                              placeholder="Address"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              value={customerData.address}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label className="w-1/3 text-md font-medium ">
-                              <LocationOnOutlinedIcon />
-                            </label>
-                            <input
-                              type="text"
-                              name="location"
-                              placeholder="location"
-                              className=" w-2/3 px-3 py-2 bg-white  rounded focus:outline-none outline-none"
-                              value={customerData.location}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-between mt-5 gap-3">
-                          <button
-                            type="button"
-                            className="bg-cyan-100 px-4 py-2 w-1/2"
-                            onClick={toggleFormVisibility}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="bg-teal-700 text-white px-4 py-2 rounded w-1/2 "
-                            onClick={handleSubmit}
-                          >
-                            Add Customer
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+                  <NewCustomer toggleNewCustomerForm={toggleNewCustomerForm} />
                 )}
               </div>
 
@@ -234,38 +115,36 @@ const CreateOrder = () => {
                   <input
                     type="radio"
                     name="deliveryOption"
-                    value="ondemand"
-                    checked={selectOption === "ondemand"}
+                    value="On-demand"
+                    checked={selectOption === "On-demand"}
                     onChange={handleOptionChange1}
-                    className="form-radio"
                   />
-                  <label htmlFor="ondemand" className="mr-4">
-                    On demand
+                  <label htmlFor="On-demand" className="mr-4">
+                    On-demand
                   </label>
                   <input
                     type="radio"
                     name="deliveryOption"
-                    value="scheduled"
-                    checked={selectOption === "scheduled"}
+                    value="Scheduled"
+                    checked={selectOption === "Scheduled"}
                     onChange={handleOptionChange1}
-                    className="form-radio"
                   />
-                  <label htmlFor="scheduled" className="mr-4">
+                  <label htmlFor="Scheduled" className="mr-4">
                     Scheduled
                   </label>
                 </div>
               </div>
 
-              {selectOption === "scheduled" && (
+              {selectOption === "Scheduled" && (
                 <div className="relative flex justify-center my-8 ml-24">
                   <input
                     type="datetime-local"
                     id="datetime"
                     name="datetime"
-                    className="h-10 text-sm  px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
+                    className="h-10 text-sm px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
                     value={dateTime}
-                    min={formatDateTimeLocal(currentDate)}
-                    max={formatDateTimeLocal(maxDate)}
+                    min={currentDate}
+                    max={maxDate}
                     onChange={handleChange}
                   />
                 </div>
@@ -273,79 +152,74 @@ const CreateOrder = () => {
 
               <div className="flex items-center mt-2">
                 <label className="w-1/3 px-6 text-gray-700">
-                  Select Delivery Option
+                  Select Delivery Mode
                 </label>
 
-                <div className="flex item-center space-x-2 w-2/3 gap-3">
+                <div className="flex items-center space-x-2 w-2/3 gap-3">
                   <input
                     type="radio"
-                    id="takeaway"
-                    name="option"
-                    value="takeaway"
+                    name="deliveryMode"
+                    value="Take Away"
                     onChange={handleOptionChange}
-                    checked={selectedOption === "takeaway"}
-                    className=""
+                    checked={selectedOption === "Take Away"}
                   />
-                  <label htmlFor="takeaway" className="mr-4">
+                  <label htmlFor="Take Away" className="mr-4">
                     Take Away
                   </label>
 
                   <input
                     type="radio"
-                    id="homedelivery"
-                    name="option"
-                    value="homedelivery"
+                    name="deliveryMode"
+                    value="Home Delivery"
                     onChange={handleOptionChange}
-                    checked={selectedOption === "homedelivery"}
-                    className=""
+                    checked={selectedOption === "Home Delivery"}
                   />
-                  <label htmlFor="homedelivery" className="mr-4">
+                  <label htmlFor="Home Delivery" className="mr-4">
                     Home Delivery
                   </label>
 
                   <input
                     type="radio"
-                    id="pickanddrop"
-                    name="option"
-                    value="pickanddrop"
+                    name="deliveryMode"
+                    value="Pick and Drop"
                     onChange={handleOptionChange}
-                    checked={selectedOption === "pickanddrop"}
+                    checked={selectedOption === "Pick and Drop"}
                     className="mr-2"
                   />
-                  <label htmlFor="pickanddrop">Pick & Drop</label>
+                  <label htmlFor="Pick and Drop">Pick & Drop</label>
+
                   <input
                     type="radio"
-                    id="customorder"
-                    name="option"
-                    value="customorder"
+                    name="deliveryMode"
+                    value="Custom Order"
                     onChange={handleOptionChange}
-                    checked={selectedOption === "customorder"}
+                    checked={selectedOption === "Custom Order"}
                     className="mr-2"
                   />
-                  <label htmlFor="customorder" className="mr-4">
+                  <label htmlFor="Custom Order" className="mr-4">
                     Custom Order
                   </label>
                 </div>
               </div>
             </div>
 
-            {selectedOption === "takeaway" && (
+            {selectedOption === "Take Away" && (
               <div className="mt-8">
-                <Takeaway />
+                <TakeAway />
               </div>
             )}
 
-            {selectedOption === "homedelivery" && (
+            {selectedOption === "Home Delivery" && (
               <div className="mt-8">
                 <HomeDelivery />
               </div>
             )}
-            {selectedOption === "pickanddrop" && (
+            {selectedOption === "Pick and Drop" && (
               <div className="mt-8">
-                <PickDrop />
+                <PickAndDrop />
               </div>
             )}
-            {selectedOption === "customorder" && (
+            {selectedOption === "Custom Order" && (
               <div className="mt-8">
                 <CustomOrder />
               </div>
