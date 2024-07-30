@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import { Modal } from 'antd'
 import axios from 'axios';
 import React, { useState } from 'react'
@@ -10,7 +11,7 @@ const AddCustomerPricingModal = ({
     BASE_URL,
     business,
   }) => {
-   
+    const toast = useToast();
     const [cpricing, setCpricing] = useState({
       vehicleType:null,
       ruleName: "",
@@ -49,10 +50,24 @@ const AddCustomerPricingModal = ({
             if(addResponse.status===201)
             {
                 console.log("addData",cpricing)
+                toast({
+                  title: "Created",
+                  description: "Customer Pricng Created successfully.",
+                  status: "success",
+                  duration: 1000,
+                  isClosable: true,
+              });
             }
 
         }catch(err){
           console.log(`Error in fetching data:${err}`)
+          toast({
+            title: "Error",
+            description: "There was an error occured.",
+            status: "error",
+            duration: 1000,
+            isClosable: true,
+        });
         }
         console.log(cpricing);
       };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Spin } from "antd";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const DeleteNotificationModal = ({
   isVisible,
@@ -12,7 +13,7 @@ const DeleteNotificationModal = ({
   remove,
 }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
-
+  const toast = useToast();
   const handleOk = async () => {
     setConfirmLoading(true);
     try {
@@ -25,10 +26,27 @@ const DeleteNotificationModal = ({
       );
       if (response.status === 200) {
         remove(currentDelete);
-        handleConfirmDelete();
+        handleConfirmDelete(); 
+        toast({
+          title: "Deleted",
+          description: "Notification Deleted Successfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+      }); 
+     
       }
     } catch (error) {
       console.error("Error deleting", error);
+     
+    toast({
+      title: "Error",
+      description: "There was an error creating the banner.",
+      status: "error",
+      duration: 9000,
+      isClosable: true,
+  });
+  
     } finally {
       setConfirmLoading(false);
     }
