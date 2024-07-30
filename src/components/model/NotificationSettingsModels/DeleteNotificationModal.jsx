@@ -1,0 +1,66 @@
+import React, { useState } from "react";
+import { Modal, Spin } from "antd";
+import axios from "axios";
+
+const DeleteNotificationModal = ({
+  isVisible,
+  handleCancel,
+  handleConfirmDelete,
+  currentDelete,
+  token,
+  BASE_URL,
+  remove,
+}) => {
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const handleOk = async () => {
+    setConfirmLoading(true);
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/admin/notification/notification-setting/${currentDelete}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        remove(currentDelete);
+        handleConfirmDelete();
+      }
+    } catch (error) {
+      console.error("Error deleting", error);
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
+
+  return (
+    <Modal
+      title="Delete"
+      open={isVisible}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      confirmLoading={confirmLoading}
+      footer={null}
+      centered
+    >
+      <Spin spinning={confirmLoading}>
+        <p>Are you sure you want to delete?</p>
+      </Spin>
+
+      <div className="flex gap-[30px] justify-end">
+        <button className=" bg-teal-100 text-teal-600 p-2 rounded">
+          Cancel
+        </button>
+        <button
+          onClick={handleOk}
+          className="bg-red-100 text-red-600 p-2 rounded"
+        >
+          Delete
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
+export default DeleteNotificationModal;

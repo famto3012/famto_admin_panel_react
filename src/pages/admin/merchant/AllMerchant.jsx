@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   SearchOutlined,
-  BellOutlined,
   PlusOutlined,
   ArrowDownOutlined,
   CheckCircleOutlined,
@@ -16,50 +15,29 @@ import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
 import axios from "axios";
 import { CSVLink } from "react-csv";
+import AddMerchant from "../../../components/model/Merchant/AddMerchant";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Merchant = () => {
-  const [merchant, setMerchant] = useState([]);
-  const [geofence, setGeofence] = useState([]);
-  const [business, setBusiness] = useState([]);
-  const [service, setService] = useState("");
-  const [geofenceFilter, setGeofenceFilter] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
-  const [businessFilter, setBusinessFilter] = useState("");
+  const [allMerchants, setAllMerchants] = useState([]);
+  const [allGeofences, setAllGeofences] = useState([]);
+  const [allBusinessCategories, setAllBusinessCategories] = useState([]);
+
+  const [serviceable, setServiceable] = useState("");
+  const [geofence, setGeofence] = useState("");
+  const [businessCategory, setBusinessCategory] = useState("");
+  const [search, setSearch] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const { token, role } = useContext(UserContext);
+
+  const toast = useToast();
   const navigate = useNavigate();
-
-  const handleToggle = (id) => {
-    setMerchant((prevMerchant) =>
-      prevMerchant.map((merchant) =>
-        merchant.id === id
-          ? { ...merchant, status: !merchant.status }
-          : merchant
-      )
-    );
-  };
-
-  const handleApprove = (id) => {
-    setMerchant((prevMerchants) =>
-      prevMerchants.map((merchant) =>
-        merchant.id === id
-          ? { ...merchant, registrationApproval: "approved" }
-          : merchant
-      )
-    );
-  };
-
-  const handleReject = (id) => {
-    setMerchant((prevMerchants) =>
-      prevMerchants.map((merchant) =>
-        merchant.id === id
-          ? { ...merchant, registrationApproval: "rejected" }
-          : merchant
-      )
-    );
-  };
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -67,7 +45,7 @@ const Merchant = () => {
       return;
     }
 
-    const fetchMerchant = async () => {
+    const fetchInitialData = async () => {
       try {
         setIsLoading(true);
 
@@ -90,13 +68,13 @@ const Merchant = () => {
             ),
           ]);
         if (merchantResponse.status === 200) {
-          setMerchant(merchantResponse.data.data);
+          setAllMerchants(merchantResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
-          setGeofence(geofenceResponse.data.geofences);
+          setAllGeofences(geofenceResponse.data.geofences);
         }
         if (businessCategoryResponse.status === 200) {
-          setBusiness(businessCategoryResponse.data.data);
+          setAllBusinessCategories(businessCategoryResponse.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -105,155 +83,195 @@ const Merchant = () => {
       }
     };
 
-    fetchMerchant();
+    fetchInitialData();
   }, [token, role, navigate]);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
+  const handleToggle = (id) => {
+    setAllMerchants((prevMerchant) =>
+      prevMerchant.map((merchant) =>
+        merchant.id === id
+          ? { ...merchant, status: !merchant.status }
+          : merchant
+      )
+    );
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const [addData, setAddData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmpassword: "",
-  });
-
-  const handleInputChange = (e) => {
-    setAddData({ ...addData, [e.target.name]: e.target.value });
-  };
-  const signupAction = (e) => {
-    e.preventDefault();
-
-    console.log(addData);
-  };
-
-  const onServiceChange = (e) => {
-    const selectedService = e.target.value;
-    setService(selectedService);
-    if (selectedService !== "") {
-      handleServiceFilter(selectedService);
-    } else {
-      setMerchant([]);
-    }
-  };
-
-  const handleServiceFilter = async (selectedService) => {
+  const handleApprove = async (merchantId) => {
     try {
-      console.log(token);
-      const serviceResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter`,
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/admin/approve-merchant/${merchantId}`,
+        {},
         {
-          params: { serviceable: selectedService },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (serviceResponse.status === 200) {
-        setMerchant(serviceResponse.data.data);
+
+      if (response.status === 200) {
+        setAllMerchants((prevMerchants) =>
+          prevMerchants.map((merchant) =>
+            merchant._id === merchantId
+              ? { ...merchant, isApproved: "Approved" }
+              : merchant
+          )
+        );
+
+        toast({
+          title: "Approval",
+          description: response.data.message,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (err) {
-      console.log(`Error in fetching merchant`, err);
+      console.log(`Error in approving merchant: ${err}`);
+      toast({
+        title: "Approval",
+        description: `Error in approving merchant`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
-  const onGeofenceChange = (e) => {
-    const selectedService = e.target.value;
-    setGeofenceFilter(selectedService);
-    if (selectedService !== "") {
-      handleGeofenceFilter(selectedService);
-    } else {
-      setMerchant([]);
-    }
-  };
-
-  const handleGeofenceFilter = async (selectedService) => {
+  const handleReject = async (merchantId) => {
     try {
-      console.log(token);
-      const serviceResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter`,
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/admin/reject-merchant/${merchantId}`,
+        {},
         {
-          params: { geofence: selectedService },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (serviceResponse.status === 200) {
-        setMerchant(serviceResponse.data.data);
+
+      if (response.status === 200) {
+        setAllMerchants(
+          allMerchants.filter((merchant) => merchant._id !== merchantId)
+        );
+
+        toast({
+          title: "Reject",
+          description: response.data.message,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (err) {
-      console.log(`Error in fetching merchant`, err);
+      console.log(`Error in rejecting merchant: ${err}`);
+      toast({
+        title: "Reject",
+        description: `Error in rejecting merchant`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
-  const onBusinessCategoryChange = (e) => {
-    const businessService = e.target.value;
-    setBusinessFilter(businessService);
-    if (businessService !== "") {
-      handleBusinessCategoryService(businessService);
-    } else {
-      setMerchant([]);
-    }
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
   };
 
-  const handleBusinessCategoryService = async (businessService) => {
-    try {
-      console.log(token);
-      const businessResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/filter`,
-        {
-          params: { businessCategory: businessService },
-          withcredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
+  useEffect(() => {
+    const filterHandler = async () => {
+      try {
+        if (!serviceable && !geofence && !businessCategory) return;
+        setIsTableLoading(true);
+
+        let endpoint = `${BASE_URL}/merchants/admin/filter`;
+
+        const params = [];
+        if (serviceable) params.push(`serviceable=${serviceable}`);
+        if (geofence) params.push(`geofence=${geofence}`);
+        if (businessCategory)
+          params.push(`businessCategory=${businessCategory}`);
+
+        if (params.length > 0) {
+          endpoint += `?${params.join("&")}`;
         }
-      );
-      if (businessResponse.status === 200) {
-        setMerchant(businessResponse.data.data);
-      }
-    } catch (err) {
-      console.log(`Error in fetching merchant`, err);
-    }
-  };
 
-  const onSearchChange = (e) => {
-    const searchService = e.target.value;
-    setSearchFilter(searchService);
-    if (searchService !== "") {
-      handleSearchChangeFilter(searchService);
-    } else {
-      setMerchant([]);
-    }
-  };
-
-  const handleSearchChangeFilter = async (searchService) => {
-    try {
-      console.log(token);
-      const searchResponse = await axios.get(
-        `${BASE_URL}/merchants/admin/search`,
-        {
-          params: { query: searchService },
+        const response = await axios.get(endpoint, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          setAllMerchants(response.data.data);
         }
-      );
-      if (searchResponse.status === 200) {
-        setMerchant(searchResponse.data.data);
+      } catch (err) {
+        console.log(`Error in filtering merchant: ${err}`);
+
+        toast({
+          title: "Error",
+          description: `Error in filtering merchant`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
+    filterHandler();
+  }, [serviceable, geofence, businessCategory, token, role]);
+
+  const onSearch = (e) => {
+    let text = e.target.value;
+    setSearch(text);
+    console.log(search);
+  };
+
+  useEffect(() => {
+    const handleSearchMerchant = async () => {
+      try {
+        if (search.trim() !== "") {
+          setIsTableLoading(true);
+
+          const response = await axios.get(
+            `${BASE_URL}/merchants/admin/search?query=${search}`,
+            {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (response.status === 200) {
+            setOrders(response.data.data);
+          }
+        }
+      } catch (err) {
+        console.log(
+          `Error in searching orders: ${err.response?.data || err.message}`
+        );
+
+        toast({
+          title: "Error",
+          description: `Error in searching merchant`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
       }
     } catch (err) {
       console.log(`Error in fetching merchant`, err);
     }
   };
+
+    const timeOut = setTimeout(() => {
+      handleSearchMerchant();
+    }, 500);
+
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, []);
 
   const csvData = [
     { label: "Merchant ID", key: "_id" },
@@ -282,7 +300,7 @@ const Merchant = () => {
               <div className="flex space-x-2 justify-end ">
                 <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
                   <CSVLink
-                    data={merchant}
+                    data={allMerchants}
                     headers={csvData}
                     filename={"merchantData.csv"}
                   >
@@ -291,118 +309,17 @@ const Merchant = () => {
                 </button>
                 <div>
                   <button
-                    className="bg-teal-800 text-white rounded-md outline-none focus:outline-none px-4 py-2 font-semibold  flex items-center space-x-1 "
-                    onClick={showModal}
+                    className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
+                    onClick={toggleModal}
                   >
                     <PlusOutlined /> <span>Add Merchant</span>
                   </button>
-                  <Modal
-                    title="Add Merchant"
-                    open={isModalVisible}
-                    onOk={handleOk}
-                    centered
-                    width="600px"
-                    onCancel={handleCancel}
-                    footer={null}
-                  >
-                    <form onSubmit={signupAction}>
-                      <div className="flex flex-col gap-4">
-                        <div className="flex items-center">
-                          <label className="w-1/3 text-gray-500" htmlFor="name">
-                            Full Name of owner
-                          </label>
-                          <input
-                            className="border-2 border-gray-300 rounded p-2 w-2/3"
-                            type="text"
-                            value={addData.name}
-                            id="name"
-                            name="name"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="email"
-                          >
-                            Email
-                          </label>
-                          <input
-                            className="border-2 border-gray-300 rounded p-2 w-2/3"
-                            type="email"
-                            value={addData.email}
-                            id="email"
-                            name="email"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="phone"
-                          >
-                            Phone Number
-                          </label>
-                          <input
-                            className="border-2 border-gray-300 rounded p-2 w-2/3"
-                            type="tel"
-                            value={addData.phone}
-                            id="phone"
-                            name="phone"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="password"
-                          >
-                            Password
-                          </label>
-                          <input
-                            className="border-2 border-gray-300 rounded p-2 w-2/3"
-                            type="password"
-                            value={addData.password}
-                            id="password"
-                            name="password"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="confirmpassword"
-                          >
-                            Confirm Password
-                          </label>
-                          <input
-                            className="border-2 border-gray-300 rounded p-2 w-2/3"
-                            type="password"
-                            value={addData.confirmpassword}
-                            id="confirmpassword"
-                            name="confirmpassword"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex justify-end gap-4 mt-6">
-                          <button
-                            className="bg-cyan-50 py-2 px-4 rounded-md"
-                            type="button"
-                            onClick={handleCancel}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-teal-800 text-white py-2 px-4 rounded-md"
-                            type="submit"
-                            onClick={handleOk}
-                          >
-                            Add Merchant
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </Modal>
+                  <AddMerchant
+                    isVisible={isModalVisible}
+                    toggleModal={toggleModal}
+                    BASE_URL={BASE_URL}
+                    token={token}
+                  />
                 </div>
               </div>
             </div>
@@ -410,12 +327,12 @@ const Merchant = () => {
             <div className="flex items-center bg-white p-5 mx-5 rounded-lg justify-between mt-[20px] px-[30px]">
               <div className="flex items-center gap-[20px]">
                 <select
-                  id="serviceable"
-                  value={service}
-                  onChange={onServiceChange}
                   className="bg-blue-50 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
+                  name="serviceable"
+                  value={serviceable}
+                  onChange={(e) => setServiceable(e.target.value)}
                 >
-                  <option selected hidden>
+                  <option defaultValue={"Serviceable"} hidden>
                     Serviceable
                   </option>
                   <option value="open">Open</option>
@@ -423,29 +340,33 @@ const Merchant = () => {
                 </select>
 
                 <select
-                  id="geofence"
-                  value={geofenceFilter}
-                  onChange={onGeofenceChange}
                   className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
+                  name="geofence"
+                  value={geofence}
+                  onChange={(e) => setGeofence(e.target.value)}
                 >
-                  {geofence.map((geoFence) => (
-                    <option value={geoFence._id} key={geoFence._id}>
-                      {geoFence.name}
+                  <option defaultValue={"Geofence"} hidden>
+                    Geofence
+                  </option>
+                  {allGeofences.map((geofence) => (
+                    <option value={geofence._id} key={geofence._id}>
+                      {geofence.name}
                     </option>
                   ))}
                 </select>
 
                 <select
-                  value={businessFilter}
-                  onChange={onBusinessCategoryChange}
-                  className="bg-blue-50  w-full text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
+                  className="bg-blue-50 w-full text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
+                  name="businessCategory"
+                  value={businessCategory}
+                  onChange={(e) => setBusinessCategory(e.target.value)}
                 >
-                  {business.map((businessCategory) => (
-                    <option
-                      key={businessCategory._id}
-                      value={businessCategory._id}
-                    >
-                      {businessCategory.title}
+                  <option defaultValue={"Business category"} hidden>
+                    Business category
+                  </option>
+                  {allBusinessCategories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.title}
                     </option>
                   ))}
                 </select>
@@ -453,19 +374,16 @@ const Merchant = () => {
 
               <div className="flex items-center gap-[30px]">
                 <div>
-                  <FilterAltOutlinedIcon className="mt-2 text-gray-400   " />
+                  <FilterAltOutlinedIcon className="text-gray-400" />
                 </div>
                 <div className="relative w-full">
                   <div>
                     <input
                       type="search"
-                      name="search"
-                      value={searchFilter}
-                      onChange={onSearchChange}
-                      className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none"
+                      onChange={onSearch}
+                      className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none cursor-pointer"
                       placeholder="Search merchant name"
                     />
-                    <SearchOutlined className="absolute -ml-7 mt-3" />
                   </div>
                 </div>
               </div>
@@ -496,45 +414,78 @@ const Merchant = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {merchant.map((data) => (
-                    <tr
-                      key={data._id}
-                      className="align-middle border-b border-gray-300"
-                    >
-                      <td className="p-4 underline underline-offset-4">
-                        <Link to={`/merchant-detail/:merchantId${data._id}`}>
-                          {data._id}
-                        </Link>
-                      </td>
-                      <td className="p-4">{data.merchantName}</td>
-                      <td className="p-4">{data.phoneNumber}</td>
-                      <td className="p-4">{data.averageRating}</td>
-                      <td className="p-4">{data.isApproved}</td>
-                      <td className="p-4">{data.isServiceableToday}</td>
-                      <td className="p-4">{data.geofence}</td>
-
-                      <td className="p-4">
-                        <Switch
-                          checked={
-                            data.isServiceableToday === "open" ? true : false
-                          }
-                          onChange={() => handleToggle(data._id)}
-                        />
-                      </td>
-                      <td className="p-4">
-                        <div className="flex space-x-2 justify-center">
-                          <CheckCircleOutlined
-                            className="text-2xl cursor-pointer text-green-500"
-                            onClick={() => handleApprove(data._id)}
-                          />
-                          <CloseCircleOutlined
-                            className="text-2xl cursor-pointer text-red-500"
-                            onClick={() => handleReject(data._id)}
-                          />
-                        </div>
+                  {isTableLoading && (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className="text-center py-[20px] bg-gray-50"
+                      >
+                        Loading data...
                       </td>
                     </tr>
-                  ))}
+                  )}
+
+                  {!isTableLoading && allMerchants.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className="text-center py-[20px] bg-gray-50"
+                      >
+                        No data available
+                      </td>
+                    </tr>
+                  )}
+
+                  {!isTableLoading &&
+                    allMerchants.map((data) => (
+                      <tr
+                        key={data._id}
+                        className="align-middle border-b border-gray-300"
+                      >
+                        <td className="p-4 underline underline-offset-4">
+                          <Link to={`/merchant-detail/${data._id}`}>
+                            {data._id}
+                          </Link>
+                        </td>
+                        <td className="p-4">{data.merchantName}</td>
+                        <td className="p-4">{data.phoneNumber}</td>
+                        <td className="p-4">{data.averageRating}</td>
+                        <td className="p-4">{data.isApproved}</td>
+                        <td className="p-4">{data.isServiceableToday}</td>
+                        <td className="p-4">{data.geofence}</td>
+
+                        <td className="p-4">
+                          <Switch
+                            checked={
+                              data.isServiceableToday === "open" ? true : false
+                            }
+                            onChange={() => handleToggle(data._id)}
+                          />
+                        </td>
+                        <td className="p-4">
+                          <div className="flex space-x-2 justify-center">
+                            <>
+                              {data.isApproved === "Approved" && (
+                                <p className="text-green-500">Approved</p>
+                              )}
+
+                              {data.isApproved === "Pending" && (
+                                <>
+                                  <CheckCircleOutlined
+                                    className="text-2xl cursor-pointer text-green-500"
+                                    onClick={() => handleApprove(data._id)}
+                                  />
+                                  <CloseCircleOutlined
+                                    className="text-2xl cursor-pointer text-red-500"
+                                    onClick={() => handleReject(data._id)}
+                                  />
+                                </>
+                              )}
+                            </>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

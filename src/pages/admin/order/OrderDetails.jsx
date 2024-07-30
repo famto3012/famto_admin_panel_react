@@ -1,4 +1,4 @@
-import React from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
@@ -16,29 +16,54 @@ import {
   Box,
 } from "@chakra-ui/react";
 import map from "/map.svg";
-import avatar from "/avatar.svg"
+import avatar from "/avatar.svg";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const OrderDetails = () => {
-  const dummyData = [
-    {
-      id: "1",
-      name: "Bank",
-      email: "123gamil",
-      accountType: "Savings",
-      description: "The bank account",
-      dateTime: "18/06/2003",
-      status: "active",
-    },
-    {
-      id: "2",
-      name: "Bakery",
-      email: "457gmail",
-      accountType: "Current",
-      description: "Account",
-      dateTime: "18/05/2003",
-      status: "active",
-    },
-  ];
+  const [orderDetail, setOrderDetail] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { orderId } = useParams();
+
+  const { token, role } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+    }
+
+    const getOrderDetail = async () => {
+      try {
+        setIsLoading(true);
+        const endpoint =
+          role === "Admin"
+            ? `${BASE_URL}/orders/admin/${orderId}`
+            : `${BASE_URL}/orders/${orderId}`;
+
+        const response = await axios.get(endpoint, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          setOrderDetail(response.data.data);
+          console.log(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getting order detail: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getOrderDetail();
+  }, [token, orderId]);
 
   const steps = [
     { title: "Created", description: "by Admin ID #123" },
@@ -66,9 +91,11 @@ const OrderDetails = () => {
         </nav>
         <div className="flex justify-between mx-5">
           <div>
-            {" "}
-            <p>
-              <ArrowLeftOutlined /> Order information #123
+            <p className="flex gap-[20px] mb-0">
+              <ArrowLeftOutlined onClick={() => navigate("/all-orders")} />
+              <p className="font-[600] mb-0">
+                Order information #{orderDetail._id}
+              </p>
             </p>
           </div>
           <div>
@@ -81,40 +108,41 @@ const OrderDetails = () => {
           <div className="w-1/3">
             <div className="flex justify-between">
               <label>Order Status</label>
-              <p>Completed</p>
+              <p>{orderDetail.orderStatus}</p>
             </div>
             <div className="flex justify-between">
               <label>Payment Status</label>
-              <p>Paid</p>
+              <p>{orderDetail.paymentStatus}</p>
             </div>
             <div className="flex justify-between">
               <label>Payment Mode</label>
-              <p>cash</p>
+              <p>{orderDetail.paymentMode}</p>
             </div>
             <div className="flex justify-between">
-              <label>Delivery Method</label>
-              <p>Pick and drop</p>
+              <label>Delivery Mode</label>
+              <p>{orderDetail.deliveryMode}</p>
             </div>
           </div>
           <div className="w-1/3">
             <div className="flex justify-between">
               <label>Delivery option</label>
-              <p>on-Demand</p>
+              <p>{orderDetail.deliveryOption}</p>
             </div>
             <div className="flex justify-between">
               <label>Vehicle Type</label>
-              <p>Type of vehicle</p>
+              <p>{orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}</p>
             </div>
             <div className="flex justify-between">
               <label>order Time</label>
-              <p>march 2024</p>
+              <p>{orderDetail.orderTime}</p>
             </div>
             <div className="flex justify-between">
               <label>Delivery Time</label>
-              <p>march 2024</p>
+              <p>{orderDetail.deliveryTime}</p>
             </div>
           </div>
         </div>
+
         <div className="mt-10">
           <h1 className="text-[18px] font-semibold ml-5 mb-5">
             Customer Details
@@ -127,7 +155,7 @@ const OrderDetails = () => {
                   "Name",
                   "Email",
                   "Phone",
-                  "Adress",
+                  "Address",
                   "Ratings to Delivery Agent",
                   "Rating by Delivery Agent",
                 ].map((header) => (
@@ -141,17 +169,68 @@ const OrderDetails = () => {
               </tr>
             </thead>
             <tbody>
-              {dummyData.map((dummyData) => (
-                <tr className="text-center bg-white h-20" key={dummyData.id}>
-                  <td>{dummyData.id}</td>
-                  <td>{dummyData.name}</td>
-                  <td>{dummyData.email}</td>
-                  <td>{dummyData.accountType}</td>
-                  <td>{dummyData.description}</td>
-                  <td>{dummyData.dateTime}</td>
-                  <td>{dummyData.status}</td>
-                </tr>
-              ))}
+              <tr className="text-center bg-white h-20">
+                <td className="underline underline-offset-2">
+                  <Link
+                    to={`/customer-detail/${orderDetail?.customerDetail?._id}`}
+                  >
+                    #{orderDetail?.customerDetail?._id}
+                  </Link>
+                </td>
+                <td>{orderDetail?.customerDetail?.name}</td>
+                <td>{orderDetail?.customerDetail?.email}</td>
+                <td>{orderDetail?.customerDetail?.phone}</td>
+
+                <td>
+                  <div className="flex flex-col">
+                    <small>
+                      {orderDetail?.customerDetail?.address?.fullName}
+                    </small>
+                    <small>
+                      {orderDetail?.customerDetail?.address?.phoneNumber}
+                    </small>
+                    <small>{orderDetail?.customerDetail?.address?.flat}</small>
+                    <small>{orderDetail?.customerDetail?.address?.area}</small>
+                    <small>
+                      {orderDetail?.customerDetail?.address?.landmark}
+                    </small>
+                  </div>
+                </td>
+
+                <td>
+                  <div className="flex flex-col">
+                    <small>
+                      {
+                        orderDetail?.customerDetail?.ratingsToDeliveryAgent
+                          ?.rating
+                      }
+                    </small>
+                    <small>
+                      {
+                        orderDetail?.customerDetail?.ratingsToDeliveryAgent
+                          ?.review
+                      }
+                    </small>
+                  </div>
+                </td>
+
+                <td>
+                  <div className="flex flex-col">
+                    <small>
+                      {
+                        orderDetail?.customerDetail?.ratingsByDeliveryAgent
+                          ?.rating
+                      }
+                    </small>
+                    <small>
+                      {
+                        orderDetail?.customerDetail?.ratingsByDeliveryAgent
+                          ?.review
+                      }
+                    </small>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -179,16 +258,20 @@ const OrderDetails = () => {
               </tr>
             </thead>
             <tbody>
-              {dummyData.map((dummyData) => (
-                <tr className="text-center bg-white h-20" key={dummyData.id}>
-                  <td>{dummyData.id}</td>
-                  <td>{dummyData.name}</td>
-                  <td>{dummyData.accountType}</td>
-                  <td>{dummyData.description}</td>
-                  <td>{dummyData.dateTime}</td>
-                  <td></td>
-                </tr>
-              ))}
+              <tr className="text-center bg-white h-20">
+                <td className="underline underline-offset-2">
+                  <Link
+                    to={`merchant-detail/${orderDetail?.merchantDetail?._id}`}
+                  >
+                    #{orderDetail?.merchantDetail?._id}
+                  </Link>
+                </td>
+                <td>{orderDetail?.merchantDetail?.name}</td>
+                <td>{orderDetail?.merchantDetail?.instructionsByCustomer}</td>
+                <td>{orderDetail?.merchantDetail?.merchantEarnings}</td>
+                <td>{orderDetail?.merchantDetail?.famtoEarnings}</td>
+                <td></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -218,25 +301,34 @@ const OrderDetails = () => {
               </tr>
             </thead>
             <tbody>
-              {dummyData.map((dummyData) => (
-                <tr className="text-center bg-white h-20" key={dummyData.id}>
-                  <td>{dummyData.id}</td>
-                  <td>{dummyData.name}</td>
-                  <td>{dummyData.email}</td>
-                  <td>{dummyData.accountType}</td>
-                  <td>{dummyData.description}</td>
-                  <td>{dummyData.dateTime}</td>
-                  <td>{dummyData.status}</td>
-                  <td></td>
-                </tr>
-              ))}
+              <tr className="text-center bg-white h-20">
+                <td className="underline underline-offset-2">
+                  <Link
+                    to={`/agent-detail/${orderDetail?.deliveryAgentDetail?._id}`}
+                  >
+                    #{orderDetail?.deliveryAgentDetail?._id}
+                  </Link>
+                </td>
+                <td>{orderDetail?.deliveryAgentDetail?.name}</td>
+                <td>{orderDetail?.deliveryAgentDetail?.team}</td>
+                <td>
+                  {orderDetail?.deliveryAgentDetail?.instructionsByCustomer}
+                </td>
+                <td>{orderDetail?.deliveryAgentDetail?.timeTaken}</td>
+                <td>{orderDetail?.deliveryAgentDetail?.distanceTravelled}</td>
+                <td>{orderDetail?.deliveryAgentDetail?.delayedBy}</td>
+                <td></td>
+              </tr>
             </tbody>
           </table>
         </div>
+
         <h1 className="text-[18px] font-semibold m-5">Order Details</h1>
-        <div className="flex justify-around gap-2">
+
+        {/* Pick and Drop */}
+        {orderDetail.deliveryMode === "Pick and Drop" && (
           <div>
-            <table className="w-full border-2 border-gray-600">
+            <table className="w-[60%] mx-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items Type", "Dimensions", "Weight Range"].map(
@@ -252,16 +344,22 @@ const OrderDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {dummyData.map((dummyData) => (
-                  <tr className="text-center bg-white h-20" key={dummyData.id}>
-                    <td>{dummyData.name}</td>
-                    <td>{dummyData.accountType}</td>
-                    <td>{dummyData.description}</td>
+                {orderDetail.items.map((item) => (
+                  <tr className="text-center bg-white h-20" key={item.itemName}>
+                    <td>{item.itemName}</td>
+                    <td>
+                      {item.length}x{item.width}x{item.height}
+                    </td>
+                    <td>{item.weight}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* Custom Order */}
+        {orderDetail.deliveryMode === "Custom Order" && (
           <div>
             <table className="w-full border-2 border-gray-600">
               <thead>
@@ -277,19 +375,24 @@ const OrderDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {dummyData.map((dummyData) => (
-                  <tr className="text-center bg-white h-20" key={dummyData.id}>
-                    <td>{dummyData.name}</td>
-                    <td>{dummyData.accountType}</td>
-                    <td>{dummyData.description}</td>
-                    <td>{dummyData.status}</td>
+                {orderDetail.items.map((item) => (
+                  <tr className="text-center bg-white h-20" key={item.itemName}>
+                    <td>{item.itemName}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.numOfUnits}</td>
+                    <td>{item.itemImageURL}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* Home Delivery */}
+        {(orderDetail.deliveryMode === "Take Away" ||
+          orderDetail.deliveryMode === "Home Delivery") && (
           <div>
-            <table className="w-full border-2 border-gray-600">
+            <table className="w-[60%] mx-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items", "Quantity", "Amount"].map((header) => (
@@ -303,48 +406,57 @@ const OrderDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {dummyData.map((dummyData) => (
-                  <tr className="text-center bg-white h-20" key={dummyData.id}>
-                    <td>{dummyData.name}</td>
-                    <td>{dummyData.accountType}</td>
-                    <td>{dummyData.description}</td>
+                {orderDetail.items.map((item) => (
+                  <tr className="text-center bg-white h-20" key={item.itemName}>
+                    <td>{item.itemName}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.price}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        )}
+
         <div>
           <h1 className="text-[18px] font-semibold m-5">Bill Summary</h1>
           <div className="border-2 border-gray-600">
             <div className="flex justify-between mx-5 m-3">
               <label>Price</label>
-              <p>514</p>
+              <p>
+                {orderDetail.billDetail ? orderDetail.billDetail.itemTotal : ""}
+              </p>
             </div>
             <div className="flex justify-between mx-5 m-3">
               <label>Delivery Charges</label>
-              <p>514</p>
+              <p>
+                {orderDetail.billDetail
+                  ? orderDetail.billDetail.deliveryCharge
+                  : ""}
+              </p>
             </div>
             <div className="flex justify-between mx-5 m-3">
               <label>Added Tip</label>
-              <p>514</p>
+              <p>
+                {orderDetail.billDetail ? orderDetail.billDetail.addedTip : ""}
+              </p>
             </div>
             <div className="flex justify-between mx-5 m-3">
               <label>Discount</label>
-              <p>514</p>
+              <p>{orderDetail?.billDetail?.discountedAmount || 0}</p>
             </div>
             <div className="flex justify-between mx-5 m-3">
               <label>Sub Total</label>
-              <p>514</p>
+              <p>{orderDetail?.billDetail?.subTotal}</p>
             </div>
             <div className="flex justify-between mx-5 m-3">
               <label>GST (inclusive of all taxes)</label>
-              <p>514</p>
+              <p>{orderDetail?.billDetail?.taxAmount}</p>
             </div>
           </div>
           <div className="bg-teal-800 flex justify-between p-5 text-white text-[16px] font-semibold">
             <label>Net Payable Amount</label>
-            <p>514</p>
+            <p>{orderDetail?.billDetail?.grandTotal}</p>
           </div>
         </div>
         <h1 className="text-[18px] font-semibold m-5">Order Activity log</h1>
@@ -354,15 +466,15 @@ const OrderDetails = () => {
           </div>
           <div className="flex justify-around w-1/4">
             <label className="text-gray-600">Agent Name</label>
-            <p>Famto</p>
+            <p>{orderDetail?.deliveryAgentDetail?.name}</p>
           </div>
           <div className="flex justify-around w-1/4">
             <label className="text-gray-600">Total Distance</label>
-            <p>10 km</p>
+            <p>{orderDetail?.deliveryAgentDetail?.distanceTravelled}</p>
           </div>
           <div className="flex justify-around w-1/4 ">
             <label className="text-gray-600">Total Time</label>
-            <p>60 min</p>
+            <p>{orderDetail?.deliveryAgentDetail?.timeTaken}</p>
           </div>
         </div>
         <div className="flex m-5 mx-10 ">

@@ -1,7 +1,7 @@
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import Addresscomponent from "./model/Addresscomponent";
+import NewAddress from "./NewAddress";
 
 const HomeDelivery = () => {
   const [formData, setFormData] = useState({
@@ -222,7 +222,7 @@ const HomeDelivery = () => {
                 <PlusOutlined />
               </button>
             </div>
-            {isFormVisible && <Addresscomponent />}
+            {isFormVisible && <NewAddress />}
           </div>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="agentinstructions">

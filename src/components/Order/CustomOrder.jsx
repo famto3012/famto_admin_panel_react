@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import {
-  AddOutlined,
-} from "@mui/icons-material";
+import { AddOutlined } from "@mui/icons-material";
 import { RiDeleteBinLine } from "react-icons/ri";
-import Addresscomponent from "./model/Addresscomponent";
+import NewAddress from "./NewAddress";
 
 const CustomOrder = () => {
   const [order, setOrder] = useState([]);
@@ -62,7 +60,6 @@ const CustomOrder = () => {
     fetchOrder();
   }, []);
 
-
   const handleAddItem = () => {
     const newItem = { name: "", quantity: "", unit: "" };
     setFormData({ ...formData, item: [...formData.item, newItem] });
@@ -89,20 +86,15 @@ const CustomOrder = () => {
   const formAction = (e) => {
     e.preventDefault();
     console.log(formData);
-
   };
-
 
   const handleAddressChange = (address) => {
     setSelectedAddress(address);
   };
 
-
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
   };
-
-
 
   const handleAdImageChange = (e) => {
     const file = e.target.files[0];
@@ -190,14 +182,10 @@ const CustomOrder = () => {
                   />
                 </div>
 
-
                 <div className="flex items-center gap-[30px]">
-
-
                   {/* {!adPreviewURL && (
                                   <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
                                 )} */}
-
 
                   {adPreviewURL && (
                     <figure className="mt-3 h-16 w-16 rounded-md relative">
@@ -224,7 +212,6 @@ const CustomOrder = () => {
                     <AddOutlined />
                     Upload Photo
                   </label>
-
 
                   <button
                     type="button"
@@ -261,8 +248,9 @@ const CustomOrder = () => {
               <button
                 key={address}
                 type="button"
-                className={`py-2 px-4  rounded border  ${selectedAddress === address ? "bg-gray-300" : "bg-white"
-                  }`}
+                className={`py-2 px-4  rounded border  ${
+                  selectedAddress === address ? "bg-gray-300" : "bg-white"
+                }`}
                 onClick={() => handleAddressChange(address)}
               >
                 {address}
@@ -282,7 +270,7 @@ const CustomOrder = () => {
               </button>
             </div>
 
-            {isFormVisible && <Addresscomponent />}
+            {isFormVisible && <NewAddress />}
           </div>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="tips">
