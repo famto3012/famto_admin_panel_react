@@ -11,6 +11,8 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AlertNotification = () => {
   const [alert,setAlert] = useState([])
@@ -18,18 +20,17 @@ const AlertNotification = () => {
   const navigate = useNavigate();
   const [isLoading,setIsLoading] = useState(false)
   const [searchType, setSearchType] = useState("")
-  const [searchTitle, setSearchTitle] = useState("")
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-
+  const [isShowModalDelete1, setIsShowModalDelete1] = useState(false);
   const [state, setState] = useState({
     userType: "",
     id: "",
     title: "",
     description: "",
-    imageUrl: "",
-    suggestions: [],
+    alertNotificationImage: null,
+    notificationPreviewURL: null
   });
+  const [visibleTaskModal, setVisibleTaskModal] = useState({});
+  const toast = useToast()
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -41,35 +42,20 @@ const AlertNotification = () => {
       try {
         setIsLoading(true);
 
-        const [alertResponse,typeResponse, searchResponse] =
+        const [alertResponse] =
           await Promise.all([
             axios.get(`${BASE_URL}/admin/notification/alert-notification`, {
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }),
-              axios.get(`${BASE_URL}/admin/notification/alert-notification/${searchType}`, {
-                withCredentials: true,
-                headers: { Authorization: `Bearer ${token}` },
-              }),
-              axios.get(`${BASE_URL}/admin/notification/search-alert-notification`, {
-                params: {title: searchTitle},
-                withCredentials: true,
-                headers: { Authorization: `Bearer ${token}` },
-              })
             
           ]);
         if (alertResponse.status === 200) {
           setAlert(alertResponse.data.data);
           console.log("alert",alertResponse.data.data)
         }
-        if(typeResponse.status === 200){
-          setAlert(typeResponse.data.alertNotifications)
-          console.log("type",typeResponse.data.alertNotifications)
-        }
-        if(searchResponse.status === 200){
-          setAlert(searchResponse.data.alertNotifications)
-          console.log("search",searchResponse.data)
-        }
+       
+       
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
@@ -78,43 +64,67 @@ const AlertNotification = () => {
     };
 
     fetchData();
-  }, [token, role, navigate, searchType, searchTitle]);
- 
+  }, [token, role, navigate]);
 
-  const mockSuggestions = {
-    Customer: ["cust-001", "cust-002", "cust-003"],
-    Agent: ["agent-001", "agent-002", "agent-003"],
-    Merchant: ["merchant-001", "merchant-002", "merchant-003"],
-  };
-
-  const handleTypeChange = (e) => {
-    const userType = e.target.value;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setState((prevState) => ({
       ...prevState,
-      userType,
-      suggestions: mockSuggestions[userType] || [],
+      [name]: value,
     }));
   };
 
-  const handleInputChange = (e) => {
-    setSearchType(e.target.value);
-    console.log(e.target.value)
+  const handleInputChange = async(e) => {
+    try{
+      setSearchType(e.target.value);
+      const  typeResponse = await axios.get(`${BASE_URL}/admin/notification/alert-notification/${e.target.value}`, {
+         withCredentials: true,
+         headers: { Authorization: `Bearer ${token}` },
+       })
+       if(typeResponse.status === 200){
+         setAlert(typeResponse.data.alertNotifications)
+         console.log("type",typeResponse.data.alertNotifications)
+       }
+    }catch(err){
+      console.error(`Error in fetching data: ${err}`);
+    }finally{
+      setIsLoading(false);
+    }
+   
   };
 
-  const handleIdChange = (e) => {
-    const id = e.target.value;
-    setState((prevState) => ({
-      ...prevState,
-      id,
-      suggestions: mockSuggestions[prevState.userType] || [],
-    }));
-  };
-
-
-  const handleConfirm = (e) => {
+  const handleConfirm = async(e) => {
     e.preventDefault();
-    const { userType, id, title, description, imageUrl } = state;
-    console.log("Confirmed Payload",state );
+    console.log("State", state)
+    const formData = new FormData();
+    formData.append('title', state.title);
+    formData.append('description', state.description);
+    formData.append('alertNotificationImage', state.alertNotificationImage);
+    formData.append('id', state.id);
+    formData.append('userType', state.userType);
+    try{
+      const alertNotificationResponse = await axios.post(`${BASE_URL}/admin/notification/alert-notification`,formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+       })
+       if(alertNotificationResponse.status === 201){
+        toast({
+          title: "Alert notification send successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+         console.log("alertNotification",alertNotificationResponse.data)
+       }
+    }catch(err){
+      console.error(`Error in fetching data: ${err}`);
+    }finally{
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -124,31 +134,70 @@ const AlertNotification = () => {
       title: "",
       description: "",
       imageUrl: "",
-      suggestions: [],
     });
-    setUrl("");
   };
 
   const handleNotificationImageChange = (e) => {
     const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
+    const previewURL = URL.createObjectURL(file);
+    console.log("file", file);
+    setState((prevState) => ({
+      ...prevState,
+      alertNotificationImage: file,
+      notificationPreviewURL: previewURL,
+    }));
   };
 
-  const handleTitleChange = (e)=>{
-     setSearchTitle(e.target.value)
-     console.log("title", e.target.value)
+  const handleDelete = async(id)=>{
+    try{
+      const deleteResponse = await axios.delete(`${BASE_URL}/admin/notification/alert-notification/${id}`, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if(deleteResponse.status === 200){
+        toast({
+          title: "Alert notification deleted successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        console.log("delete",deleteResponse.data)
+        const updatedAlert = alert.filter(alert => alert.id!== id)
+        setAlert(updatedAlert)
+      }
+    }catch(err){
+      console.error(`Error in deleting data: ${err}`);
+    }finally{
+      setIsLoading(false);
+    }
   }
 
-  
-  const [isShowModalDelete1, setIsShowModalDelete1] = useState(false);
+  const handleTitleChange = async(e)=>{
+    try{
+      const searchResponse = await axios.get(`${BASE_URL}/admin/notification/search-alert-notification`, {
+        params: {title: e.target.value},
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if(searchResponse.status === 200){
+        setAlert(searchResponse.data.alertNotifications)
+        console.log("search",searchResponse.data.alertNotifications)
+      }
+    }catch(err){
+      console.error(`Error in fetching data: ${err}`);
+    }finally{
+      setIsLoading(false);
+    }
+    
+  }
 
-  const showModalDelete1 = () => {
-    setIsShowModalDelete1(true);
+
+  const showModalTask = (taskId) => {
+    setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
   };
 
-  const showModalDeleteOk1 = () => {
-    setIsShowModalDelete1(false);
+  const showModalCancelTask = (taskId) => {
+    setVisibleTaskModal((prev) => ({ ...prev, [taskId]: false }));
   };
 
   const showModalDeleteCancel1 = () => {
@@ -176,14 +225,14 @@ const AlertNotification = () => {
               <div className="flex items-center">
                 <label className="block text-gray-700">Type of user</label>
                 <div className="flex space-x-24 ml-[128px]">
-                  {["Customer", "Agent", "Merchant"].map((type) => (
+                  {["customer", "agent", "merchant"].map((type) => (
                     <label key={type} className="flex items-center space-x-2">
                       <input
                         type="radio"
                         name="userType"
                         value={type}
                         checked={state.userType === type}
-                        onChange={handleTypeChange}
+                        onChange={handleChange}
                         className="form-radio"
                       />
                       <span>{type}</span>
@@ -201,7 +250,7 @@ const AlertNotification = () => {
                   id="id"
                   name="id"
                   value={state.id}
-                  onChange={handleIdChange}
+                  onChange={handleChange}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] ml-[200px] outline-none focus:outline-none"
                   
                 />
@@ -217,7 +266,7 @@ const AlertNotification = () => {
                   id="title"
                   name="title"
                   value={state.title}
-                 // onChange={handleInputChange("title")}
+                  onChange={handleChange}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] ml-[185px] outline-none focus:outline-none"
                 />
               </div>
@@ -233,7 +282,7 @@ const AlertNotification = () => {
                   id="description"
                   name="description"
                   value={state.description}
-                  //onChange={handleInputChange("description")}
+                  onChange={handleChange}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                 />
               </div>
@@ -241,13 +290,13 @@ const AlertNotification = () => {
               <div className="flex items-center">
                 <label className="text-gray-500">Image (342px x 160px)</label>
                 <div className="flex items-center gap-[30px]">
-                  {!notificationPreviewURL && (
+                  {!state.notificationPreviewURL && (
                     <div className="bg-gray-400 ml-[55px] mt-0.5 h-20 w-20 rounded-md" />
                   )}
-                  {notificationPreviewURL && (
+                  {state.notificationPreviewURL && (
                     <figure className="mt-0.5 ml-[55px] h-20 w-20 rounded-md relative">
                       <img
-                        src={notificationPreviewURL}
+                        src={state.notificationPreviewURL}
                         alt="profile"
                         className="w-full rounded h-full object-cover"
                       />
@@ -349,16 +398,16 @@ const AlertNotification = () => {
           </td>
           <td>
             <button
-              onClick={showModalDelete1}
+              onClick={() => showModalTask(alertItem._id)}
               className="outline-none focus:outline-none"
             >
               <RiDeleteBinLine className="text-red-700 rounded-lg bg-red-100 p-2 text-[35px]" />
             </button>
             <Modal
-              onOk={showModalDeleteOk1}
-              onCancel={showModalDeleteCancel1}
+              onOk={() => showModalCancelTask(alertItem._id)}
+              onCancel={() => showModalCancelTask(alertItem._id)}
+              open={visibleTaskModal[alertItem._id] || false}
               footer={null}
-              open={isShowModalDelete1}
               centered
             >
               <p className="font-semibold text-[18px] mb-5">
@@ -371,7 +420,9 @@ const AlertNotification = () => {
                 >
                   Cancel
                 </button>
-                <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700">
+                <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700" onClick={()=>{handleDelete(alertItem._id)
+                  showModalCancelTask(alertItem._id)
+                }}>
                   Delete
                 </button>
               </div>
