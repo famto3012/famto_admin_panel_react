@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddPromoCodeModal from "../../../components/model/promoCodeModals/AddPromoCodeModal";
 import EditPromoCodeModal from "../../../components/model/promoCodeModals/EditPromoCodeModal";
+import GIFLoader from "../../../components/GIFLoader";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -22,7 +24,9 @@ const PromoCode = () => {
   const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [status, setStatus] = useState("");
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -52,6 +56,7 @@ const PromoCode = () => {
 
     fetchData();
   }, [token, role, navigate]);
+
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -96,6 +101,13 @@ const PromoCode = () => {
       if (deleteResponse.status === 200) {
         removePromo(currentPromo);
         handleConfirmDelete();
+        toast({
+          title:"PromoCode Deleted.",
+          description:"Promocode Deleted Successfully..",
+          duration:9000,
+          isClosable:true,
+          status:"success"
+        })
       }
     } catch (err) {
       console.error(
@@ -116,148 +128,182 @@ const PromoCode = () => {
     );
   }
 
+  //update all promo code status
+
+  const toggleChange = async (checked) => {
+    setStatus(checked);
+
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/admin/promocode/edit-all-promocode`,
+        status,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      if (response.status === 200) {
+        setStatus(response.data.data)
+      }
+    } catch (err) {
+      console.error(`Error in updating data ${err}`)
+    }
+    console.log("test", status)
+  }
+
   return (
-    <>
-      <Sidebar />
+    <div>
+      {
+        isLoading ?
+          (
+            <GIFLoader />
+          )
+          : (
+            <>
+              <Sidebar />
 
-      <div className="pl-[300px] bg-gray-100 w-full h-fit">
-        <div className="">
-          <nav className="p-5">
-            <GlobalSearch />
-          </nav>
+              <div className="pl-[300px] bg-gray-100 w-full h-fit">
+                <div className="">
+                  <nav className="p-5">
+                    <GlobalSearch />
+                  </nav>
 
-          <div className="mx-5 flex justify-between">
-            <h1 className="font-bold text-[20px]">Promo codes</h1>
-            <Switch
-              onChange={(checked) => onChange("agent", checked)}
-              name="referral"
-            />
-          </div>
+                  <div className="mx-5 flex justify-between">
+                    <h1 className="font-bold text-[20px]">Promo codes</h1>
+                    <Switch
+                      checked={status}
+                      onChange={toggleChange}
+                    />
+                  </div>
 
-          <p className="m-5 text-gray-500">
-            Promo codes are exclusive discount vouchers that can be redeemed by
-            the customers during the checkout process
-            <span className="flex justify-start">
-              You can create customized promotional codes with a detailed
-              description that will be visible to customers
-            </span>
-          </p>
-          <div className="flex justify-end pr-5 mb-10">
-            <button
-              className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center  space-x-1 outline-none focus:outline-none"
-              onClick={showModal} // Call the function directly
-            >
-              <PlusOutlined /> <span>Add Promo codes</span>
-            </button>
+                  <p className="m-5 text-gray-500">
+                    Promo codes are exclusive discount vouchers that can be redeemed by
+                    the customers during the checkout process
+                    <span className="flex justify-start">
+                      You can create customized promotional codes with a detailed
+                      description that will be visible to customers
+                    </span>
+                  </p>
+                  <div className="flex justify-end pr-5 mb-10">
+                    <button
+                      className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center  space-x-1 outline-none focus:outline-none"
+                      onClick={showModal} // Call the function directly
+                    >
+                      <PlusOutlined /> <span>Add Promo codes</span>
+                    </button>
 
-            <AddPromoCodeModal
-              isVisible={isModalVisible}
-              token={token}
-              handleCancel={handleCancel}
-              BASE_URL={BASE_URL}
-            />
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="overflow-x-auto p-5 w-full">
-            <thead>
-              <tr className="p-5 w-full">
-                {[
-                  "Code",
-                  "Type",
-                  "Value",
-                  "Maximum discount",
-                  "Minimum order amount",
-                  "Start Date",
-                  "End Date",
-                  "Description",
-                  "Promo Application mode",
-                  "Promo Applied on",
-                  "Promo used (No. of Times)",
-                  "Status",
-                ].map((headers) => (
-                  <th
-                    key={headers}
-                    className="bg-teal-800 text-white h-[70px] mt-10 px-5 text-center whitespace-nowrap"
-                  >
-                    {headers}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {formData.map((data) => (
-                <tr className="text-center bg-white h-20" key={data._id}>
-                  <td>{data.promoCode}</td>
-                  <td>{data.promoType}</td>
-                  <td>{data.discount}</td>
-                  <td>{data.maxDiscountValue}</td>
-                  <td>{data.minOrderAmount}</td>
-                  <td>{data.fromDate}</td>
-                  <td>{data.toDate}</td>
-                  <td>{data.description}</td>
-                  <td>{data.PromoApplicationMode}</td>
-                  <td>{data.appliedOn}</td>
-                  <td>{data.PromoUsed}</td>
-                  <td>
-                    <div className="flex gap-3 items-center">
-                      <div>
-                        <Switch
-                          checked={data.status === "true" ? true : false}
-                          onChange={() => handleToggle(data._id)} />
-                      </div>
-                      <div className="flex items-center">
-                        <button onClick={() => showModalEdit(data._id)}>
-                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                        </button>
-
-                        <EditPromoCodeModal
-                          handleCancel={handleCancel}
-                          isVisible={isModalVisibleEdit}
-                          token={token}
-                          currentPromoEdit={currentPromoEdit}
-                          formData={formData}
-                          BASE_URL={BASE_URL}
-                        />
-                      </div>
-                      <button onClick={() => showModalDelete(data._id)}>
-                        <RiDeleteBinLine className="bg-red-100 text-red-600 mr-3 p-2 text-[35px] rounded-lg" />
-                      </button>
-                      <Modal
-                        onCancel={handleCancel}
-                        footer={null}
-                        open={isShowModalDelete}
-                        centered
-                      >
-                        <p className="font-semibold text-[18px] mb-5">
-                          <Spin spinning={isLoading}>
-                            Are you sure you want to delete?
-                          </Spin>
-                        </p>
-                        <div className="flex justify-end gap-5">
-                          <button
-                            className="bg-cyan-100 px-5 py-2 rounded-lg"
-                            onClick={handleCancel}
+                    <AddPromoCodeModal
+                      isVisible={isModalVisible}
+                      token={token}
+                      handleCancel={handleCancel}
+                      BASE_URL={BASE_URL}
+                    />
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="overflow-x-auto p-5 w-full">
+                    <thead>
+                      <tr className="p-10 w-full">
+                        {[
+                          "Code",
+                          "Type",
+                          "Value",
+                          "Maximum discount",
+                          "Minimum order amount",
+                          "Start Date",
+                          "End Date",
+                          "Description",
+                          "Promo Application mode",
+                          "Promo Applied on",
+                          "Promo used (No. of Times)",
+                          "Status",
+                        ].map((headers) => (
+                          <th
+                            key={headers}
+                            className="bg-teal-800 text-white h-[70px] mt-10 px-5 text-center whitespace-nowrap"
                           >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-red-100 px-5 py-2 rounded-lg font-semibold text-red-600"
-                            onClick={() => handlePromoDelete(currentPromo)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </Modal>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
+                            {headers}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.map((data,index) => (
+                        <tr className="text-center bg-white w-fit px-24 h-20 " style={{
+                          backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
+                        }} key={data._id}>
+                          <td>{data.promoCode}</td>
+                          <td>{data.promoType}</td>
+                          <td>{data.discount}</td>
+                          <td>{data.maxDiscountValue}</td>
+                          <td>{data.minOrderAmount}</td>
+                          <td>{data.fromDate}</td>
+                          <td>{data.toDate}</td>
+                          <td>{data.description}</td>
+                          <td>{data.applicationMode}</td>
+                          <td>{data.appliedOn}</td>
+                          <td>{data.PromoUsed}</td>
+                          <td>
+                            <div className="flex gap-3 items-center">
+                              <div>
+                                <Switch
+                                  checked={data.status === "true" ? false : true}
+                                  onChange={() => handleToggle(data._id)} />
+                              </div>
+                              <div className="flex items-center">
+                                <button onClick={() => showModalEdit(data._id)}>
+                                  <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                                </button>
+
+                                <EditPromoCodeModal
+                                  handleCancel={handleCancel}
+                                  isVisible={isModalVisibleEdit}
+                                  token={token}
+                                  currentPromoEdit={currentPromoEdit}
+                                  formData={formData}
+                                  BASE_URL={BASE_URL}
+                                />
+                              </div>
+                              <button onClick={() => showModalDelete(data._id)}>
+                                <RiDeleteBinLine className="bg-red-100 text-red-600 mr-3 p-2 text-[35px] rounded-lg" />
+                              </button>
+                              <Modal
+                                onCancel={handleCancel}
+                                footer={null}
+                                open={isShowModalDelete}
+                                centered
+                              >
+                                <p className="font-semibold text-[18px] mb-5">
+                                  <Spin spinning={isLoading}>
+                                    Are you sure you want to delete?
+                                  </Spin>
+                                </p>
+                                <div className="flex justify-end gap-5">
+                                  <button
+                                    className="bg-cyan-100 px-5 py-2 rounded-lg"
+                                    onClick={handleCancel}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    className="bg-red-100 px-5 py-2 rounded-lg font-semibold text-red-600"
+                                    onClick={() => handlePromoDelete(currentPromo)}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </Modal>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
+    </div>
   );
 };
 
