@@ -9,7 +9,7 @@ const EditProductModal = ({
   merchant,
   geofence,
   currentProduct,
-  handleCancel
+  handleCancel,
 }) => {
   const [productDiscount, setProductDiscount] = useState({
     discountName: "",
@@ -24,39 +24,37 @@ const EditProductModal = ({
     onAddOn: null,
   });
 
+  const [loading, setLoading] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
 
   // API to ftech selected discount details.
 
   useEffect(() => {
-
     const fetchData = async () => {
-
       try {
-        // setIsTableLoading(true);
+        setLoading(true);
 
         const response = await axios.get(
           `${BASE_URL}/merchant/product-discount/get-product-discount-id/${currentProduct}`,
           {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           }
-        )
+        );
         if (response.status === 200) {
           setProductDiscount(response.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetch data ${err.message}`)
+        console.error(`Error in fetch data ${err.message}`);
       } finally {
-        // setIsTableLoading(false);
+        setLoading(false);
       }
-    }
+    };
 
     if (currentProduct) {
       fetchData();
     }
-
-  }, [currentProduct, token])
+  }, [currentProduct, token]);
 
   // API to update the Discount.
 
@@ -68,11 +66,12 @@ const EditProductModal = ({
 
       const response = await axios.put(
         `${BASE_URL}/admin/product-discount/edit-product-discount-admin/${currentProduct}`,
-        productDiscount, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      )
+        productDiscount,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         handleCancel();
         toast({
@@ -80,16 +79,22 @@ const EditProductModal = ({
           description: "Successfully Updated Product Discount",
           duration: 9000,
           status: "success",
-          isClosable: true
-        })
+          isClosable: true,
+        });
       }
     } catch (err) {
-      console.error(`Error in updating data ${err.message}`)
+      console.error(`Error in updating data ${err.message}`);
+      toast({
+        title: "Error in updating",
+        description: "Error in Updating Product Discount",
+        duration: 9000,
+        status: "error",
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
-
-  }
+  };
 
   const onChange = (e) => {
     setProductDiscount({ [e.target.name]: checked });
@@ -98,7 +103,6 @@ const EditProductModal = ({
   const handleInputChange = (e) => {
     setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
   };
-
 
   return (
     <Modal
@@ -132,6 +136,7 @@ const EditProductModal = ({
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="discountName"
+              placeholder={loading ? "Loading data..." : ""}
               value={productDiscount.discountName}
               onChange={handleInputChange}
             />
@@ -144,8 +149,8 @@ const EditProductModal = ({
                 type="radio"
                 className="border-2 ml-[230px] mr-3 border-gray-300 rounded "
                 name="discountType"
-                value="fixed"
-                checked={productDiscount.discountType === "fixed"}
+                value="Flat-discount"
+                checked={productDiscount.discountType === "Flat-discount"}
                 onChange={handleInputChange}
               />
               Fixed discount
@@ -153,8 +158,8 @@ const EditProductModal = ({
                 type="radio"
                 className=" border-gray-300 mr-3 rounded ml-5 "
                 name="discountType"
-                value="percentage"
-                checked={productDiscount.discountType === "percentage"}
+                value="Percentage-discount"
+                checked={productDiscount.discountType === "Percentage-discount"}
                 onChange={handleInputChange}
               />
               Percentage-discount
@@ -191,7 +196,7 @@ const EditProductModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="maxAmount"
 
-            // onChange={handleInputChange}
+              // onChange={handleInputChange}
             />
           </div>
           <div className="flex mt-5 gap-4">
@@ -242,7 +247,9 @@ const EditProductModal = ({
           </div>
           <div className="flex mt-5 justify-between">
             <label>Discount on add-on</label>
-            <Switch onChange={onChange} name="onAddOn" />
+            <Switch 
+            // value={productDiscount.onAddOn}
+            onChange={onChange} name="onAddOn" />
           </div>
 
           <div className="flex justify-end mt-5 gap-4">

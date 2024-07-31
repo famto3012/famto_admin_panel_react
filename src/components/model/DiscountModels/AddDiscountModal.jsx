@@ -33,12 +33,15 @@ const AddDiscountModal = ({
     const handleDiscountSubmit = async (e) => {
         e.preventDefault();
 
-        if (role === "Admin") {
             try {
                 setIsLoading(true);
 
-                const response = await axios.post(
-                    `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`,
+                const endpoint =
+                role === "Admin"
+                  ? `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`
+                  : `${BASE_URL}/admin/shop-discount/add-merchant-discount`;
+      
+              const response = await axios.post(endpoint,
                     merchantDiscount,
                     {
                         withCredentials: true,
@@ -70,7 +73,6 @@ const AddDiscountModal = ({
             } finally {
                 setIsLoading(false);
             }
-        }
     };
 
     const handleDiscount = (e) => {

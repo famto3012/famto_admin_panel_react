@@ -259,9 +259,7 @@ const Merchant = () => {
       } finally {
         setIsTableLoading(false);
       }
-    } catch (err) {
-      console.log(`Error in fetching merchant`, err);
-    }
+   
   };
 
     const timeOut = setTimeout(() => {
@@ -271,7 +269,7 @@ const Merchant = () => {
     return () => {
       clearTimeout(timeOut);
     };
-  }, []);
+  });
 
   const csvData = [
     { label: "Merchant ID", key: "_id" },
