@@ -53,7 +53,7 @@ const AddDiscountModal = ({
                 if (response.status === 201) {
                     handleCancel();
                     toast({
-                        title: "Merchant Discount Added",
+                        title: "Merchant Discount Added..",
                         description: "Successfully added Merchant Discount",
                         status: "success",
                         isClosable: true,
