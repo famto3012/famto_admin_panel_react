@@ -259,8 +259,7 @@ const Merchant = () => {
       } finally {
         setIsTableLoading(false);
       }
-   
-  };
+    };
 
     const timeOut = setTimeout(() => {
       handleSearchMerchant();

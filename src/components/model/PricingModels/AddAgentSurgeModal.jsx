@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import { Modal } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react'
@@ -9,7 +10,7 @@ const AddAgentSurgeModal = ({
     geofence,
     BASE_URL,
   }) => {
-
+    const toast =useToast();
     const [agentsurge, setAgentSurge] = useState({
           ruleName: "",
           baseFare: "",
@@ -41,16 +42,23 @@ const AddAgentSurgeModal = ({
       
             if (addResponse.status === 201) {
               console.log("agentsurge", addResponse.data.message);
-              //      toast({
-              //        title: "Updated",
-              //        description: "Updated successfully.",
-              //        status: "success",
-              //        duration: 9000,
-              //        isClosable: true,
-              //    });
+                   toast({
+                     title: "Creted",
+                     description: "Agent Surge Created successfully.",
+                     status: "success",
+                     duration: 1000,
+                     isClosable: true,
+                 });
             }
           } catch (err) {
             console.error(`Error in fetching data: ${err}`);
+            toast({
+              title: "Error",
+              description: "There eas an error occured.",
+              status: "error",
+              duration: 1000,
+              isClosable: true,
+          });
           }
           
         };

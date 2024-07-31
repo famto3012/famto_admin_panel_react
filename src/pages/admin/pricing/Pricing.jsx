@@ -117,27 +117,27 @@ const Pricing = () => {
 
         if (agentPricingResponse.status === 200) {
           setAgentPricing(agentPricingResponse.data.data);
-          console.log(agentPricingResponse.data.data);
+          // console.log(agentPricingResponse.data.data);
         }
         if (agentSurgeResponse.status === 200) {
           setAgentSurge(agentSurgeResponse.data.data);
-          console.log(agentSurgeResponse.data.data);
+          // console.log(agentSurgeResponse.data.data);
         }
         if (merchPricingResponse.status === 200) {
           setMerchantPricing(merchPricingResponse.data.data);
-          console.log(merchPricingResponse.data.data);
+          // console.log(merchPricingResponse.data.data);
         }
         if (merchSurgeResponse.status === 200) {
           setMerchantSurge(merchSurgeResponse.data.data);
-          console.log(merchSurgeResponse.data.data);
+          // console.log(merchSurgeResponse.data.data);
         }
         if (custPricingResponse.status === 200) {
           setCustomerPricing(custPricingResponse.data.data);
-          console.log(custPricingResponse.data.data);
+          // console.log(custPricingResponse.data.data);
         }
         if (custSurgeResponse.status === 200) {
           setCustomerSurge(custSurgeResponse.data.data);
-          console.log(custSurgeResponse.data.data);
+          // console.log(custSurgeResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
@@ -440,6 +440,7 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
   const handleToggleAs = async (agentsurgeId) => {
     try {
       const agentResponse = agentsurge.find(
@@ -468,6 +469,7 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
   const handleToggleMr = async (merchantPricingId) => {
     try {
       const merchantResponse = merchantpricing.find(
@@ -496,6 +498,7 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
   const handleToggleMs = async (merchantsurgeId) => {
     try {
       const merchantResponse = merchantsurge.find(
@@ -524,6 +527,7 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
   const handleToggleCr = async (customerpricingId) => {
     try {
       const customerResponse = customerpricing.find(
@@ -544,7 +548,7 @@ const Pricing = () => {
         );
         setCustomerPricing(
           customerpricing.map((c) =>
-            c._id === customerpricingId ? { ...c, status: updatedStatus } :c
+            c._id === customerpricingId ? { ...c, status: updatedStatus } : c
           )
         );
       }
@@ -552,6 +556,7 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
   const handleToggleCs = async (customersurgeId) => {
     try {
       const customerResponse = customersurge.find(
@@ -623,7 +628,6 @@ const Pricing = () => {
                   "Waiting Fare",
                   "Waiting Time",
                   "Purchase Fare per hour",
-                  // "Added Tip",
                   "Geofence",
                   "Status",
                 ].map((header, index) => (
@@ -650,7 +654,6 @@ const Pricing = () => {
                   <td className="p-4">{agentpricing.waitingFare}</td>
                   <td className="p-4 px-2">{agentpricing.waitingTime}</td>
                   <td className="p-4">{agentpricing.purchaseFarePerHour}</td>
-                  {/* <td className="p-4">{agentpricing.addedTip}</td> */}
                   <td className="p-4">{agentpricing.geofenceId.name}</td>
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
@@ -753,9 +756,10 @@ const Pricing = () => {
                   <td className="py-3 ">
                     <div className="flex items-center gap-3 justify-end mx-4">
                       <div>
-                        <Switch 
-                        checked={agentsurge.status}
-                        onChange={() => handleToggleAs(agentsurge._id)} />
+                        <Switch
+                          checked={agentsurge.status}
+                          onChange={() => handleToggleAs(agentsurge._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button onClick={() => showModalEditAs(agentsurge._id)}>
@@ -846,7 +850,7 @@ const Pricing = () => {
                   <td className="p-4">{merchantpricing.baseFare}</td>
                   <td className="p-4">{merchantpricing.baseDistance}</td>
                   <td className="p-4">
-                    {merchantpricing.fareAfterbaseDistance}
+                    {merchantpricing.fareAfterBaseDistance}
                   </td>
                   <td className="p-4">{merchantpricing.baseWeightUpTo}</td>
                   <td className="p-4">{merchantpricing.fareAfterBaseWeight}</td>
@@ -857,9 +861,10 @@ const Pricing = () => {
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
                       <div>
-                        <Switch 
-                        checked={merchantpricing.status} 
-                        onChange={() => handleToggleMr(merchantpricing._id)}/>
+                        <Switch
+                          checked={merchantpricing.status}
+                          onChange={() => handleToggleMr(merchantpricing._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button
@@ -955,9 +960,9 @@ const Pricing = () => {
                     <div className="flex items-center gap-3 justify-end mx-4">
                       <div>
                         <Switch
-                         checked={merchantsurge.status}
-                         onChange={() => handleToggleMs(merchantsurge._id)}
-                          />
+                          checked={merchantsurge.status}
+                          onChange={() => handleToggleMs(merchantsurge._id)}
+                        />
                       </div>
                       <div className="flex item-center">
                         <button
@@ -1031,7 +1036,7 @@ const Pricing = () => {
                   "Purchase Fare per hour",
                   "Waiting Fare",
                   "Waiting Time",
-                  "Added Tip",
+
                   "Geofence",
                   "Status",
                 ].map((header, index) => (
@@ -1061,13 +1066,14 @@ const Pricing = () => {
                   <td className="p-4">{customerpricing.purchaseFarePerHour}</td>
                   <td className="p-4">{customerpricing.waitingFare}</td>
                   <td className="p-4 px-2">{customerpricing.waitingTime}</td>
-                  <td className="p-4">{customerpricing.addedTip}</td>
                   <td className="p-4">{customerpricing.geofenceId.name}</td>
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
                       <div>
-                        <Switch checked={customerpricing.status}
-                        onChange={() => handleToggleCr(customerpricing._id)} />
+                        <Switch
+                          checked={customerpricing.status}
+                          onChange={() => handleToggleCr(customerpricing._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button
@@ -1163,8 +1169,10 @@ const Pricing = () => {
                   <td className="py-3 ">
                     <div className="flex items-center gap-3 justify-end mx-4">
                       <div>
-                        <Switch checked={customersurge.status}
-                        onChange={() => handleToggleCs(customersurge._id)} />
+                        <Switch
+                          checked={customersurge.status}
+                          onChange={() => handleToggleCs(customersurge._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button

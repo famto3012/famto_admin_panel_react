@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 
@@ -9,16 +9,16 @@ const EditTaxModal = ({
   BASE_URL,
   allGeofence,
   allBusinessCategory,
-  taxData,
+  currentTax,
 }) => {
-  if (!taxData) return null;
-  const [editTaxData, setEditTaxData] = useState(taxData);
+  if (!currentTax) return null;
 
-  console.log(editTaxData);
+  const [editTaxData, setEditTaxData] = useState(currentTax);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setEditTaxData(taxData);
-  }, [taxData]);
+    setEditTaxData(currentTax);
+  }, [currentTax]);
 
   const handleInputChange = (e) => {
     setEditTaxData({ ...editTaxData, [e.target.name]: e.target.value });
@@ -31,16 +31,17 @@ const EditTaxModal = ({
     });
   };
 
-  const handleRadioChange = (event) => {
+  const handleRadioChange = (e) => {
     setEditTaxData((tax) => ({
       ...tax,
-      taxType: event.target.value,
+      taxType: e.target.value,
     }));
   };
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const response = await axios.put(
         `${BASE_URL}/admin/taxes/edit-tax/${editTaxData._id}`,
         editTaxData,
@@ -57,6 +58,8 @@ const EditTaxModal = ({
       }
     } catch (err) {
       console.log(`Error in updating tax: ${err}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,6 +73,7 @@ const EditTaxModal = ({
     >
       <form onSubmit={submitAction}>
         <div className="flex flex-col gap-4 justify-between">
+          {/* Form fields remain unchanged */}
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">Tax Name</label>
             <input
@@ -105,7 +109,7 @@ const EditTaxModal = ({
             <label className="w-1/2 text-gray-500">Fixed Amount</label>
             <input
               type="radio"
-              className=" border-gray-300 rounded outline-none focus:outline-none"
+              className="border-gray-300 rounded outline-none focus:outline-none"
               name="taxType"
               value="Percentage"
               checked={editTaxData.taxType === "Percentage"}
@@ -119,7 +123,7 @@ const EditTaxModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
-              value={editTaxData.geofenceId._id}
+              value={editTaxData.geofenceId?._id || ""}
               onChange={handleSelectChange}
             >
               {allGeofence.map((geofence) => (
@@ -137,7 +141,7 @@ const EditTaxModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="assignToBusinessCategoryId"
-              value={editTaxData.assignToBusinessCategoryId._id}
+              value={editTaxData.assignToBusinessCategoryId?._id || ""}
               onChange={handleSelectChange}
             >
               {allBusinessCategory.map((category) => (
@@ -160,7 +164,7 @@ const EditTaxModal = ({
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
               type="submit"
             >
-              Save
+              {isLoading ? `Saving...` : `Save`}
             </button>
           </div>
         </div>
