@@ -268,7 +268,7 @@ const Merchant = () => {
     return () => {
       clearTimeout(timeOut);
     };
-  }, []);
+  });
 
   const csvData = [
     { label: "Merchant ID", key: "_id" },

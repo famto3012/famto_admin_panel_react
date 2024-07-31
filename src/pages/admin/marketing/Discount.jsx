@@ -46,7 +46,7 @@ const Discount = () => {
 
   // API for fetch Merchant data
   useEffect(() => {
-    if (!token || role !== "Admin") {
+    if (!token) {
       navigate("/auth/login");
     }
 
@@ -99,7 +99,7 @@ const Discount = () => {
     const fetchDiscount = async () => {
       try {
         setIsTableLoading(true);
-
+        
         const response = await axios.get(
           `${BASE_URL}/merchant/shop-discount/get-merchant-discount-admin/${selectedMerchant}`,
           {
@@ -119,7 +119,7 @@ const Discount = () => {
     if (selectedMerchant) {
       fetchDiscount();
     }
-  }, [selectedMerchant, token]);
+  }, [selectedMerchant, token, role]);
 
   // Delete Current Discount...
 
@@ -220,17 +220,18 @@ const Discount = () => {
     }
   };
 
-  // API to update status
+  // API to update Merchant discount status
 
   const handleToggle = async (merchantDiscountId) => {
     try {
-      const response = merchantDiscounts.find((response) => response._id === merchantDiscountId);
-      if (response) {
-        const updatedStatus = !merchantDiscounts.status;
-        await axios.post(
-          `${BASE_URL}/admin/discount/merchant-status-admin/${merchantDiscountId}`,
+      const discountToUpdate = discount.find((d) => d._id === merchantDiscountId);
+      if (discountToUpdate) {
+        const updatedStatus = !discountToUpdate.status;
+  
+        await axios.put(
+          `${BASE_URL}/admin/shop-discount/merchant-status-admin/${merchantDiscountId}`,
           {
-            ...response,
+            ...discountToUpdate,
             status: updatedStatus,
           },
           {
@@ -238,16 +239,81 @@ const Discount = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setDiscount(
-          merchantDiscounts.map((m) =>
-            m._id ===  merchantDiscountId? { ...m, status: updatedStatus } : m
+        toast({
+          title:"Status updated",
+          description:"Discount Status Updated Successfully.",
+          status:"success",
+          duration:900,
+          isClosable:true
+        })
+  
+        // Update the state with the new status
+        setDiscount((prevDiscounts) =>
+          prevDiscounts.map((d) =>
+            d._id === merchantDiscountId ? { ...d, status: updatedStatus } : d
           )
         );
       }
     } catch (err) {
-      console.log(`Error in toggling tax status: ${err}`);
+      console.error(`Error in toggling discount status: ${err.message}`);
+      // Optionally show an error toast notification
+      toast({
+        title: "Error",
+        description: "Failed to update discount status.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
     }
   };
+
+  // API to update Product discount status
+
+  const handleToggleProduct = async (DiscountId) => {
+    try {
+      const discountToUpdate = discount.find((d) => d._id === DiscountId);
+      if (discountToUpdate) {
+        const updatedStatus = !discountToUpdate.status;
+  
+        await axios.put(
+          `${BASE_URL}/admin/product-discount/product-status-admin/${DiscountId}`,
+          {
+            ...discountToUpdate,
+            status: updatedStatus,
+          },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast({
+          title:"Status updated",
+          description:"Discount Status Updated Successfully.",
+          status:"success",
+          duration:900,
+          isClosable:true
+        })
+  
+        // Update the state with the new status
+        setDiscount((prevDiscounts) =>
+          prevDiscounts.map((d) =>
+            d._id === DiscountId ? { ...d, status: updatedStatus } : d
+          )
+        );
+      }
+    } catch (err) {
+      console.error(`Error in toggling discount status: ${err.message}`);
+      // Optionally show an error toast notification
+      toast({
+        title: "Error",
+        description: "Failed to update discount status.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
+    }
+  };
+  
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -540,6 +606,7 @@ const Discount = () => {
                           <Switch
                             className="text-teal-700 mt-2"
                             checked={table.status}
+                            onChange={() =>handleToggleProduct(table._id)}
                           />
                           <div className="flex item-center">
                             <button

@@ -218,7 +218,7 @@ const Managers = () => {
   return (
     <>
       <Sidebar />
-      <div className="pl-[300px] bg-gray-100 h-screen w-full">
+      <div className="pl-[300px] bg-gray-100 h-screen w-screen">
         <nav className="p-7">
           <GlobalSearch />
         </nav>
@@ -270,7 +270,7 @@ const Managers = () => {
             </button>
           </div>
         </div >
-        <div className="mb-24">
+        <div className="mb-24 overflow-auto">
         <table className="w-full">
           <thead>
             <tr>
