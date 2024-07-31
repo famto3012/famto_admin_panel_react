@@ -1,5 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { useContext, useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
+import { useContext, useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
@@ -22,6 +23,12 @@ const TakeAway = () => {
   const [isProductLoading, setIsProductLoading] = useState(false);
 
   const { token, role } = useContext(UserContext);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+    }
+  }, [token]);
 
   const handleSearchMerchant = async (e) => {
     const query = e.target.value;
@@ -111,7 +118,15 @@ const TakeAway = () => {
             productId: product._id,
             price: product.price,
             quantity: 1,
-            variantId: product.variantId,
+            allVariants: product.variants.map((variant) => ({
+              variantName: variant.variantName,
+              variantTypes: variant.variantTypes.map((type) => ({
+                typeName: type.typeName,
+                price: type.price,
+                _id: type._id,
+              })),
+              variantId: variant.variantTypes[0]._id,
+            })),
           },
         ],
       });
@@ -131,11 +146,13 @@ const TakeAway = () => {
     e.preventDefault();
     setFormData({
       ...formData,
-      items: formData.items.map((item) =>
-        item.productId === productId
-          ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Prevent quantity from going below 1
-          : item
-      ),
+      items: formData.items
+        .map((item) =>
+          item.productId === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0), // Remove products with quantity less than 1
     });
   };
 
@@ -151,14 +168,35 @@ const TakeAway = () => {
     });
   };
 
-  const formSubmit = (e) => {
+  const handleVariantChange = (productId, variantTypeId) => {
+    setFormData({
+      ...formData,
+      items: formData.items.map((item) =>
+        item.productId === productId
+          ? {
+              ...item,
+              variants: item.variants.map((variant) => ({
+                ...variant,
+                variantId: variant.variantTypes.some(
+                  (type) => type._id === variantTypeId
+                )
+                  ? variantTypeId
+                  : variant.variantId,
+              })),
+            }
+          : item
+      ),
+    });
+  };
+
+  const createOrder = (e) => {
     e.preventDefault();
-    console.log(formData);
   };
 
   const createInvoice = async (e) => {
     e.preventDefault();
     try {
+      console.log(formData);
       // Implement invoice creation logic here
     } catch (err) {
       console.log(`Error in creating Take away invoice: ${err}`);
@@ -175,14 +213,25 @@ const TakeAway = () => {
             </label>
             <div className="relative w-1/2">
               <input
-                type="search"
+                type="text"
                 name="merchantName"
                 placeholder="Search merchant"
-                className="h-10 px-5 text-sm border-2 w-full outline-none focus:outline-none"
+                className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
                 value={merchantName}
                 onChange={handleSearchMerchant}
               />
-              {isMerchantLoading && <p>Loading...</p>}
+
+              {isMerchantLoading && (
+                <ClipLoader
+                  size={15}
+                  className="absolute top-[30%] right-[10px]"
+                />
+              )}
+
+              {!isMerchantLoading && (
+                <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+              )}
+
               {merchantResults.length > 0 && (
                 <ul className="absolute bg-white border w-full mt-1 z-50">
                   {merchantResults.map((result) => (
@@ -199,27 +248,33 @@ const TakeAway = () => {
               )}
             </div>
           </div>
+
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="product">
               Select Product
             </label>
             <div className="relative w-1/2 z-30">
               <input
-                type="search"
+                type="text"
                 name="product"
                 id="product"
                 placeholder="Product"
-                className="h-10 px-5 text-sm border-2 w-full outline-none focus:outline-none"
+                className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
                 value={productName}
                 onChange={handleSearchProduct}
               />
-              <button
-                type="submit"
-                className="absolute right-0 top-0 mt-2 mr-2"
-              >
-                <SearchOutlined className="text-xl text-gray-500 " />
-              </button>
-              {isProductLoading && <p>Loading...</p>}
+
+              {isProductLoading && (
+                <ClipLoader
+                  size={15}
+                  className="absolute top-[20%] right-[10px]"
+                />
+              )}
+
+              {!isProductLoading && (
+                <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+              )}
+
               {productResults.length > 0 && (
                 <ul className="absolute bg-white border w-full mt-1 z-50">
                   {productResults.map((result) => (
@@ -241,43 +296,56 @@ const TakeAway = () => {
               {formData.items.length > 0 &&
                 formData.items.map((item, index) => (
                   <div
-                    className="flex gap-7 w-[20rem] bg-gray-200 p-4 rounded-lg border-2 border-gray-300"
-                    key={item.productId}
+                    className="flex gap-7 w-[20rem] bg-gray-200 p-5 rounded-md"
+                    key={index}
                   >
-                    <div>
-                      <p>{item.productName}</p>
-                      <p>{item.price}</p>
-                    </div>
-                    <div className="flex items-center justify-between w-1/3">
-                      <button
-                        className="px-2 py-1 text-lg font-bold bg-gray-200 rounded-md hover:bg-gray-300"
-                        onClick={() => decreaseQuantity(item.productId)}
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        name="quantity"
-                        className="w-1/3 text-center outline-none focus:outline-none"
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const newQuantity = parseInt(e.target.value, 10) || 1;
-                          setFormData({
-                            ...formData,
-                            items: formData.items.map((i) =>
-                              i.productId === item.productId
-                                ? { ...i, quantity: newQuantity }
-                                : i
-                            ),
-                          });
-                        }}
-                      />
-                      <button
-                        onClick={() => increaseQuantity(item.productId)}
-                        className="px-2 py-1 text-lg font-bold bg-gray-200 rounded-md hover:bg-gray-300"
-                      >
-                        +
-                      </button>
+                    <div className="flex flex-col">
+                      <span className="mb-2">{item.productName}</span>
+                      <span>
+                        {item?.variants.length === 0 && `${item.price}`}
+                      </span>
+                      {item.variants.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                          {item.variants.map((variant) => (
+                            <div key={variant._id}>
+                              <label className="me-[10px]">
+                                {variant.variantName}
+                              </label>
+                              <select
+                                className="outline-none focus:outline-none"
+                                value={variant.variantId}
+                                onChange={(e) =>
+                                  handleVariantChange(
+                                    item.productId,
+                                    e.target.value
+                                  )
+                                }
+                              >
+                                {variant.variantTypes.map((type) => (
+                                  <option key={type._id} value={type._id}>
+                                    {type.typeName} - Rs {type.price}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3 mt-2">
+                        <button
+                          className="bg-gray-300 px-3 py-1 rounded-md"
+                          onClick={(e) => decreaseQuantity(item.productId, e)}
+                        >
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          className="bg-gray-300 px-3 py-1 rounded-md"
+                          onClick={(e) => increaseQuantity(item.productId, e)}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -301,9 +369,12 @@ const TakeAway = () => {
             />
           </div>
 
-          <div className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize">
+          <button
+            type="submit"
+            className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize"
+          >
             Create invoice
-          </div>
+          </button>
         </div>
       </form>
 
@@ -345,9 +416,9 @@ const TakeAway = () => {
         <button
           className="bg-teal-700 text-white py-2 px-4 rounded-md"
           type="submit"
-          onClick={formSubmit}
+          onClick={createOrder}
         >
-          Create Order ₹534
+          Create Order
         </button>
       </div>
     </div>

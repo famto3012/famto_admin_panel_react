@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ const EditAgentPricingModal = ({
   BASE_URL,
   currentEditAr,
 }) => {
+  const toast = useToast();
   const navigate =useNavigate()
   const[isLoading,setIsLoading] = useState(false)
   const [apricing, setApricing] = useState({
@@ -84,10 +86,23 @@ const EditAgentPricingModal = ({
        );
  
        if (editResponse.status === 200) {
-
+        toast({
+          title: "Updated",
+          description: "Agent Pricing Updated successfully.",
+          status: "success",
+          duration: 1000,
+          isClosable: true,
+      });
         console.log(editResponse.data.message)
        }
      } catch (err) {
+      toast({
+        title: "Error",
+        description: "There was an error occured",
+        status: "error",
+        duration: 1000,
+        isClosable: true,
+    });
         console.log(`Error in fetching data:${err}`)
      }
      console.log(apricing)
