@@ -217,8 +217,8 @@ const TakeAway = ({ data }) => {
 
       if (response.status === 201) {
         toast({
-          title: "Order created",
-          description: "Prder created successfully",
+          title: "Success",
+          description: response.data.message,
           status: "success",
           duration: 9000,
           isClosable: true,
@@ -421,7 +421,7 @@ const TakeAway = ({ data }) => {
                         >
                           {variant.variantTypes.map((type) => (
                             <option key={type._id} value={type._id}>
-                              {type.typeName} - Rs {type.price}
+                              {type.typeName} - ₹ {type.price}
                             </option>
                           ))}
                         </select>
@@ -539,7 +539,7 @@ const TakeAway = ({ data }) => {
             >
               {isOrderLoading
                 ? "Creating order..."
-                : `Create Order ${cartData?.billDetail?.itemTotal || ""}`}
+                : `Create Order ₹${cartData?.billDetail?.itemTotal || ""}`}
             </button>
           </div>
         </>

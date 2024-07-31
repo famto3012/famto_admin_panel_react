@@ -1,214 +1,580 @@
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import NewAddress from "./NewAddress";
+import { UserContext } from "../../context/UserContext";
+import ClipLoader from "react-spinners/ClipLoader";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
-const HomeDelivery = () => {
-  const [formData, setFormData] = useState({
-    customer: "",
-    merchant: "",
-    product: "",
-    selectedProducts: 1,
-    merchantinstructions: "",
-    agentinstructions: "",
-    tips: "",
-    deliverycharges: "",
-    discount: "",
-    paymentType: "",
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
+const HomeDelivery = ({ data }) => {
+  const [homeDeliveryData, setHomeDeliveryData] = useState({
+    customerId: data.customerId,
+    deliveryMode: data.deliveryMode,
+    deliveryOption: data.deliveryOption,
+    merchantId: "",
+    customerAddressType: "",
+    customerAddressOtherAddressId: "",
+    items: [],
+    instructionToMerchant: "",
+    instructionToDeliveryAgent: "",
   });
-  const [order, setOrder] = useState([]);
+
+  const [cartData, setCartData] = useState({});
+
+  const [merchantName, setMerchantName] = useState("");
+  const [productName, setProductName] = useState("");
+  const [merchantResults, setMerchantResults] = useState([]);
+  const [allCustomerAddress, setAllCustomerAddress] = useState();
+  const [productResults, setProductResults] = useState([]);
+
+  const [isMerchantLoading, setIsMerchantLoading] = useState(false);
+  const [isProductLoading, setIsProductLoading] = useState(false);
+  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
+  const [isOrderLoading, setIsOrderLoading] = useState(false);
+
+  const [paymentMode, setPaymentMode] = useState("");
+
+  const { token } = useContext(UserContext);
+  const toast = useToast();
+
   const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedOtherAddressId, setSelectedOtherAddressId] = useState("");
   const [isFormVisible, setFormVisible] = useState(false);
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const formSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
-
   useEffect(() => {
-    const fetchOrder = async () => {
-      const dummyData = [
-        {
-          item: "Price",
-          amount: "₹257",
-        },
-        {
-          item: "Delivery Charges",
-          amount: "₹257",
-        },
-        {
-          item: "Added Tip",
-          amount: "₹257",
-        },
-        {
-          item: "Discount",
-          amount: "₹257",
-        },
-        {
-          item: "Sub Total",
-          amount: "₹257",
-        },
-        {
-          item: "GST(inclusive all taxes)",
-          amount: "₹257",
-        },
-      ];
+    if (!token) {
+      navigate("/auth/login");
+    }
+  }, [token]);
 
-      setOrder(dummyData);
-    };
-
-    fetchOrder();
-  }, []);
-
-  const handleAddressChange = (address) => {
-    // e.preventDefault();
-    setSelectedAddress(address);
+  const handleInputChange = (e) => {
+    setHomeDeliveryData({
+      ...homeDeliveryData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleChangeProducts = (e) => {
-    setFormData({ ...formData, selectedProducts: e.target.value });
-    console.log("before", formData.selectedProducts);
-    setValue(e.target.value);
-  };
-
-  const addition = (e) => {
-    e.preventDefault();
-    setFormData((prevOrder) => ({
-      ...prevOrder,
-      selectedProducts: Number(prevOrder.selectedProducts) + 1,
-    }));
-    setValue((prevValue) => prevValue + 1);
-  };
-
-  const substraction = (e) => {
-    e.preventDefault();
-    setFormData((prevOrder) => ({
-      ...prevOrder,
-      selectedProducts: Number(prevOrder.selectedProducts) - 1,
-    }));
-    setValue((prevValue) => prevValue + 1);
-  };
-
-  const toggleFormVisibility = () => {
+  const toggleNewAddressForm = () => {
     setFormVisible(!isFormVisible);
+  };
+
+  const handleAddCustomerAddress = (newCustomerAddress) => {
+    setFormVisible(true);
+    setHomeDeliveryData({ ...homeDeliveryData, newCustomerAddress });
+  };
+
+  const handleSearchMerchant = async (e) => {
+    const query = e.target.value;
+    setMerchantName(query);
+
+    if (query.length >= 3) {
+      setIsMerchantLoading(true);
+
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/merchants/admin/search?query=${query}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setMerchantResults(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in searching merchant: ${err}`);
+      } finally {
+        setIsMerchantLoading(false);
+      }
+    } else {
+      setMerchantResults([]);
+    }
+  };
+
+  const handleSearchProduct = async (e) => {
+    const query = e.target.value;
+    setProductName(query);
+
+    if (query.length >= 3 && homeDeliveryData.merchantId) {
+      setIsProductLoading(true);
+
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/customers/search-products/${homeDeliveryData.merchantId}?query=${query}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setProductResults(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in searching products of merchant: ${err}`);
+      } finally {
+        setIsProductLoading(false);
+      }
+    } else {
+      setProductResults([]);
+    }
+  };
+
+  const selectProduct = (product) => {
+    const existingProduct = homeDeliveryData.items.find(
+      (item) => item.productId === product._id
+    );
+
+    if (existingProduct) {
+      // If the product already exists, increase its quantity
+      setHomeDeliveryData({
+        ...homeDeliveryData,
+        items: homeDeliveryData.items.map((item) =>
+          item.productId === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        ),
+      });
+    } else {
+      // If the product does not exist, add it to the items array
+      setHomeDeliveryData({
+        ...homeDeliveryData,
+        items: [
+          ...homeDeliveryData.items,
+          {
+            productName: product.productName,
+            productId: product._id,
+            price: product.price,
+            quantity: 1,
+            variants: product.variants.map((variant) => ({
+              variantName: variant.variantName,
+              variantTypes: variant.variantTypes.map((type) => ({
+                typeName: type.typeName,
+                price: type.price,
+                _id: type._id,
+              })),
+              variantId: variant.variantTypes[0]._id,
+            })),
+          },
+        ],
+      });
+    }
+
+    setProductName("");
+    setProductResults([]);
+  };
+
+  const selectMerchant = (merchant) => {
+    setHomeDeliveryData({ ...homeDeliveryData, merchantId: merchant._id });
+    setMerchantName(merchant.merchantName);
+    setMerchantResults([]);
+    setAllCustomerAddress(data?.customerAddress);
+  };
+
+  const handleSelectAddressType = (type) => {
+    setSelectedAddress(type);
+    setHomeDeliveryData({ ...homeDeliveryData, customerAddressType: type });
+  };
+
+  const handleSelectOtherAddress = (id) => {
+    setSelectedOtherAddressId(id);
+    setHomeDeliveryData({
+      ...homeDeliveryData,
+      customerAddressOtherAddressId: id,
+    });
+  };
+
+  const decreaseQuantity = (productId, e) => {
+    e.preventDefault();
+    setHomeDeliveryData({
+      ...homeDeliveryData,
+      items: homeDeliveryData.items
+        .map((item) =>
+          item.productId === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0),
+    });
+  };
+
+  const increaseQuantity = (productId, e) => {
+    e.preventDefault();
+    setHomeDeliveryData({
+      ...homeDeliveryData,
+      items: homeDeliveryData.items.map((item) =>
+        item.productId === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ),
+    });
+  };
+
+  const handleVariantChange = (productId, variantTypeId, variantIndex) => {
+    setHomeDeliveryData({
+      ...homeDeliveryData,
+      items: homeDeliveryData.items.map((item) =>
+        item.productId === productId
+          ? {
+              ...item,
+              variants: item.variants.map((variant, index) =>
+                index === variantIndex
+                  ? { ...variant, variantId: variantTypeId }
+                  : variant
+              ),
+            }
+          : item
+      ),
+    });
+  };
+
+  const createInvoice = async (e) => {
+    e.preventDefault();
+    try {
+      setIsInvoiceLoading(true);
+      console.log(homeDeliveryData);
+
+      // Format the items to include the selected variantId
+      const formattedItems = homeDeliveryData?.items?.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+        variantId: item.variants.length > 0 ? item.variants[0].variantId : null,
+      }));
+
+      const invoiceData = {
+        ...homeDeliveryData,
+        items: formattedItems,
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order-invoice`,
+        invoiceData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const { data } = response.data;
+        console.log(data.billDetail);
+        setCartData(data);
+        toast({
+          title: "Invoice",
+          description: "Invoice created successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating Take away invoice: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsInvoiceLoading(false);
+    }
+  };
+
+  const createOrderHandler = (e) => {
+    e.preventDefault();
+    console.log(homeDeliveryData);
   };
 
   return (
     <div className="bg-white  mt-5 rounded">
-      <form onSubmit={formSubmit}>
+      <form onSubmit={createInvoice}>
         <div className="flex flex-col gap-6">
           <div className="flex items-center relative">
-            <label className="w-1/3 px-6" htmlFor="merchant">
+            <label className="w-1/3 px-6" htmlFor="merchantId">
               Select Merchant
             </label>
             <div className="relative w-1/2">
               <input
-                type="search"
-                name="merchant"
-                id="merchant"
-                placeholder="Merchant"
-                className="h-10 px-5 pr-10 text-sm border-2 w-full outline-none focus:outline-none"
-                value={formData.merchant}
-                onChange={handleInputChange}
+                type="text"
+                name="merchantName"
+                placeholder="Search merchant..."
+                className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
+                value={merchantName}
+                onChange={handleSearchMerchant}
               />
-              <button
-                type="submit"
-                className="absolute right-0 top-0 mt-2 mr-2"
-              >
-                <SearchOutlined className="text-xl text-gray-500" />
-              </button>
+
+              {isMerchantLoading && (
+                <ClipLoader
+                  size={15}
+                  className="absolute top-[30%] right-[10px]"
+                />
+              )}
+
+              {!isMerchantLoading && (
+                <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+              )}
+
+              {merchantResults.length > 0 && (
+                <ul className="absolute bg-white border w-full mt-1 z-50">
+                  {merchantResults.map((result) => (
+                    <li
+                      key={result._id}
+                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      onClick={() => selectMerchant(result)}
+                    >
+                      {result.merchantName} - {result.geofence} (
+                      {result.status ? "Open" : "Closed"})
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
+
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="product">
               Select Product
             </label>
-            <div className="relative w-1/2">
+            <div className="relative w-1/2 z-30">
               <input
-                type="search"
+                type="text"
                 name="product"
-                id="product"
-                placeholder="Product"
-                className="h-10 px-5  text-sm border-2 w-full  outline-none focus:outline-none"
-                value={formData.product}
-                onChange={handleInputChange}
+                placeholder="Search product..."
+                className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
+                value={productName}
+                onChange={handleSearchProduct}
               />
-              <button
-                type="submit"
-                className="absolute right-0 top-0 mt-2 mr-2"
-              >
-                <SearchOutlined className="text-xl text-gray-500 " />
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6">Selcted Products</label>
-            <div className="flex gap-7 w-[20rem] bg-gray-200 p-4 rounded-lg border-2 border-gray-300">
-              <div>
-                <p>Chicken mandi quater</p>
-                <p>275/-</p>
-              </div>
-              <div className="flex items-center justify-between w-1/3">
-                <button
-                  id="decrement"
-                  className="px-2 py-1 text-lg font-bold bg-gray-200 rounded-md hover:bg-gray-300"
-                  onClick={substraction}
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  name="selectedProducts"
-                  value={formData.selectedProducts}
-                  onChange={handleChangeProducts}
-                  className="w-1/3 text-center"
-                ></input>
-                <button
-                  className="px-2 py-1 text-lg font-bold bg-gray-200 rounded-md hover:bg-gray-300"
-                  onClick={addition}
-                >
-                  +
-                </button>
-              </div>
+
+              {isProductLoading && (
+                <ClipLoader
+                  size={15}
+                  className="absolute top-[20%] right-[10px]"
+                />
+              )}
+
+              {!isProductLoading && (
+                <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+              )}
+
+              {productResults.length > 0 && (
+                <ul className="absolute bg-white border w-full mt-1 z-50">
+                  {productResults.map((result) => (
+                    <li
+                      key={result._id}
+                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      onClick={() => selectProduct(result)}
+                    >
+                      {result.productName}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
+          {homeDeliveryData.items.length > 0 && (
+            <div className="flex items-center">
+              <label className="w-1/3 px-6">Selected Products</label>
+              <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
+                {homeDeliveryData.items.map((item, itemIndex) => (
+                  <div
+                    key={item.productId}
+                    className="flex items-center gap-3 py-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
+                  >
+                    <div>
+                      <div>
+                        <p className="text-gray-600 mb-2 w-[100px] truncate">
+                          {item.productName}
+                        </p>
+                        <p className="text-gray-600">
+                          {item?.variants?.length === 0 && `${item.price}`}
+                        </p>
+                      </div>
+
+                      <div>
+                        {item.variants.map((variant, variantIndex) => (
+                          <select
+                            className="outline-none focus:outline-none bg-white p-2"
+                            key={variant.variantId}
+                            value={variant.variantId}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                item.productId,
+                                e.target.value,
+                                variantIndex
+                              )
+                            }
+                          >
+                            {variant.variantTypes.map((type) => (
+                              <option key={type._id} value={type._id}>
+                                {type.typeName} - ₹ {type.price}
+                              </option>
+                            ))}
+                          </select>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center border-2 border-gray-300 px-2">
+                      <button
+                        className="text-red-400 text-xl"
+                        onClick={(e) => decreaseQuantity(item.productId, e)}
+                      >
+                        -
+                      </button>
+                      <span className="mx-2">{item.quantity}</span>
+                      <button
+                        className="text-green-400 text-xl"
+                        onClick={(e) => increaseQuantity(item.productId, e)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="merchantinstructions">
-              Instructions to Merchants
+            <label className="w-1/3 px-6" htmlFor="instructionToMerchant">
+              Instruction to Merchant
             </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
-              type="text"
-              placeholder="Merchant Instructions"
-              id="merchantinstructions"
-              name="merchantinstructions"
-              value={formData.merchantinstructions}
-              onChange={handleInputChange}
+            <textarea
+              name="instructionToMerchant"
+              id="instructionToMerchant"
+              placeholder="Instruction to Merchant"
+              className="h-20 text-sm ps-3 pt-2 border-2 w-1/2 outline-none focus:outline-none resize-y overflow-y-auto"
+              value={homeDeliveryData.instructionToMerchant}
+              onChange={(e) =>
+                setHomeDeliveryData({
+                  ...homeDeliveryData,
+                  instructionToMerchant: e.target.value,
+                })
+              }
             />
           </div>
 
-          <div className="flex items-center ">
+          <div className="flex items-start ">
             <label className="w-1/3 px-6" htmlFor="address">
               Select Delivery Address
             </label>
-            {["Home", "Office", "Others"].map((address) => (
-              <button
-                key={address}
-                type="button"
-                className={`py-2 px-4 rounded border ${
-                  selectedAddress === address ? "bg-gray-300" : "bg-white"
-                }`}
-                onClick={() => handleAddressChange(address)}
-              >
-                {address}
-              </button>
-            ))}
+
+            {allCustomerAddress?.length === 0 && <p>No address found</p>}
+
+            {allCustomerAddress?.length > 0 && (
+              <div className="">
+                {allCustomerAddress?.map((address, index) => (
+                  <input
+                    key={index}
+                    type="button"
+                    className={`py-2 px-4 me-2 rounded border capitalize ${
+                      selectedAddress === address.type
+                        ? "bg-gray-300"
+                        : "bg-white"
+                    }`}
+                    value={address.type}
+                    onClick={() => handleSelectAddressType(address.type)}
+                  />
+                ))}
+
+                {selectedAddress === "other" && (
+                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                    {data?.customerAddress
+                      .find((addr) => addr.type === "other")
+                      ?.otherAddress?.map((otherAddr) => (
+                        <div
+                          key={otherAddr.id}
+                          className="flex items-center gap-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
+                        >
+                          <input
+                            type="radio"
+                            name="otherAddress"
+                            value={otherAddr.id}
+                            checked={selectedOtherAddressId === otherAddr.id}
+                            onChange={() =>
+                              handleSelectOtherAddress(otherAddr.id)
+                            }
+                          />
+                          <span className="flex flex-col gap-1 ms-2 ">
+                            <span>{otherAddr.flat}</span>
+                            <span>{otherAddr.area}</span>
+                            <span>{otherAddr.landmark}</span>
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          {selectedAddress === "home" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "home")
+                ?.homeAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedAddress === "work" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "work")
+                ?.workAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div>
             <div className=" flex">
@@ -216,117 +582,104 @@ const HomeDelivery = () => {
               <button
                 type="button"
                 className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                onClick={toggleFormVisibility}
+                onClick={toggleNewAddressForm}
               >
                 <span>Add Address</span>
                 <PlusOutlined />
               </button>
             </div>
-            {isFormVisible && <NewAddress />}
+            {isFormVisible && (
+              <NewAddress
+                toggleNewAddressForm={toggleNewAddressForm}
+                onAddCustomerAddress={handleAddCustomerAddress}
+              />
+            )}
           </div>
+
           <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="agentinstructions">
+            <label className="w-1/3 px-6" htmlFor="instructionToDeliveryAgent">
               Instructions to Delivery Agent
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 px-5 text-sm border-2 w-1/2  outline-none focus:outline-none"
               type="text"
-              placeholder="Agent Instructions"
-              id="agentinstructions"
-              name="agentinstructions"
-              value={formData.agentinstructions}
+              placeholder="Instruction to agent"
+              name="instructionToDeliveryAgent"
+              value={homeDeliveryData.instructionToDeliveryAgent}
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="tips">
+            <label className="w-1/3 px-6" htmlFor="addedTip">
               Tips
             </label>
             <input
               className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
               type="text"
-              placeholder="Tips"
-              id="tips"
-              name="tips"
-              value={formData.tips}
+              placeholder="Add Tip"
+              name="addedTip"
+              pattern="^\d*\.?\d*$"
+              title="Please enter a valid number"
+              value={homeDeliveryData.addedTip}
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="deliverycharges">
-              Delivery Charges
-            </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
-              type="text"
-              placeholder="Delivery Charges"
-              id="deliverycharges"
-              name="deliverycharges"
-              value={formData.deliverycharges}
-              onChange={handleInputChange}
-            />
-          </div>
+
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="discount">
-              Discount
+              Flat Discount
             </label>
-            <select
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+
+            <input
               type="text"
-              placeholder="Discount"
-              id="discount"
-              name="discount"
-              value={formData.discount}
+              name="flatDiscount"
+              placeholder="Flat discount"
+              className="h-10 ps-3 text-sm border-2 w-1/2  outline-none focus:outline-none"
+              value={homeDeliveryData.flatDiscount}
               onChange={handleInputChange}
-            >
-              <option hidden value=""></option>
-              <option value="option1" className="bg-white">
-                option1
-              </option>
-              <option value="option2" className="bg-white">
-                option2
-              </option>
-              <option value="option3" className="bg-white">
-                option3
-              </option>
-            </select>
+            />
           </div>
+
+          <button
+            type="submit"
+            className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize"
+          >
+            {isInvoiceLoading ? `Creating invoice...` : `Create invoice`}
+          </button>
+        </div>
+      </form>
+
+      {cartData?.items && (
+        <>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="paymentType">
               Payment Type
             </label>
             <select
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
-              type="text"
-              placeholder="Payment Type"
-              id="paymentType"
-              name="paymentType"
-              value={formData.paymentType}
-              onChange={handleInputChange}
+              name="paymentMode"
+              value={paymentMode}
+              className="w-1/2 py-2 ps-3 outline-none focus:outline-none border-2"
+              onChange={(e) => setPaymentMode(e.target.value)}
             >
-              <option hidden value=""></option>
-              <option value="option1" className="bg-white">
-                option1
+              <option defaultValue="Select payment mode" hidden>
+                Select payment mode
               </option>
-              <option value="option2" className="bg-white">
-                option2
-              </option>
-              <option value="option3" className="bg-white">
-                option3
-              </option>
+              <option value="Online-payment">Online payment</option>
+              <option value="Cash-on-delivery">Cash on delivery</option>
             </select>
           </div>
 
           <div className="flex mt-5">
             <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-            <div className="overflow-auo w-2/3">
-              <table className="border-2 border-teal-700  text-left w-[75%]">
+            <div className="overflow-auto w-1/2">
+              <table className="border-2 border-teal-700 w-full text-left ">
                 <thead>
                   <tr>
                     {["Item", "Amount"].map((header, index) => (
                       <th
                         key={index}
-                        className="bg-teal-700  text-white p-4  border-[#eee]/50"
+                        className="bg-teal-700 text-white p-4 border-[#eee]/50"
                       >
                         {header}
                       </th>
@@ -334,20 +687,60 @@ const HomeDelivery = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {order.map((order) => (
-                    <tr key={order.id} className="text-left">
-                      <td className="p-4">{order.item}</td>
-                      <td className="p-4">{order.amount}</td>
-                    </tr>
-                  ))}
-                  <tr className="bg-teal-700 text-white font-semibold text-[18px]">
-                    <td className="p-4">Net Payable Amount</td>
-                    <td className="p-4">₹ 257</td>
-                  </tr>
+                  {cartData?.items && (
+                    <>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">ItemTotal</td>
+                        <td className="p-4">{cartData.billDetail.itemTotal}</td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Delivery charges</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.discountedDeliveryCharge ||
+                            cartData?.billDetail?.originalDeliveryCharge ||
+                            0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Added tip</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.addedTip || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Discount</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.discountedAmount || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Surge charge</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.surgePrice || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">GST (Inclusive of all Taxes)</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.taxAmount || 0}
+                        </td>
+                      </tr>
+                      <tr className="bg-teal-700 text-white font-semibold text-[18px]">
+                        <td className="p-4">Net Payable Amount</td>
+                        <td className="p-4">
+                          ₹{" "}
+                          {cartData?.billDetail?.discountedGrandTotal ||
+                            cartData?.billDetail?.originalGrandTotal ||
+                            0}
+                        </td>
+                      </tr>
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
+
           <div className="flex justify-end gap-4 mt-16 mx-10">
             <button
               className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
@@ -358,13 +751,18 @@ const HomeDelivery = () => {
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md"
               type="submit"
-              onClick={formSubmit}
+              onClick={createOrderHandler}
             >
-              Create Order ₹534
+              {isOrderLoading
+                ? `Creating Order....`
+                : `Create Order of ₹${
+                    cartData.billDetail.discountedGrandTotal ||
+                    cartData.billDetail.originalGrandTotal
+                  }`}
             </button>
           </div>
-        </div>
-      </form>
+        </>
+      )}
     </div>
   );
 };
