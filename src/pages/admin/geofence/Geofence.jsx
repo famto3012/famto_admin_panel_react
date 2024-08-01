@@ -61,7 +61,6 @@ const Geofence = () => {
       }
     );
   }, []);
-  
 
   const getAllGeofence = async () => {
     try {
@@ -168,7 +167,10 @@ const Geofence = () => {
                         <MenuItem className="text-black" to="">
                           Edit
                         </MenuItem>
-                        <MenuItem className="text-black" onClick={() => showModalDeleteTask(data._id)}>
+                        <MenuItem
+                          className="text-black"
+                          onClick={() => showModalDeleteTask(data._id)}
+                        >
                           Delete
                         </MenuItem>
                       </MenuList>
@@ -185,23 +187,24 @@ const Geofence = () => {
                   footer={null}
                 >
                   <p className="font-semibold text-[14px] mb-5">
-                Are you sure you want to delete?
-              </p>
-              <div className="flex justify-end">
-                <button
-                  className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                 // onClick={showModalDeleteCancel1}
-                >
-                  Cancel
-                </button>
-                <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700" 
-                //onClick={()=>{handleDelete(alertItem._id)
-                //  showModalCancelTask(alertItem._id)
-                //}}
-                >
-                  Delete
-                </button>
-              </div>
+                    Are you sure you want to delete?
+                  </p>
+                  <div className="flex justify-end">
+                    <button
+                      className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                      // onClick={showModalDeleteCancel1}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                      //onClick={()=>{handleDelete(alertItem._id)
+                      //  showModalCancelTask(alertItem._id)
+                      //}}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </Modal>
               </Card>
             ))}

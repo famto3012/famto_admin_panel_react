@@ -389,7 +389,7 @@ const TakeAway = ({ data }) => {
 
           <div className="flex items-center">
             <label className="w-1/3 px-6">Selected Products</label>
-            <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
+            <div className="relative w-[50%] flex gap-4 overflow-x-auto">
               {takeAwayData.items.map((item, itemIndex) => (
                 <div
                   key={item.productId}
