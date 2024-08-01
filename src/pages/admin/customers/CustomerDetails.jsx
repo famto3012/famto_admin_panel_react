@@ -16,6 +16,7 @@ const CustomerDetails = () => {
   const { customerId } = useParams();
   const [customer, setCustomer] = useState({});
   const { token, role } = useContext(UserContext);
+  const [rating,setRating] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   // const [walletDetails, setWalletDetails] = useState([]);
@@ -155,35 +156,33 @@ const CustomerDetails = () => {
     console.log(amountadd);
   };
 
-  const showModalRatings = () => {
-    setIsModalRatings(true);
+  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false)
+  const showModalRatings = async () => {
+    setIsModalVisibleRatings(true);
+    try {
+      const ratingResponse = await axios.get(
+        `${BASE_URL}/admin/customers/ratings/${customerId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (ratingResponse.status === 200) {
+        setRating(ratingResponse.data.data);
+      } else {
+        console.error(`Unexpected status code`, ratingResponse.data.message);
+      }
+    } catch (err) {
+      console.log(`Error in fetching data`, err);
+    } finally {
+      console.log(`Error in fetching data`);
+    }
   };
-  const handleModalClose = () => {
-    setIsModalRatings(false);
+
+  const handleCancelRatings = () => {
+    setIsModalVisibleRatings(false);
   };
-  const data = [
-    {
-      id: "ID",
-      name: "Name",
-      review:
-        "This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it's so smooth from the scrub & mask",
-      rating: 5,
-    },
-    {
-      id: "ID",
-      name: "Name",
-      review:
-        "This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it's so smooth from the scrub & mask",
-      rating: 5,
-    },
-    {
-      id: "ID",
-      name: "Name",
-      review:
-        "This is 💯 one hundred percent the best lip mask duo ever !!! The scent is delicious and it's so smooth from the scrub & mask",
-      rating: 5,
-    },
-  ];
   const [editMode, setEditMode] = useState(false); // State to manage edit mode
   const [formData, setFormData] = useState({
     // Example form data state
@@ -388,7 +387,7 @@ const CustomerDetails = () => {
           </div>
           <div className="w-[600px] flex items-center justify-between gap-[30px] mt-10">
             <label className="text-gray-700 mx-11 font-bold">Ratings</label>
-            <button
+            {/* <button
               type="button"
               onClick={showModalRatings}
               className="bg-teal-800 text-white p-2 rounded-md w-[20rem]"
@@ -449,7 +448,80 @@ const CustomerDetails = () => {
                   </tbody>
                 </table>
               </div>
-            </Modal>
+            </Modal> */}
+
+
+
+            <button
+              type="button"
+              onClick={showModalRatings}
+              className="bg-teal-700 text-white p-2 rounded-md w-[20rem]"
+            >
+              Show ratings and reviews
+            </button>
+            <Modal
+        title="Ratings"
+        centered
+        width="600px"
+        open={isModalVisibleRatings}
+        onCancel={handleCancelRatings}
+        className="w-[600px]"
+        footer={null}
+        // confirmLoading={isConfirmLoading}
+      >
+        <div className="overflow-auto max-h-[30rem]">
+          <table className="min-w-full border-collapse block md:table text-center rounded-lg mt-4">
+            <thead className="block md:table-header-group sticky top-0">
+              <tr className="border border-gray-300 md:border-none md:table-row">
+                <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
+                  ID
+                </th>
+                <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
+                  Name
+                </th>
+                <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left">
+                  Ratings and Review
+                </th>
+              </tr>
+            </thead>
+            <tbody className="block md:table-row-group">
+              {rating.length === 0 ? (
+                <tr>
+                  <td colSpan={3}>
+                    <p className="mb-0 text-center">No data</p>
+                  </td>
+                </tr>
+              ) : (
+                rating.map((rating) => (
+                  <tr
+                    key={rating.id}
+                    className="bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0"
+                  >
+                    <td className="p-2 text-center md:table-cell">{rating.customerId.id}</td>
+                    <td className="p-2 text-center md:table-cell">{rating.customerId.fullName}</td>
+                    <td className="px-6 py-4 text-left md:table-cell">
+                      <div className="flex items-center text-center">
+                        {Array.from({ length: rating.rating }).map((_, i) => (
+                          <svg
+                            key={i}
+                            className="w-5 h-5 text-yellow-500 text-center"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="mt-2">{rating.review}</p>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Modal>
           </div>
           <div className="mt-10">
             <h4 className="text-gray-700 mx-11 font-bold">Address</h4>

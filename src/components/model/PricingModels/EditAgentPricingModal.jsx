@@ -79,6 +79,7 @@ const EditAgentPricingModal = ({
       );
 
       if (editResponse.status === 200) {
+        handleCancel();
         toast({
           title: "Updated",
           description: "Agent Pricing Updated successfully.",

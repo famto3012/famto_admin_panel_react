@@ -80,6 +80,7 @@ const EditMerchantPricingModal = ({
       );
 
       if (editResponse.status === 200) {
+        handleCancel();
         toast({
           title: "Updated",
           description: "Merchant Pricing Updated Successfully.",
