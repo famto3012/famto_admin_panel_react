@@ -214,12 +214,98 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
     }
   }
 
-  const handleToggle = (id) => {
-    setBanner((prevBanner) =>
-      prevBanner.map((banner) =>
-        banner._id === id ? { ...banner, status: !banner.status } : banner
-      )
-    );
+  const handleToggle = async (BannerId) => {
+    try {
+      const statusToUpdate = banner.find(
+        (d) => d._id === BannerId
+      );
+      if (statusToUpdate) {
+        const updatedStatus = !statusToUpdate.status;
+
+        await axios.put(
+          `${BASE_URL}/admin/app-banner/app-banner-status/${BannerId}`,
+          {
+            ...statusToUpdate,
+            status: updatedStatus,
+          },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast({
+          title: "Status updated",
+          description: "Banner Status Updated Successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
+
+        // Update the state with the new status
+        setBanner((prevBanner) =>
+          prevBanner.map((banner) =>
+            banner._id === BannerId ? { ...banner, status: !banner.status } : banner
+          )
+        );
+      }
+    } catch (err) {
+      console.error(`Error in toggling discount status: ${err.message}`);
+      // Optionally show an error toast notification
+      toast({
+        title: "Error",
+        description: "Failed to update Banner status.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleIndToggle = async (IndBannerId) => {
+    try {
+      const statusToUpdate = individualBanner.find(
+        (d) => d._id === IndBannerId
+      );
+      if (statusToUpdate) {
+        const updatedStatus = !statusToUpdate.status;
+
+        await axios.put(
+          `${BASE_URL}/admin/banner/banner-status/${IndBannerId}`,
+          {
+            ...statusToUpdate,
+            status: updatedStatus,
+          },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast({
+          title: "Status updated",
+          description: "Banner Status Updated Successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
+
+        // Update the state with the new status
+        setIndividualBanner((prevBanner) =>
+          prevBanner.map((individualBanner) =>
+            individualBanner._id === IndBannerId ? { ...individualBanner, status: !individualBanner.status } : individualBanner
+          )
+        );
+      }
+    } catch (err) {
+      console.error(`Error in toggling discount status: ${err.message}`);
+      // Optionally show an error toast notification
+      toast({
+        title: "Error",
+        description: "Failed to update Banner status.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
+    }
   };
 
   // console.log("banenr details",individualBanner);
@@ -242,7 +328,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
               <h1 className="text-lg font-bold outline-none focus:outline-none">
                 Ad Banner
               </h1>
-              <Switch />
+              <Switch/>
             </div>
             <p className="mt-5 mx-10 text-[15px] text-gray-500">
               The purpose of a promotional banner is to promote a store. It can
@@ -312,7 +398,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                       <td>{bannerData.geofenceId.name}</td>
                       <td>
                         <Switch
-                          checked={bannerData.status === "true" ? false : true}
+                          checked={bannerData.status}
                           onChange={() => handleToggle(bannerData._id)}
                         />
                       </td>
@@ -431,9 +517,8 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                       <td>
                         <Switch
                           checked={
-                            individualBanner.status === "true" ? false : true
-                          }
-                          onChange={() => handleToggle(individualBanner._id)}
+                            individualBanner.status}
+                          onChange={() => handleIndToggle(individualBanner._id)}
                         />
                       </td>
                       <td>

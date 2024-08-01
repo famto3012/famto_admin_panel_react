@@ -3,7 +3,6 @@ import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import {
   DeleteOutlined,
-  EditOutlined,
   InfoCircleOutlined,
   PlusOutlined,
   SearchOutlined,
@@ -11,39 +10,15 @@ import {
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { Switch, Modal } from "antd";
-import { MdCameraAlt } from "react-icons/md";
-import { RiDeleteBinLine } from "react-icons/ri";
 import AddCategoriesModal from "../../../components/model/ProductModels/AddCategoriesModal";
 import { UserContext } from "../../../context/UserContext";
+import EditCategoriesModal from "../../../components/model/ProductModels/EditCategoriesModal";
+import EditProductItemModal from "../../../components/model/ProductModels/EditProductItemModal";
+import AddProductItemModal from "../../../components/model/ProductModels/AddProductItemModal";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Products = () => {
-  const [addData, setAddData] = useState({
-    name: "",
-    price: "",
-    availableQty: "",
-    alertQty: "",
-    minQty: "",
-    maxQty: "",
-    costPrice: "",
-    sku: "",
-    discount: "",
-    boughtTogether: "",
-    preparationTime: "",
-    searchTag: "",
-    description: "",
-    longDescription: "",
-    type: "",
-    imageUrl: "",
-  });
-
-  const [category, setCategory] = useState({
-    businessCategory: "",
-    categoryName: "",
-    description: "",
-    type: "",
-    imageUrl: "",
-  });
-
   const [product, setProduct] = useState({
     name: "",
     price: "",
@@ -52,30 +27,33 @@ const Products = () => {
     alerts: "",
     variant: "",
   });
+  const { token, role } = useContext(UserContext);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const {token, role} = useContext(UserContext);
+  // UseStates for Show Modals
+
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleCategory, setIsModalVisibleCategory] = useState(false);
+  const [isModalVisibleChange, setIsModalVisibleChange] = useState(false);
+  const [isModalVisibleItems, setIsModalVisibleItems] = useState(false);
+  const [isModalVisibleItemsEdit, setIsModalVisibleItemsEdit] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] =
+    useState(false);
 
   const shakes = ["sharjah", "karikk", "shamam"];
-
-  const handleCategory = (e) => {
-    const { name, value } = e.target;
-    setCategory((prevCategory) => ({
-      ...prevCategory,
-      [name]: value,
-    }));
-  };
-
-  // const handleRadio = (event) => {
-  //     setCategory({
-  //         ...category,
-  //         type: event.target.value,
-  //     });
-  // };
-
-  const submitCategory = (e) => {
-    e.preventDefault();
-    console.log("Categoty", category);
-  };
+  const categories = [
+    "Most Popular",
+    "Chef’s Special",
+    "Punjabi Food",
+    "Shakes",
+    "Extras",
+  ];
+  const [variants, setVariants] = useState([
+    { name: "Small", price: 10 },
+    { name: "Medium", price: 10 },
+  ]);
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
@@ -86,30 +64,13 @@ const Products = () => {
     console.log(product);
   };
 
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const categories = [
-    "Most Popular",
-    "Chef’s Special",
-    "Punjabi Food",
-    "Shakes",
-    "Extras",
-  ];
-
   const categoryChange = () => {
     console.log(`Selected Category: ${selectedCategory}`);
   };
 
-  const [isFormVisible, setFormVisible] = useState(false);
-
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
   };
-
-  const [variants, setVariants] = useState([
-    { name: "Small", price: 10 },
-    { name: "Medium", price: 10 },
-  ]);
 
   const addVariant = () => {
     setVariants([...variants, { name: "", price: "" }]);
@@ -127,138 +88,42 @@ const Products = () => {
     setVariants(newVariants);
   };
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
   const showModal = () => {
     setIsModalVisible(true);
   };
-
-  const [isModalVisibleCategory, setIsModalVisibleCategory] = useState(false);
 
   const showModalCategory = () => {
     setIsModalVisibleCategory(true);
   };
 
-  const showModalOkCategory = () => {
-    setIsModalVisibleCategory(false);
-  };
-
-  const showModalCancelCategory = () => {
-    setIsModalVisibleCategory(false);
-  };
-
-  const [isModalVisibleChange, setIsModalVisibleChange] = useState(false);
-
   const showModalChange = () => {
     setIsModalVisibleChange(true);
   };
-
-  const showModalOkChange = () => {
-    setIsModalVisibleChange(false);
-  };
-
-  const showModalCancelChange = () => {
-    setIsModalVisibleChange(false);
-  };
-
-  const [isModalVisibleItems, setIsModalVisibleItems] = useState(false);
 
   const showModalItems = () => {
     setIsModalVisibleItems(true);
   };
 
-  const showModalOkItems = () => {
-    setIsModalVisibleItems(false);
-  };
-
-  const showModalCancelItems = () => {
-    setIsModalVisibleItems(false);
-  };
-
-  const [isModalVisibleItemsEdit, setIsModalVisibleItemsEdit] = useState(false);
-
   const showModalItemsEdit = () => {
     setIsModalVisibleItemsEdit(true);
   };
-
-  const showModalOkItemsEdit = () => {
-    setIsModalVisibleItemsEdit(false);
-  };
-
-  const showModalCancelItemsEdit = () => {
-    setIsModalVisibleItemsEdit(false);
-  };
-
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = () => {
     setIsShowModalDelete(true);
   };
 
-  const showModalDeleteOk = () => {
-    setIsShowModalDelete(false);
-  };
-
-  const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false);
-  };
-
-  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] = useState(false);
-
   const ShowModalDeleteCustomer = () => {
     setIsShowModalDeleteCustomer(true);
   };
 
-  const showModalDeleteOkCustomer = () => {
-    setIsShowModalDeleteCustomer(false);
-  };
-
-  const showModalDeleteCancelCustomer = () => {
-    setIsShowModalDeleteCustomer(false);
-  };
-
-  const handleCancel = () =>{
+  const handleCancel = () => {
     setIsModalVisible(false);
-  }
-
-
-  const handleInputChange = (e) => {
-    setAddData({ ...addData, [e.target.name]: e.target.value });
-  };
-
-  const signupAction = (e) => {
-    e.preventDefault();
-    console.log(addData);
-  };
-
-  const [agentFile, setAgentFile] = useState(null);
-  const [agentPreviewURL, setAgentPreviewURL] = useState(null);
-
-  const handleAgentImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setAgentFile(file);
-    setAgentPreviewURL(URL.createObjectURL(file));
-  };
-
-  const [agentFileEdit, setAgentFileEdit] = useState(null);
-  const [agentPreviewURLEdit, setAgentPreviewURLEdit] = useState(null);
-
-  const handleAgentImageChangeEdit = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setAgentFileEdit(file);
-    setAgentPreviewURLEdit(URL.createObjectURL(file));
-  };
-
-  const [adFile, setAdFile] = useState(null);
-  const [adPreviewURL, setAdPreviewURL] = useState(null);
-
-  const handleAdImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setAdFile(file);
-    setAdPreviewURL(URL.createObjectURL(file));
+    setIsModalVisibleCategory(false);
+    setIsModalVisibleItemsEdit(false);
+    setIsModalVisibleItems(false);
+    setIsShowModalDeleteCustomer(false);
+    setIsShowModalDeleteCustomer(false);
+    setIsModalVisibleChange(false);
   };
 
   return (
@@ -303,15 +168,14 @@ const Products = () => {
                 {" "}
                 Add Categories
               </button>
-              
+
               <AddCategoriesModal
-              isVisible={isModalVisible}
-              handleCancel={handleCancel}
-              token={token}
-              role={role}
+                isVisible={isModalVisible}
+                handleCancel={handleCancel}
+                token={token}
+                BASE_URL={BASE_URL}
+                role={role}
               />
-
-
             </div>
           </div>
           <div className="w-4/5 bg-white rounded-md m-5 ml-2">
@@ -327,186 +191,44 @@ const Products = () => {
                 >
                   <MdOutlineModeEdit className="text-xl mr-1" /> Edit
                 </button>
-                <Modal
-                  onCancel={showModalCancelCategory}
-                  onOk={showModalOkCategory}
-                  width="60rem"
-                  closeIcon={null}
-                  open={isModalVisibleCategory}
-                  footer={null}
+                <EditCategoriesModal
+                  isVisible={isModalVisibleCategory}
+                  handleCancel={handleCancel}
+                  token={token}
+                  role={role}
+                  BASE_URL={BASE_URL}
+                />
+                <button
+                  className="bg-red-100 p-2 flex items-center rounded-lg px-3"
+                  onClick={showModalDelete}
                 >
-                  <form onClick={submitCategory}>
-                    <div className="flex justify-between">
-                      <b>Edit Category name</b>
-                      <button className="flex bg-red-100 rounded-md p-2 outline-none focus:outline-none">
-                        <RiDeleteBinLine className=" text-[18px] text-red-900 mr-1" />
-                        {""}Delete
+                  <RiDeleteBin6Line className="text-xl mr-1 text-red-700" />{" "}
+                  Delete
+                </button>
+                <Modal
+                  onCancel={handleCancel}
+                  footer={null}
+                  open={isShowModalDelete}
+                  centered
+                >
+                  <form>
+                    <p className="font-bold text-[20px] mb-5">
+                      Are you sure want to delete?
+                    </p>
+                    <div className="flex justify-end">
+                      <button
+                        className="bg-zinc-200 p-2 rounded-md font-semibold"
+                        onClick={handleCancel}
+                      >
+                        Cancel
                       </button>
-                    </div>
-                    <div className="flex flex-col gap-4 mt-5">
-                      <div className="flex mt-5  gap-4">
-                        <label
-                          className="w-1/2 text-gray-500"
-                          htmlFor="businessCategory"
-                        >
-                          Business Category
-                        </label>
-                        <select
-                          name="businessCategory"
-                          id="businessCategory"
-                          value={category.businessCategory}
-                          onChange={handleCategory}
-                          className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                        >
-                          <option value="select" hidden selected>
-                            Business Category
-                          </option>
-                          <option value="Option 1">Option 1</option>
-                        </select>
-                      </div>
-                      <div className="flex items-center">
-                        <label
-                          className="w-1/3 text-gray-500"
-                          htmlFor="categoryName"
-                        >
-                          Category Name
-                        </label>
-                        <input
-                          className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                          type="text"
-                          value={category.categoryName}
-                          id="categoryName"
-                          name="categoryName"
-                          onChange={handleCategory}
-                        />
-                      </div>
-                      <div className="flex items-center">
-                        <label
-                          className="w-1/3 text-gray-500"
-                          htmlFor="description"
-                        >
-                          Description
-                        </label>
-                        <input
-                          className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                          type="text"
-                          value={category.description}
-                          id="description"
-                          name="description"
-                          onChange={handleCategory}
-                        ></input>
-                      </div>
-                      <div className="flex items-center">
-                        <label className="w-1/3 text-gray-500">Veg/Non-veg</label>
-                        <div>
-                          <input
-                            type="radio"
-                            name="type"
-                            value="veg"
-                            checked={category.type === "veg"}
-                            onChange={handleCategory}
-                            className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
-                          />
-                          <label> Veg</label>
-                        </div>
-                        <input
-                          type="radio"
-                          name="type"
-                          value="non-veg"
-                          checked={category.type === "non-veg"}
-                          onChange={handleCategory}
-                          className="border-2 border-gray-100 ml-5 rounded p-2 mr-3 focus:outline-none"
-                        />
-                        <label>Non-Veg</label>
-
-                        <input
-                          type="radio"
-                          name="type"
-                          value="both"
-                          checked={category.type === "both"}
-                          onChange={handleCategory}
-                          className="border-2 border-gray-100 ml-5 rounded p-2 mr-3 focus:outline-none"
-                        />
-                        <label> Both</label>
-                      </div>
-                      <div className="flex items-center">
-                        <label className=" w-1/3">Photos</label>
-                        <div className="flex items-center gap-[30px]">
-                          {!adPreviewURL && (
-                            <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
-                          )}
-                          {adPreviewURL && (
-                            <figure className="mt-3 h-16 w-16 rounded-md relative">
-                              <img
-                                src={adPreviewURL}
-                                alt="profile"
-                                className="w-full rounded h-full object-cover"
-                              />
-                            </figure>
-                          )}
-                          <input
-                            type="file"
-                            name="adImage"
-                            id="adImage"
-                            className="hidden"
-                            onChange={handleAdImageChange}
-                          />
-                          <label htmlFor="adImage" className="cursor-pointer">
-                            <MdCameraAlt
-                              className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
-                              size={30}
-                            />
-                          </label>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-end gap-4 mt-6">
-                        <button
-                          className="bg-cyan-50 py-2 px-4 rounded-md"
-                          type="button"
-                          onClick={showModalCancelCategory}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
-                          type="submit"
-                          onClick={showModalOkCategory}
-                        >
-                          Add
-                        </button>
-                      </div>
+                      <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
+                        {" "}
+                        Delete
+                      </button>
                     </div>
                   </form>
                 </Modal>
-                <button className="bg-red-100 p-2 flex items-center rounded-lg px-3" onClick={showModalDelete}>
-                  <RiDeleteBin6Line className="text-xl mr-1 text-red-700" /> Delete
-                </button>
-                <Modal
-              onOk={showModalDeleteOk}
-              onCancel={showModalDeleteCancel}
-              footer={null}
-              open={isShowModalDelete}
-              centered
-            >
-              <form>
-                <p className="font-bold text-[20px] mb-5">
-                  Are you sure want to delete?
-                </p>
-                <div className="flex justify-end">
-                  <button
-                    className="bg-zinc-200 p-2 rounded-md font-semibold"
-                    onClick={showModalDeleteCancel}
-                  >
-                    Cancel
-                  </button>
-                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
-                    {" "}
-                    Delete
-                  </button>
-                </div>
-              </form>
-            </Modal>
               </div>
             </div>
             <div className="flex">
@@ -520,327 +242,14 @@ const Products = () => {
                     onClick={showModalItems}
                   />
                   <p className="text-gray-500"> Add Items</p>
-                  <Modal
-                    title="Add Products"
-                    onCancel={showModalCancelItems}
-                    onOk={showModalOkItems}
-                    width="60rem"
-                    footer={null}
-                    open={isModalVisibleItems}
-                  >
-                    <form
-                      onSubmit={signupAction}
-                      className="max-h-[30rem] overflow-auto"
-                    >
-                      <div className="flex flex-col gap-4 mt-5">
-                        <div className="flex items-center">
-                          <label className="w-1/3 text-gray-500" htmlFor="name">
-                            Product Name
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.name}
-                            id="name"
-                            name="name"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="price"
-                          >
-                            Price
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.price}
-                            id="price"
-                            name="price"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="availableQty"
-                          >
-                            Available Quantity
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.availableQty}
-                            id="availableQty"
-                            name="availableQty"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="alertQty"
-                          >
-                            Alert Quantity
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.alertQty}
-                            id="alertQty"
-                            name="alertQty"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500 "
-                            htmlFor="minQty"
-                          >
-                            Minimum Quantity to Order
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.minQty}
-                            id="minQty"
-                            name="minQty"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="maxQty"
-                          >
-                            Maximum Quantity to Order
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.maxQty}
-                            id="maxQty"
-                            name="maxQty"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="costPrice"
-                          >
-                            Cost Price
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.costPrice}
-                            id="costPrice"
-                            name="costPrice"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label className="w-1/3 text-gray-500" htmlFor="sku">
-                            SKU
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.sku}
-                            id="sku"
-                            name="sku"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex mt-5  gap-4">
-                          <label
-                            className="w-1/2 text-gray-500"
-                            htmlFor="discount"
-                          >
-                            Discount
-                          </label>
-                          <select
-                            name="discount"
-                            id="discount"
-                            value={addData.discount}
-                            onChange={handleInputChange}
-                            className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                          >
-                            <option value="select" hidden selected>
-                              Discount
-                            </option>
-                            <option value="Option 1">Option 1</option>
-                          </select>
-                        </div>
-                        <div className="flex mt-5  gap-4">
-                          <label
-                            className="w-1/2 text-gray-500"
-                            htmlFor="boughtTogether"
-                          >
-                            Often bought together
-                          </label>
-                          <select
-                            name="boughtTogether"
-                            id="boughtTogether"
-                            value={addData.boughtTogether}
-                            onChange={handleInputChange}
-                            className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                          >
-                            <option value="select" hidden selected>
-                              often bought Together
-                            </option>
-                            <option value="Option 1">Option 1</option>
-                          </select>
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="preparationTime"
-                          >
-                            Preparation Time
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.preparationTime}
-                            id="preparationTime"
-                            name="preparationTime"
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="searchTag"
-                          >
-                            Search Tag
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.searchTag}
-                            id="searchTag"
-                            name="searchTag"
-                            onChange={handleInputChange}
-                          ></input>
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="description"
-                          >
-                            Description
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.description}
-                            id="description"
-                            name="description"
-                            onChange={handleInputChange}
-                          ></input>
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="longDescription"
-                          >
-                            Long description
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                            type="text"
-                            value={addData.longDescription}
-                            id="longDescription"
-                            name="longDescription"
-                            onChange={handleInputChange}
-                          ></input>
-                        </div>
-                        <div className="flex items-center">
-                          <label className="w-1/3 text-gray-500" htmlFor="type">
-                            Veg/Non-veg
-                          </label>
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
-                            type="radio"
-                            value="veg"
-                            checked={addData.type === "veg"}
-                            name="type"
-                            onChange={handleInputChange}
-                          />
-                          Veg
-                          <input
-                            className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
-                            type="radio"
-                            value="non-veg"
-                            checked={addData.type === "non-veg"}
-                            name="type"
-                            onChange={handleInputChange}
-                          />
-                          non-veg
-                        </div>
-                        <div className="flex items-center">
-                          <label
-                            className="w-1/3 text-gray-500"
-                            htmlFor="photos"
-                          >
-                            Photos
-                          </label>
 
-                          <div className=" flex items-center gap-[30px]">
-                            {!agentPreviewURL && (
-                              <div className="bg-gray-400  mt-5 h-16 w-16 rounded-md" />
-                            )}
-                            {agentPreviewURL && (
-                              <figure className=" mt-5 h-16 w-16 rounded-md relative">
-                                <img
-                                  src={agentPreviewURL}
-                                  alt="profile"
-                                  className="w-full rounded h-full object-cover "
-                                />
-                              </figure>
-                            )}
-                            <input
-                              type="file"
-                              name="agentImage"
-                              id="agentImage"
-                              className="hidden"
-                              onChange={handleAgentImageChange}
-                            />
-                            <label
-                              htmlFor="agentImage"
-                              className="cursor-pointer "
-                            >
-                              <MdCameraAlt
-                                className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                                size={30}
-                              />
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end gap-4 mt-6">
-                          <button
-                            className="bg-cyan-50 py-2 px-4 rounded-md"
-                            type="button"
-                            onClick={showModalCancelItems}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
-                            type="submit"
-                            onClick={showModalOkItems}
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </Modal>
+                  <AddProductItemModal
+                    isVisible={isModalVisibleItems}
+                    handleCancel={handleCancel}
+                    BASE_URL={BASE_URL}
+                    token={token}
+                    role={role}
+                  />
                 </div>
               </div>
               <div className="w-full">
@@ -861,8 +270,7 @@ const Products = () => {
                     </button>
                     <Modal
                       title="Add Categories"
-                      onCancel={showModalCancelChange}
-                      onOk={showModalOkChange}
+                      onCancel={handleCancel}
                       width="60rem"
                       open={isModalVisibleChange}
                       footer={null}
@@ -912,378 +320,49 @@ const Products = () => {
                     Inventory
                     <Switch />
                     <button
-                  className="bg-blue-50 p-2 flex items-center outline-none focus:outline-none px-5 rounded-lg"
-                  onClick={showModalItemsEdit}
-                >
-                  <MdOutlineModeEdit className="text-xl mr-1" /> Edit
-                </button>
-                    <Modal
-                      onCancel={showModalCancelItemsEdit}
-                      onOk={showModalOkItemsEdit}
-                      width="60rem"
-                      closeIcon={null}
-                      footer={null}
-                      open={isModalVisibleItemsEdit}
+                      className="bg-blue-50 p-2 flex items-center outline-none focus:outline-none px-5 rounded-lg"
+                      onClick={showModalItemsEdit}
                     >
-                      <form
-                        onSubmit={signupAction}
-                        className="max-h-[30rem] overflow-auto"
-                      >
-                        <div className="flex justify-between">
-                          <b>Edit Category name</b>
-                          <button className="flex bg-red-100 rounded-md p-2 outline-none focus:outline-none">
-                            <RiDeleteBinLine className=" text-[18px] text-red-900 mr-1" />
-                            {""}Delete
+                      <MdOutlineModeEdit className="text-xl mr-1" /> Edit
+                    </button>
+                    <EditProductItemModal
+                      isVisible={isModalVisibleItemsEdit}
+                      handleCancel={handleCancel}
+                      BASE_URL={BASE_URL}
+                      token={token}
+                      role={role}
+                    />
+                    <button
+                      className="bg-red-100 p-2 flex items-center rounded-lg px-3"
+                      onClick={ShowModalDeleteCustomer}
+                    >
+                      <RiDeleteBin6Line className="text-xl mr-1 text-red-700" />{" "}
+                      Delete
+                    </button>
+                    <Modal
+                      onCancel={handleCancel}
+                      footer={null}
+                      open={isShowModalDeleteCustomer}
+                      centered
+                    >
+                      <form>
+                        <p className="font-bold text-[20px] mb-5">
+                          Are you sure want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-zinc-200 p-2 rounded-md font-semibold"
+                            onClick={handleCancel}
+                          >
+                            Cancel
                           </button>
-                        </div>
-                        <div className="flex flex-col gap-4 mt-5">
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="name"
-                            >
-                              Product Name
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.name}
-                              id="name"
-                              name="name"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="price"
-                            >
-                              Price
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.price}
-                              id="price"
-                              name="price"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="availableQty"
-                            >
-                              Available Quantity
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.availableQty}
-                              id="availableQty"
-                              name="availableQty"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="alertQty"
-                            >
-                              Alert Quantity
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.alertQty}
-                              id="alertQty"
-                              name="alertQty"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500 "
-                              htmlFor="minQty"
-                            >
-                              Minimum Quantity to Order
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.minQty}
-                              id="minQty"
-                              name="minQty"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="maxQty"
-                            >
-                              Maximum Quantity to Order
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.maxQty}
-                              id="maxQty"
-                              name="maxQty"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="costPrice"
-                            >
-                              Cost Price
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.costPrice}
-                              id="costPrice"
-                              name="costPrice"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="sku"
-                            >
-                              SKU
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.sku}
-                              id="sku"
-                              name="sku"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex mt-5  gap-4">
-                            <label
-                              className="w-1/2 text-gray-500"
-                              htmlFor="discount"
-                            >
-                              Discount
-                            </label>
-                            <select
-                              name="discount"
-                              id="discount"
-                              value={addData.discount}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                            >
-                              <option value="select" hidden selected>
-                                Discount
-                              </option>
-                              <option value="Option 1">Option 1</option>
-                            </select>
-                          </div>
-                          <div className="flex mt-5  gap-4">
-                            <label
-                              className="w-1/2 text-gray-500"
-                              htmlFor="boughtTogether"
-                            >
-                              Often bought together
-                            </label>
-                            <select
-                              name="boughtTogether"
-                              id="boughtTogether"
-                              value={addData.boughtTogether}
-                              onChange={handleInputChange}
-                              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-                            >
-                              <option value="select" hidden selected>
-                                often bought Together
-                              </option>
-                              <option value="Option 1">Option 1</option>
-                            </select>
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="preparationTime"
-                            >
-                              Preparation Time
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.preparationTime}
-                              id="preparationTime"
-                              name="preparationTime"
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="searchTag"
-                            >
-                              Search Tag
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.searchTag}
-                              id="searchTag"
-                              name="searchTag"
-                              onChange={handleInputChange}
-                            ></input>
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="description"
-                            >
-                              Description
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.description}
-                              id="description"
-                              name="description"
-                              onChange={handleInputChange}
-                            ></input>
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="longDescription"
-                            >
-                              Long description
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                              type="text"
-                              value={addData.longDescription}
-                              id="longDescription"
-                              name="longDescription"
-                              onChange={handleInputChange}
-                            ></input>
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="type"
-                            >
-                              Veg/Non-veg
-                            </label>
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
-                              type="radio"
-                              id="veg"
-                              value="veg"
-                              checked={addData.type === "veg"}
-                              name="type"
-                              onChange={handleInputChange}
-                            />
-                            Veg
-                            <input
-                              className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
-                              type="radio"
-                              id="non-veg"
-                              value="non-veg"
-                              checked={addData.type === "non-veg"}
-                              name="type"
-                              onChange={handleInputChange}
-                            />
-                            non-veg
-                          </div>
-                          <div className="flex items-center">
-                            <label
-                              className="w-1/3 text-gray-500"
-                              htmlFor="preparationTime"
-                            >
-                              Preparation Time
-                            </label>
-
-                            <div className=" flex items-center gap-[30px]">
-                              {!agentPreviewURLEdit && (
-                                <div className="bg-gray-400  mt-5 h-16 w-16 rounded-md" />
-                              )}
-                              {agentPreviewURLEdit && (
-                                <figure className=" mt-5 h-16 w-16 rounded-md relative">
-                                  <img
-                                    src={agentPreviewURLEdit}
-                                    alt="profile"
-                                    className="w-full rounded h-full object-cover "
-                                  />
-                                </figure>
-                              )}
-                              <input
-                                type="file"
-                                name="agentImageEdit"
-                                id="agentImageEdit"
-                                className="hidden"
-                                onChange={handleAgentImageChangeEdit}
-                              />
-                              <label
-                                htmlFor="agentImageEdit"
-                                className="cursor-pointer "
-                              >
-                                <MdCameraAlt
-                                  className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                                  size={30}
-                                />
-                              </label>
-                            </div>
-                          </div>
-
-                          <div className="flex justify-end gap-4 mt-6">
-                            <button
-                              className="bg-cyan-50 py-2 px-4 rounded-md"
-                              type="button"
-                              onClick={showModalCancelItemsEdit}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
-                              type="submit"
-                              onClick={showModalOkItemsEdit}
-                            >
-                              Add
-                            </button>
-                          </div>
+                          <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
+                            {" "}
+                            Delete
+                          </button>
                         </div>
                       </form>
                     </Modal>
-                    <button className="bg-red-100 p-2 flex items-center rounded-lg px-3" onClick={ShowModalDeleteCustomer}>
-                  <RiDeleteBin6Line className="text-xl mr-1 text-red-700" /> Delete
-                </button>
-                <Modal
-              onOk={showModalDeleteOkCustomer}
-              onCancel={showModalDeleteCancelCustomer}
-              footer={null}
-              open={isShowModalDeleteCustomer}
-              centered
-            >
-              <form>
-                <p className="font-bold text-[20px] mb-5">
-                  Are you sure want to delete?
-                </p>
-                <div className="flex justify-end">
-                  <button
-                    className="bg-zinc-200 p-2 rounded-md font-semibold"
-                    onClick={showModalDeleteCancelCustomer}
-                  >
-                    Cancel
-                  </button>
-                  <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
-                    {" "}
-                    Delete
-                  </button>
-                </div>
-              </form>
-            </Modal>
                   </div>
                 </div>
                 <div>

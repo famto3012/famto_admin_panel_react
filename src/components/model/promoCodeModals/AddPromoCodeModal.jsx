@@ -5,8 +5,14 @@ import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 
-const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
-  const [formData, setFormData] = useState({
+const AddPromoCodeModal = ({
+  isVisible,
+  handleCancel,
+  token,
+  BASE_URL,
+  onPromocodeAdd,
+}) => {
+  const [addPromocode, setAddPromocode] = useState({
     promoCode: "",
     promoType: "",
     discount: "",
@@ -23,7 +29,6 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
     imageUrl: "",
   });
 
-
   const [geofence, setGeofence] = useState([]);
   const [merchant, setMerchant] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +37,11 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
   const toast = useToast();
 
   const handleNotificationImageChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-          setNotificationFile(file);
-          setNotificationPreviewURL(URL.createObjectURL(file));
-      }
+    const file = e.target.files[0];
+    if (file) {
+      setNotificationFile(file);
+      setNotificationPreviewURL(URL.createObjectURL(file));
+    }
   };
 
   useEffect(() => {
@@ -51,8 +56,8 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
           }),
           axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
-          })
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
@@ -69,38 +74,36 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
 
     fetchData();
   }, [token]);
-  console.log(merchant);
-
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setAddPromocode({ ...addPromocode, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     setIsLoading(true);
-  
+
     try {
       const addPromoToSend = new FormData();
-      addPromoToSend.append("promoCode", formData.promoCode);
-      addPromoToSend.append("promoType", formData.promoType);
-      addPromoToSend.append("discount", formData.discount);
-      addPromoToSend.append("description", formData.description);
-      addPromoToSend.append("fromDate", formData.fromDate);
-      addPromoToSend.append("toDate", formData.toDate);
-      addPromoToSend.append("applicationMode", formData.applicationMode);
-      addPromoToSend.append("maxDiscountValue", formData.maxDiscountValue);
-      addPromoToSend.append("minOrderAmount", formData.minOrderAmount);
-      addPromoToSend.append("maxAllowedUsers", formData.maxAllowedUsers);
-      addPromoToSend.append("appliedOn", formData.appliedOn);
-      addPromoToSend.append("merchantId", formData.merchantId);
-      addPromoToSend.append("geofenceId", formData.geofenceId);
-  
+      addPromoToSend.append("promoCode", addPromocode.promoCode);
+      addPromoToSend.append("promoType", addPromocode.promoType);
+      addPromoToSend.append("discount", addPromocode.discount);
+      addPromoToSend.append("description", addPromocode.description);
+      addPromoToSend.append("fromDate", addPromocode.fromDate);
+      addPromoToSend.append("toDate", addPromocode.toDate);
+      addPromoToSend.append("applicationMode", addPromocode.applicationMode);
+      addPromoToSend.append("maxDiscountValue", addPromocode.maxDiscountValue);
+      addPromoToSend.append("minOrderAmount", addPromocode.minOrderAmount);
+      addPromoToSend.append("maxAllowedUsers", addPromocode.maxAllowedUsers);
+      addPromoToSend.append("appliedOn", addPromocode.appliedOn);
+      addPromoToSend.append("merchantId", addPromocode.merchantId);
+      addPromoToSend.append("geofenceId", addPromocode.geofenceId);
+
       if (notificationFile) {
         addPromoToSend.append("promoImage", notificationFile);
       }
-  
+
       const response = await axios.post(
         `${BASE_URL}/admin/promocode/add-promocode`,
         addPromoToSend,
@@ -112,51 +115,50 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
           },
         }
       );
-  
+
       if (response.status === 201) {
         setNotificationFile(null);
         setNotificationPreviewURL(null);
+        onPromocodeAdd(response.data.data);
         handleCancel();
         toast({
-          title : "Promo Code Created",
-          description : "Successfully created Promo code..",
-          status:"success",
-          isClosable:true,
-          duration:9000
-        })
-        // You may want to clear the form here
-        setFormData({
-          promoCode: "",
-          promoType: "",
-          discount: "",
-          description: "",
-          fromDate: "",
-          toDate: "",
-          applicationMode: "",
-          maxDiscountValue: "",
-          minOrderAmount: "",
-          maxAllowedUsers: "",
-          appliedOn: "",
-          merchantId: "",
-          geofenceId: "",
-          imageUrl: "",
+          title: "Promo Code Created",
+          description: "Successfully created Promo code..",
+          status: "success",
+          isClosable: true,
+          duration: 9000,
         });
+        // You may want to clear the form here
+        // setAddPromocode({
+        //   promoCode: "",
+        //   promoType: "",
+        //   discount: "",
+        //   description: "",
+        //   fromDate: "",
+        //   toDate: "",
+        //   applicationMode: "",
+        //   maxDiscountValue: "",
+        //   minOrderAmount: "",
+        //   maxAllowedUsers: "",
+        //   appliedOn: "",
+        //   merchantId: "",
+        //   geofenceId: "",
+        //   imageUrl: "",
+        // });
       }
     } catch (err) {
       console.log(`Error in adding data: ${err.message}`);
       toast({
-        title:"Error while Creating..",
-        description:"Error in creating Promo Code.",
-        status:"failed",
-        isClosable:true,
-        duration:9000
-      })
+        title: "Error while Creating..",
+        description: "Error in creating Promo Code.",
+        status: "error",
+        isClosable: true,
+        duration: 9000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
-  
-
 
   return (
     <Modal
@@ -175,7 +177,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               type="text"
               name="promoCode"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
-              value={formData.promoCode}
+              value={addPromocode.promoCode}
               onChange={handleChange}
             />
           </div>
@@ -186,7 +188,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               name="promoType"
               value="Flat-discount"
               className="-ml-12 mr-1"
-              checked={formData.promoType === "Flat-discount"}
+              checked={addPromocode.promoType === "Flat-discount"}
               onChange={handleChange}
             />
             Flat discount
@@ -195,7 +197,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               name="promoType"
               className="ml-3 mr-1"
               value="Percentage-discount"
-              checked={formData.promoType === "Percentage-discount"}
+              checked={addPromocode.promoType === "Percentage-discount"}
               onChange={handleChange}
             />
             Percentage discount
@@ -206,7 +208,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               type="text"
               name="discount"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={formData.discount}
+              value={addPromocode.discount}
               onChange={handleChange}
             />
           </div>
@@ -219,7 +221,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               name="description"
               maxLength={150}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={formData.description}
+              value={addPromocode.description}
               onChange={handleChange}
             />
           </div>
@@ -229,7 +231,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               type="date"
               name="fromDate"
               min={new Date()}
-              value={formData.fromDate}
+              value={addPromocode.fromDate}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             />
@@ -240,7 +242,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               type="date"
               name="toDate"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={formData.toDate}
+              value={addPromocode.toDate}
               onChange={handleChange}
             />
           </div>
@@ -250,11 +252,13 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             </label>
             <select
               name="applicationMode"
-              value={formData.applicationMode}
+              value={addPromocode.applicationMode}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option defaultValue={""} selected hidden>Select Application Mode</option>
+              <option defaultValue={""} selected hidden>
+                Select Application Mode
+              </option>
               <option value="Public">Public</option>
               <option value="Hidden">Hidden</option>
             </select>
@@ -264,7 +268,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <input
               type="number"
               name="maxDiscountValue"
-              value={formData.maxDiscountValue}
+              value={addPromocode.maxDiscountValue}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             />
@@ -274,7 +278,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <input
               type="text"
               name="minOrderAmount"
-              value={formData.minOrderAmount}
+              value={addPromocode.minOrderAmount}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             />
@@ -286,7 +290,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <input
               type="number"
               name="maxAllowedUsers"
-              value={formData.maxAllowedUsers}
+              value={addPromocode.maxAllowedUsers}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             />
@@ -298,7 +302,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               name="appliedOn"
               value="Cart-value"
               className="-ml-12  mr-2"
-              checked={formData.appliedOn === "Cart-value"}
+              checked={addPromocode.appliedOn === "Cart-value"}
               onChange={handleChange}
             />
             Cart Value
@@ -307,7 +311,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               name="appliedOn"
               value="Delivery-charge"
               className="ml-4 mr-1"
-              checked={formData.appliedOn === "Delivery-charge"}
+              checked={addPromocode.appliedOn === "Delivery-charge"}
               onChange={handleChange}
             />
             Delivery charge
@@ -317,12 +321,16 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <select
               name="merchantId"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={formData.merchantId}
+              value={addPromocode.merchantId}
               onChange={handleChange}
             >
-              <option defaultValue={"Select merchant"} hidden>Select Merchant</option>
+              <option defaultValue={"Select merchant"} hidden>
+                Select Merchant
+              </option>
               {merchant.map((data) => (
-                <option value={data._id} key={data._id}>{data.merchantName}</option>
+                <option value={data._id} key={data._id}>
+                  {data.merchantName}
+                </option>
               ))}
             </select>
           </div>
@@ -331,11 +339,13 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
             <select
               name="geofenceId"
               id="geofenceId"
-              value={formData.geofenceId}
+              value={addPromocode.geofenceId}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option defaultValue={"Select geofence"} hidden>Select Geofence</option>
+              <option defaultValue={"Select geofence"} hidden>
+                Select Geofence
+              </option>
               {geofence.map((geofence) => (
                 <option key={geofence._id} value={geofence._id}>
                   {geofence.name}
@@ -385,7 +395,7 @@ const AddPromoCodeModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
               type="submit"
             >
-             {isLoading ? "Saving....": "save"}
+              {isLoading ? "Saving...." : "save"}
             </button>
           </div>
         </form>

@@ -7,6 +7,8 @@ import { Switch } from "antd";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 
 const AccountLogs = () => {
+
+  const [type, setType] = useState("")
   const dummyData = [
     {
       id: "1",
@@ -26,10 +28,11 @@ const AccountLogs = () => {
     },
   ];
 
-  const handleChange = (event) => {
+  const handleChange = (e) => {
     e.preventDefault();
 
-    console.log(Account);
+    setType({...type,[e.target.name] : e.target.value});
+    console.log(type);
   };
 
   return (
@@ -50,12 +53,13 @@ const AccountLogs = () => {
           <div className="flex gap-10">
             <select
               name="AccountType"
-              value={""}
+              value={type}
               className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
               onChange={handleChange}
             >
-              <option value="Option 1">Account Type</option>
-              <option value="optioon 2">Option 2</option>
+              <option value="Admin">Admin</option>
+              <option value="Merchant">Merchant</option>
+              <option value="Customer">Customer</option>
             </select>
             <select
               name="Status"
@@ -64,7 +68,6 @@ const AccountLogs = () => {
               onChange={handleChange}
             >
               <option value="block">Blocked</option>
-              <option value="unblock">Unblocked</option>
             </select>
           </div>
           <div className="flex gap-4">
@@ -81,7 +84,7 @@ const AccountLogs = () => {
             <input
               type="search"
               name="search"
-              placeholder="search User id"
+              placeholder="Search User ID"
               className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
             />
             <button type="submit" className="absolute right-16 mt-2">
