@@ -252,8 +252,6 @@ const AgentDetails = () => {
     console.log(reason);
   };
 
- 
-
   return (
     <>
       <Sidebar />

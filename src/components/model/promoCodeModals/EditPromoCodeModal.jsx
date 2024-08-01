@@ -8,10 +8,12 @@ const EditPromoCodeModal = ({
   handleCancel,
   BASE_URL,
   currentPromoEdit,
-  handleOkEdit,
   isVisible,
   token,
 }) => {
+
+  if(!currentPromoEdit) return
+
   const [formData, setFormData] = useState({
     promoCode: "",
     promoType: "",
@@ -36,15 +38,11 @@ const EditPromoCodeModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-
-  console.log("data", formData);
-
   // api call for get the promoCode details
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         const [response, geofenceResponse, merchantResponse] =
           await Promise.all([
             axios.get(`${BASE_URL}/admin/promocode/${currentPromoEdit}`, {
@@ -120,12 +118,12 @@ const EditPromoCodeModal = ({
       if (response.status === 200) {
         handleCancel();
         toast({
-          title:"PromoCode Updated.",
-          description:"Promocode updated Successfully",
-          duration:9000,
-          isClosable:true,
-          status:"true"
-        })
+          title: "PromoCode Updated.",
+          description: "Promocode updated Successfully",
+          duration: 9000,
+          isClosable: true,
+          status: "true",
+        });
       }
     } catch (err) {
       console.error(`Error in update data ${err.message}`);
@@ -238,7 +236,9 @@ const EditPromoCodeModal = ({
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option defaultValue={""} selected hidden>Select Application Mode</option>
+              <option defaultValue={""} selected hidden>
+                Select Application Mode
+              </option>
               <option value="Public">Public</option>
               <option value="Hidden">Hidden</option>
             </select>
@@ -304,9 +304,13 @@ const EditPromoCodeModal = ({
               value={formData.merchantId}
               onChange={handleChange}
             >
-              <option defaultValue={"Select merchant"} hidden>Select Merchant</option>
+              <option defaultValue={"Select merchant"} hidden>
+                Select Merchant
+              </option>
               {merchant.map((data) => (
-                <option value={data._id} key={data._id}>{data.merchantName}</option>
+                <option value={data._id} key={data._id}>
+                  {data.merchantName}
+                </option>
               ))}
             </select>
           </div>
@@ -319,7 +323,9 @@ const EditPromoCodeModal = ({
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option defaultValue={"Select geofence"} hidden>Select Geofence</option>
+              <option defaultValue={"Select geofence"} hidden>
+                Select Geofence
+              </option>
               {geofence.map((geofence) => (
                 <option key={geofence._id} value={geofence._id}>
                   {geofence.name}

@@ -84,7 +84,7 @@ const AddDiscountModal = ({
 
     console.log("id", selectedMerchant);
     console.log("merchant", geofence);
-    console.log("LAST", merchantDiscount);
+    console.log("merchant Discount", merchantDiscount);
 
     return (
         <Modal
