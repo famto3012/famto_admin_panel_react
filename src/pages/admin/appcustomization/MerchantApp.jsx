@@ -1,5 +1,5 @@
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
 import { Switch } from "antd";
@@ -7,35 +7,130 @@ import { FaGoogle } from "react-icons/fa";
 import { AiFillApple } from "react-icons/ai";
 import { FaFacebookSquare } from "react-icons/fa";
 import GlobalSearch from "../../../components/GlobalSearch";
-
+import { useToast } from "@chakra-ui/react";
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const MerchantApp = () => {
-  const [formData, setFormData] = useState({
-    phoneno: false,
-    email: false,
-    emailverify: false,
-    otpverify: false,
-    otp: false,
-    google: false,
-    ios: false,
-    facebook: false,
-  });
-  const submitAction = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
-
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked });
-  };
-
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-
-  const handleNotificationImageChange = (e) => {
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
-  };
+    const toast = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+    const { token, role } = useContext(UserContext);
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+      splashScreenUrl: "",
+      email: false,
+      phoneNumber: false,
+      emailVerification: false,
+      otpVerification: false,
+      loginViaOtp: false,
+      loginViaGoogle: false,
+      loginViaApple: false,
+      loginViaFacebook: false,
+    });
+  
+    useEffect(() => {
+      if (!token) {
+        navigate("/auth/login");
+        return;
+      }
+  
+      const fetchData = async () => {
+        setIsLoading(true);
+        try {
+          const response = await axios.get(
+            `${BASE_URL}/admin/app-customization/merchant-app`,
+            {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+  
+          if (response.status === 200) {
+            setFormData(response.data.data);
+            console.log(response.data.data);
+          }
+        } catch (err) {
+          console.error(`Error in fetching data: ${err}`);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, [token, role, navigate]);
+  
+    const submitAction = async (e) => {
+      e.preventDefault();
+      try {
+        console.log("formData", formData);
+  
+        setIsLoading(true);
+        const adddataToSend = new FormData();
+        adddataToSend.append("email", formData.email);
+        adddataToSend.append("phoneNumber", formData.phoneNumber);
+        adddataToSend.append("emailVerification", formData.emailVerification);
+        adddataToSend.append("otpVerification", formData.otpVerification);
+        adddataToSend.append("loginViaOtp", formData.loginViaOtp);
+        adddataToSend.append("loginViaGoogle", formData.loginViaGoogle);
+        adddataToSend.append("loginViaApple", formData.loginViaApple);
+        adddataToSend.append("loginViaFacebook", formData.loginViaFacebook);
+  
+        adddataToSend.append("splashScreenImage", notificationFile);
+        console.log("data for test", adddataToSend);
+  
+        const addDataResponse = await axios.post(
+          `${BASE_URL}/admin/app-customization/merchant-app`,
+          adddataToSend,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+  
+        if (addDataResponse.status === 201) {
+          setFormData(addDataResponse.data.data);
+          setNotificationPreviewURL(null);
+          setNotificationFile(null);
+          handleCancel();
+          toast({
+            title: "Updated",
+            description: "Agent App Updated Successfully",
+            status: "success",
+            duration: 1000,
+            isClosable: true,
+          });
+        }
+      } catch (err) {
+        console.error(`Error in fetch datas : ${addDataResponse.data.message}`);
+        toast({
+          title: "Error",
+          description: "There was an error occured",
+          status: "error",
+          duration: 1000,
+          isClosable: true,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+      console.log(formData);
+    };
+  
+    const onChange = (name, checked) => {
+      setFormData({ ...formData, [name]: checked });
+    };
+  
+    const [notificationFile, setNotificationFile] = useState(null);
+    const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
+  
+    const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      setNotificationFile(file);
+      setNotificationPreviewURL(URL.createObjectURL(file));
+    };
 
   return (
     <>
@@ -57,8 +152,14 @@ const MerchantApp = () => {
           </p>
 
           <div className="flex items-center ml-14 gap-[30px] mx-10">
-            {!notificationPreviewURL && (
-              <div className="bg-cyan-50 shadow-md h-16 w-16 rounded-md " />
+          {formData?.splashScreenUrl && !notificationPreviewURL && (
+              <figure className="h-16 w-16 rounded-md  relative">
+                <img
+                  src={formData?.splashScreenUrl}
+                  alt="profile"
+                  className="w-full rounded h-full object-cover"
+                />
+              </figure>
             )}
             {notificationPreviewURL && (
               <figure className="h-16 w-16 rounded-md  relative">
@@ -71,12 +172,12 @@ const MerchantApp = () => {
             )}
             <input
               type="file"
-              name="notificationImage"
-              id="notificationImage"
+              name="splashScreenImage"
+              id="splashScreenImage"
               className="hidden"
-              onChange={handleNotificationImageChange}
+              onChange={handleImageChange}
             />
-            <label htmlFor="notificationImage" className="cursor-pointer">
+            <label htmlFor="splashScreenImage" className="cursor-pointer">
               <MdCameraAlt
                 className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 rounded-md"
                 size={30}
@@ -103,14 +204,16 @@ const MerchantApp = () => {
                   <label className="text-gray-500">Phoneno</label>
                   <Switch
                     className="ml-[54px]"
-                    onChange={(checked) => onChange("phoneno", checked)}
-                    name="phoneno"
+                    checked={formData.phoneNumber}
+                    onChange={(checked) => onChange("phoneNumber", checked)}
+                    name="phoneNumber"
                   />
                 </div>
                 <div className="flex items-center mt-5">
                   <label className="text-gray-500">Email</label>
                   <Switch
                     className="ml-20"
+                    checked={formData.email}
                     onChange={(checked) => onChange("email", checked)}
                     name="email"
                   />
@@ -122,16 +225,18 @@ const MerchantApp = () => {
                   <label className="text-gray-500">Email Verification</label>
                   <Switch
                     className="ml-10"
-                    onChange={(checked) => onChange("emailverify", checked)}
-                    name="emailverify"
+                    checked={formData.emailVerification}
+                    onChange={(checked) => onChange("emailVerification", checked)}
+                    name="emailVerification"
                   />
                 </div>
                 <div className="flex items-center mt-5">
                   <label className="text-gray-500">OTP Verification</label>
                   <Switch
                     className="ml-12"
-                    onChange={(checked) => onChange("otpverify", checked)}
-                    name="otpverify"
+                    checked={formData.otpVerification}
+                    onChange={(checked) => onChange("otpVerification", checked)}
+                    name="otpVerification"
                   />
                 </div>
               </div>
@@ -141,32 +246,36 @@ const MerchantApp = () => {
                   <label className="text-gray-500">OTP</label>
                   <Switch
                     className="ml-20"
-                    onChange={(checked) => onChange("otp", checked)}
-                    name="otp"
+                    checked={formData.loginViaOtp}
+                    onChange={(checked) => onChange("loginViaOtp", checked)}
+                    name="loginViaOtp"
                   />
                 </div>
                 <div className="flex items-center mt-5">
                   <FaGoogle className="text-gray-500 text-[25px]" />
                   <Switch
                     className="ml-[84px]"
-                    onChange={(checked) => onChange("google", checked)}
-                    name="google"
+                    checked={formData.loginViaGoogle}
+                    onChange={(checked) => onChange("loginViaGoogle", checked)}
+                    name="loginViaGoogle"
                   />
                 </div>
                 <div className="flex items-center mt-5">
                   <AiFillApple className="text-gray-500 text-[30px]" />
                   <Switch
                     className="ml-[80px]"
-                    onChange={(checked) => onChange("ios", checked)}
-                    name="ios"
+                    checked={formData.loginViaApple}
+                    onChange={(checked) => onChange("loginViaApple", checked)}
+                    name="loginViaApple"
                   />
                 </div>
                 <div className="flex items-center mt-5">
                   <FaFacebookSquare className="text-gray-500 text-[30px]" />
                   <Switch
                     className="ml-[80px]"
-                    onChange={(checked) => onChange("facebook", checked)}
-                    name="facebook"
+                    checked={formData.loginViaFacebook}
+                    onChange={(checked) => onChange("loginViaFacebook", checked)}
+                    name="loginViaFacebook"
                   />
                 </div>
               </div>

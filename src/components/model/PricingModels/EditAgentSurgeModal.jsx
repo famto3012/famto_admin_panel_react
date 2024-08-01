@@ -80,6 +80,7 @@ const EditAgentSurgeModal = ({
            );
      
            if (editResponse.status === 200) {
+            handleCancel();
             toast({
               title: "Updated",
               description: "Agent Surge Updated Succesfully.",

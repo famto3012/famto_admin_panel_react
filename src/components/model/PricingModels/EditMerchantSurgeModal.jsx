@@ -79,6 +79,7 @@ const EditMerchantSurgeModal = ({
            );
      
            if (editResponse.status === 200) {
+            handleCancel();
             toast({
               title: "Updated",
               description: "Merchant Updated Successfully.",

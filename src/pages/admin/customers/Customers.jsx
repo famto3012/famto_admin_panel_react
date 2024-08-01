@@ -192,7 +192,7 @@ const Customers = () => {
                       <td>{customer.lastPlatformUsed}</td>
                       <td>{customer.registrationDate}</td>
                       <td>
-                        <StarRating rating={customer.averageRating} />
+                        <StarRating rating={customer.rating} />
                       </td>
                     </tr>
                   ))}

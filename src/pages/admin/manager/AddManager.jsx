@@ -85,7 +85,7 @@ const AddManager = () => {
 
       if (response.status === 201) {
         toast({
-          title: "Manager Created.",
+          title: "Manager Created",
           description: "Manager created successfully.",
           status: "success",
           duration: 9000,

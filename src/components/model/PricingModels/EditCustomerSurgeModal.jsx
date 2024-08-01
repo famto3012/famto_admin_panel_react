@@ -79,6 +79,7 @@ const EditCustomerSurgeModal = ({
            );
      
            if (editResponse.status === 200) {
+            handleCancel();
             toast({
               title: "Updated",
               description: "Customer Surge Updated Successfully.",
