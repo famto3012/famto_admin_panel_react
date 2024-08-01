@@ -65,8 +65,7 @@ const Geofence = () => {
       }
     );
   }, []);
-  
- 
+
   // useEffect(() => {
   //   if (isModalVisible) {
   //     console.log("Add geofence modal is visible");
@@ -78,7 +77,7 @@ const Geofence = () => {
   //       geolocation: true,
   //       clickableIcons: true,
   //     };
-      
+
   //     const mapplsClassObject = new mappls();
 
   //     // Delay the map initialization to ensure the modal is fully rendered
@@ -220,16 +219,16 @@ const Geofence = () => {
           <button
             // to="/add-geofence"
             className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 "
-            onClick={showModal} 
+            onClick={showModal}
           >
-            <PlusOutlined className="mr-2"/> Add Geofence
+            <PlusOutlined className="mr-2" /> Add Geofence
           </button>
           <AddGeofenceModal
-          isModalVisible={isModalVisible}
-          handleOk={showOkModal}
-          handleCancel={showModalCancel}
-          setMapAddObject={setMapAddObject}
-        />
+            isModalVisible={isModalVisible}
+            handleOk={showOkModal}
+            handleCancel={showModalCancel}
+            setMapAddObject={setMapAddObject}
+          />
         </div>
         <p className=" text-gray-500  mx-10 mt-5">
           A geofence is a virtual perimeter for a real-world geographic area.
@@ -263,10 +262,16 @@ const Geofence = () => {
                         <MoreHorizOutlinedIcon />
                       </MenuButton>
                       <MenuList>
-                        <MenuItem className="text-black" onClick={() => showModalEditTask(data._id)}>
+                        <MenuItem
+                          className="text-black"
+                          onClick={() => showModalEditTask(data._id)}
+                        >
                           Edit
                         </MenuItem>
-                        <MenuItem className="text-black" onClick={() => showModalDeleteTask(data._id)}>
+                        <MenuItem
+                          className="text-black"
+                          onClick={() => showModalDeleteTask(data._id)}
+                        >
                           Delete
                         </MenuItem>
                       </MenuList>
@@ -282,77 +287,77 @@ const Geofence = () => {
                   title="Edit Geofence"
                   footer={null}
                 >
-                 <form onSubmit={signupAction}>
-              <div className="flex flex-col gap-3 ">
-                <div>
-                  <label
-                    className="w-1/3 text-md font-medium"
-                    htmlFor="regionName"
-                  >
-                    Colour
-                  </label>
-                  <div className="relative rounded-full">
-                    <input
-                      type="color"
-                      className="appearance-none w-full h-12 rounded outline-none focus:outline-none mt-2"
-                      style={{ WebkitAppearance: "none" }}
-                      value={color}
-                      onChange={handleColorChange}
-                    />
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      <ColorLensOutlinedIcon className=" text-white text-[25px]" />
+                  <form onSubmit={signupAction}>
+                    <div className="flex flex-col gap-3 ">
+                      <div>
+                        <label
+                          className="w-1/3 text-md font-medium"
+                          htmlFor="regionName"
+                        >
+                          Colour
+                        </label>
+                        <div className="relative rounded-full">
+                          <input
+                            type="color"
+                            className="appearance-none w-full h-12 rounded outline-none focus:outline-none mt-2"
+                            style={{ WebkitAppearance: "none" }}
+                            value={color}
+                            onChange={handleColorChange}
+                          />
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <ColorLensOutlinedIcon className=" text-white text-[25px]" />
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <label
+                          className="w-1/3 text-md font-medium"
+                          htmlFor="regionName"
+                        >
+                          Region name
+                        </label>
+                        <input
+                          type="text"
+                          name="regionName"
+                          placeholder="Region Name"
+                          className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
+                          value={geofences.name}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          className="w-1/3 text-md font-medium"
+                          htmlFor="regionDescription"
+                        >
+                          Region description
+                        </label>
+                        <input
+                          type="text"
+                          name="regionDescription"
+                          placeholder="Region Description"
+                          className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
+                          value={geofences.description}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-4 mt-6">
+                        <button
+                          className="bg-cyan-50 px-7 py-1 rounded-md"
+                          type="button"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="bg-teal-700 text-white px-8 py-1 rounded-md"
+                          type="submit"
+                          onClick={signupAction}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div>
-                  <label
-                    className="w-1/3 text-md font-medium"
-                    htmlFor="regionName"
-                  >
-                    Region name
-                  </label>
-                  <input
-                    type="text"
-                    name="regionName"
-                    placeholder="Region Name"
-                    className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                    value={geofences.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <label
-                    className="w-1/3 text-md font-medium"
-                    htmlFor="regionDescription"
-                  >
-                    Region description
-                  </label>
-                  <input
-                    type="text"
-                    name="regionDescription"
-                    placeholder="Region Description"
-                    className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                    value={geofences.description}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="flex justify-end gap-4 mt-6">
-                  <button
-                    className="bg-cyan-50 px-7 py-1 rounded-md"
-                    type="button"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-teal-700 text-white px-8 py-1 rounded-md"
-                    type="submit"
-                    onClick={signupAction}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </form>
+                  </form>
                 </Modal>
                 <Modal
                   onOk={() => showModalDeleteCancelTask(data._id)}
@@ -364,23 +369,24 @@ const Geofence = () => {
                   footer={null}
                 >
                   <p className="font-semibold text-[14px] mb-5">
-                Are you sure you want to delete?
-              </p>
-              <div className="flex justify-end">
-                <button
-                  className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                 // onClick={showModalDeleteCancel1}
-                >
-                  Cancel
-                </button>
-                <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700" 
-                //onClick={()=>{handleDelete(alertItem._id)
-                //  showModalCancelTask(alertItem._id)
-                //}}
-                >
-                  Delete
-                </button>
-              </div>
+                    Are you sure you want to delete?
+                  </p>
+                  <div className="flex justify-end">
+                    <button
+                      className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                      // onClick={showModalDeleteCancel1}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                      //onClick={()=>{handleDelete(alertItem._id)
+                      //  showModalCancelTask(alertItem._id)
+                      //}}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </Modal>
               </Card>
             ))}
