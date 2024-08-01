@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
@@ -9,6 +10,7 @@ const AddAgentPricingModal = ({
   geofence,
   BASE_URL,
 }) => {
+  const toast = useToast();
   const [apricing, setApricing] = useState({
     ruleName: "",
     baseFare: "",
@@ -41,16 +43,23 @@ const AddAgentPricingModal = ({
 
       if (addResponse.status === 201) {
         console.log("adddata", addResponse.data.message);
-        //      toast({
-        //        title: "Updated",
-        //        description: "Updated successfully.",
-        //        status: "success",
-        //        duration: 9000,
-        //        isClosable: true,
-        //    });
+             toast({
+               title: "Created",
+               description: "Agent Pricng Created successfully.",
+               status: "success",
+               duration: 1000,
+               isClosable: true,
+           });
       }
     } catch (err) {
       console.error(`Error in fetching data: ${err}`);
+      toast({
+        title: "Error",
+        description: "There was an error occured",
+        status: "error",
+        duration: 1000,
+        isClosable: true,
+    });
     }
     console.log(apricing);
   };

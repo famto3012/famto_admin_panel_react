@@ -97,6 +97,13 @@ const EditDiscountModal = (
       }
     } catch (err) {
       console.error(`Error in updating data ${err.message}`)
+      toast({
+        title: "Error in updating",
+        description: "Error in Updating Discount",
+        duration: 9000,
+        status: "error",
+        isClosable: true
+      })
     } finally {
       setIsLoading(false);
     }
@@ -139,6 +146,7 @@ const EditDiscountModal = (
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="discountName"
+              placeholder={isTableLoading ? "Loading data..." : ""}
               value={merchantDiscount.discountName}
               onChange={handleDiscount}
             />

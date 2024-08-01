@@ -15,6 +15,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import GIFLoader from "../../../components/GIFLoader";
 import { useToast } from "@chakra-ui/react";
+import { formatDate, formatTime } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -46,7 +47,7 @@ const Discount = () => {
 
   // API for fetch Merchant data
   useEffect(() => {
-    if (!token || role !== "Admin") {
+    if (!token) {
       navigate("/auth/login");
     }
 
@@ -119,7 +120,7 @@ const Discount = () => {
     if (selectedMerchant) {
       fetchDiscount();
     }
-  }, [selectedMerchant, token]);
+  }, [selectedMerchant, token, role]);
 
   // Delete Current Discount...
 
@@ -170,8 +171,7 @@ const Discount = () => {
     }
   };
 
-    // Delete Current Product...
-
+  // Delete Current Product...
 
   const removeProduct = (currentProductDelete) => {
     setDiscount(
@@ -220,17 +220,20 @@ const Discount = () => {
     }
   };
 
-  // API to update status
+  // API to update Merchant discount status
 
   const handleToggle = async (merchantDiscountId) => {
     try {
-      const response = merchantDiscounts.find((response) => response._id === merchantDiscountId);
-      if (response) {
-        const updatedStatus = !merchantDiscounts.status;
-        await axios.post(
-          `${BASE_URL}/admin/discount/merchant-status-admin/${merchantDiscountId}`,
+      const discountToUpdate = discount.find(
+        (d) => d._id === merchantDiscountId
+      );
+      if (discountToUpdate) {
+        const updatedStatus = !discountToUpdate.status;
+
+        await axios.put(
+          `${BASE_URL}/admin/shop-discount/merchant-status-admin/${merchantDiscountId}`,
           {
-            ...response,
+            ...discountToUpdate,
             status: updatedStatus,
           },
           {
@@ -238,14 +241,78 @@ const Discount = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setDiscount(
-          merchantDiscounts.map((m) =>
-            m._id ===  merchantDiscountId? { ...m, status: updatedStatus } : m
+        toast({
+          title: "Status updated",
+          description: "Discount Status Updated Successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
+
+        // Update the state with the new status
+        setDiscount((prevDiscounts) =>
+          prevDiscounts.map((d) =>
+            d._id === merchantDiscountId ? { ...d, status: updatedStatus } : d
           )
         );
       }
     } catch (err) {
-      console.log(`Error in toggling tax status: ${err}`);
+      console.error(`Error in toggling discount status: ${err.message}`);
+      // Optionally show an error toast notification
+      toast({
+        title: "Error",
+        description: "Failed to update discount status.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
+    }
+  };
+
+  // API to update Product discount status
+
+  const handleToggleProduct = async (DiscountId) => {
+    try {
+      const discountToUpdate = discount.find((d) => d._id === DiscountId);
+      if (discountToUpdate) {
+        const updatedStatus = !discountToUpdate.status;
+
+        await axios.put(
+          `${BASE_URL}/admin/product-discount/product-status-admin/${DiscountId}`,
+          {
+            ...discountToUpdate,
+            status: updatedStatus,
+          },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast({
+          title: "Status updated",
+          description: "Discount Status Updated Successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
+
+        // Update the state with the new status
+        setDiscount((prevDiscounts) =>
+          prevDiscounts.map((d) =>
+            d._id === DiscountId ? { ...d, status: updatedStatus } : d
+          )
+        );
+      }
+    } catch (err) {
+      console.error(`Error in toggling discount status: ${err.message}`);
+      // Optionally show an error toast notification
+      toast({
+        title: "Error",
+        description: "Failed to update discount status.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
     }
   };
 
@@ -395,10 +462,14 @@ const Discount = () => {
                         {merchantDiscounts.description}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {merchantDiscounts.validFrom}
+                        {formatDate(merchantDiscounts.validFrom)}
+                        <br />
+                        {formatTime(merchantDiscounts.validFrom)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {merchantDiscounts.validTo}
+                        {formatDate(merchantDiscounts.validTo)}
+                        <br />
+                        {formatTime(merchantDiscounts.validTo)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
                         {merchantDiscounts.geofence}
@@ -408,10 +479,14 @@ const Discount = () => {
                           <Switch
                             className="text-teal-700 mt-2"
                             checked={merchantDiscounts.status}
-                            onChange={() =>handleToggle(merchantDiscounts._id)}
+                            onChange={() => handleToggle(merchantDiscounts._id)}
                           />
                           <div className="flex items-center">
-                            <button onClick={() => showModalEdit(merchantDiscounts._id)}>
+                            <button
+                              onClick={() =>
+                                showModalEdit(merchantDiscounts._id)
+                              }
+                            >
                               <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                             </button>
 
@@ -426,7 +501,9 @@ const Discount = () => {
                             />
                           </div>
                           <button
-                            onClick={() => showModalDelete1(merchantDiscounts._id)}
+                            onClick={() =>
+                              showModalDelete1(merchantDiscounts._id)
+                            }
                             className="outline-none focus:outline-none"
                           >
                             <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
@@ -527,10 +604,14 @@ const Discount = () => {
                         {table.description}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {table.validFrom}
+                        {formatDate(table.validFrom)}
+                        <br />
+                        {formatTime(table.validFrom)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {table.validTo}
+                        {formatDate(table.validFrom)}
+                        <br />
+                        {formatTime(table.validFrom)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
                         {table.geofence}
@@ -540,6 +621,7 @@ const Discount = () => {
                           <Switch
                             className="text-teal-700 mt-2"
                             checked={table.status}
+                            onChange={() => handleToggleProduct(table._id)}
                           />
                           <div className="flex item-center">
                             <button

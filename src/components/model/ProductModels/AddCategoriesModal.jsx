@@ -4,8 +4,9 @@ import { MdCameraAlt } from 'react-icons/md';
 
 const AddCategoriesModal = (
   {
-    isvisible,
+    isVisible,
     handleCancel,
+    BASE_URL,
     token,
     role
   }
@@ -23,7 +24,7 @@ const AddCategoriesModal = (
     setCategory((prevCategory) => ({
       ...prevCategory,
       [name]: value,
-    }));
+    }));s
   };
 
   const [adFile, setAdFile] = useState(null);
@@ -44,7 +45,7 @@ const AddCategoriesModal = (
       title="Add Categories"
       onCancel={handleCancel}
       width="60rem"
-      open={isvisible}
+      open={isVisible}
       footer={null}
     >
       <form onSubmit={submitCategory}>

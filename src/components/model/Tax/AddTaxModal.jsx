@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 
@@ -9,6 +9,7 @@ const AddTaxModal = ({
   BASE_URL,
   allGeofence,
   allBusinessCategory,
+  onAddTax,
 }) => {
   const [taxData, setTaxData] = useState({
     taxName: "",
@@ -22,10 +23,10 @@ const AddTaxModal = ({
     setTaxData({ ...taxData, [e.target.name]: e.target.value });
   };
 
-  const handleRadioChange = (event) => {
+  const handleRadioChange = (e) => {
     setTaxData((tax) => ({
       ...tax,
-      taxType: event.target.value,
+      taxType: e.target.value,
     }));
   };
 
@@ -46,6 +47,7 @@ const AddTaxModal = ({
 
       if (response.status === 201) {
         handleCancel();
+        onAddTax(taxData);
       }
     } catch (err) {
       console.log(`Error in adding new tax: ${err}`);

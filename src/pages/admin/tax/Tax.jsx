@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { PlusOutlined } from "@ant-design/icons";
 import { Switch } from "antd";
@@ -24,7 +24,6 @@ const Tax = () => {
 
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
 
   // State for each modal
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -84,28 +83,16 @@ const Tax = () => {
   }, [token, role, navigate]);
 
   const showAddModal = () => {
-    setAddModalVisible(true);
+    setAddModalVisible(!addModalVisible);
   };
 
-  const showEditModal = async (taxId) => {
-    console.log("Hii");
+  const showEditModal = (taxId) => {
+    const singleTax = taxData.find(
+      (tax) => tax._id.toString() === taxId.toString()
+    );
+
+    setCurrentTax(singleTax);
     setEditModalVisible(true);
-    try {
-      const response = await axios.get(`${BASE_URL}/admin/taxes/${taxId}`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      console.log("Hello");
-
-      if (response.status === 200) {
-        setCurrentTax(response.data.data);
-      }
-
-      console.log("Bye");
-    } catch (err) {
-      console.log(`Error in getting tax data: ${err}`);
-    }
   };
 
   const showDeleteModal = (taxId) => {
@@ -147,6 +134,10 @@ const Tax = () => {
     }
   };
 
+  const handleAddTax = (newTax) => {
+    setTaxData([...taxData, newTax]);
+  };
+
   // New function to remove a tax from the taxData state
   const removeTax = (taxId) => {
     setTaxData(taxData.filter((tax) => tax._id !== taxId));
@@ -154,7 +145,7 @@ const Tax = () => {
 
   // New function to handle confirm delete
   const handleConfirmDelete = () => {
-    setDeleteModalVisible(false);
+    setDeleteModalVisible(!deleteModalVisible);
     setCurrentTax(null);
   };
 
@@ -184,6 +175,7 @@ const Tax = () => {
                 BASE_URL={BASE_URL}
                 allGeofence={allGeofence}
                 allBusinessCategory={allBusinessCategory}
+                onAddTax={handleAddTax}
               />
             </div>
             <p className="ms-5 mt-8 text-gray-500">
@@ -199,11 +191,11 @@ const Tax = () => {
                 <thead>
                   <tr>
                     {[
-                      "Tax Id",
+                      // "Tax Id",
                       "Tax name",
                       "Tax",
                       "Fixed/Percentage",
-                      "Assign to Merchant",
+                      "Assign to Business category",
                       "Geofence",
                       "Status",
                     ].map((header) => (
@@ -219,9 +211,9 @@ const Tax = () => {
                 <tbody className="bg-white">
                   {taxData.map((tax) => (
                     <tr key={tax._id}>
-                      <td className="py-2 px-4 border-b border-gray-100">
+                      {/* <td className="py-2 px-4 border-b border-gray-100">
                         {tax._id}
-                      </td>
+                      </td> */}
 
                       <td className="py-2 px-4 border-b border-gray-100">
                         {tax.taxName}
@@ -276,7 +268,7 @@ const Tax = () => {
               currentTax={currentTax}
               allGeofence={allGeofence}
               allBusinessCategory={allBusinessCategory}
-              // setModalLoading={setModalLoading}
+              setTaxData={setTaxData}
             />
           )}
           {deleteModalVisible && (
@@ -288,7 +280,6 @@ const Tax = () => {
               token={token}
               BASE_URL={BASE_URL}
               removeTax={removeTax}
-              setModalLoading={setModalLoading}
             />
           )}
         </>

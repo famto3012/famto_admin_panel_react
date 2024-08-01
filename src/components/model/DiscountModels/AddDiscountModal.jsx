@@ -33,12 +33,15 @@ const AddDiscountModal = ({
     const handleDiscountSubmit = async (e) => {
         e.preventDefault();
 
-        if (role === "Admin") {
             try {
                 setIsLoading(true);
 
-                const response = await axios.post(
-                    `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`,
+                const endpoint =
+                role === "Admin"
+                  ? `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`
+                  : `${BASE_URL}/admin/shop-discount/add-merchant-discount`;
+      
+              const response = await axios.post(endpoint,
                     merchantDiscount,
                     {
                         withCredentials: true,
@@ -50,7 +53,7 @@ const AddDiscountModal = ({
                 if (response.status === 201) {
                     handleCancel();
                     toast({
-                        title: "Merchant Discount Added",
+                        title: "Merchant Discount Added..",
                         description: "Successfully added Merchant Discount",
                         status: "success",
                         isClosable: true,
@@ -70,7 +73,6 @@ const AddDiscountModal = ({
             } finally {
                 setIsLoading(false);
             }
-        }
     };
 
     const handleDiscount = (e) => {
@@ -82,7 +84,7 @@ const AddDiscountModal = ({
 
     console.log("id", selectedMerchant);
     console.log("merchant", geofence);
-    console.log("LAST", merchantDiscount);
+    console.log("merchant Discount", merchantDiscount);
 
     return (
         <Modal

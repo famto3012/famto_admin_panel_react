@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-const NewCustomer = ({ toggleNewCustomerForm }) => {
+const NewCustomer = ({ toggleNewCustomerForm, onAddCustomer }) => {
   const [newCustomer, setNewCustomer] = useState({
     fullName: "",
     email: "",
@@ -14,8 +14,7 @@ const NewCustomer = ({ toggleNewCustomerForm }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("New Customer:", newCustomer);
+    onAddCustomer(newCustomer);
   };
 
   return (

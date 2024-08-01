@@ -383,9 +383,19 @@ const Orders = () => {
                       <p>{order.orderDate}</p>
                       <p>{order.orderTime}</p>
                     </td>
-                    <td className="p-4 w-[120px] text-center">
-                      <p>{order.orderDate}</p>
-                      <p>{order.deliveryTime}</p>
+                    <td className="p-4 w-[120px]  text-center">
+                      <>
+                        {(!order?.deliveryDate || !order?.deliveryTime) && (
+                          <p>N/A</p>
+                        )}
+
+                        {(order?.deliveryDate || order?.deliveryTime) && (
+                          <>
+                            <p>{order.deliveryDate}</p>
+                            <p>{order.deliveryTime}</p>
+                          </>
+                        )}
+                      </>
                     </td>
                     <td className="p-4">{order.paymentMethod}</td>
                     <td className="p-4">{order.deliveryOption}</td>

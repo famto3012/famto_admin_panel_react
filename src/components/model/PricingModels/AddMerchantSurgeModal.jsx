@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import { Modal } from 'antd'
 import axios from 'axios';
 import React, { useState } from 'react'
@@ -9,7 +10,7 @@ const AddMerchantSurgeModal = ({
     geofence,
     BASE_URL,
   }) => {
-
+    const toast = useToast();
     const [merchantsurge, setMerchantSurge] = useState({
         ruleName: "",
         baseFare: "",
@@ -40,16 +41,23 @@ const AddMerchantSurgeModal = ({
       
             if (addResponse.status === 201) {
               console.log("merchantSurge", addResponse.data.message);
-              //      toast({
-              //        title: "Updated",
-              //        description: "Updated successfully.",
-              //        status: "success",
-              //        duration: 9000,
-              //        isClosable: true,
-              //    });
+                   toast({
+                     title: "Created",
+                     description: "Merchant Surge Created successfully.",
+                     status: "success",
+                     duration: 1000,
+                     isClosable: true,
+                 });
             }
           } catch (err) {
             console.error(`Error in fetching data: ${err}`);
+            toast({
+              title: "Error",
+              description: "There was an error occured",
+              status: "error",
+              duration: 1000,
+              isClosable: true,
+          });
           }
         console.log(merchantsurge);
       };

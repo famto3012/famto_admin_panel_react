@@ -259,7 +259,7 @@ const Merchant = () => {
       } finally {
         setIsTableLoading(false);
       }
-  };
+    };
 
     const timeOut = setTimeout(() => {
       handleSearchMerchant();
@@ -268,7 +268,7 @@ const Merchant = () => {
     return () => {
       clearTimeout(timeOut);
     };
-  }, []);
+  });
 
   const csvData = [
     { label: "Merchant ID", key: "_id" },
