@@ -18,6 +18,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const CreateOrder = () => {
   const [topData, setTopData] = useState({
     customerId: null,
+    customerAddress: [],
     deliveryOption: "On-demand",
     deliveryMode: "Take Away",
   });
@@ -80,6 +81,7 @@ const CreateOrder = () => {
     setTopData((prevState) => ({
       ...prevState,
       customerId: customer._id,
+      customerAddress: customer.address,
     }));
     setCustomerName(customer.fullName);
     setCustomerResults([]);
