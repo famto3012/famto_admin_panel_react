@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
+import { mappls } from "mappls-web-maps";
 
 const AddGeofence = () => {
   const [geofence, setIsGeofence] = useState({
     regionName: "",
     regionDescription: "",
   });
-  const [color, setColor] = useState("#4931a0"); // default color
+  const [color, setColor] = useState("#4931a0");
+  const mapContainerRef = useRef(null);
+  const [mapObject, setMapObject] = useState(null); // default color
 
   const handleColorChange = (event) => {
     setColor(event.target.value);
@@ -24,6 +27,45 @@ const AddGeofence = () => {
     const location = { geofence, color };
     console.log("Confirmed Location", location);
   };
+
+  useEffect(() => {
+    const mapProps = {
+      center: [8.528818999999999, 76.94310683333333],
+      traffic: true,
+      zoom: 12,
+      geolocation: true,
+      clickableIcons: true,
+    };
+
+    const mapplsClassObject = new mappls();
+
+    mapplsClassObject.initialize(
+      "9a632cda78b871b3a6eb69bddc470fef",
+      async () => {
+        if (mapContainerRef.current) {
+          console.log("Initializing map...");
+          const map = await mapplsClassObject.Map({
+            id: "map",
+            properties: mapProps,
+          });
+
+          if (map && typeof map.on === "function") {
+            console.log("Map initialized successfully.");
+            map.on("load", () => {
+              console.log("Map loaded.");
+              setMapObject(map);
+            });
+          } else {
+            console.error(
+              "mapObject.on is not a function or mapObject is not defined"
+            );
+          }
+        } else {
+          console.error("Map container not found");
+        }
+      }
+    );
+  }, []);
   return (
     <>
       <Sidebar />
@@ -106,8 +148,12 @@ const AddGeofence = () => {
               </div>
             </form>
           </div>
-          <div className="flex mx-10 mb-24">
-            <img src="addGeofence.svg" />
+          <div className="w-3/4 bg-white h-[520px]">
+            <div
+              id="map"
+              ref={mapContainerRef}
+              style={{ width: "99%", height: "510px", display: "inline-block" }}
+            ></div>
           </div>
         </div>
       </div>

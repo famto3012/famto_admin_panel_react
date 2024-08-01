@@ -259,9 +259,6 @@ const Merchant = () => {
       } finally {
         setIsTableLoading(false);
       }
-    } catch (err) {
-      console.log(`Error in fetching merchant`, err);
-    }
   };
 
     const timeOut = setTimeout(() => {

@@ -1,11 +1,10 @@
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { formatDate, formatTime } from "../../../utils/formatter";
-import TablePagination from '@mui/material/TablePagination';
+import { Pagination } from "@mui/material";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Notificationlog = () => {
@@ -13,7 +12,7 @@ const Notificationlog = () => {
   const [tableData, setTableData] = useState([]);
   const [pagination, setPagination] = useState({});
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     if (role === "Admin") {
@@ -21,7 +20,7 @@ const Notificationlog = () => {
     } else if (role === "Merchant") {
       getMerchantNotificationLog(page, limit);
     }
-  }, [page, limit]);
+  }, [page, limit, role]);
 
   const getAdminNotificationLog = async (page, limit) => {
     try {
@@ -35,7 +34,6 @@ const Notificationlog = () => {
         }
       );
       if (response.status === 200) {
-        // const {data} = response.data;
         setTableData(response.data.data);
         setPagination(response.data);
       }
@@ -56,23 +54,33 @@ const Notificationlog = () => {
         }
       );
       if (response.status === 200) {
-        // const {data} = response.data;
         setTableData(response.data.data);
         setPagination(response.data);
-        // console.log("response", response.data);
       }
     } catch (err) {
       console.log("Error in fetching agent: ", err);
     }
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setLimit(parseInt(event.target.value, 10));
-    setPage(0);
+  const getItemAriaLabel = (type, page, selected) => {
+    switch (type) {
+      case "page":
+        return `${selected ? "" : "Go to "}page ${page}`;
+      case "first":
+        return "Go to first page";
+      case "last":
+        return "Go to last page";
+      case "next":
+        return "Go to next page";
+      case "previous":
+        return "Go to previous page";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -85,14 +93,6 @@ const Notificationlog = () => {
         <div>
           <h1 className="text-lg font-bold mt-7 mx-11">Notification Log</h1>
         </div>
-        <TablePagination
-          // component="div"
-          count={100}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={limit}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
         <div className="overflow-x-auto">
           <table className="overflow-x-auto p-4 w-full mt-7">
             <thead>
@@ -127,7 +127,6 @@ const Notificationlog = () => {
                     <span className="block">{table.description}</span>
                   </td>
                   <td>
-                    {" "}
                     {`${formatDate(table.createdAt)} ${formatTime(
                       table.createdAt
                     )}`}
@@ -136,6 +135,18 @@ const Notificationlog = () => {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-center mt-5 mb-4">
+            <Pagination
+              count={pagination.totalPages || 0}
+              page={pagination.currentPage || page}
+              onChange={handlePageChange}
+              shape="rounded"
+              siblingCount={0}
+              hidePrevButton={!pagination.hasPrevPage}
+              hideNextButton={!pagination.hasNextPage}
+              getItemAriaLabel={getItemAriaLabel}
+            />
+          </div>
         </div>
       </div>
     </>
