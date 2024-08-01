@@ -43,6 +43,7 @@ const AddMerchantPricingModal = ({
             );
       
             if (addResponse.status === 201) {
+              handleCancel();
               console.log("adddata", addResponse.data.message);
                    toast({
                      title: "Created",

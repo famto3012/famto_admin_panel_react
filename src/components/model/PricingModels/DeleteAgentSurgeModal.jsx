@@ -29,7 +29,7 @@ const DeleteAgentSurgeModal = ({
         handleConfirmDeleteAs();
         toast({
           title: "Deleted",
-          description: "Agent Pricng Deleted successfully.",
+          description: "Agent Surge Deleted successfully.",
           status: "success",
           duration: 1000,
           isClosable: true,

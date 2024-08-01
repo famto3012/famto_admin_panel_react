@@ -40,6 +40,7 @@ const AddMerchantSurgeModal = ({
             );
       
             if (addResponse.status === 201) {
+              handleCancel();
               console.log("merchantSurge", addResponse.data.message);
                    toast({
                      title: "Created",

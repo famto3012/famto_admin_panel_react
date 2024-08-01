@@ -16,13 +16,9 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Geofence = () => {
   const mapContainerRef = useRef(null);
-  const mapAddContainerRef = useRef(null);
   const [mapObject, setMapObject] = useState(null);
-  const [mapAddObject, setMapAddObject] = useState(null);
   const { token } = useContext(UserContext);
   const [geofences, setGeofences] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [visibleEditModal, setVisibleEditModal] = useState({});
   const [visibleDeleteModal, setVisibleDeleteModal] = useState({});
 
   useEffect(() => {
@@ -65,58 +61,6 @@ const Geofence = () => {
       }
     );
   }, []);
-
-  // useEffect(() => {
-  //   if (isModalVisible) {
-  //     console.log("Add geofence modal is visible");
-
-  //     const mapProps = {
-  //       center: [8.528818999999999, 76.94310683333333],
-  //       traffic: true,
-  //       zoom: 12,
-  //       geolocation: true,
-  //       clickableIcons: true,
-  //     };
-
-  //     const mapplsClassObject = new mappls();
-
-  //     // Delay the map initialization to ensure the modal is fully rendered
-  //     setTimeout(() => {
-  //       if (mapAddContainerRef.current) {
-  //         console.log("Initializing map in modal...");
-  //         mapplsClassObject.initialize(
-  //           "9a632cda78b871b3a6eb69bddc470fef",
-  //           async () => {
-  //             console.log("Inside initialize callback");
-
-  //             try {
-  //               const map = await mapplsClassObject.Map({
-  //                 id: "modalMap",
-  //                 properties: mapProps,
-  //               });
-
-  //               if (map && typeof map.on === "function") {
-  //                 console.log("Map add initialized successfully.");
-  //                 map.on("load", () => {
-  //                   console.log("Map add loaded.");
-  //                   setMapAddObject(map);
-  //                 });
-  //               } else {
-  //                 console.error(
-  //                   "mapObject.on is not a function or mapObject is not defined"
-  //                 );
-  //               }
-  //             } catch (error) {
-  //               console.error("Error initializing map:", error);
-  //             }
-  //           }
-  //         );
-  //       } else {
-  //         console.error("Map container not found in modal");
-  //       }
-  //     }, 500); // Adjust the delay as necessary
-  //   }
-  // }, [isModalVisible]);
 
   const getAllGeofence = async () => {
     try {
@@ -163,14 +107,6 @@ const Geofence = () => {
     });
   };
 
-  const showModalEditTask = (taskId) => {
-    setVisibleEditModal((prev) => ({ ...prev, [taskId]: true }));
-  };
-
-  const showModalEditCancelTask = (taskId) => {
-    setVisibleEditModal((prev) => ({ ...prev, [taskId]: false }));
-  };
-
   const showModalDeleteTask = (taskId) => {
     setVisibleDeleteModal((prev) => ({ ...prev, [taskId]: true }));
   };
@@ -179,33 +115,6 @@ const Geofence = () => {
     setVisibleDeleteModal((prev) => ({ ...prev, [taskId]: false }));
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const showOkModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const showModalCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const [color, setColor] = useState("#4931a0"); // default color
-
-  const handleColorChange = (event) => {
-    setColor(event.target.value);
-  };
-
-  const handleInputChange = (e) => {
-    setGeofences({ ...geofences, [e.target.name]: e.target.value });
-  };
-
-  const signupAction = (e) => {
-    e.preventDefault();
-    const location = { geofences, color };
-    console.log("Confirmed Location", location);
-  };
 
   return (
     <>
@@ -216,19 +125,12 @@ const Geofence = () => {
         </nav>
         <div className="flex items-center justify-between mx-10">
           <h1 className="font-bold text-lg">Geofence</h1>
-          <button
-            // to="/add-geofence"
-            className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 "
-            onClick={showModal}
+          <Link
+            to="/add-geofence"
+            className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 " 
           >
-            <PlusOutlined className="mr-2" /> Add Geofence
-          </button>
-          <AddGeofenceModal
-            isModalVisible={isModalVisible}
-            handleOk={showOkModal}
-            handleCancel={showModalCancel}
-            setMapAddObject={setMapAddObject}
-          />
+            <PlusOutlined className="mr-2"/> Add Geofence
+          </Link>
         </div>
         <p className=" text-gray-500  mx-10 mt-5">
           A geofence is a virtual perimeter for a real-world geographic area.
@@ -262,10 +164,7 @@ const Geofence = () => {
                         <MoreHorizOutlinedIcon />
                       </MenuButton>
                       <MenuList>
-                        <MenuItem
-                          className="text-black"
-                          onClick={() => showModalEditTask(data._id)}
-                        >
+                        <MenuItem className="text-black" to="">
                           Edit
                         </MenuItem>
                         <MenuItem
@@ -278,87 +177,6 @@ const Geofence = () => {
                     </Menu>
                   </div>
                 </div>
-                <Modal
-                  onOk={() => showModalEditCancelTask(data._id)}
-                  onCancel={() => showModalEditCancelTask(data._id)}
-                  open={visibleEditModal[data._id] || false}
-                  width="500px"
-                  centered
-                  title="Edit Geofence"
-                  footer={null}
-                >
-                  <form onSubmit={signupAction}>
-                    <div className="flex flex-col gap-3 ">
-                      <div>
-                        <label
-                          className="w-1/3 text-md font-medium"
-                          htmlFor="regionName"
-                        >
-                          Colour
-                        </label>
-                        <div className="relative rounded-full">
-                          <input
-                            type="color"
-                            className="appearance-none w-full h-12 rounded outline-none focus:outline-none mt-2"
-                            style={{ WebkitAppearance: "none" }}
-                            value={color}
-                            onChange={handleColorChange}
-                          />
-                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                            <ColorLensOutlinedIcon className=" text-white text-[25px]" />
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <label
-                          className="w-1/3 text-md font-medium"
-                          htmlFor="regionName"
-                        >
-                          Region name
-                        </label>
-                        <input
-                          type="text"
-                          name="regionName"
-                          placeholder="Region Name"
-                          className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                          value={geofences.name}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <label
-                          className="w-1/3 text-md font-medium"
-                          htmlFor="regionDescription"
-                        >
-                          Region description
-                        </label>
-                        <input
-                          type="text"
-                          name="regionDescription"
-                          placeholder="Region Description"
-                          className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                          value={geofences.description}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className="flex justify-end gap-4 mt-6">
-                        <button
-                          className="bg-cyan-50 px-7 py-1 rounded-md"
-                          type="button"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-teal-700 text-white px-8 py-1 rounded-md"
-                          type="submit"
-                          onClick={signupAction}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </Modal>
                 <Modal
                   onOk={() => showModalDeleteCancelTask(data._id)}
                   onCancel={() => showModalDeleteCancelTask(data._id)}

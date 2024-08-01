@@ -41,6 +41,7 @@ const AddAgentSurgeModal = ({
             );
       
             if (addResponse.status === 201) {
+              handleCancel();
               console.log("agentsurge", addResponse.data.message);
                    toast({
                      title: "Creted",
