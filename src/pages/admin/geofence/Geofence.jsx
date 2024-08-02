@@ -115,7 +115,6 @@ const Geofence = () => {
     setVisibleDeleteModal((prev) => ({ ...prev, [taskId]: false }));
   };
 
-
   return (
     <>
       <Sidebar />
@@ -127,9 +126,9 @@ const Geofence = () => {
           <h1 className="font-bold text-lg">Geofence</h1>
           <Link
             to="/add-geofence"
-            className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 " 
+            className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 "
           >
-            <PlusOutlined className="mr-2"/> Add Geofence
+            <PlusOutlined className="mr-2" /> Add Geofence
           </Link>
         </div>
         <p className=" text-gray-500  mx-10 mt-5">

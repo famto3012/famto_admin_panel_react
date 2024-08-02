@@ -16,8 +16,8 @@ const PushNotification = () => {
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentData, setCurrentData] = useState(null);
-  const [searchFilter,setSearchFilter] = useState("")
-  const [type,setType] = useState("")
+  const [searchFilter, setSearchFilter] = useState("");
+  const [type, setType] = useState("");
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
@@ -129,122 +129,120 @@ const PushNotification = () => {
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = (dataId) => {
-   setCurrentData(dataId);
-   console.log(dataId);
-   setIsShowModalDelete(true);
-   
- };
+    setCurrentData(dataId);
+    console.log(dataId);
+    setIsShowModalDelete(true);
+  };
 
- const removeBanner = (dataId) => {
-   setData(data.filter((data) => data._id !== dataId));
- };
+  const removeBanner = (dataId) => {
+    setData(data.filter((data) => data._id !== dataId));
+  };
 
- // New function to handle confirm delete
- const handleConfirmDelete = () => {
-   setIsShowModalDelete(false);
-   setCurrentManager(null);
- };
+  // New function to handle confirm delete
+  const handleConfirmDelete = () => {
+    setIsShowModalDelete(false);
+    setCurrentManager(null);
+  };
 
- const handleCancel = () => {
-   setIsShowModalDelete(false);
- };
- const handleDelete = async (currentData) => {
-   try {
-     setConfirmLoading(true);
+  const handleCancel = () => {
+    setIsShowModalDelete(false);
+  };
+  const handleDelete = async (currentData) => {
+    try {
+      setConfirmLoading(true);
 
-     const deleteResponse = await axios.delete(
-       `${BASE_URL}/admin/notification/push-notification/${currentData}`,
-       {
-         withCredentials: true,
-         headers: { Authorization: `Bearer ${token}` },
-       }
-     );
-
-     if (deleteResponse.status === 200) {
-       removeBanner(currentData);
-     handleConfirmDelete();
-   }
-   } catch (err) {
-     console.error('Error in deleting banner:', err);
-   } finally {
-     setConfirmLoading(false);
-   }
- }
- const sendNotification = async(id) => {
-     try{
-        const sendResponse = await axios.post(
-          `${BASE_URL}/admin/notification/send-push-notification/${id}`,{},{
-            withCredentials:true,
-            headers:{Authorization:`Bearer ${token}`}
-          }
-        
-        )
-        if(sendResponse.status===200){
-          console.log("notification send",sendResponse.data.data)  
+      const deleteResponse = await axios.delete(
+        `${BASE_URL}/admin/notification/push-notification/${currentData}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
         }
-     }catch(err){
-      console.error('Error in send notification:',err);
-     }
-    
- }
+      );
 
-
- const onTypeChange = (e) => {
-  const selectedType = e.target.value;
-  setType(selectedType);
-  if (selectedType !== "") {
-    handleTypeFilter(selectedType);
-  } else {
-    setData([]);
-  }
-};
-
-const handleTypeFilter = async (selectedType) => {
-  try {
-    console.log(token);
-    const typeResponse = await axios.get(
-      `${BASE_URL}/admin/notification/push-notification-type`,
-      {
-        params: { type: selectedType },
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
+      if (deleteResponse.status === 200) {
+        removeBanner(currentData);
+        handleConfirmDelete();
       }
-    );
-    if (typeResponse.status === 200) {
-      setData(typeResponse.data.data);
+    } catch (err) {
+      console.error("Error in deleting banner:", err);
+    } finally {
+      setConfirmLoading(false);
     }
-  } catch (err) {
-    console.log(`Error in fetching notification`, err);
-  }
-};
-const onSearchChange = (e) => {
-  const searchService = e.target.value;
-  setSearchFilter(searchService);
-  if(searchService !== "") {
-    handleSearchChangeFilter(searchService);
-  }else {
-    setData([]);
-  }
-};
+  };
+  const sendNotification = async (id) => {
+    try {
+      const sendResponse = await axios.post(
+        `${BASE_URL}/admin/notification/send-push-notification/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (sendResponse.status === 200) {
+        console.log("notification send", sendResponse.data.data);
+      }
+    } catch (err) {
+      console.error("Error in send notification:", err);
+    }
+  };
 
-const handleSearchChangeFilter = async(searchService) => {
-  try{
+  const onTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setType(selectedType);
+    if (selectedType !== "") {
+      handleTypeFilter(selectedType);
+    } else {
+      setData([]);
+    }
+  };
+
+  const handleTypeFilter = async (selectedType) => {
+    try {
+      console.log(token);
+      const typeResponse = await axios.get(
+        `${BASE_URL}/admin/notification/push-notification-type`,
+        {
+          params: { type: selectedType },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (typeResponse.status === 200) {
+        setData(typeResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching notification`, err);
+    }
+  };
+  const onSearchChange = (e) => {
+    const searchService = e.target.value;
+    setSearchFilter(searchService);
+    if (searchService !== "") {
+      handleSearchChangeFilter(searchService);
+    } else {
+      setData([]);
+    }
+  };
+
+  const handleSearchChangeFilter = async (searchService) => {
+    try {
       console.log(token);
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/notification/push-notification-search`,
         {
-          params: {query : searchService},
+          params: { query: searchService },
           withCredentials: true,
-          headers: {Authorization: `Bearer ${token}`}
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if(searchResponse.status === 200) {
+      if (searchResponse.status === 200) {
         setData(searchResponse.data.data);
       }
-  }catch (err) {
-    console.log(`Error in fetching notification`, err);
-  }
-};
+    } catch (err) {
+      console.log(`Error in fetching notification`, err);
+    }
+  };
   return (
     <>
       <Sidebar />
@@ -376,7 +374,6 @@ const handleSearchChangeFilter = async(searchService) => {
             value={type}
             onChange={onTypeChange}
             className="bg-blue-50 rounded-lg p-3 outline-none focus:outline-none"
-      
           >
             <option hidden value="">
               Type of user
@@ -424,7 +421,9 @@ const handleSearchChangeFilter = async(searchService) => {
           <tbody>
             {data.map((data) => (
               <tr key={data._id} className="text-center bg-white h-20">
-                <td>{data.customer && data.driver && data.merchant ? "All":type}</td>
+                <td>
+                  {data.customer && data.driver && data.merchant ? "All" : type}
+                </td>
                 <td>{data.description}</td>
                 <td className=" flex items-center justify-center p-3">
                   <figure className="h-[70px] w-[100px]">
@@ -446,40 +445,40 @@ const handleSearchChangeFilter = async(searchService) => {
 
                 <td>
                   <div className="flex items-center justify-center gap-3">
-                    <button
-                    onClick={() => sendNotification(data._id)}>
+                    <button onClick={() => sendNotification(data._id)}>
                       <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
                     </button>
                     <button
                       className="outline-none focus:outline-none"
                       onClick={() => showModalDelete(data._id)}
-                
                     >
                       <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                     </button>
                     <Modal
-                    onCancel={handleCancel}
-                    footer={null}
-                    open={isShowModalDelete}
-                    centered
-                  >
-                    <p className="font-semibold text-[18px] mb-5">
-                    <Spin spinning={confirmLoading}>
-                      Are you sure want to delete?
-                      </Spin>
-                    </p>
-                    <div className="flex justify-end">
-                      <button
-                        className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                        onClick={handleCancel}
-                      >
-                        Cancel
-                      </button>
-                      <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                       onClick={() => handleDelete(currentData)}>
-                        Delete
-                      </button>
-                    </div>
+                      onCancel={handleCancel}
+                      footer={null}
+                      open={isShowModalDelete}
+                      centered
+                    >
+                      <p className="font-semibold text-[18px] mb-5">
+                        <Spin spinning={confirmLoading}>
+                          Are you sure want to delete?
+                        </Spin>
+                      </p>
+                      <div className="flex justify-end">
+                        <button
+                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                          onClick={handleCancel}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                          onClick={() => handleDelete(currentData)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </Modal>
                   </div>
                 </td>

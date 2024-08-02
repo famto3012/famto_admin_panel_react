@@ -1,6 +1,4 @@
-import {
-  SearchOutlined,
-} from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
@@ -15,11 +13,11 @@ import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AlertNotification = () => {
-  const [alert,setAlert] = useState([])
+  const [alert, setAlert] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
-  const [isLoading,setIsLoading] = useState(false)
-  const [searchType, setSearchType] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchType, setSearchType] = useState("");
   const [isShowModalDelete1, setIsShowModalDelete1] = useState(false);
   const [state, setState] = useState({
     userType: "",
@@ -27,10 +25,10 @@ const AlertNotification = () => {
     title: "",
     description: "",
     alertNotificationImage: null,
-    notificationPreviewURL: null
+    notificationPreviewURL: null,
   });
   const [visibleTaskModal, setVisibleTaskModal] = useState({});
-  const toast = useToast()
+  const toast = useToast();
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -42,20 +40,16 @@ const AlertNotification = () => {
       try {
         setIsLoading(true);
 
-        const [alertResponse] =
-          await Promise.all([
-            axios.get(`${BASE_URL}/admin/notification/alert-notification`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            
-          ]);
+        const [alertResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/notification/alert-notification`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
         if (alertResponse.status === 200) {
           setAlert(alertResponse.data.data);
-          console.log("alert",alertResponse.data.data)
+          console.log("alert", alertResponse.data.data);
         }
-       
-       
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
@@ -74,55 +68,60 @@ const AlertNotification = () => {
     }));
   };
 
-  const handleInputChange = async(e) => {
-    try{
+  const handleInputChange = async (e) => {
+    try {
       setSearchType(e.target.value);
-      const  typeResponse = await axios.get(`${BASE_URL}/admin/notification/alert-notification/${e.target.value}`, {
-         withCredentials: true,
-         headers: { Authorization: `Bearer ${token}` },
-       })
-       if(typeResponse.status === 200){
-         setAlert(typeResponse.data.alertNotifications)
-         console.log("type",typeResponse.data.alertNotifications)
-       }
-    }catch(err){
+      const typeResponse = await axios.get(
+        `${BASE_URL}/admin/notification/alert-notification/${e.target.value}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (typeResponse.status === 200) {
+        setAlert(typeResponse.data.alertNotifications);
+        console.log("type", typeResponse.data.alertNotifications);
+      }
+    } catch (err) {
       console.error(`Error in fetching data: ${err}`);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-   
   };
 
-  const handleConfirm = async(e) => {
+  const handleConfirm = async (e) => {
     e.preventDefault();
-    console.log("State", state)
+    console.log("State", state);
     const formData = new FormData();
-    formData.append('title', state.title);
-    formData.append('description', state.description);
-    formData.append('alertNotificationImage', state.alertNotificationImage);
-    formData.append('id', state.id);
-    formData.append('userType', state.userType);
-    try{
-      const alertNotificationResponse = await axios.post(`${BASE_URL}/admin/notification/alert-notification`,formData,
+    formData.append("title", state.title);
+    formData.append("description", state.description);
+    formData.append("alertNotificationImage", state.alertNotificationImage);
+    formData.append("id", state.id);
+    formData.append("userType", state.userType);
+    try {
+      const alertNotificationResponse = await axios.post(
+        `${BASE_URL}/admin/notification/alert-notification`,
+        formData,
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
-       })
-       if(alertNotificationResponse.status === 201){
+        }
+      );
+      if (alertNotificationResponse.status === 201) {
         toast({
           title: "Alert notification send successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-         console.log("alertNotification",alertNotificationResponse.data)
-       }
-    }catch(err){
+        console.log("alertNotification", alertNotificationResponse.data);
+      }
+    } catch (err) {
       console.error(`Error in fetching data: ${err}`);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
@@ -148,49 +147,53 @@ const AlertNotification = () => {
     }));
   };
 
-  const handleDelete = async(id)=>{
-    try{
-      const deleteResponse = await axios.delete(`${BASE_URL}/admin/notification/alert-notification/${id}`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if(deleteResponse.status === 200){
+  const handleDelete = async (id) => {
+    try {
+      const deleteResponse = await axios.delete(
+        `${BASE_URL}/admin/notification/alert-notification/${id}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (deleteResponse.status === 200) {
         toast({
           title: "Alert notification deleted successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-        console.log("delete",deleteResponse.data)
-        const updatedAlert = alert.filter(alert => alert.id!== id)
-        setAlert(updatedAlert)
+        console.log("delete", deleteResponse.data);
+        const updatedAlert = alert.filter((alert) => alert.id !== id);
+        setAlert(updatedAlert);
       }
-    }catch(err){
+    } catch (err) {
       console.error(`Error in deleting data: ${err}`);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const handleTitleChange = async(e)=>{
-    try{
-      const searchResponse = await axios.get(`${BASE_URL}/admin/notification/search-alert-notification`, {
-        params: {title: e.target.value},
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if(searchResponse.status === 200){
-        setAlert(searchResponse.data.alertNotifications)
-        console.log("search",searchResponse.data.alertNotifications)
+  const handleTitleChange = async (e) => {
+    try {
+      const searchResponse = await axios.get(
+        `${BASE_URL}/admin/notification/search-alert-notification`,
+        {
+          params: { title: e.target.value },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (searchResponse.status === 200) {
+        setAlert(searchResponse.data.alertNotifications);
+        console.log("search", searchResponse.data.alertNotifications);
       }
-    }catch(err){
+    } catch (err) {
       console.error(`Error in fetching data: ${err}`);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-    
-  }
-
+  };
 
   const showModalTask = (taskId) => {
     setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
@@ -204,12 +207,11 @@ const AlertNotification = () => {
     setIsShowModalDelete1(false);
   };
 
-
   return (
     <>
       <Sidebar />
       <div className="w-full  pl-[300px] bg-gray-100">
-      <nav className="p-5">
+        <nav className="p-5">
           <GlobalSearch />
         </nav>
         <div className="flex flex-col mx-[30px] mt-[20px] gap-2">
@@ -252,9 +254,7 @@ const AlertNotification = () => {
                   value={state.id}
                   onChange={handleChange}
                   className="border-2 border-gray-300 rounded p-2 w-[45%] ml-[200px] outline-none focus:outline-none"
-                  
                 />
-                
               </div>
 
               <div className="flex items-center">
@@ -368,78 +368,83 @@ const AlertNotification = () => {
             </div>
           </div>
           <table className="w-full mt-5">
-  <thead>
-    <tr>
-      {["Title", "ID", "Description", "Image", "Action"].map((header) => (
-        <th
-          key={header}
-          className="bg-teal-800 text-white h-[70px] text-center w-screen"
-        >
-          {header}
-        </th>
-      ))}
-    </tr>
-  </thead>
-  <tbody>
-    {alert && alert.length > 0 ? (
-      alert.map((alertItem) => (
-        <tr key={alertItem._id} className="text-center bg-white h-20">
-          <td>{alertItem.title}</td>
-          <td>{alertItem._id}</td>
-          <td>{alertItem.description}</td>
-          <td className="flex items-center justify-center p-3">
-            <figure className="h-[70px] w-[100px]">
-              <img
-                src={alertItem.imageUrl}
-                className="w-full h-full object-contain"
-                alt="alert"
-              />
-            </figure>
-          </td>
-          <td>
-            <button
-              onClick={() => showModalTask(alertItem._id)}
-              className="outline-none focus:outline-none"
-            >
-              <RiDeleteBinLine className="text-red-700 rounded-lg bg-red-100 p-2 text-[35px]" />
-            </button>
-            <Modal
-              onOk={() => showModalCancelTask(alertItem._id)}
-              onCancel={() => showModalCancelTask(alertItem._id)}
-              open={visibleTaskModal[alertItem._id] || false}
-              footer={null}
-              centered
-            >
-              <p className="font-semibold text-[18px] mb-5">
-                Are you sure you want to delete?
-              </p>
-              <div className="flex justify-end">
-                <button
-                  className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                  onClick={showModalDeleteCancel1}
-                >
-                  Cancel
-                </button>
-                <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700" onClick={()=>{handleDelete(alertItem._id)
-                  showModalCancelTask(alertItem._id)
-                }}>
-                  Delete
-                </button>
-              </div>
-            </Modal>
-          </td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={5} className="text-center py-4">
-          No data available
-        </td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
+            <thead>
+              <tr>
+                {["Title", "ID", "Description", "Image", "Action"].map(
+                  (header) => (
+                    <th
+                      key={header}
+                      className="bg-teal-800 text-white h-[70px] text-center w-screen"
+                    >
+                      {header}
+                    </th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {alert && alert.length > 0 ? (
+                alert.map((alertItem) => (
+                  <tr key={alertItem._id} className="text-center bg-white h-20">
+                    <td>{alertItem.title}</td>
+                    <td>{alertItem._id}</td>
+                    <td>{alertItem.description}</td>
+                    <td className="flex items-center justify-center p-3">
+                      <figure className="h-[70px] w-[100px]">
+                        <img
+                          src={alertItem.imageUrl}
+                          className="w-full h-full object-contain"
+                          alt="alert"
+                        />
+                      </figure>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => showModalTask(alertItem._id)}
+                        className="outline-none focus:outline-none"
+                      >
+                        <RiDeleteBinLine className="text-red-700 rounded-lg bg-red-100 p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        onOk={() => showModalCancelTask(alertItem._id)}
+                        onCancel={() => showModalCancelTask(alertItem._id)}
+                        open={visibleTaskModal[alertItem._id] || false}
+                        footer={null}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure you want to delete?
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalDeleteCancel1}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                            onClick={() => {
+                              handleDelete(alertItem._id);
+                              showModalCancelTask(alertItem._id);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">
+                    No data available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </>

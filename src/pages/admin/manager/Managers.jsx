@@ -49,16 +49,15 @@ const Managers = () => {
   //   getAllManagers();
   // }, [token]);
 
-
-  const[manager,setManager] = useState([]);
+  const [manager, setManager] = useState([]);
   const [currentManager, setCurrentManager] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const[geofence,setGeofence] = useState([])
+  const [geofence, setGeofence] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
-  const[isLoading,setIsLoading]=useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
-  const toast=useToast()
+  const toast = useToast();
   const navigate = useNavigate();
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -70,23 +69,22 @@ const Managers = () => {
       try {
         setIsLoading(true);
 
-        const [managerResponse, geofenceResponse] =
-          await Promise.all([
-            axios.get(`${BASE_URL}/admin/managers`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),  
-          ]);
+        const [managerResponse, geofenceResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/managers`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
         if (managerResponse.status === 200) {
           setManager(managerResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
-          console.log(geofence)
+          console.log(geofence);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -97,7 +95,6 @@ const Managers = () => {
 
     fetchData();
   }, [token, role, navigate]);
-  
 
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
@@ -130,28 +127,28 @@ const Managers = () => {
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
-    if(searchService !== "") {
+    if (searchService !== "") {
       handleSearchChangeFilter(searchService);
-    }else {
+    } else {
       setManager([]);
     }
   };
 
-  const handleSearchChangeFilter = async(searchService) => {
-    try{
-        console.log(token);
-        const searchResponse = await axios.get(
-          `${BASE_URL}/admin/managers/search`,
-          {
-            params: {query : searchService},
-            withCredentials: true,
-            headers: {Authorization: `Bearer ${token}`}
-          }
-        );
-        if(searchResponse.status === 200) {
-          setManager(searchResponse.data.data);
+  const handleSearchChangeFilter = async (searchService) => {
+    try {
+      console.log(token);
+      const searchResponse = await axios.get(
+        `${BASE_URL}/admin/managers/search`,
+        {
+          params: { query: searchService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
         }
-    }catch (err) {
+      );
+      if (searchResponse.status === 200) {
+        setManager(searchResponse.data.data);
+      }
+    } catch (err) {
       console.log(`Error in fetching manager`, err);
     }
   };
@@ -164,11 +161,10 @@ const Managers = () => {
 
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
-   const showModalDelete = (managerId) => {
+  const showModalDelete = (managerId) => {
     setCurrentManager(managerId);
     console.log(managerId);
     setIsShowModalDelete(true);
-    
   };
 
   const removeBanner = (managerId) => {
@@ -205,15 +201,15 @@ const Managers = () => {
           status: "success",
           duration: 9000,
           isClosable: true,
-      });
-      handleConfirmDelete();
-    }
+        });
+        handleConfirmDelete();
+      }
     } catch (err) {
-      console.error('Error in deleting banner:', err);
+      console.error("Error in deleting banner:", err);
     } finally {
       setConfirmLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -239,17 +235,15 @@ const Managers = () => {
               value={geofenceFilter}
               className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
               onChange={onGeofenceChange}
-             
             >
-                <option hidden value="">
-                  Geofence
+              <option hidden value="">
+                Geofence
+              </option>
+              {geofence.map((geoFence) => (
+                <option value={geoFence._id} key={geoFence._id}>
+                  {geoFence.name}
                 </option>
-               {geofence.map((geoFence) => (
-                  <option value={geoFence._id} key={geoFence._id}>
-                    {geoFence.name}
-                  </option>
-                ))}
-
+              ))}
             </select>
           </div>
           <div className="flex gap-4">
@@ -263,90 +257,88 @@ const Managers = () => {
               className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
               value={searchFilter}
               onChange={onSearchChange}
-              
-             />
+            />
             <button type="submit" className="absolute right-16 mt-2">
               <SearchOutlined className="text-xl text-gray-600" />
             </button>
           </div>
-        </div >
+        </div>
         <div className="mb-24 overflow-auto">
-        <table className="w-full">
-          <thead>
-            <tr>
-              {[
-                "Id",
-                "Name",
-                "Email",
-                "Phone",
-                "Role",
-                "geoFence",
-                "Action",
-              ].map((header) => (
-                <th
-                  key={header}
-                  className="bg-teal-800 text-white h-[70px] text-center"
-                >
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-          {manager.map((manager) => (
-            <tr 
-            key={manager._id}
-            className="text-center bg-white h-20">
-              <td>{manager._id}</td>
-              <td>{manager.name}</td>
-              <td>{manager.email}</td>
-              <td>{manager.phoneNumber}</td>
-              <td>{manager.role}</td>
-              <td>{manager.geofenceId.name}</td>
-              <td>
-                <div className="flex  justify-center gap-3">
-                  <button>
-                  <Link to={`/update-manager/${manager._id}`}>
-
-                      <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                    </Link>
-                  </button>
-                  <button
-                    className="outline-none focus:outline-none"
-                    onClick={() => showModalDelete(manager._id)}
+          <table className="w-full">
+            <thead>
+              <tr>
+                {[
+                  "Id",
+                  "Name",
+                  "Email",
+                  "Phone",
+                  "Role",
+                  "geoFence",
+                  "Action",
+                ].map((header) => (
+                  <th
+                    key={header}
+                    className="bg-teal-800 text-white h-[70px] text-center"
                   >
-                    <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                  </button>
-                  <Modal
-                    onCancel={handleCancel}
-                    footer={null}
-                    open={isShowModalDelete}
-                    centered
-                  >
-                    <p className="font-semibold text-[18px] mb-5">
-                    <Spin spinning={confirmLoading}>
-                      Are you sure want to delete?
-                      </Spin>
-                    </p>
-                    <div className="flex justify-end">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {manager.map((manager) => (
+                <tr key={manager._id} className="text-center bg-white h-20">
+                  <td>{manager._id}</td>
+                  <td>{manager.name}</td>
+                  <td>{manager.email}</td>
+                  <td>{manager.phoneNumber}</td>
+                  <td>{manager.role}</td>
+                  <td>{manager.geofenceId.name}</td>
+                  <td>
+                    <div className="flex  justify-center gap-3">
+                      <button>
+                        <Link to={`/update-manager/${manager._id}`}>
+                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                        </Link>
+                      </button>
                       <button
-                        className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                        onClick={handleCancel}
+                        className="outline-none focus:outline-none"
+                        onClick={() => showModalDelete(manager._id)}
                       >
-                        Cancel
+                        <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
-                      <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                       onClick={() => handleDelete(currentManager)}>
-                        Delete
-                      </button>
+                      <Modal
+                        onCancel={handleCancel}
+                        footer={null}
+                        open={isShowModalDelete}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          <Spin spinning={confirmLoading}>
+                            Are you sure want to delete?
+                          </Spin>
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={handleCancel}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                            onClick={() => handleDelete(currentManager)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
-                  </Modal>
-                </div>
-              </td>
-            </tr>
-          ))}
-          </tbody>
-        </table>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </>

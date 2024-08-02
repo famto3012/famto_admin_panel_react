@@ -44,13 +44,13 @@ const AddAgentPricingModal = ({
       if (addResponse.status === 201) {
         handleCancel();
         console.log("adddata", addResponse.data.message);
-             toast({
-               title: "Created",
-               description: "Agent Pricng Created successfully.",
-               status: "success",
-               duration: 1000,
-               isClosable: true,
-           });
+        toast({
+          title: "Created",
+          description: "Agent Pricng Created successfully.",
+          status: "success",
+          duration: 1000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error(`Error in fetching data: ${err}`);
@@ -60,7 +60,7 @@ const AddAgentPricingModal = ({
         status: "error",
         duration: 1000,
         isClosable: true,
-    });
+      });
     }
     console.log(apricing);
   };

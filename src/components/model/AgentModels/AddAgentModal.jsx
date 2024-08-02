@@ -43,8 +43,6 @@ const AddAgentModal = ({
     setAddData({ ...addData, [e.target.name]: e.target.value });
   };
 
-
-
   const [agentFile, setAgentFile] = useState(null);
   const [agentPreviewURL, setAgentPreviewURL] = useState(null);
 
@@ -113,7 +111,6 @@ const AddAgentModal = ({
       console.log("here");
       console.log("data for test", addagentToSend);
 
-
       const addAgentResponse = await axios.post(
         `${BASE_URL}/admin/agents/add-agents`,
         addagentToSend,
@@ -125,7 +122,7 @@ const AddAgentModal = ({
           },
         }
       );
- 
+
       if (addAgentResponse.status === 200) {
         setAadharBackPreviewURL(null);
         setAadharFrontPreviewURL(null);
@@ -135,7 +132,7 @@ const AddAgentModal = ({
         setDriFrontPreviewURL(null);
         setRcBackPreviewURL(null);
         setRcFrontPreviewURL(null);
-        console.log("MESSAGE:",addAgentResponse.data.message);
+        console.log("MESSAGE:", addAgentResponse.data.message);
         handleCancel();
       }
     } catch (err) {
@@ -254,7 +251,9 @@ const AddAgentModal = ({
                   name="rcFrontImage"
                   id="rcFrontImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setRcFrontFile, setRcFrontPreviewURL)}
+                  onChange={(e) =>
+                    handleImageChange(e, setRcFrontFile, setRcFrontPreviewURL)
+                  }
                 />
                 <label htmlFor="rcFrontImage" className="cursor-pointer">
                   {rcFrontPreviewURL ? (
@@ -279,8 +278,9 @@ const AddAgentModal = ({
                   name="rcBackImage"
                   id="rcBackImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setRcBackFile, setRcBackPreviewURL)}
-
+                  onChange={(e) =>
+                    handleImageChange(e, setRcBackFile, setRcBackPreviewURL)
+                  }
                 />
                 <label htmlFor="rcBackImage" className="cursor-pointer">
                   {rcBackPreviewURL ? (
@@ -377,8 +377,13 @@ const AddAgentModal = ({
                   name="aadharFrontImage"
                   id="aadharFrontImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setAadharFrontFile, setAadharFrontPreviewURL)}
-
+                  onChange={(e) =>
+                    handleImageChange(
+                      e,
+                      setAadharFrontFile,
+                      setAadharFrontPreviewURL
+                    )
+                  }
                 />
                 <label htmlFor="aadharFrontImage" className="cursor-pointer">
                   {aadharFrontPreviewURL ? (
@@ -403,8 +408,13 @@ const AddAgentModal = ({
                   name="aadharBackImage"
                   id="aadharBackImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setAadharBackFile, setAadharBackPreviewURL)}
-
+                  onChange={(e) =>
+                    handleImageChange(
+                      e,
+                      setAadharBackFile,
+                      setAadharBackPreviewURL
+                    )
+                  }
                 />
                 <label htmlFor="aadharBackImage" className="cursor-pointer">
                   {aadharBackPreviewURL ? (
@@ -449,9 +459,14 @@ const AddAgentModal = ({
                   name="drivingLicenseFrontImage"
                   id="drivingLicenseFrontImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setDriFrontFile, setDriFrontPreviewURL)}
+                  onChange={(e) =>
+                    handleImageChange(e, setDriFrontFile, setDriFrontPreviewURL)
+                  }
                 />
-                <label htmlFor="drivingLicenseFrontImage" className="cursor-pointer">
+                <label
+                  htmlFor="drivingLicenseFrontImage"
+                  className="cursor-pointer"
+                >
                   {driFrontPreviewURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
@@ -474,9 +489,14 @@ const AddAgentModal = ({
                   name="drivingLicenseBackImage"
                   id="drivingLicenseBackImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setDriBackFile, setDriBackPreviewURL)}
+                  onChange={(e) =>
+                    handleImageChange(e, setDriBackFile, setDriBackPreviewURL)
+                  }
                 />
-                <label htmlFor="drivingLicenseBackImage" className="cursor-pointer">
+                <label
+                  htmlFor="drivingLicenseBackImage"
+                  className="cursor-pointer"
+                >
                   {driBackPreviewURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
@@ -591,7 +611,9 @@ const AddAgentModal = ({
               name="agentImage"
               id="agentImage"
               className="hidden"
-              onChange={(e) => handleImageChange(e, setAgentFile, setAgentPreviewURL)}
+              onChange={(e) =>
+                handleImageChange(e, setAgentFile, setAgentPreviewURL)
+              }
             />
             <label htmlFor="agentImage" className="cursor-pointer ">
               <MdCameraAlt

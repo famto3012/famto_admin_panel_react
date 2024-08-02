@@ -104,10 +104,10 @@ const DeliveryManagement = () => {
 
   const autoAllocationStatusUpdate = async () => {
     try {
-      if(autoAllocation.isActive){
-        setAutoAllocationStatus(false)
-      }else{
-        setAutoAllocationStatus(true)
+      if (autoAllocation.isActive) {
+        setAutoAllocationStatus(false);
+      } else {
+        setAutoAllocationStatus(true);
       }
       const response = await axios.put(
         `${BASE_URL}/admin/auto-allocation/update-status`,
@@ -398,9 +398,11 @@ const DeliveryManagement = () => {
         offset: [0, 10],
         draggable: true,
       };
-   
+
       console.log("Adding markers...");
-      const approvedAgents = allAgentData.filter(agent=> agent.isApproved === "Approved")
+      const approvedAgents = allAgentData.filter(
+        (agent) => agent.isApproved === "Approved"
+      );
       console.log("Geofence", geofenceToggle);
       console.log("Approved agents", approvedAgents);
       const agentGeoData = {
@@ -619,7 +621,7 @@ const DeliveryManagement = () => {
       );
       if (response.status === 200) {
         setAutoAllocation(response.data.data);
-        setAutoAllocationStatus(response.data.data.isActive)
+        setAutoAllocationStatus(response.data.data.isActive);
       }
       console.log(autoAllocation);
     } catch (err) {
@@ -632,7 +634,7 @@ const DeliveryManagement = () => {
     console.log(data._id);
   };
 
-  const handleSendNotification = async(taskId)=>{
+  const handleSendNotification = async (taskId) => {
     try {
       console.log(token);
       const response = await axios.post(
@@ -662,7 +664,7 @@ const DeliveryManagement = () => {
         isClosable: true,
       });
     }
-  }
+  };
 
   return (
     <>
@@ -1275,7 +1277,12 @@ const DeliveryManagement = () => {
                                     >
                                       Cancel
                                     </button>
-                                    <button className="bg-teal-800 text-white p-2 rounded-md px-4" onClick={()=>handleSendNotification(data._id)}>
+                                    <button
+                                      className="bg-teal-800 text-white p-2 rounded-md px-4"
+                                      onClick={() =>
+                                        handleSendNotification(data._id)
+                                      }
+                                    >
                                       Assign Agent
                                     </button>
                                   </div>

@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { Modal, Switch } from 'antd'
-import axios from 'axios';
-import { useToast } from '@chakra-ui/react';
+import React, { useEffect, useState } from "react";
+import { Modal, Switch } from "antd";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
-const EditDiscountModal = (
-  {
-    isVisible,
-    currentDiscount,
-    token,
-    merchant,
-    geofence,
-    BASE_URL,
-    handleCancel
-  }
-) => {
+const EditDiscountModal = ({
+  isVisible,
+  currentDiscount,
+  token,
+  merchant,
+  geofence,
+  BASE_URL,
+  handleCancel,
+}) => {
   const [merchantDiscount, setMerchantDiscount] = useState({
     merchant: "",
     discountName: "",
@@ -30,7 +28,6 @@ const EditDiscountModal = (
   const toast = useToast();
   const [isTableLoading, setIsTableLoading] = useState(false);
 
-
   const handleDiscount = (e) => {
     setMerchantDiscount({
       ...merchantDiscount,
@@ -41,9 +38,7 @@ const EditDiscountModal = (
   // API to ftech selected discount details.
 
   useEffect(() => {
-
     const fetchData = async () => {
-
       try {
         setIsTableLoading(true);
 
@@ -51,40 +46,40 @@ const EditDiscountModal = (
           `${BASE_URL}/merchant/shop-discount/get-merchant-discount-id/${currentDiscount}`,
           {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           }
-        )
+        );
         if (response.status === 200) {
           setMerchantDiscount(response.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetch data ${err.message}`)
+        console.error(`Error in fetch data ${err.message}`);
       } finally {
         setIsTableLoading(false);
       }
-    }
+    };
 
     if (currentDiscount) {
       fetchData();
     }
-
-  }, [currentDiscount, token])
+  }, [currentDiscount, token]);
 
   // API to update the Discount.
 
   const handleDiscountSubmit = async (e) => {
     e.preventDefault();
 
-        try {
+    try {
       setIsLoading(true);
 
       const response = await axios.put(
         `${BASE_URL}/admin/shop-discount/edit-merchant-discount-admin/${currentDiscount}`,
-        merchantDiscount, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      )
+        merchantDiscount,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         handleCancel();
         toast({
@@ -92,23 +87,22 @@ const EditDiscountModal = (
           description: "Successfully Updated Discount",
           duration: 9000,
           status: "success",
-          isClosable: true
-        })
+          isClosable: true,
+        });
       }
     } catch (err) {
-      console.error(`Error in updating data ${err.message}`)
+      console.error(`Error in updating data ${err.message}`);
       toast({
         title: "Error in updating",
         description: "Error in Updating Discount",
         duration: 9000,
         status: "error",
-        isClosable: true
-      })
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
-
-  }
+  };
   return (
     <Modal
       title="Edit Discount Tax"
@@ -122,9 +116,7 @@ const EditDiscountModal = (
       <form onSubmit={handleDiscountSubmit}>
         <div className="flex flex-col  gap-4 max-h-[30rem] overflow-auto justify-between">
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">
-              Assign Merchant
-            </label>
+            <label className="w-1/2 text-gray-500">Assign Merchant</label>
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="merchant"
@@ -139,9 +131,7 @@ const EditDiscountModal = (
             </select>
           </div>
           <div className="flex  gap-4">
-            <label className="w-1/2 text-gray-500">
-              Discount Name
-            </label>
+            <label className="w-1/2 text-gray-500">Discount Name</label>
             <input
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -165,18 +155,13 @@ const EditDiscountModal = (
             />
           </div>
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">
-              Discount
-            </label>
+            <label className="w-1/2 text-gray-500">Discount</label>
             <input
               type="radio"
               className="border-2 -ml-14 border-gray-300 rounded outline-none focus:outline-none"
               name="discountType"
               value="Fixed-discount"
-              checked={
-                merchantDiscount.discountType ===
-                "Fixed-discount"
-              }
+              checked={merchantDiscount.discountType === "Fixed-discount"}
               onChange={handleDiscount}
             />
             Fixed-discount
@@ -185,10 +170,7 @@ const EditDiscountModal = (
               className=" border-gray-300 rounded  outline-none focus:outline-none"
               name="discountType"
               value="Percentage-discount"
-              checked={
-                merchantDiscount.discountType ===
-                "Percentage-discount"
-              }
+              checked={merchantDiscount.discountType === "Percentage-discount"}
               onChange={handleDiscount}
             />
             Percentage-discount
@@ -217,9 +199,7 @@ const EditDiscountModal = (
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">
-              From
-            </label>
+            <label className="w-1/2 text-gray-500">From</label>
             <input
               type="date"
               name="validFrom"
@@ -229,9 +209,7 @@ const EditDiscountModal = (
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">
-              To
-            </label>
+            <label className="w-1/2 text-gray-500">To</label>
             <input
               type="date"
               name="validTo"
@@ -241,22 +219,18 @@ const EditDiscountModal = (
             />
           </div>
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">
-              geoFence
-            </label>
+            <label className="w-1/2 text-gray-500">geoFence</label>
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
               value={merchantDiscount.geofenceId}
               onChange={handleDiscount}
             >
-              {
-                geofence.map((data) => (
-                  <option value={data._id} key={data._id}>
-                    {data.name}
-                  </option>
-                ))
-              }
+              {geofence.map((data) => (
+                <option value={data._id} key={data._id}>
+                  {data.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -279,7 +253,7 @@ const EditDiscountModal = (
         </div>
       </form>
     </Modal>
-  )
-}
+  );
+};
 
-export default EditDiscountModal
+export default EditDiscountModal;

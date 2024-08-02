@@ -33,7 +33,7 @@ const DeleteAgentSurgeModal = ({
           status: "success",
           duration: 1000,
           isClosable: true,
-      });
+        });
       }
     } catch (error) {
       console.error("Error deleting surge:", error);
@@ -43,7 +43,7 @@ const DeleteAgentSurgeModal = ({
         status: "error",
         duration: 1000,
         isClosable: true,
-    });
+      });
     } finally {
       setConfirmLoading(false);
     }

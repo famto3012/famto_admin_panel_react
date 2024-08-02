@@ -78,11 +78,11 @@ const EditNotificatioModal = ({
       );
       if (editResponse === 201) {
         toast({
-            title: "Notification Updated",
-            description: "Notification Updated Successfully.",
-            status: "success",
-            duration: 9000,
-            isClosable: true,
+          title: "Notification Updated",
+          description: "Notification Updated Successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
         });
       }
     } catch (err) {
@@ -93,7 +93,7 @@ const EditNotificatioModal = ({
         status: "error",
         duration: 9000,
         isClosable: true,
-    });
+      });
     }
     console.log(formData);
   };

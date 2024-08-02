@@ -1,16 +1,14 @@
-import { React, useState } from 'react'
-import { Modal } from 'antd'
-import { MdCameraAlt } from 'react-icons/md';
+import { React, useState } from "react";
+import { Modal } from "antd";
+import { MdCameraAlt } from "react-icons/md";
 
-const AddCategoriesModal = (
-  {
-    isVisible,
-    handleCancel,
-    BASE_URL,
-    token,
-    role
-  }
-) => {
+const AddCategoriesModal = ({
+  isVisible,
+  handleCancel,
+  BASE_URL,
+  token,
+  role,
+}) => {
   const [category, setCategory] = useState({
     businessCategory: "",
     categoryName: "",
@@ -24,7 +22,8 @@ const AddCategoriesModal = (
     setCategory((prevCategory) => ({
       ...prevCategory,
       [name]: value,
-    }));s
+    }));
+    s;
   };
 
   const [adFile, setAdFile] = useState(null);
@@ -37,9 +36,7 @@ const AddCategoriesModal = (
     setAdPreviewURL(URL.createObjectURL(file));
   };
 
-  const submitCategory = () => {
-
-  }
+  const submitCategory = () => {};
   return (
     <Modal
       title="Add Categories"
@@ -51,10 +48,7 @@ const AddCategoriesModal = (
       <form onSubmit={submitCategory}>
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex mt-5 gap-4">
-            <label
-              className="w-1/2 text-gray-500"
-              htmlFor="businessCategory"
-            >
+            <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
               Business Category
             </label>
             <select
@@ -71,10 +65,7 @@ const AddCategoriesModal = (
             </select>
           </div>
           <div className="flex items-center">
-            <label
-              className="w-1/3 text-gray-500"
-              htmlFor="categoryName"
-            >
+            <label className="w-1/3 text-gray-500" htmlFor="categoryName">
               Category Name
             </label>
             <input
@@ -87,10 +78,7 @@ const AddCategoriesModal = (
             />
           </div>
           <div className="flex items-center">
-            <label
-              className="w-1/3 text-gray-500"
-              htmlFor="description"
-            >
+            <label className="w-1/3 text-gray-500" htmlFor="description">
               Description
             </label>
             <input
@@ -184,7 +172,7 @@ const AddCategoriesModal = (
         </div>
       </form>
     </Modal>
-  )
-}
+  );
+};
 
-export default AddCategoriesModal
+export default AddCategoriesModal;

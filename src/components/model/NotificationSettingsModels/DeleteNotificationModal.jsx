@@ -26,27 +26,25 @@ const DeleteNotificationModal = ({
       );
       if (response.status === 200) {
         remove(currentDelete);
-        handleConfirmDelete(); 
+        handleConfirmDelete();
         toast({
           title: "Deleted",
           description: "Notification Deleted Successfully",
           status: "success",
           duration: 9000,
           isClosable: true,
-      }); 
-     
+        });
       }
     } catch (error) {
       console.error("Error deleting", error);
-     
-    toast({
-      title: "Error",
-      description: "There was an error creating the banner.",
-      status: "error",
-      duration: 9000,
-      isClosable: true,
-  });
-  
+
+      toast({
+        title: "Error",
+        description: "There was an error creating the banner.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     } finally {
       setConfirmLoading(false);
     }

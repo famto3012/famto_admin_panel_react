@@ -7,8 +7,7 @@ import { Switch } from "antd";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 
 const AccountLogs = () => {
-
-  const [type, setType] = useState("")
+  const [type, setType] = useState("");
   const dummyData = [
     {
       id: "1",
@@ -31,7 +30,7 @@ const AccountLogs = () => {
   const handleChange = (e) => {
     e.preventDefault();
 
-    setType({...type,[e.target.name] : e.target.value});
+    setType({ ...type, [e.target.name]: e.target.value });
     console.log(type);
   };
 

@@ -45,7 +45,7 @@ const AddProductModal = ({
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
-      )
+      );
       if (response.status === 201) {
         handleCancel();
         toast({
