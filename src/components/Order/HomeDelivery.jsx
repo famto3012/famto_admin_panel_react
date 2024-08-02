@@ -14,6 +14,7 @@ const HomeDelivery = ({ data }) => {
     customerId: data.customerId,
     deliveryMode: data.deliveryMode,
     deliveryOption: data.deliveryOption,
+    newCustomer: data.newCustomer,
     merchantId: "",
     customerAddressType: "",
     customerAddressOtherAddressId: "",
@@ -177,6 +178,7 @@ const HomeDelivery = ({ data }) => {
     setMerchantName(merchant.merchantName);
     setMerchantResults([]);
     setAllCustomerAddress(data?.customerAddress);
+    console.log(data.newCustomer);
   };
 
   const handleSelectAddressType = (type) => {
@@ -240,7 +242,6 @@ const HomeDelivery = ({ data }) => {
     e.preventDefault();
     try {
       setIsInvoiceLoading(true);
-      console.log(homeDeliveryData);
 
       // Format the items to include the selected variantId
       const formattedItems = homeDeliveryData?.items?.map((item) => ({
@@ -252,8 +253,12 @@ const HomeDelivery = ({ data }) => {
 
       const invoiceData = {
         ...homeDeliveryData,
+        customerId: data.customerId,
+        newCustomer: data.newCustomer,
         items: formattedItems,
       };
+
+      console.log("invoiceData", invoiceData);
 
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
@@ -292,9 +297,48 @@ const HomeDelivery = ({ data }) => {
     }
   };
 
-  const createOrderHandler = (e) => {
+  const createOrderHandler = async (e) => {
     e.preventDefault();
-    console.log(homeDeliveryData);
+    try {
+      console.log("clicked");
+      setIsOrderLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order`,
+        {
+          paymentMode,
+          cartId: cartData.cartId,
+          deliveryMode: cartData.deliveryMode,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        toast({
+          title: "Success",
+          description: response.data.message,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setIsOrderLoading(false);
+    }
   };
 
   return (
@@ -589,10 +633,7 @@ const HomeDelivery = ({ data }) => {
               </button>
             </div>
             {isFormVisible && (
-              <NewAddress
-                toggleNewAddressForm={toggleNewAddressForm}
-                onAddCustomerAddress={handleAddCustomerAddress}
-              />
+              <NewAddress onAddCustomerAddress={handleAddCustomerAddress} />
             )}
           </div>
 
@@ -750,7 +791,6 @@ const HomeDelivery = ({ data }) => {
             </button>
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md"
-              type="submit"
               onClick={createOrderHandler}
             >
               {isOrderLoading

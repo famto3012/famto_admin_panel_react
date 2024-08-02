@@ -153,7 +153,7 @@ const Discount = () => {
           title: "Discount Deleted",
           description: "Discount Deleted Successfully.",
           status: "success",
-          duration: 9000,
+          duration: 100,
           isClosable: true,
         });
       }
@@ -164,11 +164,52 @@ const Discount = () => {
         description: "Error in deleting Discount.",
         status: "error",
         isClosable: true,
-        duration: 9000,
+        duration: 100,
       });
     } finally {
       setConfirmLoading(false);
     }
+  };
+
+  const handleDiscountAdd = (newDiscount) => {
+    setDiscount((prevDiscounts) => {
+      // Ensure prevPromocodes is an array before adding the new promo code
+      if (Array.isArray(prevDiscounts)) {
+        return [...prevDiscounts, newDiscount];
+      } else {
+        return [newDiscount];
+      }
+    });
+  };
+
+  // const handleEditDiscount = (editDiscount) => {
+  //   setDiscount((prevDiscounts) => {
+  //     if (Array.isArray(prevDiscounts)) {
+  //       return [...prevDiscounts, editDiscount];
+  //     } else {
+  //       return [editDiscount];
+  //     }
+  //   });
+  // };
+
+  const handleAddProduct = (newProduct) => {
+    setDiscount((prevProducts) => {
+      if (Array.isArray(prevProducts)) {
+        return [...prevProducts, newProduct];
+      } else {
+        return [newProduct];
+      }
+    });
+  };
+
+  const handleEditProduct = (editProduct) => {
+    setDiscount((prevProduct) => {
+      if (Array.isArray(prevProduct)) {
+        return [...prevProduct, editProduct];
+      } else {
+        return [editProduct];
+      }
+    });
   };
 
   // Delete Current Product...
@@ -202,7 +243,7 @@ const Discount = () => {
           title: "Discount Deleted",
           description: "Discount Deleted Successfully.",
           status: "success",
-          duration: 9000,
+          duration: 100,
           isClosable: true,
         });
       }
@@ -213,7 +254,7 @@ const Discount = () => {
         description: "Error in deleting Discount.",
         status: "error",
         isClosable: true,
-        duration: 9000,
+        duration: 100,
       });
     } finally {
       setConfirmLoading(false);
@@ -245,7 +286,7 @@ const Discount = () => {
           title: "Status updated",
           description: "Discount Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 100,
           isClosable: true,
         });
 
@@ -263,7 +304,7 @@ const Discount = () => {
         title: "Error",
         description: "Failed to update discount status.",
         status: "error",
-        duration: 900,
+        duration: 100,
         isClosable: true,
       });
     }
@@ -292,7 +333,7 @@ const Discount = () => {
           title: "Status updated",
           description: "Discount Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 100,
           isClosable: true,
         });
 
@@ -310,7 +351,7 @@ const Discount = () => {
         title: "Error",
         description: "Failed to update discount status.",
         status: "error",
-        duration: 900,
+        duration: 100,
         isClosable: true,
       });
     }
@@ -407,6 +448,7 @@ const Discount = () => {
                 selectedMerchant={selectedMerchant}
                 BASE_URL={BASE_URL}
                 handleCancel={handleCancel}
+                onDiscountAdd={handleDiscountAdd}
               />
             </div>
 
@@ -498,6 +540,7 @@ const Discount = () => {
                               currentDiscount={currentDiscount}
                               BASE_URL={BASE_URL}
                               handleCancel={handleCancel}
+                              // onEditDiscount={handleEditDiscount}
                             />
                           </div>
                           <button
@@ -561,6 +604,7 @@ const Discount = () => {
                 geofence={geofence}
                 merchant={merchant}
                 BASE_URL={BASE_URL}
+                onAddProduct={handleAddProduct}
                 handleCancel={handleCancel}
               />
             </div>
@@ -637,6 +681,7 @@ const Discount = () => {
                               merchant={merchant}
                               currentProduct={currentProduct}
                               BASE_URL={BASE_URL}
+                              onEditProduct={handleEditProduct}
                               handleCancel={handleCancel}
                             />
                           </div>

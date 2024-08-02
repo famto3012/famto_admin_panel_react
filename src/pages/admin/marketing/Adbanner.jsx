@@ -127,6 +127,17 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
     setShowModalDeleteIndividual(false);
   };
 
+  // To display recently added Banner
+  const handleAddBanner = (newBanner) => {
+    setBanner((prevBanners) => {
+      if (Array.isArray(prevBanners)) {
+        return [...prevBanners,newBanner];
+      } else {
+        [newBanner];
+      }
+    });
+  };
+
   // New function to remove a Banner from the banner state
   const removeBanner = (bannerId) => {
     setBanner(banner.filter((banner) => banner._id !== bannerId));
@@ -139,7 +150,6 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   };
 
   // api calling to delete Aapp banner..      
-
   const handleBannerDelete = async (currentBanner) => {
     try {
       setConfirmLoading(true);
@@ -159,7 +169,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
           title:"Banner Deleted",
           description:"The Banner Deleted Successfully.",
           status:"success",
-          duration:9000,
+          duration:100,
           isClosable:"true"
         })
       } else {
@@ -201,7 +211,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
           title:"Banner Deleted",
           description:"The Banner Deleted Successfully.",
           status:"success",
-          duration:9000,
+          duration:100,
           isClosable:"true"
         })
       } else {
@@ -237,7 +247,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
           title: "Status updated",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 100,
           isClosable: true,
         });
 
@@ -255,7 +265,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 900,
+        duration: 100,
         isClosable: true,
       });
     }
@@ -284,7 +294,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
           title: "Status updated",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 100,
           isClosable: true,
         });
 
@@ -302,7 +312,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 900,
+        duration: 100,
         isClosable: true,
       });
     }
@@ -354,6 +364,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                   handleCancel={handleCancel}
                   BASE_URL={BASE_URL}
                   token={token}
+                  onAddBanner={handleAddBanner}
                   allGeofence={allGeofence}
                 />
               </div>
