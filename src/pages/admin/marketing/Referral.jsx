@@ -11,7 +11,7 @@ const Referral = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
-  const toast =useToast()
+  const toast = useToast();
   const [formData, setFormData] = useState({
     referalType: "Flat-discount",
     referrerDiscount: "",
@@ -78,22 +78,22 @@ const Referral = () => {
       if (addResponse.status === 201) {
         console.log(addResponse.data.message);
         toast({
-          title:"Updated",
-          description:"Referal Updated Successfully",
-          status:"success",
-          duration:1000,
-          isClosable:true
-        })
+          title: "Updated",
+          description: "Referal Updated Successfully",
+          status: "success",
+          duration: 1000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.log(`Error in fetch data:${err}`);
       toast({
-        title:"Error",
-        description:"There was an error occured",
-        status:"error",
-        duration:1000,
-        isClosable:true
-      })
+        title: "Error",
+        description: "There was an error occured",
+        status: "error",
+        duration: 1000,
+        isClosable: true,
+      });
     }
     console.log(formData);
   };

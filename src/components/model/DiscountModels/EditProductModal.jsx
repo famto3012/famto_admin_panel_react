@@ -25,7 +25,7 @@ const EditProductModal = ({
     onAddOn: null,
   });
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // API to ftech selected discount details.
@@ -249,9 +249,11 @@ const EditProductModal = ({
           </div>
           <div className="flex mt-5 justify-between">
             <label>Discount on add-on</label>
-            <Switch 
-            // value={productDiscount.onAddOn}
-            onChange={onChange} name="onAddOn" />
+            <Switch
+              // value={productDiscount.onAddOn}
+              onChange={onChange}
+              name="onAddOn"
+            />
           </div>
 
           <div className="flex justify-end mt-5 gap-4">

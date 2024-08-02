@@ -13,15 +13,15 @@ import EditAgentModal from "../../../components/model/AgentModels/EditAgentModal
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AgentDetails = () => {
   const [reason, setReason] = useState("");
-  const [averageRating,setRatings] = useState("");
+  const [averageRating, setRatings] = useState("");
   const { agentId } = useParams();
   const [agent, setAgent] = useState({});
   const { token, role } = useContext(UserContext);
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
   const [salary, setSalary] = useState([]);
   const [manager, setManager] = useState([]);
-  const [isconfirmLoading,setIsConfirmLoading] = useState(false);
+  const [isconfirmLoading, setIsConfirmLoading] = useState(false);
   const navigate = useNavigate();
 
   // const [addData, setAddData] = useState({
@@ -53,36 +53,35 @@ const AgentDetails = () => {
   //   agentImage: "",
   // });
   useEffect(() => {
-      if (!token) {
-        navigate("/auth/login");
-        return;
-      }
-  
-      const fetchData = async () => {
-        setIsLoading(true);
-        try {
-          const [agentResponse,geofenceResponse,managerResponse,salaryResponse] =
-          await Promise.all([
-          axios.get(
-            `${BASE_URL}/admin/agents/${agentId}`,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [
+          agentResponse,
+          geofenceResponse,
+          managerResponse,
+          salaryResponse,
+        ] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/agents/${agentId}`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(
-            `${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`,{
-            withCredentials:true,
-            headers:{Authorization: `Bearer ${token}`}
+          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(
-            `${BASE_URL}/admin/managers`,{
-            withCredentials:true,
-            headers:{Authorization: `Bearer ${token}`}
+          axios.get(`${BASE_URL}/admin/managers`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
         if (salaryResponse.status === 200) {
@@ -94,33 +93,31 @@ const AgentDetails = () => {
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
         }
-          if (agentResponse.status === 200) {
-            // const { data } = agentResponse.data;
-            console.log("data in response is", agentResponse.data.data);
-            setAgent(agentResponse.data.data);
-            
-          }
-        } catch (err) {
-          console.error(`Error in fetching data: ${err}`);
-        } finally {
-          setIsLoading(false);
-          // console.log("data in state", agent);
+        if (agentResponse.status === 200) {
+          // const { data } = agentResponse.data;
+          console.log("data in response is", agentResponse.data.data);
+          setAgent(agentResponse.data.data);
         }
-      };
-  
-      fetchData();
-      console.log("data in state", agent);
-    }, [token, role, navigate, agentId]);
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+        // console.log("data in state", agent);
+      }
+    };
 
-    const [editModalVisible, setEditModalVisible] = useState(false);
-    const showEditModal = () => {
-      setEditModalVisible(true);
-    };
-  
-  
-    const handleCancel1 = () => {
-      setEditModalVisible(false);
-    };
+    fetchData();
+    console.log("data in state", agent);
+  }, [token, role, navigate, agentId]);
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const showEditModal = () => {
+    setEditModalVisible(true);
+  };
+
+  const handleCancel1 = () => {
+    setEditModalVisible(false);
+  };
 
   // const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false);
 
@@ -150,10 +147,7 @@ const AgentDetails = () => {
   //   }
   // };
 
-
-
-
-  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false)
+  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false);
   const showModalRatings = async () => {
     setIsModalVisibleRatings(true);
     try {
@@ -178,8 +172,6 @@ const AgentDetails = () => {
       console.log(`Error in fetching data`);
     }
   };
-
-  
 
   const handleOkRatings = () => {
     setIsModalVisibleRatings(false);
@@ -248,7 +240,6 @@ const AgentDetails = () => {
 
   const submitBlock = (event) => {
     event.preventDefault();
-
     console.log(reason);
   };
 
@@ -261,7 +252,8 @@ const AgentDetails = () => {
         </nav>
         <div className="flex justify-between my-[15px] m-5">
           <Link to="/all-agents" className="font-[600] text-[18px]">
-            <ArrowLeftOutlined className="mr-4"/>Agent ID
+            <ArrowLeftOutlined className="mr-4" />
+            Agent ID
           </Link>
           <div className="flex items-center">
             <button
@@ -321,7 +313,7 @@ const AgentDetails = () => {
                 <p className="w-2/3">{agent.fullName}</p>
               </div>
               <div className="flex items-center mt-5">
-                <label  className="w-1/3">Email</label>
+                <label className="w-1/3">Email</label>
                 <p className="w-2/3">{agent.email}</p>
               </div>
             </div>
@@ -337,21 +329,26 @@ const AgentDetails = () => {
             </div>
             <div>
               <figure className="h-20 w-20">
-              <img className="w-full h-full object-contain" src={agent.agentImageURL} />
-              </figure></div>
-              
+                <img
+                  className="w-full h-full object-contain"
+                  src={agent.agentImageURL}
+                />
+              </figure>
+            </div>
+
             <div>
               <button
                 className="bg-gray-100 p-2 focus:outline-none rounded-lg flex items-center"
                 onClick={showEditModal}
               >
-                <MdOutlineEdit className="mr-4 text-[18px]"/>Edit
+                <MdOutlineEdit className="mr-4 text-[18px]" />
+                Edit
               </button>
               <EditAgentModal
-              isVisible={editModalVisible}
-              handleCancel={handleCancel1}
-            />
-              
+                isVisible={editModalVisible}
+                handleCancel={handleCancel1}
+              />
+
               {/* <Modal
                 title="Edit Delivery Agent"
                 width="700px"
@@ -901,78 +898,75 @@ const AgentDetails = () => {
               </div>
             </Modal> */}
 
-
-
-
-
-
-
-      <Modal
-        title="Ratings"
-        centered
-        width="600px"
-        open={isModalVisibleRatings}
-        onCancel={handleCancelRatings}
-        className="w-[600px]"
-        footer={null}
-        // confirmLoading={isConfirmLoading}
-      >
-        <div className="overflow-auto max-h-[30rem]">
-          <table className="min-w-full border-collapse block md:table text-center rounded-lg mt-4">
-            <thead className="block md:table-header-group sticky top-0">
-              <tr className="border border-gray-300 md:border-none md:table-row">
-                <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
-                  ID
-                </th>
-                <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
-                  Name
-                </th>
-                <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left">
-                  Ratings and Review
-                </th>
-              </tr>
-            </thead>
-            <tbody className="block md:table-row-group">
-              {averageRating.length === 0 ? (
-                <tr>
-                  <td colSpan={3}>
-                    <p className="mb-0 text-center">No data</p>
-                  </td>
-                </tr>
-              ) : (
-                averageRating.map((rating) => (
-                  <tr
-                    key={rating.id}
-                    className="bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0"
-                  >
-                    <td className="p-2 text-center md:table-cell">{rating.customerId.id}</td>
-                    <td className="p-2 text-center md:table-cell">{rating.customerId.fullName}</td>
-                    <td className="px-6 py-4 text-left md:table-cell">
-                      <div className="flex items-center text-center">
-                        {Array.from({ length: rating.rating }).map((_, i) => (
-                          <svg
-                            key={i}
-                            className="w-5 h-5 text-yellow-500 text-center"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
-                          </svg>
-                        ))}
-                      </div>
-                      <p className="mt-2">{rating.review}</p>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Modal>
-  
-
-
+            <Modal
+              title="Ratings"
+              centered
+              width="600px"
+              open={isModalVisibleRatings}
+              onCancel={handleCancelRatings}
+              className="w-[600px]"
+              footer={null}
+              // confirmLoading={isConfirmLoading}
+            >
+              <div className="overflow-auto max-h-[30rem]">
+                <table className="min-w-full border-collapse block md:table text-center rounded-lg mt-4">
+                  <thead className="block md:table-header-group sticky top-0">
+                    <tr className="border border-gray-300 md:border-none md:table-row">
+                      <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
+                        ID
+                      </th>
+                      <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
+                        Name
+                      </th>
+                      <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left">
+                        Ratings and Review
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="block md:table-row-group">
+                    {averageRating.length === 0 ? (
+                      <tr>
+                        <td colSpan={3}>
+                          <p className="mb-0 text-center">No data</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      averageRating.map((rating) => (
+                        <tr
+                          key={rating.id}
+                          className="bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0"
+                        >
+                          <td className="p-2 text-center md:table-cell">
+                            {rating.customerId.id}
+                          </td>
+                          <td className="p-2 text-center md:table-cell">
+                            {rating.customerId.fullName}
+                          </td>
+                          <td className="px-6 py-4 text-left md:table-cell">
+                            <div className="flex items-center text-center">
+                              {Array.from({ length: rating.rating }).map(
+                                (_, i) => (
+                                  <svg
+                                    key={i}
+                                    className="w-5 h-5 text-yellow-500 text-center"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
+                                  </svg>
+                                )
+                              )}
+                            </div>
+                            <p className="mt-2">{rating.review}</p>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </Modal>
           </div>
         </div>
         <h1 className="font-semibold text-[18px] ml-5 mt-10">
@@ -999,22 +993,30 @@ const AgentDetails = () => {
               </tr>
             </thead>
             <tbody>
-            {agent?.vehicleDetail?.map((vehicleDetails) => (
+              {agent?.vehicleDetail?.map((vehicleDetails) => (
                 <tr
                   key={vehicleDetails._id}
                   className="align-middle border-b-2 border-gray-300 text-center"
                 >
-
                   <td className="p-3">{vehicleDetails.licensePlate}</td>
                   <td className="p-3">{vehicleDetails.model}</td>
                   <td className="p-3">{vehicleDetails.type}</td>
                   <td className="p-3 flex items-center justify-center">
-                  <figure className="h-24 w-24">
-                  <img className="w-full h-full object-contain" src={vehicleDetails.rcFrontImageURL} /></figure>
+                    <figure className="h-24 w-24">
+                      <img
+                        className="w-full h-full object-contain"
+                        src={vehicleDetails.rcFrontImageURL}
+                      />
+                    </figure>
                   </td>
                   <td className="p-3">
-                  <figure className="h-24 w-24">
-                  <img className="w-full h-full object-contain " src={vehicleDetails.rcBackImageURL} /></figure></td>
+                    <figure className="h-24 w-24">
+                      <img
+                        className="w-full h-full object-contain "
+                        src={vehicleDetails.rcBackImageURL}
+                      />
+                    </figure>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1045,32 +1047,56 @@ const AgentDetails = () => {
               </tr>
             </thead>
             <tbody>
-              
-           
-                <tr
-                  
-                  className="align-middle border-b-2 border-gray-300 text-center"
-                >
-                  <td className="p-3">{agent?.governmentCertificateDetail?.aadharNumber}</td>
-                  <td className="p-3">
+              <tr className="align-middle border-b-2 border-gray-300 text-center">
+                <td className="p-3">
+                  {agent?.governmentCertificateDetail?.aadharNumber}
+                </td>
+                <td className="p-3">
                   <figure className="h-24 w-24">
-                  <img className="w-full h-full object-contain" src={agent?.governmentCertificateDetail?.aadharFrontImageURL} /></figure>
-                  </td>
-                  <td className="p-3">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={
+                        agent?.governmentCertificateDetail?.aadharFrontImageURL
+                      }
+                    />
+                  </figure>
+                </td>
+                <td className="p-3">
                   <figure className="h-24 w-24">
-                  <img className="w-full h-full object-contain" src={agent?.governmentCertificateDetail?.aadharFrontImageURL} /></figure>
-                  </td>
-                  <td className="p-3">{agent?.governmentCertificateDetail?.drivingLicenseNumber}</td>
-                  <td className="p-3">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={
+                        agent?.governmentCertificateDetail?.aadharFrontImageURL
+                      }
+                    />
+                  </figure>
+                </td>
+                <td className="p-3">
+                  {agent?.governmentCertificateDetail?.drivingLicenseNumber}
+                </td>
+                <td className="p-3">
                   <figure className="h-24 w-24">
-                  <img className="w-full h-full object-contain" src={agent?.governmentCertificateDetail?.drivingLicenseFrontImageURL} /></figure>
-                  </td>
-                  <td className="p-3">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={
+                        agent?.governmentCertificateDetail
+                          ?.drivingLicenseFrontImageURL
+                      }
+                    />
+                  </figure>
+                </td>
+                <td className="p-3">
                   <figure className="h-24 w-24">
-                  <img className="w-full h-full object-contain" src={agent?.governmentCertificateDetail?.drivingLicenseFrontImageURL} /></figure>
-                  </td>
-                  </tr>
-            
+                    <img
+                      className="w-full h-full object-contain"
+                      src={
+                        agent?.governmentCertificateDetail
+                          ?.drivingLicenseFrontImageURL
+                      }
+                    />
+                  </figure>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1095,16 +1121,12 @@ const AgentDetails = () => {
               </tr>
             </thead>
             <tbody>
-           
-                <tr
-                  className="align-middle border-b-2 border-gray-300 text-center"
-                >
+              <tr className="align-middle border-b-2 border-gray-300 text-center">
                 <td className="p-3">{agent?.bankDetail?.accountHolderName}</td>
                 <td className="p-3">{agent?.bankDetail?.accountNumber}</td>
                 <td className="p-3">{agent?.bankDetail?.IFSCCode}</td>
                 <td className="p-3">{agent?.bankDetail?.UPIId}</td>
               </tr>
-          
             </tbody>
           </table>
         </div>
@@ -1126,17 +1148,14 @@ const AgentDetails = () => {
               </tr>
             </thead>
             <tbody>
-          
-                <tr
-                  
-                  className="align-middle border-b-2 border-gray-300 text-center"
-                >
+              <tr className="align-middle border-b-2 border-gray-300 text-center">
                 <td className="p-3">{agent?.workStructure?.managerId?.name}</td>
                 <td className="p-3">{agent?.geofenceId?.name}</td>
-                <td className="p-3">{agent?.workStructure?.salaryStructureId?.ruleName}</td>
+                <td className="p-3">
+                  {agent?.workStructure?.salaryStructureId?.ruleName}
+                </td>
                 <td className="p-3">{agent?.workStructure?.tag}</td>
               </tr>
-            
             </tbody>
           </table>
         </div>

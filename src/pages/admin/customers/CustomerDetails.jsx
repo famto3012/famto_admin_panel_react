@@ -16,7 +16,7 @@ const CustomerDetails = () => {
   const { customerId } = useParams();
   const [customer, setCustomer] = useState({});
   const { token, role } = useContext(UserContext);
-  const [rating,setRating] = useState("");
+  const [rating, setRating] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   // const [walletDetails, setWalletDetails] = useState([]);
@@ -72,11 +72,14 @@ const CustomerDetails = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${BASE_URL}/admin/customers/${customerId}`, {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
+        const response = await axios.get(
+          `${BASE_URL}/admin/customers/${customerId}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         if (response.status === 200) {
           // Update customer state with response data
           setCustomer(response.data.data);
@@ -92,12 +95,9 @@ const CustomerDetails = () => {
         setIsLoading(false);
       }
     };
-  
-    
-  
+
     fetchData();
   }, [token, customerId, navigate]);
-  
 
   const showModal1 = () => {
     setIsModalVisible(true);
@@ -107,30 +107,31 @@ const CustomerDetails = () => {
     setIsModalVisible(false);
   };
 
-  const handleSubmit1 = async(e) => {
+  const handleSubmit1 = async (e) => {
     e.preventDefault();
-  
-  try {
-    setIsLoading(true);
 
-    const response = await axios.patch(
-      `${BASE_URL}/admin/customers/block-customer/${customerId}`,{reason},{
-        withCredentials:true,
-        headers:{Authorization: `Bearer${token}`,
-       }
-      }
+    try {
+      setIsLoading(true);
+
+      const response = await axios.patch(
+        `${BASE_URL}/admin/customers/block-customer/${customerId}`,
+        { reason },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer${token}` },
+        }
       );
-     if(response.status===200) {
-      setReason(response.data.message)
-      console.log(response.data.message)
-     }
-    console.log(reason);
-  } catch(err) {
-    // console.error(`Error in fetching data: ${err}`);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      if (response.status === 200) {
+        setReason(response.data.message);
+        console.log(response.data.message);
+      }
+      console.log(reason);
+    } catch (err) {
+      // console.error(`Error in fetching data: ${err}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const showModal2 = () => {
     setIsModalVisibleDeduct(true);
   };
@@ -156,7 +157,7 @@ const CustomerDetails = () => {
     console.log(amountadd);
   };
 
-  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false)
+  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false);
   const showModalRatings = async () => {
     setIsModalVisibleRatings(true);
     try {
@@ -450,8 +451,6 @@ const CustomerDetails = () => {
               </div>
             </Modal> */}
 
-
-
             <button
               type="button"
               onClick={showModalRatings}
@@ -460,68 +459,74 @@ const CustomerDetails = () => {
               Show ratings and reviews
             </button>
             <Modal
-        title="Ratings"
-        centered
-        width="600px"
-        open={isModalVisibleRatings}
-        onCancel={handleCancelRatings}
-        className="w-[600px]"
-        footer={null}
-        // confirmLoading={isConfirmLoading}
-      >
-        <div className="overflow-auto max-h-[30rem]">
-          <table className="min-w-full border-collapse block md:table text-center rounded-lg mt-4">
-            <thead className="block md:table-header-group sticky top-0">
-              <tr className="border border-gray-300 md:border-none md:table-row">
-                <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
-                  ID
-                </th>
-                <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
-                  Name
-                </th>
-                <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left">
-                  Ratings and Review
-                </th>
-              </tr>
-            </thead>
-            <tbody className="block md:table-row-group">
-              {rating.length === 0 ? (
-                <tr>
-                  <td colSpan={3}>
-                    <p className="mb-0 text-center">No data</p>
-                  </td>
-                </tr>
-              ) : (
-                rating.map((rating) => (
-                  <tr
-                    key={rating.id}
-                    className="bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0"
-                  >
-                    <td className="p-2 text-center md:table-cell">{rating.customerId.id}</td>
-                    <td className="p-2 text-center md:table-cell">{rating.customerId.fullName}</td>
-                    <td className="px-6 py-4 text-left md:table-cell">
-                      <div className="flex items-center text-center">
-                        {Array.from({ length: rating.rating }).map((_, i) => (
-                          <svg
-                            key={i}
-                            className="w-5 h-5 text-yellow-500 text-center"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
-                          </svg>
-                        ))}
-                      </div>
-                      <p className="mt-2">{rating.review}</p>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Modal>
+              title="Ratings"
+              centered
+              width="600px"
+              open={isModalVisibleRatings}
+              onCancel={handleCancelRatings}
+              className="w-[600px]"
+              footer={null}
+              // confirmLoading={isConfirmLoading}
+            >
+              <div className="overflow-auto max-h-[30rem]">
+                <table className="min-w-full border-collapse block md:table text-center rounded-lg mt-4">
+                  <thead className="block md:table-header-group sticky top-0">
+                    <tr className="border border-gray-300 md:border-none md:table-row">
+                      <th className="p-2 px-5 border-r-2 bg-teal-700 font-normal text-white">
+                        ID
+                      </th>
+                      <th className="p-2 px-8 border-r-2 bg-teal-700 font-normal text-white">
+                        Name
+                      </th>
+                      <th className="px-6 border-r-2 bg-teal-700 font-normal text-white text-left">
+                        Ratings and Review
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="block md:table-row-group">
+                    {rating.length === 0 ? (
+                      <tr>
+                        <td colSpan={3}>
+                          <p className="mb-0 text-center">No data</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      rating.map((rating) => (
+                        <tr
+                          key={rating.id}
+                          className="bg-gray-100 border border-gray-300 md:border-none md:table-row mb-2 md:mb-0"
+                        >
+                          <td className="p-2 text-center md:table-cell">
+                            {rating.customerId.id}
+                          </td>
+                          <td className="p-2 text-center md:table-cell">
+                            {rating.customerId.fullName}
+                          </td>
+                          <td className="px-6 py-4 text-left md:table-cell">
+                            <div className="flex items-center text-center">
+                              {Array.from({ length: rating.rating }).map(
+                                (_, i) => (
+                                  <svg
+                                    key={i}
+                                    className="w-5 h-5 text-yellow-500 text-center"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049.467a1.003 1.003 0 011.902 0l1.454 4.553h4.769a1 1 0 01.593 1.807l-3.855 2.8 1.453 4.553a1 1 0 01-1.54 1.117L10 13.137l-3.855 2.8a1 1 0 01-1.54-1.117l1.453-4.553-3.855-2.8a1 1 0 01.593-1.807h4.77L9.05.467z"></path>
+                                  </svg>
+                                )
+                              )}
+                            </div>
+                            <p className="mt-2">{rating.review}</p>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </Modal>
           </div>
           <div className="mt-10">
             <h4 className="text-gray-700 mx-11 font-bold">Address</h4>

@@ -46,10 +46,10 @@ const DeliveryAgent = () => {
     console.log("Agent to approve", id);
     console.log("Token", token);
     console.log("Base URL", BASE_URL);
-  
+
     try {
       const response = await axios.patch(
-        `${BASE_URL}/admin/agents/approve-registration/${id}`, 
+        `${BASE_URL}/admin/agents/approve-registration/${id}`,
         {},
         {
           withCredentials: true,
@@ -58,7 +58,7 @@ const DeliveryAgent = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         console.log(response.data.message); // Log the success message from the server
         navigate(0); // Reload the page or component
@@ -83,46 +83,46 @@ const DeliveryAgent = () => {
       });
     }
   };
-  
 
-  const handleReject = async(id) => {
-    console.log("rejectID",id)
-    console.log("url",BASE_URL)
-    try{
+  const handleReject = async (id) => {
+    console.log("rejectID", id);
+    console.log("url", BASE_URL);
+    try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/agents/reject-registration/${id}`, 
-        
+        `${BASE_URL}/admin/agents/reject-registration/${id}`,
+
         {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
-          }
+          },
         }
       );
-  
+
       if (response.status === 200) {
-      console.log(response.data.message);
+        console.log(response.data.message);
+        toast({
+          title: "Agent Rejected",
+          description: "Agent Rejected successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+      // else {
+      //   console.log(`Unexpected response status: ${response.status}`);
+      // }
+    } catch (err) {
+      console.error(err.message);
       toast({
-        title: "Agent Rejected",
-        description: "Agent Rejected successfully.",
-        status: "success",
+        title: "Error Rejecting Agent",
+        description: err.response?.data?.message || err.message,
+        status: "error",
         duration: 9000,
         isClosable: true,
       });
-     }
-    // else {
-    //   console.log(`Unexpected response status: ${response.status}`);
-    // }
-  }catch (err) {
-    console.error(err.message);
-    toast({
-      title: "Error Rejecting Agent",
-      description: err.response?.data?.message || err.message,
-      status: "error",
-      duration: 9000,
-      isClosable: true,
-    });
-  } finally {}
+    } finally {
+    }
   };
 
   useEffect(() => {
@@ -135,7 +135,12 @@ const DeliveryAgent = () => {
       try {
         setIsLoading(true);
 
-        const [agentResponse, geofenceResponse, salaryResponse, managerResponse] = await Promise.all([
+        const [
+          agentResponse,
+          geofenceResponse,
+          salaryResponse,
+          managerResponse,
+        ] = await Promise.all([
           axios.get(`${BASE_URL}/admin/agents/all-agents`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -144,16 +149,14 @@ const DeliveryAgent = () => {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(
-            `${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
+          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(
-            `${BASE_URL}/admin/managers`, {
+          axios.get(`${BASE_URL}/admin/managers`, {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
-          })
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
         if (salaryResponse.status === 200) {
           setSalary(salaryResponse.data.data);
@@ -259,12 +262,9 @@ const DeliveryAgent = () => {
     }
   };
 
-
-
   const showAddModal = () => {
     setAddModalVisible(true);
   };
-
 
   const handleCancel = () => {
     setAddModalVisible(false);
@@ -316,8 +316,6 @@ const DeliveryAgent = () => {
                 salary={salary}
                 manager={manager}
               />
-
-
             </div>
           </div>
         </div>
@@ -424,20 +422,25 @@ const DeliveryAgent = () => {
                   </td>
                   <td className="p-4">
                     <>
-                      {agent.isApproved === "Approved" && <p className="text-green-500">Approved</p>}
-                      {agent.isApproved === "Rejected" && <p className="text-red-500">Rejected</p>}
+                      {agent.isApproved === "Approved" && (
+                        <p className="text-green-500">Approved</p>
+                      )}
+                      {agent.isApproved === "Rejected" && (
+                        <p className="text-red-500">Rejected</p>
+                      )}
 
-                      {agent.isApproved === "Pending" && <div className="flex space-x-10 justify-center">
-                        <CheckCircleOutlined
-                          className="text-3xl cursor-pointer text-green-500"
-                          onClick={() => handleApprove(agent._id)}
-                        />
-                        <CloseCircleOutlined
-                          className="text-3xl  cursor-pointer text-red-500"
-                          onClick={() => handleReject(agent._id)}
-                        />
-                      </div>}
-
+                      {agent.isApproved === "Pending" && (
+                        <div className="flex space-x-10 justify-center">
+                          <CheckCircleOutlined
+                            className="text-3xl cursor-pointer text-green-500"
+                            onClick={() => handleApprove(agent._id)}
+                          />
+                          <CloseCircleOutlined
+                            className="text-3xl  cursor-pointer text-red-500"
+                            onClick={() => handleReject(agent._id)}
+                          />
+                        </div>
+                      )}
                     </>
                   </td>
                 </tr>

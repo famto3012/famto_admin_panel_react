@@ -17,7 +17,7 @@ import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-  const Adbanner = () => {
+const Adbanner = () => {
   const [banner, setBanner] = useState([]);
   const [individualBanner, setIndividualBanner] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,12 +34,15 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [isModalVisibleIndividual, setIsModalVisibleIndividual] = useState(false);
-  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] = useState(false);
+  const [isModalVisibleIndividual, setIsModalVisibleIndividual] =
+    useState(false);
+  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] =
+    useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-  const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] = useState(false);
+  const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] =
+    useState(false);
 
-  //api connections 
+  //api connections
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -92,7 +95,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   };
 
   const showModalEdit = (bannerId) => {
-    setCurrentEditBanner(bannerId)
+    setCurrentEditBanner(bannerId);
     setEditModalVisible(true);
   };
 
@@ -102,7 +105,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
   const showModalIndividualEdit = (bannerEditId) => {
     setCurrentIndBanner(bannerEditId);
-    console.log(bannerEditId)
+    console.log(bannerEditId);
     setIsModalVisibleIndividualEdit(true);
   };
 
@@ -110,12 +113,11 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
     setCurrentBanner(bannerId);
     console.log(bannerId);
     setIsShowModalDelete(true);
-    
   };
 
   const showModalDeleteIndividual = (currentIndBannerId) => {
     setCurrentIndBanner(currentIndBannerId);
-    console.log(currentIndBannerId)
+    console.log(currentIndBannerId);
     setShowModalDeleteIndividual(true);
   };
 
@@ -148,7 +150,6 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
     setIsShowModalDelete(false);
     setCurrentBanner(null);
   };
-
   // api calling to delete Aapp banner..      
   const handleBannerDelete = async (currentBanner) => {
     try {
@@ -176,21 +177,24 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         console.error(`Unexpected status code: ${deleteResponse.status}`);
       }
     } catch (err) {
-      console.error('Error in deleting banner:', err);
+      console.error("Error in deleting banner:", err);
     } finally {
       setConfirmLoading(false);
     }
-  }
+  };
 
   const handleConfirmIndBannerDelete = () => {
     setShowModalDeleteIndividual(false);
     setCurrentIndBanner(null);
-
-  }
+  };
 
   const removeIndBanner = (currentIndBannerId) => {
-    setIndividualBanner(individualBanner.filter((individualBanner) => individualBanner._id || currentIndBannerId));
-  }
+    setIndividualBanner(
+      individualBanner.filter(
+        (individualBanner) => individualBanner._id || currentIndBannerId
+      )
+    );
+  };
 
   //api calling to delete individual app banner..
 
@@ -199,10 +203,11 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
       setConfirmLoading(true);
 
       const indDeleteResponse = await axios.delete(
-        `${BASE_URL}/admin/banner/delete-banner/${currentIndBanner}`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` }
-      }
+        `${BASE_URL}/admin/banner/delete-banner/${currentIndBanner}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       if (indDeleteResponse === 200) {
         removeIndBanner(currentIndBanner);
@@ -218,17 +223,15 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         console.error(`Unexpected status code: ${indDeleteResponse.status}`);
       }
     } catch (err) {
-      console.error(`Error in delete individual banner`, err)
+      console.error(`Error in delete individual banner`, err);
     } finally {
       setConfirmLoading(false);
     }
-  }
+  };
 
   const handleToggle = async (BannerId) => {
     try {
-      const statusToUpdate = banner.find(
-        (d) => d._id === BannerId
-      );
+      const statusToUpdate = banner.find((d) => d._id === BannerId);
       if (statusToUpdate) {
         const updatedStatus = !statusToUpdate.status;
 
@@ -254,7 +257,9 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         // Update the state with the new status
         setBanner((prevBanner) =>
           prevBanner.map((banner) =>
-            banner._id === BannerId ? { ...banner, status: !banner.status } : banner
+            banner._id === BannerId
+              ? { ...banner, status: !banner.status }
+              : banner
           )
         );
       }
@@ -301,7 +306,9 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         // Update the state with the new status
         setIndividualBanner((prevBanner) =>
           prevBanner.map((individualBanner) =>
-            individualBanner._id === IndBannerId ? { ...individualBanner, status: !individualBanner.status } : individualBanner
+            individualBanner._id === IndBannerId
+              ? { ...individualBanner, status: !individualBanner.status }
+              : individualBanner
           )
         );
       }
@@ -322,7 +329,6 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   // console.log("currently active banner", currentIndBanner)
   // console.log("last",currentBannerEdit)
 
-
   return (
     <div>
       {isLoading ? (
@@ -338,7 +344,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
               <h1 className="text-lg font-bold outline-none focus:outline-none">
                 Ad Banner
               </h1>
-              <Switch/>
+              <Switch />
             </div>
             <p className="mt-5 mx-10 text-[15px] text-gray-500">
               The purpose of a promotional banner is to promote a store. It can
@@ -372,7 +378,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
             <div className="overflow-x-auto">
               <table className="overflow-x-auto p-4 w-full mt-7">
                 <thead>
-                  <tr className="p-5 w-full" >
+                  <tr className="p-5 w-full">
                     {[
                       "Image",
                       "Name",
@@ -391,17 +397,21 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                   </tr>
                 </thead>
                 <tbody>
-                  {banner.map((bannerData,index) => (
+                  {banner.map((bannerData, index) => (
                     <tr
-                      className="text-center bg-white h-20" style={{
+                      className="text-center bg-white h-20"
+                      style={{
                         backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
                       }}
                       key={bannerData._id}
                     >
                       {/* className="w-[120px] px-5" */}
-                      <td className=" flex items-center justify-center p-3" >
+                      <td className=" flex items-center justify-center p-3">
                         <figure className="h-[70px] w-[100px]">
-                          <img src={bannerData.imageUrl} className="w-full h-full object-contain" />
+                          <img
+                            src={bannerData.imageUrl}
+                            className="w-full h-full object-contain"
+                          />
                         </figure>
                       </td>
                       <td>{bannerData.name}</td>
@@ -453,8 +463,12 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                               >
                                 Cancel
                               </button>
-                              <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                                onClick={() => handleBannerDelete(currentBanner)}>
+                              <button
+                                className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                                onClick={() =>
+                                  handleBannerDelete(currentBanner)
+                                }
+                              >
                                 {" "}
                                 Delete
                               </button>
@@ -512,14 +526,18 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                 <tbody>
                   {individualBanner.map((individualBanner, index) => (
                     <tr
-                      className="text-center bg-white h-20" style={{
+                      className="text-center bg-white h-20"
+                      style={{
                         backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
                       }}
                       key={individualBanner._id}
                     >
-                      <td className=" flex items-center justify-center p-3" >
+                      <td className=" flex items-center justify-center p-3">
                         <figure className="h-[70px] w-[100px]">
-                        <img src={individualBanner.imageUrl} className="w-full h-full object-contain" />
+                          <img
+                            src={individualBanner.imageUrl}
+                            className="w-full h-full object-contain"
+                          />
                         </figure>
                       </td>
                       <td>{individualBanner.name}</td>
@@ -527,14 +545,17 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                       <td>{individualBanner.geofenceId}</td>
                       <td>
                         <Switch
-                          checked={
-                            individualBanner.status}
+                          checked={individualBanner.status}
                           onChange={() => handleIndToggle(individualBanner._id)}
                         />
                       </td>
                       <td>
                         <div className="flex justify-center items-center gap-3">
-                          <button onClick={() => showModalIndividualEdit(individualBanner._id)}>
+                          <button
+                            onClick={() =>
+                              showModalIndividualEdit(individualBanner._id)
+                            }
+                          >
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
 
@@ -549,7 +570,9 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                           <button>
                             <RiDeleteBinLine
                               className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
-                              onClick={() => showModalDeleteIndividual(individualBanner._id)}
+                              onClick={() =>
+                                showModalDeleteIndividual(individualBanner._id)
+                              }
                             />
                           </button>
                           <Modal
@@ -570,8 +593,11 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
                               >
                                 Cancel
                               </button>
-                              <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                                onClick={() => handleIndBannerDelete(currentIndBanner)}
+                              <button
+                                className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                                onClick={() =>
+                                  handleIndBannerDelete(currentIndBanner)
+                                }
                               >
                                 {" "}
                                 Delete

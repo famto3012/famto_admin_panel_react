@@ -11,8 +11,7 @@ const EditPromoCodeModal = ({
   isVisible,
   token,
 }) => {
-
-  if(!currentPromoEdit) return
+  if (!currentPromoEdit) return;
 
   const [formData, setFormData] = useState({
     promoCode: "",

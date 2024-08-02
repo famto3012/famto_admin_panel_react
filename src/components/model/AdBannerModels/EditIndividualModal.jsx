@@ -31,45 +31,42 @@ const EditIndividualModal = ({
   const toast = useToast();
   const navigate = useNavigate();
 
-  console.log("data",individualdata);
+  console.log("data", individualdata);
 
   //api connection to get individual banner details
 
   useEffect(() => {
-
     const getData = async () => {
       setConfirmLoading(true);
 
       try {
-            const response = await axios.get(
+        const response = await axios.get(
           `${BASE_URL}/admin/banner/get-banner/${currentIndBanner}`,
           {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (response.status === 200) {
           const data = response.data.data;
           setIndividualData({
             name: data.name,
-            merchantId : data.merchantId,
+            merchantId: data.merchantId,
             geofence: data.geofenceId,
-            bannerImage: data.imageUrl
-          })
+            bannerImage: data.imageUrl,
+          });
         }
-      }catch (err) {
+      } catch (err) {
         console.error(`Error in fetch data ${response.data.message}`);
       } finally {
         setConfirmLoading(false);
       }
+    };
+
+    if (currentIndBanner) {
+      getData();
     }
-
-    if(currentIndBanner) {
-    getData();
-    }
-
-  },[currentIndBanner,token,BASE_URL])
-
+  }, [currentIndBanner, token, BASE_URL]);
 
   // Populate initial state when currentIndBanner changes
   // useEffect(() => {
@@ -167,7 +164,7 @@ const EditIndividualModal = ({
     setAdPreviewURL(URL.createObjectURL(file));
   };
 
-    return (
+  return (
     <Modal
       title="Edit Individual Merchant Ad Banner"
       open={isVisible}
@@ -233,9 +230,7 @@ const EditIndividualModal = ({
             )}
           </div>
           <div className="flex items-center">
-            <label className=" w-1/3">
-              Banner Image (390px x 400px)
-            </label>
+            <label className=" w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
               {!adPreviewURL && (
                 <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
@@ -256,36 +251,33 @@ const EditIndividualModal = ({
                 className="hidden"
                 onChange={handleAdImageChange}
               />
-              <label
-                htmlFor="adImage"
-                className="cursor-pointer"
-              >
+              <label htmlFor="adImage" className="cursor-pointer">
                 <MdCameraAlt
                   className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
                   size={30}
                 />
               </label>
             </div>
+          </div>
 
-        </div>
-
-        <div className="flex justify-end gap-4 mt-6">
-          <button
-            className="bg-cyan-50 py-2 px-4 rounded-md"
-            type="button"
-            onClick={handleCancel}
-          >
-            Cancel
-          </button>
-          <button
-            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${isLoading ? "opacity-50" : ""
+          <div className="flex justify-end gap-4 mt-6">
+            <button
+              className="bg-cyan-50 py-2 px-4 rounded-md"
+              type="button"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className={`bg-teal-700 text-white py-2 px-4 rounded-md ${
+                isLoading ? "opacity-50" : ""
               }`}
-            type="submit"
-            disabled={isLoading}
-          >
-            {isLoading ? "Saving..." : "Save"}
-          </button>
-        </div>
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Saving..." : "Save"}
+            </button>
+          </div>
         </div>
       </form>
     </Modal>

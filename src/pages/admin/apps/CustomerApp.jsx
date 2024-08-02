@@ -276,7 +276,8 @@ const CustomerApp = () => {
     setIsShowModalDelete(false);
   };
 
-  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] = useState(false);
+  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] =
+    useState(false);
 
   const ShowModalDeleteCustomer = () => {
     setIsShowModalDeleteCustomer(true);
@@ -1013,9 +1014,11 @@ const CustomerApp = () => {
                 </div>
               </form>
             </Modal>
-            <button className="bg-red-100 rounded-3xl p-3 text-red-700 ml-5 px-12 mt-5" onClick={ShowModalDeleteCustomer}>
-              <DeleteOutlined />{" "}
-              Delete
+            <button
+              className="bg-red-100 rounded-3xl p-3 text-red-700 ml-5 px-12 mt-5"
+              onClick={ShowModalDeleteCustomer}
+            >
+              <DeleteOutlined /> Delete
             </button>
             <Modal
               onOk={showModalDeleteOkCustomer}
@@ -1228,9 +1231,11 @@ const CustomerApp = () => {
                 </div>
               </form>
             </Modal>
-            <button className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5" onClick={showModalDeletePick}>
-              <DeleteOutlined />{" "}
-              Delete
+            <button
+              className="bg-teal-800 rounded-3xl p-3 text-white ml-5 px-12 mt-5"
+              onClick={showModalDeletePick}
+            >
+              <DeleteOutlined /> Delete
             </button>
             <Modal
               onOk={showModalDeleteOkPick}

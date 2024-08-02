@@ -67,7 +67,7 @@ const Customers = () => {
         }`,
         {
           params:
-          filterType === "geofence" ? { filter: value } : { query: value },
+            filterType === "geofence" ? { filter: value } : { query: value },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -81,18 +81,16 @@ const Customers = () => {
       setIsLoading(false);
     }
   };
-  
-  const csvData = [
-      { label: 'ID', key: '_id' },
-      { label: 'Name', key: 'fullName' },
-      { label: 'Email', key: 'email' },
-      { label: 'Phone Number', key: 'phoneNumber' },
-      { label: 'Last Platform Used', key: 'lastPlatformUsed' },
-      { label: 'Registration Date', key: 'registrationDate' },
-      { label: 'Rating', key: 'averageRating' },
-    
-  ];
 
+  const csvData = [
+    { label: "ID", key: "_id" },
+    { label: "Name", key: "fullName" },
+    { label: "Email", key: "email" },
+    { label: "Phone Number", key: "phoneNumber" },
+    { label: "Last Platform Used", key: "lastPlatformUsed" },
+    { label: "Registration Date", key: "registrationDate" },
+    { label: "Rating", key: "averageRating" },
+  ];
 
   return (
     <div>
@@ -108,9 +106,13 @@ const Customers = () => {
             <div className="flex items-center justify-between mx-8 mt-5">
               <h1 className="text-lg font-bold">Customers</h1>
               <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-              <CSVLink data={customers} headers={csvData} filename={"customerData.csv"}>
-                 <ArrowDownOutlined /> <span>CSV</span>
-                  </CSVLink>
+                <CSVLink
+                  data={customers}
+                  headers={csvData}
+                  filename={"customerData.csv"}
+                >
+                  <ArrowDownOutlined /> <span>CSV</span>
+                </CSVLink>
               </button>
             </div>
             <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">

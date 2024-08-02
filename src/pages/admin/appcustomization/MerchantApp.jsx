@@ -13,130 +13,132 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const MerchantApp = () => {
-    const toast = useToast();
-    const [isLoading, setIsLoading] = useState(false);
-    const { token, role } = useContext(UserContext);
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-      splashScreenUrl: "",
-      email: false,
-      phoneNumber: false,
-      emailVerification: false,
-      otpVerification: false,
-      loginViaOtp: false,
-      loginViaGoogle: false,
-      loginViaApple: false,
-      loginViaFacebook: false,
-    });
-  
-    useEffect(() => {
-      if (!token) {
-        navigate("/auth/login");
-        return;
-      }
-  
-      const fetchData = async () => {
-        setIsLoading(true);
-        try {
-          const response = await axios.get(
-            `${BASE_URL}/admin/app-customization/merchant-app`,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-  
-          if (response.status === 200) {
-            setFormData(response.data.data);
-            console.log(response.data.data);
-          }
-        } catch (err) {
-          console.error(`Error in fetching data: ${err}`);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchData();
-    }, [token, role, navigate]);
-  
-    const submitAction = async (e) => {
-      e.preventDefault();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    splashScreenUrl: "",
+    email: false,
+    phoneNumber: false,
+    emailVerification: false,
+    otpVerification: false,
+    loginViaOtp: false,
+    loginViaGoogle: false,
+    loginViaApple: false,
+    loginViaFacebook: false,
+  });
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
-        console.log("formData", formData);
-  
-        setIsLoading(true);
-        const adddataToSend = new FormData();
-        adddataToSend.append("email", formData.email);
-        adddataToSend.append("phoneNumber", formData.phoneNumber);
-        adddataToSend.append("emailVerification", formData.emailVerification);
-        adddataToSend.append("otpVerification", formData.otpVerification);
-        adddataToSend.append("loginViaOtp", formData.loginViaOtp);
-        adddataToSend.append("loginViaGoogle", formData.loginViaGoogle);
-        adddataToSend.append("loginViaApple", formData.loginViaApple);
-        adddataToSend.append("loginViaFacebook", formData.loginViaFacebook);
-  
-        adddataToSend.append("splashScreenImage", notificationFile);
-        console.log("data for test", adddataToSend);
-  
-        const addDataResponse = await axios.post(
+        const response = await axios.get(
           `${BASE_URL}/admin/app-customization/merchant-app`,
-          adddataToSend,
           {
             withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-  
-        if (addDataResponse.status === 201) {
-          setFormData(addDataResponse.data.data);
-          setNotificationPreviewURL(null);
-          setNotificationFile(null);
-          handleCancel();
-          toast({
-            title: "Updated",
-            description: "Agent App Updated Successfully",
-            status: "success",
-            duration: 1000,
-            isClosable: true,
-          });
+
+        if (response.status === 200) {
+          setFormData(response.data.data);
+          console.log(response.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetch datas : ${addDataResponse.data.message}`);
-        toast({
-          title: "Error",
-          description: "There was an error occured",
-          status: "error",
-          duration: 1000,
-          isClosable: true,
-        });
+        console.error(`Error in fetching data: ${err}`);
       } finally {
         setIsLoading(false);
       }
-      console.log(formData);
     };
-  
-    const onChange = (name, checked) => {
-      setFormData({ ...formData, [name]: checked });
-    };
-  
-    const [notificationFile, setNotificationFile] = useState(null);
-    const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-  
-    const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      setNotificationFile(file);
-      setNotificationPreviewURL(URL.createObjectURL(file));
-    };
+
+    fetchData();
+  }, [token, role, navigate]);
+
+  const submitAction = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("formData", formData);
+
+      setIsLoading(true);
+      const adddataToSend = new FormData();
+      adddataToSend.append("email", formData.email);
+      adddataToSend.append("phoneNumber", formData.phoneNumber);
+      adddataToSend.append("emailVerification", formData.emailVerification);
+      adddataToSend.append("otpVerification", formData.otpVerification);
+      adddataToSend.append("loginViaOtp", formData.loginViaOtp);
+      adddataToSend.append("loginViaGoogle", formData.loginViaGoogle);
+      adddataToSend.append("loginViaApple", formData.loginViaApple);
+      adddataToSend.append("loginViaFacebook", formData.loginViaFacebook);
+
+      adddataToSend.append("splashScreenImage", notificationFile);
+      console.log("data for test", adddataToSend);
+
+      const addDataResponse = await axios.post(
+        `${BASE_URL}/admin/app-customization/merchant-app`,
+        adddataToSend,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (addDataResponse.status === 201) {
+        setFormData(addDataResponse.data.data);
+        setNotificationPreviewURL(null);
+        setNotificationFile(null);
+        handleCancel();
+        toast({
+          title: "Updated",
+          description: "Agent App Updated Successfully",
+          status: "success",
+          duration: 1000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.error(`Error in fetch datas : ${addDataResponse.data.message}`);
+      toast({
+        title: "Error",
+        description: "There was an error occured",
+        status: "error",
+        duration: 1000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+    console.log(formData);
+  };
+
+  const onChange = (name, checked) => {
+    setFormData({ ...formData, [name]: checked });
+  };
+
+  const [notificationFile, setNotificationFile] = useState(null);
+  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setNotificationFile(file);
+    setNotificationPreviewURL(URL.createObjectURL(file));
+  };
 
   return (
     <>
       <Sidebar />
       <div className="w-fit min-h-screen pl-[290px] bg-gray-100">
-        <nav className="p-5"><GlobalSearch /></nav>
+        <nav className="p-5">
+          <GlobalSearch />
+        </nav>
         <div>
           <h1 className="text-lg font-bold mt-7 mx-11">Merchant App</h1>
         </div>
@@ -152,7 +154,7 @@ const MerchantApp = () => {
           </p>
 
           <div className="flex items-center ml-14 gap-[30px] mx-10">
-          {formData?.splashScreenUrl && !notificationPreviewURL && (
+            {formData?.splashScreenUrl && !notificationPreviewURL && (
               <figure className="h-16 w-16 rounded-md  relative">
                 <img
                   src={formData?.splashScreenUrl}
@@ -226,7 +228,9 @@ const MerchantApp = () => {
                   <Switch
                     className="ml-10"
                     checked={formData.emailVerification}
-                    onChange={(checked) => onChange("emailVerification", checked)}
+                    onChange={(checked) =>
+                      onChange("emailVerification", checked)
+                    }
                     name="emailVerification"
                   />
                 </div>
@@ -274,7 +278,9 @@ const MerchantApp = () => {
                   <Switch
                     className="ml-[80px]"
                     checked={formData.loginViaFacebook}
-                    onChange={(checked) => onChange("loginViaFacebook", checked)}
+                    onChange={(checked) =>
+                      onChange("loginViaFacebook", checked)
+                    }
                     name="loginViaFacebook"
                   />
                 </div>
@@ -282,8 +288,7 @@ const MerchantApp = () => {
             </div>
           </div>
         </div>
-       
-       
+
         {/* <div className="flex justify-between mt-16 border-t-2 pt-10 border-gray-300">
           <h1 className="mx-10">Merchant login restriction</h1>
           <p className="text-gray-500 mr-[100px]">
@@ -297,7 +302,6 @@ const MerchantApp = () => {
             <Switch />
           </div>
         </div> */}
-
 
         <div className="flex justify-end gap-4 mt-16 mx-10">
           <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">

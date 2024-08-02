@@ -84,86 +84,86 @@ const Subscriptioncustomer = () => {
         <div className="mx-3 mt-5">
           <div className="flex justify-between items-center gap-3 ml-2 ">
             <div>
-            <label
-              htmlFor="Toggle3"
-              className="inline-flex outline-none gap-5 cursor-pointer "
-            >
-              <input
-                id="Toggle3"
-                type="checkbox"
-                className="hidden peer "
-                onChange={handleToggle}
-              />
+              <label
+                htmlFor="Toggle3"
+                className="inline-flex outline-none gap-5 cursor-pointer "
+              >
+                <input
+                  id="Toggle3"
+                  type="checkbox"
+                  className="hidden peer "
+                  onChange={handleToggle}
+                />
 
-<span
-                className={`px-4 py-2 rounded-lg dark:bg-gray-100 ${
-                  isCommission
-                    ? "peer-checked:dark:bg-teal-800 text-white"
-                    : "peer-checked:dark:bg-gray-100"
-                }`}
-              >
-                Commission
-              </span>
-              <span
-                className={`px-4 py-2 rounded-lg dark:bg-teal-800 ${
-                  isCommission
-                    ? "peer-checked:dark:bg-gray-100"
-                    : "peer-checked:dark:bg-teal-800 text-white"
-                }`}
-              >
-                Subscription
-              </span>
-            </label>
+                <span
+                  className={`px-4 py-2 rounded-lg dark:bg-gray-100 ${
+                    isCommission
+                      ? "peer-checked:dark:bg-teal-800 text-white"
+                      : "peer-checked:dark:bg-gray-100"
+                  }`}
+                >
+                  Commission
+                </span>
+                <span
+                  className={`px-4 py-2 rounded-lg dark:bg-teal-800 ${
+                    isCommission
+                      ? "peer-checked:dark:bg-gray-100"
+                      : "peer-checked:dark:bg-teal-800 text-white"
+                  }`}
+                >
+                  Subscription
+                </span>
+              </label>
             </div>
             <div className="flex gap-10">
-            <div className=" rounded-lg  flex items-center ">
-              {isCommission ? (
-                ""
-              ) : (
-                <select
-                  name="type"
-                  defaultValue=""
-                  className="bg-cyan-100 px-2 py-2 rounded-lg outline-none focus:outline-none "
-                >
-                  <option hidden value="">
-                    MerchantName
-                  </option>
-                  <option value="customer" className="bg-white">
-                    option1
-                  </option>
-                  <option value="agent" className="bg-white">
-                    option2
-                  </option>
-                  <option value="merchant" className="bg-white">
-                    option3
-                  </option>
-                </select>
-              )}
+              <div className=" rounded-lg  flex items-center ">
+                {isCommission ? (
+                  ""
+                ) : (
+                  <select
+                    name="type"
+                    defaultValue=""
+                    className="bg-cyan-100 px-2 py-2 rounded-lg outline-none focus:outline-none "
+                  >
+                    <option hidden value="">
+                      MerchantName
+                    </option>
+                    <option value="customer" className="bg-white">
+                      option1
+                    </option>
+                    <option value="agent" className="bg-white">
+                      option2
+                    </option>
+                    <option value="merchant" className="bg-white">
+                      option3
+                    </option>
+                  </select>
+                )}
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="date"
+                  // name="date"
+                  value={""}
+                  // onChange={handleChange}
+                  className="p-2 rounded"
+                />
+              </div>
+              <div className="flex items-center">
+                <FilterAltOutlined className="text-gray-400 " />
+              </div>
+              <div className="relative flex justify-end">
+                <input
+                  type="search"
+                  name="search"
+                  placeholder="Search merchant name"
+                  className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
+                />
+                <button type="submit" className="absolute right-0 mt-2 mr-4 ">
+                  <SearchOutlined className="text-xl text-gray-500" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center">
-              <input
-                type="date"
-                // name="date"
-                value={""}
-                // onChange={handleChange}
-                className="p-2 rounded"
-              />
-            </div>
-            <div className="flex items-center">
-              <FilterAltOutlined className="text-gray-400 " />
-            </div>
-            <div className="relative flex justify-end">
-              <input
-                type="search"
-                name="search"
-                placeholder="Search merchant name"
-                className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
-              />
-              <button type="submit" className="absolute right-0 mt-2 mr-4 ">
-                <SearchOutlined className="text-xl text-gray-500" />
-              </button>
-            </div>
-          </div>
           </div>
         </div>
         {isCommission ? (
