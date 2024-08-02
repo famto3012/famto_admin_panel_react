@@ -128,23 +128,6 @@ const AddPromoCodeModal = ({
           isClosable: true,
           duration: 9000,
         });
-        // You may want to clear the form here
-        // setAddPromocode({
-        //   promoCode: "",
-        //   promoType: "",
-        //   discount: "",
-        //   description: "",
-        //   fromDate: "",
-        //   toDate: "",
-        //   applicationMode: "",
-        //   maxDiscountValue: "",
-        //   minOrderAmount: "",
-        //   maxAllowedUsers: "",
-        //   appliedOn: "",
-        //   merchantId: "",
-        //   geofenceId: "",
-        //   imageUrl: "",
-        // });
       }
     } catch (err) {
       console.log(`Error in adding data: ${err.message}`);
