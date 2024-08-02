@@ -1,30 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { mappls } from "mappls-web-maps";
+import axios from "axios";
+import { UserContext } from "../../../context/UserContext";
+import { useLocation } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-const AddGeofence = () => {
-  const [geofence, setIsGeofence] = useState({
-    regionName: "",
-    regionDescription: "",
-  });
+const AddGeofence = ({heading}) => {
+  const { token } = useContext(UserContext);
+  const [geofences, setGeofences] = useState([]);
   const [color, setColor] = useState("#4931a0");
   const mapContainerRef = useRef(null);
-  const [mapObject, setMapObject] = useState(null); // default color
+  const [mapObject, setMapObject] = useState(null); // default color 
+
+  const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+  };
+
+  const query = useQuery();
+  const id = query.get('id')
 
   const handleColorChange = (event) => {
     setColor(event.target.value);
   };
 
   const handleInputChange = (e) => {
-    setIsGeofence({ ...geofence, [e.target.name]: e.target.value });
+    setGeofences({ ...geofences, [e.target.name]: e.target.value });
   };
 
   const signupAction = (e) => {
     e.preventDefault();
-    const location = { geofence, color };
+    const location = { geofences, color };
     console.log("Confirmed Location", location);
   };
 
@@ -66,6 +74,33 @@ const AddGeofence = () => {
       }
     );
   }, []);
+
+  useEffect(() => {
+    if(heading === "Edit Geofence"){
+      getSingleGeofence()
+    }
+   
+  }, [])
+
+  const getSingleGeofence = async()=>{
+    try {
+      console.log(token);
+      const response = await axios.get(
+        `${BASE_URL}/admin/geofence/get-geofence/${id}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setGeofences(response.data.geofence);
+      }
+    } catch (err) {
+      console.log("Error in fetching geofences: ", err);
+    }
+  }
+
+
   return (
     <>
       <Sidebar />
@@ -73,7 +108,7 @@ const AddGeofence = () => {
         <nav className="p-5">
           <GlobalSearch />
         </nav>
-        <h1 className="font-bold text-lg mx-10">Geofence</h1>
+        <h1 className="font-bold text-lg mx-10">{heading}</h1>
         <div className="flex justify-between gap-3">
           <div className="mt-8 p-6 bg-white  rounded-lg shadow-sm w-1/3 ms-10">
             <form onSubmit={signupAction}>
@@ -110,7 +145,7 @@ const AddGeofence = () => {
                     name="regionName"
                     placeholder="Region Name"
                     className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                    value={geofence.regionName}
+                    value={geofences.name}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -126,7 +161,7 @@ const AddGeofence = () => {
                     name="regionDescription"
                     placeholder="Region Description"
                     className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                    value={geofence.regionDescription}
+                    value={geofences.description}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -148,11 +183,11 @@ const AddGeofence = () => {
               </div>
             </form>
           </div>
-          <div className="w-3/4 bg-white h-[520px]">
+          <div className="w-3/4 mt-[25px] bg-white h-[560px]">
             <div
               id="map"
               ref={mapContainerRef}
-              style={{ width: "99%", height: "510px", display: "inline-block" }}
+              style={{ width: "99%", height: "550px", display: "inline-block" }}
             ></div>
           </div>
         </div>
