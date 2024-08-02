@@ -67,6 +67,7 @@ const Commission = lazy(() => import("./pages/admin/manager/Commission"));
 const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
 
 function App() {
+
   return (
     <>
       <BrowserRouter>
@@ -131,7 +132,8 @@ function App() {
 
             <Route path="/products" element={<Products />} />
             <Route path="/geofence" element={<Geofence />} />
-            <Route path="/add-geofence" element={<AddGeofence />} />
+            <Route path="/add-geofence" element={<AddGeofence heading="Add Geofence" />} />
+            <Route path="/edit-geofence" element={<AddGeofence heading="Edit Geofence" />} />
             <Route
               path="/delivery-management"
               element={<DeliveryManagement />}

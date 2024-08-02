@@ -129,6 +129,17 @@ const Adbanner = () => {
     setShowModalDeleteIndividual(false);
   };
 
+  // To display recently added Banner
+  const handleAddBanner = (newBanner) => {
+    setBanner((prevBanners) => {
+      if (Array.isArray(prevBanners)) {
+        return [...prevBanners,newBanner];
+      } else {
+        [newBanner];
+      }
+    });
+  };
+
   // New function to remove a Banner from the banner state
   const removeBanner = (bannerId) => {
     setBanner(banner.filter((banner) => banner._id !== bannerId));
@@ -139,9 +150,7 @@ const Adbanner = () => {
     setIsShowModalDelete(false);
     setCurrentBanner(null);
   };
-
-  // api calling to delete Aapp banner..
-
+  // api calling to delete Aapp banner..      
   const handleBannerDelete = async (currentBanner) => {
     try {
       setConfirmLoading(true);
@@ -158,12 +167,12 @@ const Adbanner = () => {
         removeBanner(currentBanner);
         handleConfirmDelete();
         toast({
-          title: "Banner Deleted",
-          description: "The Banner Deleted Successfully.",
-          status: "success",
-          duration: 9000,
-          isClosable: "true",
-        });
+          title:"Banner Deleted",
+          description:"The Banner Deleted Successfully.",
+          status:"success",
+          duration:100,
+          isClosable:"true"
+        })
       } else {
         console.error(`Unexpected status code: ${deleteResponse.status}`);
       }
@@ -204,12 +213,12 @@ const Adbanner = () => {
         removeIndBanner(currentIndBanner);
         handleConfirmIndBannerDelete();
         toast({
-          title: "Banner Deleted",
-          description: "The Banner Deleted Successfully.",
-          status: "success",
-          duration: 9000,
-          isClosable: "true",
-        });
+          title:"Banner Deleted",
+          description:"The Banner Deleted Successfully.",
+          status:"success",
+          duration:100,
+          isClosable:"true"
+        })
       } else {
         console.error(`Unexpected status code: ${indDeleteResponse.status}`);
       }
@@ -241,7 +250,7 @@ const Adbanner = () => {
           title: "Status updated",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 100,
           isClosable: true,
         });
 
@@ -261,7 +270,7 @@ const Adbanner = () => {
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 900,
+        duration: 100,
         isClosable: true,
       });
     }
@@ -290,7 +299,7 @@ const Adbanner = () => {
           title: "Status updated",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 100,
           isClosable: true,
         });
 
@@ -310,7 +319,7 @@ const Adbanner = () => {
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 900,
+        duration: 100,
         isClosable: true,
       });
     }
@@ -361,6 +370,7 @@ const Adbanner = () => {
                   handleCancel={handleCancel}
                   BASE_URL={BASE_URL}
                   token={token}
+                  onAddBanner={handleAddBanner}
                   allGeofence={allGeofence}
                 />
               </div>

@@ -11,6 +11,7 @@ const AddDiscountModal = ({
   BASE_URL,
   role,
   geofence,
+  onDiscountAdd,
   handleCancel,
 }) => {
   const [merchantDiscount, setMerchantDiscount] = useState({
@@ -36,25 +37,30 @@ const AddDiscountModal = ({
     try {
       setIsLoading(true);
 
-      const endpoint =
-        role === "Admin"
-          ? `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`
-          : `${BASE_URL}/admin/shop-discount/add-merchant-discount`;
+      // const endpoint =
+      // role === "Admin"
+      //   ? `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`
+      //   : `${BASE_URL}/admin/shop-discount/add-merchant-discount`;
 
-      const response = await axios.post(endpoint, merchantDiscount, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`,
+        merchantDiscount,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 201) {
         handleCancel();
+        onDiscountAdd(response.data.data);
         toast({
           title: "Merchant Discount Added..",
           description: "Successfully added Merchant Discount",
           status: "success",
           isClosable: true,
-          duration: 9000,
+          duration: 9000,   
         });
       }
     } catch (err) {

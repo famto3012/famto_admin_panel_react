@@ -3,15 +3,18 @@ import { Modal, Switch } from "antd";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 
-const EditDiscountModal = ({
-  isVisible,
-  currentDiscount,
-  token,
-  merchant,
-  geofence,
-  BASE_URL,
-  handleCancel,
-}) => {
+const EditDiscountModal = (
+  {
+    isVisible,
+    currentDiscount,
+    token,
+    merchant,
+    geofence,
+    BASE_URL,
+    handleCancel,
+    onEditDiscount
+  }
+) => {
   const [merchantDiscount, setMerchantDiscount] = useState({
     merchant: "",
     discountName: "",
@@ -82,6 +85,7 @@ const EditDiscountModal = ({
       );
       if (response.status === 200) {
         handleCancel();
+        // onEditDiscount(response.data.data);
         toast({
           title: "Discount Updated",
           description: "Successfully Updated Discount",

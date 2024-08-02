@@ -9,6 +9,7 @@ const EditProductModal = ({
   merchant,
   geofence,
   currentProduct,
+  onEditProduct,
   handleCancel,
 }) => {
   const [productDiscount, setProductDiscount] = useState({
@@ -73,6 +74,7 @@ const EditProductModal = ({
         }
       );
       if (response.status === 200) {
+        onEditProduct(response.data.data);
         handleCancel();
         toast({
           title: "Product Discount Updated",

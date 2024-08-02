@@ -10,7 +10,9 @@ const AddProductModal = ({
   geofence,
   merchant,
   handleCancel,
+  onAddProduct,
 }) => {
+  const [productResults, setProductResults] = useState([]);
   const [productDiscount, setProductDiscount] = useState({
     discountName: "",
     maxAmount: "",
@@ -48,6 +50,7 @@ const AddProductModal = ({
       );
       if (response.status === 201) {
         handleCancel();
+        onAddProduct(response.data.data);
         toast({
           title: "Product Discount Created",
           description: "Product Discount Added Successfully",
@@ -70,6 +73,33 @@ const AddProductModal = ({
     }
   };
 
+  const handleSearchProduct = async (e) => {
+    const query = e.target.value;
+
+    if (query.length < 2) {
+      // Only search when query length is 3 or more characters
+      setProductResults([]);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${BASE_URL}/products/search`, {
+        params: { query },
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        setProductResults(response.data.data || []); // Handle case where data might be empty
+      }
+    } catch (err) {
+      console.error(`Error in fetch product ${err.message}`);
+    }
+  };
+
+  const handleProductSelect = (productId) => {
+    setProductDiscount({ ...productDiscount, productId });
+  };
+
   const handleToggle = (checked) => {
     setProductDiscount({ ...productDiscount, onAddOn: checked });
   };
@@ -81,7 +111,6 @@ const AddProductModal = ({
       title="Add Product-wise Discount"
       width="700px"
       open={isVisible}
-      // onOk={handleOkProduct}
       centered
       onCancel={handleCancel}
       footer={null} // Custom footer to include form buttons
@@ -170,8 +199,26 @@ const AddProductModal = ({
               type="search"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="productId"
-              onChange={handleInputChange}
+              // value={productDiscount.productId}
+              onChange={handleSearchProduct}
             />
+          </div>
+          <div className="mt-2">
+            <ul className="border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+              {productResults.map((product) => (
+                <li
+                  key={product._id}
+                  className={`p-2 cursor-pointer text-black hover:bg-gray-100 ${
+                    productDiscount.productId === product._id
+                      ? "bg-teal-200"
+                      : ""
+                  }`}
+                  onClick={() => handleProductSelect(product._id)}
+                >
+                  {product.productName}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">Max Amount</label>
@@ -235,13 +282,12 @@ const AddProductModal = ({
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
               onClick={handleCancel}
-              type="submit"
+              type="button"  // Changed to "button" to prevent accidental form submission
             >
               Cancel
             </button>
             <button
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-              // onClick={handleOkProduct}
               onClick={handleSubmit}
               type="submit"
             >
