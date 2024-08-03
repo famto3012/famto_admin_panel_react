@@ -188,7 +188,7 @@ const AddPromoCodeModal = ({
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">Discount</label>
             <input
-              type="text"
+              type="number"
               name="discount"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               value={addPromocode.discount}

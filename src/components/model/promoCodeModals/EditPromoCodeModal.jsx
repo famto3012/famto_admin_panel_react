@@ -58,7 +58,12 @@ const EditPromoCodeModal = ({
             }),
           ]);
         if (response.status === 200) {
-          setFormData(response.data.data);
+
+          const formData = response.data.data;
+          formData.fromDate = formatDate(formData.fromDate)
+          formData.toDate = formatDate(formData.toDate)
+
+          setFormData(formData);
         }
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
@@ -137,6 +142,16 @@ const EditPromoCodeModal = ({
     setNotificationFile(file);
     setNotificationPreviewURL(URL.createObjectURL(file));
   };
+
+     // Helper function to format date to "yyyy-MM-dd"
+     const formatDate = (dateString) => {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(date.getUTCDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
 
   return (
     <Modal

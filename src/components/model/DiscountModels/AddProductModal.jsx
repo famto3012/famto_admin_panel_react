@@ -15,9 +15,9 @@ const AddProductModal = ({
   const [productResults, setProductResults] = useState([]);
   const [productDiscount, setProductDiscount] = useState({
     discountName: "",
-    maxAmount: "",
+    maxAmount: null,
     discountType: "",
-    discountValue: "",
+    discountValue: null,
     description: "",
     merchantId: "",
     validFrom: "",
@@ -151,7 +151,7 @@ const AddProductModal = ({
               <label className="w-1/2 text-gray-500">Discount</label>
               <input
                 type="radio"
-                className="border-2 ml-[230px] mr-3 border-gray-300 rounded "
+                className="border-2 ml-[225px] mr-3 border-gray-300 rounded "
                 name="discountType"
                 value="Flat-discount"
                 checked={productDiscount.discountType === "Flat-discount"}
@@ -172,7 +172,7 @@ const AddProductModal = ({
           <div>
             <input
               type="text"
-              className="border-2 border-gray-300 rounded ml-72 p-2 w-[360px] focus:outline-none"
+              className="border-2 border-gray-300 rounded ml-[280px] p-2 w-[357px] focus:outline-none"
               name="discountValue"
               value={productDiscount.discountValue}
               onChange={handleInputChange}
@@ -204,7 +204,7 @@ const AddProductModal = ({
             />
           </div>
           <div className="mt-2">
-            <ul className="border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+            <ul className=" border-gray-300 rounded-md max-h-40 overflow-y-auto">
               {productResults.map((product) => (
                 <li
                   key={product._id}
@@ -220,7 +220,7 @@ const AddProductModal = ({
               ))}
             </ul>
           </div>
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-2 gap-4">
             <label className="w-1/2 text-gray-500">Max Amount</label>
 
             <input

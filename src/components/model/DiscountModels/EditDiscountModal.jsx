@@ -53,7 +53,12 @@ const EditDiscountModal = (
           }
         );
         if (response.status === 200) {
-          setMerchantDiscount(response.data.data);
+          const discountData = response.data.data;
+          // Format the date fields
+          discountData.validFrom = formatDate(discountData.validFrom);
+          discountData.validTo = formatDate(discountData.validTo);
+
+          setMerchantDiscount(discountData);
         }
       } catch (err) {
         console.error(`Error in fetch data ${err.message}`);
@@ -107,6 +112,18 @@ const EditDiscountModal = (
       setIsLoading(false);
     }
   };
+
+   // Helper function to format date to "yyyy-MM-dd"
+   const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+
   return (
     <Modal
       title="Edit Discount Tax"
@@ -155,6 +172,17 @@ const EditDiscountModal = (
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="maxCheckoutValue"
               value={merchantDiscount.maxCheckoutValue}
+              onChange={handleDiscount}
+            />
+          </div>
+          <div className="flex gap-4">
+            <label className="w-1/2 text-gray-500">Max Amount</label>
+
+            <input
+              type="text"
+              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              name="maxDiscountValue"
+              value={merchantDiscount.maxDiscountValue}
               onChange={handleDiscount}
             />
           </div>

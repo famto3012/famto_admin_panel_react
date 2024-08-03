@@ -26,6 +26,10 @@ const AccountLogs = () => {
   const dateInputRef = useRef(null); // Create a ref for the date input
 
   useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("/auth/login")
+      return
+    }
     // Fetch merchant details on initial render
     handleRoleFilter("Merchant");
   }, []);
@@ -158,10 +162,9 @@ const AccountLogs = () => {
 
   // Function to trigger the date input click
   const openDatePicker = () => {
-
-    console.log("clicked")
-    if (dateInputRef.newDate) {
-      dateInputRef.newDate.click();
+    console.log("clicked");
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
     }
   };
 
@@ -228,7 +231,8 @@ const AccountLogs = () => {
                   ref={dateInputRef} // Attach the ref to the input
                   value={dateFilter}
                   onChange={onDateChange}
-                  className="hidden" // Keep the input hidden
+                  className="hidden top-80" // Keep the input hidden
+                  style={{ right: "40px", top: "200px" }}
                 />
                 <button
                   onClick={openDatePicker}
