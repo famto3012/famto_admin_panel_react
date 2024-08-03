@@ -1,56 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { ArrowBack, FilterAltOutlined } from "@mui/icons-material";
-
+import MerchantSub from "../../../components/model/SubscriptionModels/MerchantSub";
+import CustomerSub from "../../../components/model/SubscriptionModels/CustomerSub";
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const Subscriptioncustomer = () => {
   const [customerlog, setCustomerlog] = useState([]);
   const [merchantlog, setMerchantlog] = useState([]);
   const [isMerchant, setIsMerchant] = useState(false);
+  const [isLoading,setIsLoading] = useState(false)
+  const {token,role} = useContext(UserContext);
+  const navigate= useNavigate();
+  const [isSubscription, setIsSubscription] = useState(false);
 
   useEffect(() => {
-    const fetchMerchantlog = async () => {
-      const dummyData = [
-        {
-          merchantName: "Nandhu",
-          subsciptionPlans: "Online",
-          totalAmount: "₹40.00",
-          paymentMode: "Online",
-          date: "18-06-2024",
-          status: "Unpaid",
-        },
-        // Add more customers as needed
-      ];
+    if (!token || role !== "Admin") {
+      navigate("auth/login");
+      return;
+    }
 
-      setMerchantlog(dummyData);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const [merchantResponse, customerResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/subscription-payment/merchant-subscription-log`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/subscription-payment/customer-subscription-log`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),  
+          ]);
+        if (merchantResponse.status === 200) {
+          setMerchantlog(merchantResponse.data.data);
+        }
+        if (customerResponse.status === 200) {
+          setCustomerlog(customerResponse.data.data);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchMerchantlog();
-  }, []);
-
-  useEffect(() => {
-    const fetchCustomerlog = async () => {
-      const dummyData1 = [
-        {
-          customerName: "Paru",
-          subsciptionPlans: "Online",
-          totalAmount: "₹40.00",
-          paymentMode: "Online",
-          status: "Unpaid",
-        },
-        // Add more customers as needed
-      ];
-
-      setCustomerlog(dummyData1);
-    };
-
-    fetchCustomerlog();
-  }, []);
-
-  const [isCommission, setIsCommission] = useState(false);
+    fetchData();
+  }, [token, role, navigate]);
 
   const handleToggle = () => {
-    setIsCommission(!isCommission);
+    setIsSubscription(!isSubscription);
+  };
+  const dateInputRef = useRef(null);
+  const openDatePicker = () => {
+    console.log("clicked");
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+    }
   };
 
   return (
@@ -84,89 +96,41 @@ const Subscriptioncustomer = () => {
         <div className="mx-3 mt-5">
           <div className="flex justify-between items-center gap-3 ml-2 ">
             <div>
-            <label
-              htmlFor="Toggle3"
-              className="inline-flex outline-none gap-5 cursor-pointer "
-            >
-              <input
-                id="Toggle3"
-                type="checkbox"
-                className="hidden peer "
-                onChange={handleToggle}
-              />
+              <label
+                htmlFor="Toggle3"
+                className="inline-flex outline-none gap-5 cursor-pointer "
+              >
+                <input
+                  id="Toggle3"
+                  type="checkbox"
+                  className="hidden peer "
+                  onChange={handleToggle}
+                />
 
-<span
-                className={`px-4 py-2 rounded-lg dark:bg-gray-100 ${
-                  isCommission
-                    ? "peer-checked:dark:bg-teal-800 text-white"
-                    : "peer-checked:dark:bg-gray-100"
-                }`}
-              >
-                Commission
-              </span>
-              <span
-                className={`px-4 py-2 rounded-lg dark:bg-teal-800 ${
-                  isCommission
-                    ? "peer-checked:dark:bg-gray-100"
-                    : "peer-checked:dark:bg-teal-800 text-white"
-                }`}
-              >
-                Subscription
-              </span>
-            </label>
-            </div>
-            <div className="flex gap-10">
-            <div className=" rounded-lg  flex items-center ">
-              {isCommission ? (
-                ""
-              ) : (
-                <select
-                  name="type"
-                  defaultValue=""
-                  className="bg-cyan-100 px-2 py-2 rounded-lg outline-none focus:outline-none "
+                <span
+                  className={`px-4 py-2 rounded-lg dark:bg-gray-100 ${
+                    isSubscription
+                      ? "peer-checked:dark:bg-teal-800 text-white"
+                      : "peer-checked:dark:bg-gray-100"
+                  }`}
                 >
-                  <option hidden value="">
-                    MerchantName
-                  </option>
-                  <option value="customer" className="bg-white">
-                    option1
-                  </option>
-                  <option value="agent" className="bg-white">
-                    option2
-                  </option>
-                  <option value="merchant" className="bg-white">
-                    option3
-                  </option>
-                </select>
-              )}
+                  Customer
+                </span>
+                <span
+                  className={`px-4 py-2 rounded-lg dark:bg-teal-800 ${
+                    isSubscription
+                      ? "peer-checked:dark:bg-gray-100"
+                      : "peer-checked:dark:bg-teal-800 text-white"
+                  }`}
+                >
+                  Merchant
+                </span>
+              </label>
             </div>
-            <div className="flex items-center">
-              <input
-                type="date"
-                // name="date"
-                value={""}
-                // onChange={handleChange}
-                className="p-2 rounded"
-              />
-            </div>
-            <div className="flex items-center">
-              <FilterAltOutlined className="text-gray-400 " />
-            </div>
-            <div className="relative flex justify-end">
-              <input
-                type="search"
-                name="search"
-                placeholder="Search merchant name"
-                className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
-              />
-              <button type="submit" className="absolute right-0 mt-2 mr-4 ">
-                <SearchOutlined className="text-xl text-gray-500" />
-              </button>
-            </div>
-          </div>
+            {isSubscription ? <CustomerSub /> : <MerchantSub />}
           </div>
         </div>
-        {isCommission ? (
+        {/* {isSubscription ? (
           <div className="overflow-auto mt-[40px]">
             <table className="text-start w-full ">
               <thead>
@@ -248,7 +212,7 @@ const Subscriptioncustomer = () => {
               </tbody>
             </table>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

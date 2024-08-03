@@ -1,27 +1,51 @@
-import React, { useState } from "react";
-
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const CommissionComponent = () => {
+  const [isLoading,setIsLoading]=useState(false);
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
   const [isForm, setIsForm] = useState({
+
+    commissionType:"Fixed",
     merchantId: "",
     commissionValue: "",
   });
-  const [commissionType, setCommissionType] = useState("fixed");
-
+  
+  const fetchData = (commissionType) => {
+    console.log(`Fetching data for commission type: ${commissionType}`);
+  };
+  
   const handleInputChange = (e) => {
-    setIsForm({ ...isForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setIsForm({ ...isForm, [name]: value });
+    if (name === "commissionType") {
+      fetchData(value);
+    }
   };
 
-  const handleTypeChange = (e) => {
-    setCommissionType(e.target.value);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    const { merchantId, commissionValue } = isForm;
-    const payload = { merchantId, commissionValue, commissionType };
-    console.log("Confirmed Payload", payload);
-    // Add your form submission logic here
-  };
+    try{
+        setIsLoading(true);
+        const addResponse = await axios.post(
+          `${BASE_URL}/admin/commission/add-commission`,isForm,
+          {
+            withCredentials:true,
+            headers:{Authorization:`Bearer ${token}`}
+          }
+        )
+        if(addResponse.status===201){
+          console.log(isForm);
+        }
+    }catch(err){
+     console.log(`Error in fetching data:${err}`)
+    }finally{
+     setIsLoading(false);
+    }
+    };
 
   return (
     <div className="flex m-20 h-screen min-w-fit">
@@ -31,26 +55,26 @@ const CommissionComponent = () => {
             <label className=" w-1/3 text-gray-600">Commission setup</label>
             <input
               type="radio"
-              id="fixed"
+              id="Fixed"
               name="commissionType"
-              value="fixed"
-              checked={commissionType === "fixed"}
-              onChange={handleTypeChange}
+              value="Fixed"
+              checked={isForm.commissionType === "Fixed"}
+              onChange={handleInputChange}
               className="mr-2 ml-6"
             />
-            <label htmlFor="fixed" className="w-[200px] text-gray-600">
+            <label htmlFor="Fixed" className="w-[200px] text-gray-600">
               Set fixed amount (in₹)
             </label>
             <input
               type="radio"
-              id="percentage"
+              id="Percentage"
               name="commissionType"
-              value="percentage"
-              checked={commissionType === "percentage"}
-              onChange={handleTypeChange}
+              value="Percentage"
+              checked={isForm.commissionType === "Percentage"}
+              onChange={handleInputChange}
               className="mr-2"
             />
-            <label htmlFor="percentage" className="w-[200px] text-gray-600">
+            <label htmlFor="Percentage" className="w-[200px] text-gray-600">
               Set a percentage (%)
             </label>
           </div>

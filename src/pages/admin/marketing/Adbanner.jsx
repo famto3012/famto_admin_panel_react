@@ -110,7 +110,6 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
     setCurrentBanner(bannerId);
     console.log(bannerId);
     setIsShowModalDelete(true);
-    
   };
 
   const showModalDeleteIndividual = (currentIndBannerId) => {

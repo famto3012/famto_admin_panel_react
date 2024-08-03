@@ -1,191 +1,213 @@
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Switch, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { BiEdit } from "react-icons/bi";
+import AddSubMerchantModal from "./model/SubscriptionModels/AddSubMerchantModal";
+import { UserContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import EditSubMerchantModal from "./model/SubscriptionModels/EditSubMerchantModal";
+import DeleteSubMerchantModal from "./model/SubscriptionModels/DeleteSubMerchantModal";
+import AddSubCustomerModal from "./model/SubscriptionModels/AddSubCustomerModal";
+import EditSubCustomerModal from "./model/SubscriptionModels/EditSubCustomerModal";
+import DeleteSubCustomerModal from "./model/SubscriptionModels/DeleteSubCustomerModal";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const SubscriptionComponent = () => {
-  const [addData, setAddData] = useState({
-    name: "",
-    amount: "",
-    duration: "",
-    taxId: "",
-    reminder: "",
-    description: "",
-  });
+  const [isLoading,setIsLoading]=useState(false)
+  const {token,role} = useContext(UserContext)
+  const [subscriptionMerchant,setSubscriptionMerchant] = useState([])
+  const [subscriptionCustomer,setSubscriptionCustomer] = useState([])
+  const [currentEditMerchant,setCurrentEditMerchant] = useState(null)
+  const [currentEditCustomer,setCurrentEditCustomer] = useState(null)
+  
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("auth/login");
+      return;
+    }
 
-  const [customerData, setCustomerData] = useState({
-    name: "",
-    amount: "",
-    duration: "",
-    taxId: "",
-    reminder: "",
-    description: "",
-  });
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const [merchantResponse ,customerResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/subscription/get-merchant-subscription`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }), 
+            axios.get(`${BASE_URL}/admin/subscription/get-customer-subscription`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }), 
+          ]);
+        if (merchantResponse.status === 200) {
+          setSubscriptionMerchant(merchantResponse.data.data);
+          console.log(subscriptionMerchant)
+        }
+        if (customerResponse.status === 200) {
+          setSubscriptionCustomer(customerResponse.data.data);
+          console.log(subscriptionCustomer)
+        }
+       
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token, role, navigate]);
+
+ 
 
   const [merchant, setMerchant] = useState({
-    plan: "",
-    id: "",
-    mode: "",
+    planId: "",
+    userId: "",
+    paymentMode: "",
   });
 
   const [customer, setCustomer] = useState({
-    plan: "",
-    id: "",
-    mode: "",
+    planId: "",
+    userId: "",
+    paymentMode: "",
   });
 
   const handleCustomer = (e) => {
-    setCustomer({ ...customer, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setCustomer({ ...customer, [name]: value });
+   
   };
 
-  const submitCustomer = (e) => {
+  const submitCustomer = async(e) => {
     e.preventDefault();
-
-    console.log("Cusotmer", customer);
+    try{
+      setIsLoading(true)
+      const addResponse= await axios.post(
+        `${BASE_URL}/admin/subscription-payment/customer-subscription-payment`,customer,{
+          withCredentials:true,
+          headers:{Authorization:`Bearer ${token}`}
+        }
+      )
+      if(addResponse.status===201)
+      {
+        console.log(addResponse.data.message)
+      }
+    }catch(err){
+       console.log(`Error in fetching data:${err}`);
+       
+    }
+    console.log("Customer", customer);
+   
   };
 
   const handleMerchant = (e) => {
-    setMerchant({ ...merchant, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setMerchant({ ...merchant, [name]: value });
+   
   };
 
-  const submitMerchant = (e) => {
+  const submitMerchant = async(e) => {
     e.preventDefault();
-
+    try{
+      setIsLoading(true)
+      const addResponse= await axios.post(
+        `${BASE_URL}/admin/subscription-payment/merchant-subscription-payment`,merchant,{
+          withCredentials:true,
+          headers:{Authorization:`Bearer ${token}`}
+        }
+      )
+      if(addResponse.status===201)
+      {
+        console.log(addResponse.data.message)
+      }
+    }catch(err){
+       console.log(`Error in fetching data:${err}`);
+       
+    }
     console.log("Merchant", merchant);
   };
 
-  const subscription = [
-    {
-      name: "monthly",
-      amount: "310/-",
-      duration: "3",
-      reminder: "7",
-      tax: "1",
-      description: "subscription",
-    },
-    {
-      name: "Quaterly",
-      amount: "710/-",
-      duration: "3",
-      reminder: "7",
-      tax: "1",
-      description: "subscription",
-    },
-    {
-      name: "Yearly",
-      amount: "3010/-",
-      duration: "3",
-      reminder: "7",
-      tax: "1",
-      description: "subscription",
-    },
-  ];
+ 
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleMerchant, setIsModalVisibleMerchant] = useState(false);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
+  const showModalAddMerchant = () => {
+    setIsModalVisibleMerchant(true);
   };
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    setIsModalVisibleMerchant(false);
+    setIsModalVisibleMerchantEdit(false);
+    setIsModalMerchantDelete(false);
+    setIsModalVisibleCustomer(false)
+    setIsModalVisibleCustomerEdit(false)
+  };
+ 
+  const [isModalVisibleMerchantEdit, setIsModalVisibleMerchantEdit] = useState(false);
+
+  const showModalEditMerchant = (id) => {
+    setCurrentEditMerchant(id);
+    setIsModalVisibleMerchantEdit(true);
   };
 
-  const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
-
-  const showModalEdit = () => {
-    setIsModalVisibleEdit(true);
+  const [currentDeleteMerchant,setCurrentDeleteMerchant] = useState(null)
+  const [deleteModalMerchant, setIsModalMerchantDelete] = useState(false);
+  const showModalDeleteMerchant = (id) => {
+    setCurrentDeleteMerchant(id);
+    setIsModalMerchantDelete(true);
   };
 
-  const handleOkEdit = () => {
-    setIsModalVisibleEdit(false);
+  const removeMerchant = (id) => {
+    setSubscriptionMerchant(
+      subscriptionMerchant.filter((subscriptions) => subscriptions._id !== id)
+    );
   };
 
-  const handleCancelEdit = () => {
-    setIsModalVisibleEdit(false);
+  // New function to handle confirm delete
+  const handleConfirmDeleteMerchant = () => {
+    setIsModalMerchantDelete(false);
+    setCurrentDeleteMerchant(null);
   };
+
+
 
   const [isModalVisibleCustomer, setIsModalVisibleCustomer] = useState(false);
 
-  const showModalCustomer = () => {
+  const showModalAddCustomer = () => {
     setIsModalVisibleCustomer(true);
   };
 
-  const handleOkCustomer = () => {
-    setIsModalVisibleCustomer(false);
-  };
+  const [isModalVisibleCustomerEdit, setIsModalVisibleCustomerEdit] = useState(false);
 
-  const handleCancelCustomer = () => {
-    setIsModalVisibleCustomer(false);
-  };
-
-  const [isModalVisibleCustomerEdit, setIsModalVisibleCustomerEdit] =
-    useState(false);
-
-  const showModalCustomerEdit = () => {
+  const showModalEditCustomer = (id) => {
+    setCurrentEditCustomer(id);
     setIsModalVisibleCustomerEdit(true);
   };
 
-  const handleOkCustomerEdit = () => {
-    setIsModalVisibleCustomerEdit(false);
+  const [currentDeleteCustomer,setCurrentDeleteCustomer] = useState(null)
+  const [deleteModalCustomer, setIsModalCustomerDelete] = useState(false);
+  const showModalDeleteCustomer = (id) => {
+    setCurrentDeleteCustomer(id);
+    setIsModalCustomerDelete(true);
   };
 
-  const handleCancelCustomerEdit = () => {
-    setIsModalVisibleCustomerEdit(false);
+  const removeCustomer = (id) => {
+    setSubscriptionCustomer(
+      subscriptionCustomer.filter((subscriptions) => subscriptions._id !== id)
+    );
   };
 
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-
-  const showModalDelete = () => {
-    setIsShowModalDelete(true);
+  // New function to handle confirm delete
+  const handleConfirmDeleteCustomer = () => {
+    setIsModalCustomerDelete(false);
+    setCurrentDeleteCustomer(null);
   };
 
-  const showModalDeleteOk = () => {
-    setIsShowModalDelete(false);
-  };
-
-  const showModalDeleteCancel = () => {
-    setIsShowModalDelete(false);
-  };
-
-  const [isShowModalDeleteCustomer, setIsShowModalDeleteCustomer] =
-    useState(false);
-
-  const showModalDeleteCustomer = () => {
-    setIsShowModalDeleteCustomer(true);
-  };
-
-  const showModalDeleteOkCustomer = () => {
-    setIsShowModalDeleteCustomer(false);
-  };
-
-  const showModalDeleteCancelCustomer = () => {
-    setIsShowModalDeleteCustomer(false);
-  };
-
-  const handleInputChange = (e) => {
-    setAddData({ ...addData, [e.target.name]: e.target.value });
-  };
-  const signupAction = (e) => {
-    e.preventDefault();
-
-    console.log("Merchant Data: ", addData);
-  };
-
-  const handleInputCustomer = (e) => {
-    setCustomerData({ ...customerData, [e.target.name]: e.target.value });
-  };
-
-  const signupActionCustomer = (e) => {
-    e.preventDefault();
-
-    console.log("Cusotmer Data: ", customerData);
-  };
 
   return (
     <>
@@ -203,125 +225,16 @@ const SubscriptionComponent = () => {
           </div>
           <div className="flex w-2/3 justify-between mt-10">
             <p>Merchant Subscription Setup</p>
-            <button className="bg-zinc-200 p-2 rounded-lg" onClick={showModal}>
+            <button className="bg-zinc-200 p-2 rounded-lg" onClick={showModalAddMerchant}>
               Add New Merchant Subscription Plan{" "}
               <PlusOutlined className="ml-10" />
             </button>
-            <Modal
-              title="Edit Merchant Subscription Plan"
-              width="700px"
-              centered
-              open={isModalVisible}
-              onOk={handleOk}
-              onCancel={handleCancel}
-              footer={null}
-            >
-              <form
-                onSubmit={signupAction}
-                className="max-h-[30rem] overflow-auto"
-              >
-                <div className="flex flex-col gap-4 mt-5">
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="Name">
-                      Name
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={addData.name}
-                      id="name"
-                      name="name"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="amount">
-                      Amount
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={addData.amount}
-                      id="amount"
-                      name="amount"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="duration">
-                      Duration (In Days)
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={addData.duration}
-                      id="duration"
-                      name="duration"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="taxId">
-                      Tax Id
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={addData.taxId}
-                      id="taxId"
-                      name="taxId"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="reminder">
-                      Renewal Reminder (In days)
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={addData.reminder}
-                      id="reminder"
-                      name="reminder"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label
-                      className="w-1/3 text-gray-500"
-                      htmlFor="description"
-                    >
-                      Description
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={addData.description}
-                      id="description"
-                      name="description"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex justify-end mt-10  gap-4">
-                    <button
-                      className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                      onClick={handleCancel}
-                      type="submit"
-                    >
-                      {" "}
-                      Cancel
-                    </button>
-                    <button
-                      className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-                      onClick={handleOk}
-                      type="submit"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </Modal>
+            <AddSubMerchantModal
+              isVisible={isModalVisibleMerchant}
+              handleCancel={handleCancel}
+              token={token}
+              BASE_URL={BASE_URL}
+            />
           </div>
         </div>
 
@@ -330,197 +243,58 @@ const SubscriptionComponent = () => {
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>
             <div className="w-2/3 grid grid-cols-2 gap-5">
-              {subscription.map((subscriptions) => (
+              {subscriptionMerchant.map((subscriptions) => (
                 <div className="bg-zinc-50 shadow rounded-lg flex">
                   <div>
                     <div className="flex justify-between m-3">
-                      <p>Name:{subscriptions.name}</p>
+                      <p>{subscriptions.name}</p>
                       <p>{subscriptions.amount}</p>
                     </div>
                     <div className="flex justify-between mt-5 m-3">
                       <p>{subscriptions.duration}</p>
-                      <p> {subscriptions.reminder}</p>
+                      <p>{subscriptions.renewalReminder}</p>
                     </div>
-                    <p className="m-3">{subscriptions.tax}</p>
+                    <p className="m-3">{subscriptions.taxId}</p>
                     <p className="m-3">{subscriptions.description}</p>
                     <div className="mb-5 flex">
                       <button
                         className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
-                        onClick={showModalEdit}
+                        onClick={() => showModalEditMerchant(subscriptions._id)}
                       >
                         <BiEdit className="text-[22px] mr-1" /> Edit
                       </button>
-                      <Modal
-                        title="Edit Merchant Subscription Plan"
-                        width="700px"
-                        centered
-                        open={isModalVisibleEdit}
-                        onOk={handleOkEdit}
-                        onCancel={handleCancelEdit}
-                        footer={null}
-                      >
-                        <form
-                          onSubmit={signupAction}
-                          className="max-h-[30rem] overflow-auto"
-                        >
-                          <div className="flex flex-col gap-4 mt-5">
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="Name"
-                              >
-                                Name
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={addData.name}
-                                id="name"
-                                name="name"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="amount"
-                              >
-                                Amount
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={addData.amount}
-                                id="amount"
-                                name="amount"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="duration"
-                              >
-                                Duration (In Days)
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={addData.duration}
-                                id="duration"
-                                name="duration"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="taxId"
-                              >
-                                Tax Id
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={addData.taxId}
-                                id="taxId"
-                                name="taxId"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="reminder"
-                              >
-                                Renewal Reminder (In days)
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={addData.reminder}
-                                id="reminder"
-                                name="reminder"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="description"
-                              >
-                                Description
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={addData.description}
-                                id="description"
-                                name="description"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="flex justify-end mt-10  gap-4">
-                              <button
-                                className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                                onClick={handleCancelEdit}
-                                type="submit"
-                              >
-                                {" "}
-                                Cancel
-                              </button>
-                              <button
-                                className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-                                onClick={handleOkEdit}
-                                type="submit"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                        </form>
-                      </Modal>
+                      <EditSubMerchantModal
+                       isVisible={isModalVisibleMerchantEdit}
+                        handleCancel={handleCancel}
+                        currentEditMerchant={currentEditMerchant}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                       />
 
                       <button
                         className="bg-teal-800 flex  rounded-3xl p-3 items-center text-white ml-3 px-8 mt-5"
-                        onClick={showModalDelete}
+                        onClick={() => showModalDeleteMerchant(subscriptions._id)}
                       >
                         <RiDeleteBinLine className="text-[20px] mr-1" />
                         Delete
                       </button>
-                      <Modal
-                        onOk={showModalDeleteOk}
-                        onCancel={showModalDeleteCancel}
-                        footer={null}
-                        open={isShowModalDelete}
-                        centered
-                      >
-                        <form>
-                          <p className="font-bold text-[20px] mb-5">
-                            Are you sure want to delete?
-                          </p>
-                          <div className="flex justify-end">
-                            <button
-                              className="bg-cyan-100 p-2 rounded-md font-semibold"
-                              onClick={showModalDeleteCancel}
-                            >
-                              Cancel
-                            </button>
-                            <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
-                              {" "}
-                              Delete
-                            </button>
-                          </div>
-                        </form>
-                      </Modal>
+                      <DeleteSubMerchantModal
+                        isVisible={deleteModalMerchant}
+                        handleCancel={handleCancel}
+                        handleConfirmDeleteMerchant={handleConfirmDeleteMerchant}
+                        currentDeleteMerchant={currentDeleteMerchant}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                        removeMerchant={removeMerchant}
+                      />
                     </div>
                   </div>
                   <div className="bg-white  shadow ml-auto rounded-lg w-14 flex items-center justify-center">
                     <input
                       type="radio"
-                      name="plan"
+                      name="planId"
                       value={subscriptions.name}
-                      checked={merchant.plan === subscriptions.name}
+                      checked={merchant.planId === subscriptions.name}
                       className="size-5 bg-teal-800"
                       onChange={handleMerchant}
                     />
@@ -533,8 +307,8 @@ const SubscriptionComponent = () => {
             <label className="w-1/3 text-gray-800">Merchant Id</label>
             <input
               type="text"
-              name="id"
-              value={merchant.id}
+              name="userId"
+              value={merchant.userId}
               className="border-2 border-gray-100 rounded shadow-md p-2 w-1/3 focus:outline-none"
               onChange={handleMerchant}
             />
@@ -546,19 +320,19 @@ const SubscriptionComponent = () => {
             <div className="w-2/3">
               <input
                 type="radio"
-                name="mode"
+                name="paymentMode"
                 value="Online"
                 className="mr-3"
-                checked={merchant.mode === "Online"}
+                checked={merchant.paymentMode === "Online"}
                 onChange={handleMerchant}
               />
               Online
               <input
                 type="radio"
-                name="mode"
+                name="paymentMode"
                 value="Cash"
                 className="mr-3 ml-8"
-                checked={merchant.mode === "Cash"}
+                checked={merchant.paymentMode === "Cash"}
                 onChange={handleMerchant}
               />
               Cash
@@ -589,126 +363,17 @@ const SubscriptionComponent = () => {
             <p>Customerr Subscription Setup</p>
             <button
               className="bg-zinc-200 p-2 rounded-lg"
-              onClick={showModalCustomer}
+              onClick={showModalAddCustomer}
             >
               Add New Customer Subscription Plan{" "}
               <PlusOutlined className="ml-10" />
             </button>
-            <Modal
-              title="Add Customer Subscription Plan"
-              width="700px"
-              centered
-              open={isModalVisibleCustomer}
-              onOk={handleOkCustomer}
-              onCancel={handleCancelCustomer}
-              footer={null}
-            >
-              <form
-                onSubmit={signupActionCustomer}
-                className="max-h-[30rem] overflow-auto"
-              >
-                <div className="flex flex-col gap-4 mt-5">
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="Name">
-                      Name
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={customerData.name}
-                      id="name"
-                      name="name"
-                      onChange={handleInputCustomer}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="amount">
-                      Amount
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={customerData.amount}
-                      id="amount"
-                      name="amount"
-                      onChange={handleInputCustomer}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="duration">
-                      Duration (In Days)
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={customerData.duration}
-                      id="duration"
-                      name="duration"
-                      onChange={handleInputCustomer}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="taxId">
-                      Tax Id
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={customerData.taxId}
-                      id="taxId"
-                      name="taxId"
-                      onChange={handleInputCustomer}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label className="w-1/3 text-gray-500" htmlFor="reminder">
-                      Renewal Reminder (In days)
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={customerData.reminder}
-                      id="reminder"
-                      name="reminder"
-                      onChange={handleInputCustomer}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <label
-                      className="w-1/3 text-gray-500"
-                      htmlFor="description"
-                    >
-                      Description
-                    </label>
-                    <input
-                      className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                      type="text"
-                      value={customerData.description}
-                      id="description"
-                      name="description"
-                      onChange={handleInputCustomer}
-                    />
-                  </div>
-                  <div className="flex justify-end mt-10  gap-4">
-                    <button
-                      className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                      onClick={handleCancelCustomer}
-                      type="submit"
-                    >
-                      {" "}
-                      Cancel
-                    </button>
-                    <button
-                      className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-                      onClick={handleOkCustomer}
-                      type="submit"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </Modal>
+            <AddSubCustomerModal
+              isVisible={isModalVisibleCustomer}
+              handleCancel={handleCancel}
+              token={token}
+              BASE_URL={BASE_URL}
+            />
           </div>
         </div>
 
@@ -717,196 +382,58 @@ const SubscriptionComponent = () => {
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>
             <div className="w-2/3  grid grid-cols-2 gap-5">
-              {subscription.map((subscriptions) => (
+              {subscriptionCustomer.map((subscriptions) => (
                 <div className="bg-zinc-50 shadow-md rounded-lg flex">
                   <div>
                     <div className="flex justify-between m-3">
-                      <p>Name:{subscriptions.name}</p>
+                      <p>{subscriptions.name}</p>
                       <p>{subscriptions.amount}</p>
                     </div>
                     <div className="flex justify-between mt-5 m-3">
                       <p>{subscriptions.duration}</p>
-                      <p> {subscriptions.reminder}</p>
+                      <p>{subscriptions.renewalReminder}</p>
                     </div>
-                    <p className="m-3">{subscriptions.tax}</p>
+                    <p className="m-3">{subscriptions.taxId}</p>
+                    <p className="m-3">{subscriptions.noOfOrder}</p>
                     <p className="m-3">{subscriptions.description}</p>
                     <div className="mb-5 flex">
                       <button
                         className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
-                        onClick={showModalCustomerEdit}
+                        onClick={() => showModalEditCustomer(subscriptions._id)}
                       >
                         <BiEdit className="text-[22px] mr-1" /> Edit
                       </button>
-                      <Modal
-                        title="Edit Customer Subscription Plan"
-                        width="700px"
-                        centered
-                        open={isModalVisibleCustomerEdit}
-                        onOk={handleOkCustomerEdit}
-                        onCancel={handleCancelCustomerEdit}
-                        footer={null}
-                      >
-                        <form
-                          onSubmit={signupActionCustomer}
-                          className="max-h-[30rem] overflow-auto"
-                        >
-                          <div className="flex flex-col gap-4 mt-5">
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="Name"
-                              >
-                                Name
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={customerData.name}
-                                id="name"
-                                name="name"
-                                onChange={handleInputCustomer}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="amount"
-                              >
-                                Amount
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={customerData.amount}
-                                id="amount"
-                                name="amount"
-                                onChange={handleInputCustomer}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="duration"
-                              >
-                                Duration (In Days)
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={customerData.duration}
-                                id="duration"
-                                name="duration"
-                                onChange={handleInputCustomer}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="taxId"
-                              >
-                                Tax Id
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={customerData.taxId}
-                                id="taxId"
-                                name="taxId"
-                                onChange={handleInputCustomer}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="reminder"
-                              >
-                                Renewal Reminder (In days)
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={customerData.reminder}
-                                id="reminder"
-                                name="reminder"
-                                onChange={handleInputCustomer}
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label
-                                className="w-1/3 text-gray-500"
-                                htmlFor="description"
-                              >
-                                Description
-                              </label>
-                              <input
-                                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-                                type="text"
-                                value={customerData.description}
-                                id="description"
-                                name="description"
-                                onChange={handleInputCustomer}
-                              />
-                            </div>
-                            <div className="flex justify-end mt-10  gap-4">
-                              <button
-                                className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                                onClick={handleCancelCustomerEdit}
-                                type="submit"
-                              >
-                                {" "}
-                                Cancel
-                              </button>
-                              <button
-                                className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-                                onClick={handleOkCustomerEdit}
-                                type="submit"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                        </form>
-                      </Modal>
+                      <EditSubCustomerModal
+                       isVisible={isModalVisibleCustomerEdit}
+                        handleCancel={handleCancel}
+                        currentEditCustomer={currentEditCustomer}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                       />
                       <button
                         className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
-                        onClick={showModalDeleteCustomer}
+                        onClick={() => showModalDeleteCustomer(subscriptions._id)}
                       >
                         <RiDeleteBinLine className="text-[20px] mr-1" />
                         Delete
                       </button>
-                      <Modal
-                        onOk={showModalDeleteOkCustomer}
-                        onCancel={showModalDeleteCancelCustomer}
-                        footer={null}
-                        open={isShowModalDeleteCustomer}
-                        centered
-                      >
-                        <form>
-                          <p className="font-bold text-[20px] mb-5">
-                            Are you sure want to delete?
-                          </p>
-                          <div className="flex justify-end">
-                            <button
-                              className="bg-cyan-100 p-2 rounded-md font-semibold"
-                              onClick={showModalDeleteCancelCustomer}
-                            >
-                              Cancel
-                            </button>
-                            <button className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700">
-                              {" "}
-                              Delete
-                            </button>
-                          </div>
-                        </form>
-                      </Modal>
+                      <DeleteSubCustomerModal
+                        isVisible={deleteModalCustomer}
+                        handleCancel={handleCancel}
+                        handleConfirmDeleteCustomer={handleConfirmDeleteCustomer}
+                        currentDeleteCustomer={currentDeleteCustomer}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                        removeCustomer={removeCustomer}
+                      />
                     </div>
                   </div>
                   <div className="bg-white  shadow ml-auto rounded-lg w-14 flex items-center justify-center">
                     <input
                       type="radio"
-                      name="plan"
+                      name="planId"
                       value={subscriptions.name}
-                      checked={customer.plan === subscriptions.name}
+                      checked={customer.planId === subscriptions.name}
                       className="size-5 bg-teal-800"
                       onChange={handleCustomer}
                     />
@@ -919,8 +446,8 @@ const SubscriptionComponent = () => {
             <label className="w-1/3 text-gray-800">Customer Id</label>
             <input
               type="text"
-              name="id"
-              value={customer.id}
+              name="userId"
+              value={customer.userId}
               className="border-2 border-gray-100 rounded shadow-md p-2 w-1/3 focus:outline-none"
               onChange={handleCustomer}
             />
@@ -932,19 +459,19 @@ const SubscriptionComponent = () => {
             <div className="w-2/3">
               <input
                 type="radio"
-                name="mode"
+                name="paymentMode"
                 value="Online"
                 className="mr-3"
-                checked={customer.mode === "Online"}
+                checked={customer.paymentMode === "Online"}
                 onChange={handleCustomer}
               />
               Online
               <input
                 type="radio"
-                name="mode"
+                name="paymentMode"
                 value="Cash"
                 className="mr-3 ml-8"
-                checked={customer.mode === "Cash"}
+                checked={customer.paymentMode === "Cash"}
                 onChange={handleCustomer}
               />
               Cash
