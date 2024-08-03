@@ -1,170 +1,264 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { AddOutlined } from "@mui/icons-material";
 import { RiDeleteBinLine } from "react-icons/ri";
 import NewAddress from "./NewAddress";
+import MapModal from "./MapModal";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+import { UserContext } from "../../context/UserContext";
 
-const CustomOrder = () => {
-  const [order, setOrder] = useState([]);
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-  const [formData, setFormData] = useState({
-    location: "",
-    agentinstructions: "",
-    tips: "",
-    deliveryCharges: "",
-    discount: "",
-    paymentType: "",
-    subtotal: "",
-    item: [],
+const CustomOrder = ({ data }) => {
+  const [customOrderData, setCustomOrderData] = useState({
+    latitude: null,
+    longitude: null,
+    items: [],
+    instructionInDelivery: "",
+    deliveryAddressType: "",
+    deliveryAddressOtherAddressId: "",
+    addedTip: "",
   });
 
-  const [selectedAddress, setSelectedAddress] = useState("");
-  const [isFormVisible, setFormVisible] = useState(false);
-  const [adPreviewURL, setAdPreviewURL] = useState(null);
-  const [adFile, setAdFile] = useState(null);
+  const { token } = useContext(UserContext);
+  const toast = useToast();
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      const dummyData = [
-        {
-          item1: "Price",
-          amount: "₹257",
-        },
-        {
-          item1: "Delivery Charges",
-          amount: "₹257",
-        },
-        {
-          item1: "Added Tip",
-          amount: "₹257",
-        },
-        {
-          item1: "Discount",
-          amount: "₹257",
-        },
-        {
-          item1: "Sub Total",
-          amount: "₹257",
-        },
-        {
-          item1: "GST(inclusive all taxes)",
-          amount: "₹257",
-        },
-      ];
+    setAllCustomerAddress(data.customerAddress);
+  }, [data]);
 
-      setOrder(dummyData);
-    };
+  const [allCustomerAddress, setAllCustomerAddress] = useState([]);
 
-    fetchOrder();
-  }, []);
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedOtherAddressId, setSelectedOtherAddressId] = useState("");
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [paymentMode, setPaymentMode] = useState("");
+  const [cartData, setCartData] = useState({});
+
+  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
+  const [isOrderLoading, setIsOrderLoading] = useState(false);
 
   const handleAddItem = () => {
-    const newItem = { name: "", quantity: "", unit: "" };
-    setFormData({ ...formData, item: [...formData.item, newItem] });
+    const newItem = { itemName: "", quantity: "", numOfUnits: "" };
+    setCustomOrderData({
+      ...customOrderData,
+      items: [...customOrderData.items, newItem],
+    });
   };
 
   const handleRemoveItem = (index) => {
-    const updatedItems = [...formData.item];
+    const updatedItems = [...customOrderData.items];
     updatedItems.splice(index, 1);
-    setFormData({ ...formData, item: updatedItems });
+    setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
 
   const handleItemChange = (index, e) => {
     const { name, value } = e.target;
-    const updatedItems = [...formData.item];
+    const updatedItems = [...customOrderData.items];
     updatedItems[index] = { ...updatedItems[index], [name]: value };
-    setFormData({ ...formData, item: updatedItems });
+    setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setCustomOrderData({ ...customOrderData, [name]: value });
   };
 
-  const formAction = (e) => {
-    e.preventDefault();
-    console.log(formData);
+  const handleSelectAddressType = (type) => {
+    setSelectedAddress(type);
+    setCustomOrderData({ ...customOrderData, deliveryAddressType: type });
   };
 
-  const handleAddressChange = (address) => {
-    setSelectedAddress(address);
+  const handleSelectOtherAddress = (id) => {
+    setSelectedOtherAddressId(id);
+    setCustomOrderData({
+      ...customOrderData,
+      customerAddressOtherAddressId: id,
+    });
   };
 
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
   };
 
-  const handleAdImageChange = (e) => {
-    const file = e.target.files[0];
-    setAdFile(file);
-    setAdPreviewURL(URL.createObjectURL(file));
+  const toggleLocationMarker = () => {
+    setModalVisible((prev) => !prev);
+  };
+
+  const setCoordinates = ({ latitude, longitude }) => {
+    setCustomOrderData({ ...customOrderData, latitude, longitude });
+  };
+
+  const createInvoice = async (e) => {
+    e.preventDefault();
+    try {
+      setIsInvoiceLoading(true);
+
+      const invoiceData = {
+        ...customOrderData,
+        ifScheduled: {
+          startDate: data?.ifScheduled?.startDate,
+          endDate: data?.ifScheduled?.endDate,
+          time: data?.ifScheduled?.time,
+        },
+        customPickupLocation: [
+          customOrderData.latitude,
+          customOrderData.longitude,
+        ],
+        customerId: data.customerId,
+        deliveryMode: data.deliveryMode,
+        deliveryOption: data.deliveryOption,
+        newCustomer: data.newCustomer,
+      };
+
+      console.log("invoiceData", invoiceData);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order-invoice`,
+        invoiceData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setCartData(response.data.data);
+        toast({
+          title: "Invoice",
+          description: "Invoice created successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating invoice: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsInvoiceLoading(false);
+    }
+  };
+
+  const createOrder = async (e) => {
+    e.preventDefault();
+    try {
+      setIsOrderLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order`,
+        {
+          paymentMode,
+          cartId: cartData.cartId,
+          deliveryMode: cartData.deliveryMode,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        toast({
+          title: "Success",
+          description: response.data.message,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating Custom Order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating order",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsOrderLoading(false);
+    }
   };
 
   return (
     <div className="bg-white mt-5 rounded">
-      <form onSubmit={formAction}>
+      <form onSubmit={createInvoice}>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center relative">
+          <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="location">
               Search for a location
             </label>
-            <div className="relative w-1/2">
-              <input
-                type="text"
-                name="location"
-                id="location"
-                placeholder="Search Location"
-                className="h-10 px-5 pr-10 text-sm border-2 w-full outline-none focus:outline-none"
-                value={formData.location}
-                onChange={handleInputChange}
-              />
+
+            <div className="w-1/3">
               <button
                 type="button"
-                className="absolute right-0 top-0 mt-2 mr-2"
+                onClick={() => setModalVisible(true)}
+                className="font-medium bg-teal-700 text-white w-[80%] rounded-md  py-2 flex items-center justify-center"
               >
-                <LocationOnOutlinedIcon />
+                Mark location{" "}
+                <LocationOnOutlinedIcon className="text-[18px] ms-2" />
+              </button>
+
+              <MapModal
+                isVisible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setCoordinates={setCoordinates}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-start mt-[30px]">
+            <h1 className="w-1/3 px-6 invisible">Add Items</h1>
+            <div className="w-2/3">
+              <button
+                className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[40%] "
+                type="button"
+                onClick={() => handleAddItem()}
+              >
+                <PlusOutlined className="mr-3" /> Add Item
               </button>
             </div>
           </div>
-          <h1 className="px-6 mt-5 font-semibold">Add Items</h1>
-          <div className="px-6">
-            <button
-              className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[85%] "
-              type="button"
-              onClick={() => handleAddItem()}
-            >
-              <PlusOutlined className="mr-3" /> Add More Items
-            </button>
-          </div>
-          <div>
-            {formData.item.map((item, index) => (
+
+          <div className="flex flex-col items-center w-full max-h-[500px] overflow-auto">
+            <span className="w-1/3"></span>
+            {customOrderData.items.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4 flex flex-col gap-[20px]"
+                className="w-2/3 bg-gray-200 p-5 rounded-lg mb-4 flex flex-col gap-[20px]"
               >
                 <div className="flex items-center">
                   <label className="w-1/3">Item Name</label>
-                  <select
-                    name="name"
-                    value={item.name}
+                  <input
+                    type="text"
+                    name="itemName"
+                    value={item.itemName}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3"
-                  >
-                    <option defaultValue={"Select one"} hidden>
-                      Select one
-                    </option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                  </select>
+                    className="w-1/2 p-3 outline-none focus:outline-none"
+                  />
                 </div>
 
                 <div className="flex items-center">
                   <label className="w-1/3">Quantity</label>
                   <input
                     name="quantity"
-                    type="number"
+                    type="text"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, e)}
                     className="w-1/2 p-3"
@@ -172,38 +266,24 @@ const CustomOrder = () => {
                 </div>
 
                 <div className="flex items-center">
-                  <label className="w-1/3">Unit</label>
+                  <label className="w-1/3">Number of units</label>
                   <input
-                    name="unit"
+                    name="numOfUnits"
                     type="text"
-                    value={item.unit}
+                    value={item.numOfUnits}
                     onChange={(e) => handleItemChange(index, e)}
                     className="w-1/2 p-3"
                   />
                 </div>
 
-                <div className="flex items-center gap-[30px]">
-                  {/* {!adPreviewURL && (
-                                  <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
-                                )} */}
-
-                  {adPreviewURL && (
-                    <figure className="mt-3 h-16 w-16 rounded-md relative">
-                      <img
-                        src={adPreviewURL}
-                        alt="profile"
-                        className="w-full rounded h-full object-cover"
-                      />
-                    </figure>
-                  )}
-                </div>
+                <div className="flex items-center gap-[30px]"></div>
                 <div className="mx-3 flex justify-between mt-3 gap-3">
                   <input
                     type="file"
                     name="adImage"
                     id="adImage"
                     className="hidden"
-                    onChange={handleAdImageChange}
+                    // onChange={handleAdImageChange}
                   />
                   <label
                     htmlFor="adImage"
@@ -231,32 +311,126 @@ const CustomOrder = () => {
               Instructions to Delivery Agent
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 ps-3 text-sm border-2 w-1/2 outline-none focus:outline-none"
               type="text"
-              placeholder="Agent Instructions"
-              id="agentinstructions"
-              name="agentinstructions"
-              value={formData.agentinstructions}
+              placeholder="Instruction to agent"
+              id="instructionInDelivery"
+              name="instructionInDelivery"
+              value={customOrderData.instructionInDelivery}
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center ">
             <label className="w-1/3 px-6" htmlFor="address">
               Select Delivery Address
             </label>
-            {["Home", "Office", "Others"].map((address) => (
-              <button
-                key={address}
-                type="button"
-                className={`py-2 px-4  rounded border  ${
-                  selectedAddress === address ? "bg-gray-300" : "bg-white"
-                }`}
-                onClick={() => handleAddressChange(address)}
-              >
-                {address}
-              </button>
-            ))}
+
+            {allCustomerAddress?.length === 0 && <p>No address found</p>}
+
+            {allCustomerAddress?.length > 0 && (
+              <div className="">
+                {allCustomerAddress?.map((address, index) => (
+                  <input
+                    key={index}
+                    type="button"
+                    className={`py-2 px-4 me-2 rounded border capitalize cursor-pointer ${
+                      selectedAddress === address.type
+                        ? "bg-gray-300"
+                        : "bg-white"
+                    }`}
+                    value={address.type}
+                    onClick={() => handleSelectAddressType(address.type)}
+                  />
+                ))}
+
+                {selectedAddress === "other" && (
+                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                    {data?.customerAddress
+                      .find((addr) => addr.type === "other")
+                      ?.otherAddress?.map((otherAddr) => (
+                        <div
+                          key={otherAddr.id}
+                          className="flex items-center gap-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
+                        >
+                          <input
+                            type="radio"
+                            name="otherAddress"
+                            value={otherAddr.id}
+                            checked={selectedOtherAddressId === otherAddr.id}
+                            onChange={() =>
+                              handleSelectOtherAddress(otherAddr.id)
+                            }
+                          />
+                          <span className="flex flex-col gap-1 ms-2 ">
+                            <span>{otherAddr.flat}</span>
+                            <span>{otherAddr.area}</span>
+                            <span>{otherAddr.landmark}</span>
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          {selectedAddress === "home" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "home")
+                ?.homeAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedAddress === "work" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "work")
+                ?.workAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div>
             <div className=" flex">
               <label className="w-1/3"></label>
@@ -272,135 +446,145 @@ const CustomOrder = () => {
 
             {isFormVisible && <NewAddress />}
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="tips">
               Tips
             </label>
             <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
+              className="h-10 ps-3 text-sm border-2 w-1/2 outline-none focus:outline-none"
               type="text"
-              placeholder="Tips"
-              id="tips"
-              name="tips"
-              value={formData.tips}
+              placeholder="Add Tip"
+              name="addedTip"
+              value={customOrderData.addedTip}
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="deliveryCharges">
-              Delivery Charges
-            </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
-              type="text"
-              placeholder="Delivery Charges"
-              id="deliveryCharges"
-              name="deliveryCharges"
-              value={formData.deliveryCharges}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="discount">
-              Discount *
-            </label>
-            <input
-              type="discount"
-              name="discount"
-              id="discount"
-              placeholder="Discount"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
-              value={formData.discount}
-              onChange={handleInputChange}
-            />
-          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            onClick={createInvoice}
+            className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize"
+          >
+            {isInvoiceLoading ? `Creating invoice...` : `Create invoice`}
+          </button>
+        </div>
+      </form>
+
+      {cartData?.items && (
+        <>
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="paymentType">
               Payment Type
             </label>
             <select
-              className="h-10 px-5  text-sm border-2 w-1/2  outline-none focus:outline-none"
-              type="text"
-              placeholder="Payment Type"
-              id="paymentType"
-              name="paymentType"
-              value={formData.paymentType}
-              onChange={handleInputChange}
+              name="paymentMode"
+              value={paymentMode}
+              className="w-1/2 py-2 ps-3 outline-none focus:outline-none border-2"
+              onChange={(e) => setPaymentMode(e.target.value)}
             >
-              <option hidden value=""></option>
-              <option value="option1" className="bg-white">
-                option1
+              <option defaultValue="Select payment mode" hidden>
+                Select payment mode
               </option>
-              <option value="option2" className="bg-white">
-                option2
-              </option>
-              <option value="option3" className="bg-white">
-                option3
-              </option>
+              <option value="Online-payment">Online payment</option>
+              <option value="Cash-on-delivery">Cash on delivery</option>
             </select>
           </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="subtotal">
-              Sub Total
-            </label>
-            <input
-              type="number"
-              name="subtotal"
-              id="subtotal"
-              placeholder="Sub Total"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none focus:outline-none relative"
-              value={formData.subtotal}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-        <div className="flex mt-5">
-          <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-          <div className="overflow-auo w-2/3">
-            <table className="border-2 border-teal-700  text-left w-[75%]">
-              <thead>
-                <tr>
-                  {["Item", "Amount"].map((header, index) => (
-                    <th
-                      key={index}
-                      className="bg-teal-700  text-white p-4  border-[#eee]/50"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {order.map((order) => (
-                  <tr key={order.id} className="text-left">
-                    <td className="p-4">{order.item1}</td>
-                    <td className="p-4">{order.amount}</td>
+
+          <div className="flex mt-5">
+            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
+            <div className="overflow-auto w-1/2">
+              <table className="border-2 border-teal-700 w-full text-left ">
+                <thead>
+                  <tr>
+                    {["Item", "Amount"].map((header, index) => (
+                      <th
+                        key={index}
+                        className="bg-teal-700 text-white p-4 border-[#eee]/50"
+                      >
+                        {header}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-                <tr className="bg-teal-700 text-white font-semibold text-[18px]">
-                  <td className="p-4">Net Payable Amount</td>
-                  <td className="p-4">₹ 257</td>
-                </tr>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cartData?.items && (
+                    <>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">ItemTotal</td>
+                        <td className="p-4">{cartData.billDetail.itemTotal}</td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Delivery charges</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.discountedDeliveryCharge ||
+                            cartData?.billDetail?.originalDeliveryCharge ||
+                            0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Added tip</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.addedTip || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Discount</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.discountedAmount || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Surge charge</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.surgePrice || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">GST (Inclusive of all Taxes)</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.taxAmount || 0}
+                        </td>
+                      </tr>
+                      <tr className="bg-teal-700 text-white font-semibold text-[18px]">
+                        <td className="p-4">Net Payable Amount</td>
+                        <td className="p-4">
+                          ₹{" "}
+                          {cartData?.billDetail?.discountedGrandTotal ||
+                            cartData?.billDetail?.originalGrandTotal ||
+                            0}
+                        </td>
+                      </tr>
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-end gap-4 mt-16 mx-10">
-          <button
-            className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-            type="button"
-          >
-            <SaveAltIcon /> Bill
-          </button>
-          <button
-            className="bg-teal-700 text-white py-2 px-4 rounded-md"
-            type="submit"
-            onClick={formAction}
-          >
-            Create Order ₹534
-          </button>
-        </div>
-      </form>
+
+          <div className="flex justify-end gap-4 mt-16 mx-10">
+            <button
+              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
+              type="button"
+            >
+              <SaveAltIcon /> Bill
+            </button>
+            <button
+              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+              onClick={createOrder}
+            >
+              {isOrderLoading
+                ? `Creating Order....`
+                : `Create Order of ₹${
+                    cartData.billDetail.discountedGrandTotal ||
+                    cartData.billDetail.originalGrandTotal
+                  }`}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

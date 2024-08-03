@@ -1,12 +1,17 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { AddOutlined } from "@mui/icons-material";
 import { useContext, useEffect, useState } from "react";
-import { RiDeleteBinLine } from "react-icons/ri";
-import NewAddress from "./NewAddress";
+
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+
+import NewAddress from "./NewAddress";
 import { UserContext } from "../../context/UserContext";
+
+import { PlusOutlined } from "@ant-design/icons";
+import { AddOutlined } from "@mui/icons-material";
+import { RiDeleteBinLine } from "react-icons/ri";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+
+import { itemTypes } from "../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -26,9 +31,6 @@ const PickAndDrop = ({ data }) => {
   });
 
   const [allCustomerAddress, setAllCustomerAddress] = useState([]);
-  useEffect(() => {
-    setAllCustomerAddress(data.customerAddress);
-  }, [data]);
 
   const [cartData, setCartData] = useState({});
 
@@ -36,9 +38,6 @@ const PickAndDrop = ({ data }) => {
   const [isOrderLoading, setIsOrderLoading] = useState(false);
 
   const [paymentMode, setPaymentMode] = useState("");
-
-  const { token } = useContext(UserContext);
-  const toast = useToast();
 
   const [selectedVehicle, setSelectedVehicle] = useState("");
 
@@ -55,27 +54,12 @@ const PickAndDrop = ({ data }) => {
   const [isNewDeliveryAddressVisible, setIsNewDeliveryAddressVisible] =
     useState(false);
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-    }
-  }, [token]);
+  const { token } = useContext(UserContext);
+  const toast = useToast();
 
-  const itemTypes = [
-    "Documents & Parcels",
-    "Food & Groceries",
-    "Clothing & Laundry",
-    "Medical Supplies",
-    "Personal Items",
-    "Gifts & Flowers",
-    "Electronics",
-    "Household Items",
-    "Books & Stationery",
-    "Online Orders",
-    "Pet Supplies",
-    "Automotive Parts",
-    "Others",
-  ];
+  useEffect(() => {
+    setAllCustomerAddress(data.customerAddress);
+  }, [data]);
 
   const handleInputChange = (e) => {
     setPickAndDropData({
@@ -84,7 +68,7 @@ const PickAndDrop = ({ data }) => {
     });
   };
 
-  const handleItemChange = (section, index, e) => {
+  const handleItemChange = (index, e) => {
     const { name, value } = e.target;
     setPickAndDropData((prevData) => {
       const items = [...prevData.items];
@@ -96,7 +80,7 @@ const PickAndDrop = ({ data }) => {
     });
   };
 
-  const handleAddItem = (section) => {
+  const handleAddItem = () => {
     setPickAndDropData((prevData) => ({
       ...prevData,
       items: [
@@ -106,12 +90,12 @@ const PickAndDrop = ({ data }) => {
     }));
   };
 
-  const handleRemoveItem = (section, index) => {
+  const handleRemoveItem = (index) => {
     setPickAndDropData((prevData) => {
       const items = [...prevData.items];
       items.splice(index, 1);
       return {
-        ...prevData[section],
+        ...prevData,
         items,
       };
     });
@@ -125,7 +109,8 @@ const PickAndDrop = ({ data }) => {
     setIsNewDeliveryAddressVisible(!isNewDeliveryAddressVisible);
   };
 
-  const handleAddCustomerAddress = () => {};
+  const handlePickUpAddress = () => {};
+  const handleDeliveryAddress = () => {};
 
   const createInvoice = async (e) => {
     e.preventDefault();
@@ -137,6 +122,12 @@ const PickAndDrop = ({ data }) => {
         newCustomer: data.newCustomer,
         deliveryOption: data.deliveryOption,
         deliveryMode: data.deliveryMode,
+        ifScheduled: {
+          startDate: data?.ifScheduled?.startDate,
+          endDate: data?.ifScheduled?.endDate,
+          time: data?.ifScheduled?.time,
+        },
+        items: pickAndDropData.items,
         ...pickAndDropData,
       };
 
@@ -222,13 +213,27 @@ const PickAndDrop = ({ data }) => {
   };
 
   const handleSelectPickUpAddress = (type) => {
-    setSelectedPickUpAddress(type);
-    setPickAndDropData({ ...pickAndDropData, pickUpAddressType: type });
+    // Check if the type is already selected
+    const newSelectedAddress = selectedPickUpAddress === type ? "" : type;
+
+    setSelectedPickUpAddress(newSelectedAddress);
+    setPickAndDropData({
+      ...pickAndDropData,
+      pickUpAddressType: newSelectedAddress,
+    });
   };
+
   const handleSelectDeliveryAddress = (type) => {
-    setSelectedDeliveryAddress(type);
-    setPickAndDropData({ ...pickAndDropData, deliveryAddressType: type });
+    // Check if the type is already selected
+    const newSelectedAddress = selectedDeliveryAddress === type ? "" : type;
+
+    setSelectedDeliveryAddress(newSelectedAddress);
+    setPickAndDropData({
+      ...pickAndDropData,
+      deliveryAddressType: newSelectedAddress,
+    });
   };
+
   const handleSelectVehicle = (type) => {
     setSelectedVehicle(type);
     setPickAndDropData({ ...pickAndDropData, vehicleType: type });
@@ -239,7 +244,7 @@ const PickAndDrop = ({ data }) => {
       <h1 className="bg-teal-800 text-white px-6 py-4 text-xl font-semibold">
         Pick Up
       </h1>
-      {/* onSubmit={createInvoice} */}
+
       <form>
         <div className="flex flex-col gap-6">
           <div className="flex items-center mt-[30px]">
@@ -255,7 +260,7 @@ const PickAndDrop = ({ data }) => {
                   <input
                     key={index}
                     type="button"
-                    className={`py-2 px-4 me-2 rounded border capitalize ${
+                    className={`py-2 px-4 me-2 rounded border capitalize cursor-pointer ${
                       selectedPickUpAddress === address.type
                         ? "bg-gray-300"
                         : "bg-white"
@@ -370,7 +375,7 @@ const PickAndDrop = ({ data }) => {
               </button>
             </div>
             {isNewPickupAddressVisible && (
-              <NewAddress onAddCustomerAddress={handleAddCustomerAddress} />
+              <NewAddress onAddCustomerAddress={handlePickUpAddress} />
             )}
           </div>
 
@@ -383,7 +388,7 @@ const PickAndDrop = ({ data }) => {
               name="orderTime"
               placeholder="In scheduled order, it will be filled automatically as scheduled"
               className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              value={pickAndDropData.orderTime}
+              value={data?.ifScheduled?.time}
               onChange={handleInputChange}
             />
           </div>
@@ -632,20 +637,20 @@ const PickAndDrop = ({ data }) => {
               </button>
             </div>
             {isNewDeliveryAddressVisible && (
-              <NewAddress onAddCustomerAddress={handleAddCustomerAddress} />
+              <NewAddress onAddCustomerAddress={handleDeliveryAddress} />
             )}
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="orderTime">
-              Order Time
+            <label className="w-1/3 px-6" htmlFor="deliveryTime">
+              Delivery Time
             </label>
             <input
               type="text"
-              name="dropData.orderTime"
+              name="deliveryime"
               placeholder="In scheduled order, it will be filled automatically as scheduled"
               className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              value={pickAndDropData.orderTime}
+              value={data?.deliveryTime}
               onChange={handleInputChange}
             />
           </div>
@@ -707,6 +712,7 @@ const PickAndDrop = ({ data }) => {
           </button>
         </div>
       </form>
+
       {cartData?.items && (
         <>
           <div className="flex items-center">

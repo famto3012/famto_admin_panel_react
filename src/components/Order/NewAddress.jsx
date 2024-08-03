@@ -4,9 +4,8 @@ import MapModal from "./MapModal";
 const NewAddress = ({ onAddCustomerAddress }) => {
   const [addressData, setAddressData] = useState({
     type: "",
-    // TODO: Change the coordinates and make the map work in the modal
-    latitude: 8.576817,
-    longitude: 76.869701,
+    latitude: null,
+    longitude: null,
     fullName: "",
     phoneNumber: "",
     flat: "",
@@ -34,7 +33,28 @@ const NewAddress = ({ onAddCustomerAddress }) => {
     e.preventDefault();
     console.log(addressData);
     onAddCustomerAddress(addressData);
+    setAddressData({
+      type: "",
+      latitude: null,
+      longitude: null,
+      fullName: "",
+      phoneNumber: "",
+      flat: "",
+      area: "",
+      landmark: "",
+      saveAddress: false,
+    });
+    setSelectedType("");
   };
+
+  const showButton =
+    !addressData.type ||
+    !addressData.latitude ||
+    !addressData.longitude ||
+    !addressData.fullName ||
+    !addressData.phoneNumber ||
+    !addressData.flat ||
+    !addressData.area;
 
   return (
     <>
@@ -44,12 +64,12 @@ const NewAddress = ({ onAddCustomerAddress }) => {
           <div>
             <div className="flex flex-col gap-3">
               <div className="flex space-x-2 justify-around mx-2">
-                {["Home", "Work", "Others"].map((button) => (
+                {["home", "work", "others"].map((button) => (
                   <button
                     key={button}
                     type="button"
                     onClick={() => handleButtonClick(button)}
-                    className={`px-5 p-2 rounded ${
+                    className={`px-5 p-2 rounded capitalize ${
                       selectedType === button
                         ? "bg-teal-700 text-white"
                         : "bg-transparent border border-teal-700 text-teal-700 outline-none focus:outline-none"
@@ -130,13 +150,14 @@ const NewAddress = ({ onAddCustomerAddress }) => {
                 />
               </div>
 
-              <div className="flex items-center my-[20px]">
+              <div className="flex items-center">
+                <label className="w-1/3 text-md font-medium ">Location</label>
                 <button
                   type="button"
                   onClick={() => setModalVisible(true)}
-                  className="font-medium bg-teal-700 text-white w-[90%] rounded-md mx-auto py-2"
+                  className="font-medium bg-teal-700 text-white w-2/3 rounded-md mx-auto py-2"
                 >
-                  Mark location
+                  {`Mark location`}
                 </button>
 
                 <MapModal
@@ -145,33 +166,38 @@ const NewAddress = ({ onAddCustomerAddress }) => {
                   setCoordinates={setCoordinates}
                 />
               </div>
+
+              <div className="flex">
+                <input
+                  type="checkbox"
+                  name="addressBook"
+                  value="true"
+                  checked={addressData.saveAddress}
+                  className="mr-2"
+                  onChange={(e) =>
+                    setAddressData({
+                      ...addressData,
+                      saveAddress: e.target.checked,
+                    })
+                  }
+                />
+                Save this address to address book
+              </div>
             </div>
 
             <div className="flex justify-end mt-5 gap-3">
               <button
                 type="button"
-                className="bg-teal-700 text-white px-4 py-2 rounded w-1/2"
+                disabled={showButton}
+                className={`${
+                  showButton
+                    ? "bg-teal-700/50 text-white"
+                    : "bg-teal-700 text-white"
+                }  px-4 py-2 rounded w-1/2`}
                 onClick={handleSubmit}
               >
                 Add Address
               </button>
-            </div>
-
-            <div className="mt-6 flex">
-              <input
-                type="checkbox"
-                name="adressBook"
-                value="true"
-                checked={addressData.adressBook}
-                className="mr-2"
-                onChange={(e) =>
-                  setAddressData({
-                    ...addressData,
-                    saveAddress: e.target.checked,
-                  })
-                }
-              />
-              Save this address to address book
             </div>
           </div>
         </div>

@@ -254,6 +254,11 @@ const TakeAway = ({ data }) => {
       newCustomer: data.newCustomer,
       deliveryOption: data.deliveryOption,
       deliveryMode: data.deliveryMode,
+      ifScheduled: {
+        startDate: data?.ifScheduled?.startDate,
+        endDate: data?.ifScheduled?.endDate,
+        time: data?.ifScheduled?.time,
+      },
       items: formattedItems,
       instructionToMerchant: takeAwayData.instructionToMerchant,
       merchantId: takeAwayData.merchantId,

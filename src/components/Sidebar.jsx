@@ -24,7 +24,7 @@ import {
   HubOutlined as HubOutlinedIcon,
   LoyaltyOutlined as LoyaltyOutlinedIcon,
   ShareLocationOutlined as ShareLocationOutlinedIcon,
-  CurrencyRupeeOutlined as CurrencyRupeeOutlinedIcon,
+  // CurrencyRupeeOutlined as CurrencyRupeeOutlinedIcon,
 } from "@mui/icons-material";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { BsPersonLinesFill } from "react-icons/bs";
