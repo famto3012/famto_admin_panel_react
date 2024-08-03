@@ -20,7 +20,7 @@
   }
 
   .side {
-    @apply hover:bg-cyan-400 hover:text-white;
+    @apply flex items-center mb-1 hover:bg-cyan-400 hover:text-white;
   }
 
   .dropside {

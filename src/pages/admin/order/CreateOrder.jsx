@@ -3,6 +3,10 @@ import { ArrowBack, SearchOutlined } from "@mui/icons-material";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
+import DateRangePicker from "@wojtekmaj/react-daterange-picker";
+
+import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
+import "react-calendar/dist/Calendar.css";
 
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -21,19 +25,33 @@ const CreateOrder = () => {
     customerAddress: [],
     deliveryOption: "On-demand",
     deliveryMode: "Take Away",
+    ifScheduled: {},
   });
 
   const [customerName, setCustomerName] = useState("");
   const [customerResults, setCustomerResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormVisible, setFormVisible] = useState(false);
-  const [dateTime, setDateTime] = useState("");
+  const [value, setValue] = useState([new Date(), new Date()]);
+  const [time, setTime] = useState(() => {
+    const currentTime = new Date();
+    const hours = currentTime.getHours().toString().padStart(2, "0");
+    const minutes = currentTime.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  });
 
-  const { token } = useContext(UserContext);
+  const { token, role } = useContext(UserContext);
 
   useEffect(() => {
     if (!token) navigate("/auth/login");
   }, [token]);
+
+  const deliveryModes = [
+    "Take Away",
+    "Home Delivery",
+    role !== "Merchant" && "Pick and Drop",
+    role !== "Merchant" && "Custom Order",
+  ].filter(Boolean);
 
   const handleChangeDeliveryMode = (e) => {
     setTopData({ ...topData, [e.target.name]: e.target.value });
@@ -41,15 +59,12 @@ const CreateOrder = () => {
 
   const handleChangeDeliveryOption = (e) => {
     setTopData({ ...topData, [e.target.name]: e.target.value });
-    if (e.target.value === "Scheduled") showModal();
-  };
-
-  const handleChange = (e) => {
-    setDateTime(e.target.value);
   };
 
   const toggleNewCustomerForm = () => {
     setFormVisible(!isFormVisible);
+    setCustomerName("");
+    setTopData({ ...topData, customerAddress: [] });
   };
 
   const handleSearchCustomer = async (e) => {
@@ -92,10 +107,38 @@ const CreateOrder = () => {
     setTopData({ ...topData, newCustomer });
   };
 
-  const currentDate = new Date().toISOString().slice(0, 16);
-  const maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 16);
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return `${d.getFullYear()}-${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
+  };
+
+  const selectDateRange = (value) => {
+    setValue(value);
+    const formattedStartDate = formatDate(value[0]);
+    const formattedEndDate = formatDate(value[1]);
+    setTopData((prevState) => ({
+      ...prevState,
+      ifScheduled: {
+        ...prevState.ifScheduled,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+      },
+    }));
+  };
+
+  const selectTime = (e) => {
+    const value = e.target.value;
+    setTime(value);
+    setTopData((prevState) => ({
+      ...prevState,
+      ifScheduled: {
+        ...prevState.ifScheduled,
+        time: value,
+      },
+    }));
+  };
 
   return (
     <>
@@ -143,7 +186,7 @@ const CreateOrder = () => {
                         className="p-2 hover:bg-gray-200 cursor-pointer"
                         onClick={() => selectCustomer(result)}
                       >
-                        {result.fullName} - {result.email}
+                        {result.fullName} - {result.phoneNumber}
                       </li>
                     ))}
                   </ul>
@@ -200,17 +243,31 @@ const CreateOrder = () => {
             </div>
 
             {topData?.deliveryOption === "Scheduled" && (
-              <div className="relative flex justify-center my-8 ml-24">
-                <input
-                  type="datetime-local"
-                  id="datetime"
-                  name="datetime"
-                  className="h-10 text-sm px-3 border-2 w-1/2 ml-10 outline-none focus:outline-none"
-                  value={dateTime}
-                  min={currentDate}
-                  max={maxDate}
-                  onChange={handleChange}
-                />
+              <div className="flex items-center">
+                <label className="w-1/3 px-6 text-gray-700 invisible">
+                  Select Delivery Date and time
+                </label>
+
+                <div className="flex gap-5 justify-start z-50">
+                  <DateRangePicker
+                    onChange={selectDateRange}
+                    name="date"
+                    value={value}
+                    format="y-MM-dd"
+                    minDate={new Date()}
+                    maxDate={
+                      new Date(new Date().setDate(new Date().getDate() + 30))
+                    }
+                  />
+
+                  <input
+                    type="time"
+                    name="time"
+                    value={time}
+                    onChange={selectTime}
+                    className="outline-none focus:outline-none"
+                  />
+                </div>
               </div>
             )}
 
@@ -219,12 +276,7 @@ const CreateOrder = () => {
                 Select Delivery Mode
               </label>
               <div className="flex items-center space-x-2 w-2/3 gap-3">
-                {[
-                  "Take Away",
-                  "Home Delivery",
-                  "Pick and Drop",
-                  "Custom Order",
-                ].map((mode) => (
+                {deliveryModes.map((mode) => (
                   <div key={mode} className="flex items-center cursor-pointer">
                     <input
                       type="radio"
@@ -250,12 +302,16 @@ const CreateOrder = () => {
               <HomeDelivery data={topData} />
             )}
 
-            {topData?.deliveryMode === "Pick and Drop" && (
-              <PickAndDrop data={topData} />
-            )}
+            {role === "Admin" && (
+              <>
+                {topData?.deliveryMode === "Pick and Drop" && (
+                  <PickAndDrop data={topData} />
+                )}
 
-            {topData?.deliveryMode === "Custom Order" && (
-              <CustomOrder data={topData} />
+                {topData?.deliveryMode === "Custom Order" && (
+                  <CustomOrder data={topData} />
+                )}
+              </>
             )}
           </div>
         </div>

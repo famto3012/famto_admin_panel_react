@@ -27,9 +27,9 @@ const PushNotification = () => {
     title: "",
     description: "",
     geofenceId: "",
-    customer: null,
-    driver: null,
-    merchant: null,
+    customer: false,
+    merchant: false,
+    driver: false,
     pushNotificationImage: "",
   });
   useEffect(() => {
@@ -123,7 +123,10 @@ const PushNotification = () => {
   };
 
   const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked });
+    setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
+    console.log(formData.customer);
+    console.log(formData.merchant);
+    console.log(formData.driver);
   };
 
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
@@ -336,7 +339,7 @@ const PushNotification = () => {
               />
             </div>
             <div className="flex">
-              <label className="mt-10 ml-10">Agent App</label>
+              <label className="mt-10 ml-10">Merchant App</label>
               <Switch
                 className="mt-11 ml-[200px]"
                 onChange={(checked) => onChange("merchant", checked)}
@@ -379,7 +382,7 @@ const PushNotification = () => {
               Type of user
             </option>
             <option value="customer">Customer</option>
-            <option value="merchant">Agent</option>
+            <option value="merchant">Merchant</option>
             <option value="driver">Driver</option>
           </select>
           <div>
@@ -406,7 +409,7 @@ const PushNotification = () => {
                 "Image",
                 "Customer App",
                 "Driver App",
-                "Agent App",
+                "Merchant App",
                 "Action",
               ].map((header) => (
                 <th
