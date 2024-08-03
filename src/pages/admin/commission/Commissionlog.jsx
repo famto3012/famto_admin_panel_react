@@ -1,33 +1,199 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { ArrowBack, FilterAltOutlined } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../../../context/UserContext";
+import { Modal } from "antd";
+import { FaCalendar } from "react-icons/fa6";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Commissionlog = () => {
   const [commissionlog, setCommissionlog] = useState([]);
+  const [searchFilter, setSearchFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [merchantFilter, setMerchantFilter] = useState("");
+  const [merchant, setMerchants] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
+  const navigate = useNavigate();
+  const dateInputRef = useRef(null);
 
+  const { token, role } = useContext(UserContext);
   useEffect(() => {
-    const fetchCommissionlog = async () => {
-      const dummyData = [
-        {
-          orderId: "3",
-          merchantName: "Nandhu",
-          paymentMode: "Cash",
-          totalAmount: "₹40.00",
-          toMerchants: "₹36.00",
-          famtoCommission: "₹4.00",
-          status: "Unpaid",
-        },
-        // Add more customers as needed
-      ];
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
 
-      setCommissionlog(dummyData);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [commissionResponse, merchantResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/commission/all-commission-log`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        if (commissionResponse.status === 200) {
+          setCommissionlog(commissionResponse.data.data.commissionLogs);
+          console.log(commissionResponse.data.data);
+        }
+        if (merchantResponse.status === 200) {
+          setMerchants(merchantResponse.data.data);
+          console.log(merchantResponse.data.data);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchCommissionlog();
-  }, []);
+    fetchData();
+  }, [token, role, navigate]);
 
+  const onSearchChange = (e) => {
+    const searchService = e.target.value;
+    setSearchFilter(searchService);
+    if (searchService !== "") {
+      handleSearchChangeFilter(searchService);
+    } else {
+      setCommissionlog([]);
+    }
+  };
+
+  const handleSearchChangeFilter = async (searchService) => {
+    try {
+      console.log(token);
+      const searchResponse = await axios.get(
+        `${BASE_URL}/admin/commission/commission-log-name`,
+        {
+          params: { merchantName: searchService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (searchResponse.status === 200) {
+        setCommissionlog(searchResponse.data.data.commissionLogs);
+      }
+    } catch (err) {
+      console.log(`Error in fetching data`, err);
+    }
+  };
+  const onDateChange = (e) => {
+    const searchDate = e.target.value;
+    setDateFilter(searchDate);
+    if (searchDate !== "") {
+      handleDateChangeFilter(searchDate);
+    } else {
+      setCommissionlog([]);
+    }
+    console.log(searchDate)
+  };
+
+  const handleDateChangeFilter = async (searchDate) => {
+    try {
+      console.log(token);
+      const dateResponse = await axios.get(
+        `${BASE_URL}/admin/commission/commission-log-date`,
+        {
+          params: { date: searchDate },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (dateResponse.status === 200) {
+        setCommissionlog(dateResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching data`, err);
+    }
+  };
+
+   // Function to trigger the date input click
+   const openDatePicker = () => {
+    console.log("clicked");
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+    }
+  };
+
+  const onMerchantChange = (e) => {
+    const searchMerchant = e.target.value;
+    setMerchantFilter(searchMerchant);
+    if (searchMerchant !== "") {
+      handleMerchantChangeFilter(searchMerchant);
+    } else {
+      setCommissionlog([]);
+    }
+  };
+
+  const handleMerchantChangeFilter = async (searchMerchant) => {
+    try {
+      console.log(token);
+      const response = await axios.get(
+        `${BASE_URL}/admin/commission/commission-log/${searchMerchant}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setCommissionlog(response.data.data.commissionLogs);
+      }
+    } catch (err) {
+      console.log(`Error in fetching data`, err);
+    }
+  };
+  const showModal = (id) => {
+    setCurrentId(id);
+    console.log(id);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleChange = async (id) => {
+    console.log("id", id);
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/admin/commission/commission-log/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        handleCancel();
+        setCommissionlog((prev) =>
+          prev.map((commission) =>
+            commission._id === id
+              ? { ...commissionlog, status: "Paid" }
+              : commissionlog
+          )
+        );
+        console.log(response.data.status);
+      } else {
+        console.log(`Unexpected response status: ${response.status}`);
+      }
+    } catch (err) {
+      console.error(`Error in handleApprove: ${err.message}`);
+    }
+  };
   return (
     <>
       <Sidebar />
@@ -60,34 +226,49 @@ const Commissionlog = () => {
             name="type"
             defaultValue=""
             className="bg-cyan-100 px-4 outline-none rounded-lg focus:outline-none mr-6"
+            onChange={onMerchantChange}
+            value={merchantFilter}
           >
             <option hidden value="">
               All Merchants
             </option>
-            <option value="customer" className="bg-white">
-              option1
-            </option>
-            <option value="agent" className="bg-white">
-              option2
-            </option>
-            <option value="merchant" className="bg-white">
-              option3
-            </option>
+            {merchant.map((merchant) => (
+              <option value={merchant._id} key={merchant._id}>
+                {merchant._id}
+              </option>
+            ))}
           </select>
           <div className="flex items-center ">
-            <input
+            {/* <input
               type="date"
               name="date"
-              value={""}
-              // onChange={handleChange}
+              value={dateFilter}
+              onChange={onDateChange}
               className="right-4 p-2"
-            />
+            /> */}
+             <input
+                  type="date"
+                  name="date"
+                  ref={dateInputRef} // Attach the ref to the input
+                  value={dateFilter}
+                  onChange={onDateChange}
+                  className="hidden top-80" // Keep the input hidden
+                  style={{ right: "40px", top: "200px" }}
+                />
+                 <button
+                  onClick={openDatePicker}
+                  className="flex items-center justify-center"
+                >
+                  <FaCalendar className="text-gray-400 text-xl" />
+                </button>
             <FilterAltOutlined className="text-gray-400 mx-7" />
             <input
               type="search"
               name="search"
               placeholder="Search merchant name"
               className="bg-white h-10 px-5 pr-2 rounded-full  w-72 text-sm focus:outline-none"
+              value={searchFilter}
+              onChange={onSearchChange}
             />
             <button type="submit" className="absolute right-14 mt-2 ">
               <SearchOutlined className="text-xl text-gray-500 " />
@@ -95,7 +276,7 @@ const Commissionlog = () => {
           </div>
         </div>
         <div className="overflow-auto mt-[40px] w-full pl-[10px]">
-          <table className="text-start w-full ">
+          <table className="text-start w-full mb-24 ">
             <thead>
               <tr>
                 {[
@@ -117,26 +298,59 @@ const Commissionlog = () => {
               </tr>
             </thead>
             <tbody>
-              {commissionlog.map((commissionlog) => (
+              {commissionlog?.map((commissionlog) => (
                 <tr
-                  key={commissionlog.id}
-                  className="align-middle border-b border-gray-300 text-center"
+                  key={commissionlog._id}
+                  className="align-middle border-b border-gray-300 text-center h-20"
                 >
                   <td>
-                    <Link to="/home" className="underline underline-offset-4  ">
-                      {commissionlog.orderId}
+                    <Link
+                      to="/home"
+                      className="underline underline-offset-4 px-4"
+                    >
+                      {commissionlog._id}
                     </Link>
                   </td>
-                  <td>{commissionlog.merchantName}</td>
-                  <td>{commissionlog.paymentMode}</td>
-                  <td>{commissionlog.totalAmount}</td>
-                  <td>{commissionlog.toMerchants}</td>
-                  <td>{commissionlog.famtoCommission}</td>
+                  <td className="px-4">{commissionlog.merchantName}</td>
+                  <td className="px-4">{commissionlog.paymentMode}</td>
+                  <td className="px-4">{commissionlog.totalAmount}</td>
+                  <td className="px-4">
+                    {commissionlog.payableAmountToMerchant}
+                  </td>
+                  <td className="px-4">{commissionlog.payableAmountToFamto}</td>
                   <td className="flex items-center gap-6 px-[15px] py-4">
-                    {commissionlog.status}
-                    <button className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center ">
+                    {commissionlog.status ==="Unpaid" ?
+                      <button
+                      className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
+                      onClick={() => showModal(commissionlog._id)}
+                    >
                       Set as paid
-                    </button>
+                    </button>:
+                    <p>Paid</p>
+}
+
+                    <Modal
+                      onCancel={handleCancel}
+                      footer={null}
+                      open={isModalVisible && currentId === commissionlog._id}
+                      centered
+                    >
+                      <p className="font-semibold text-[18px] mb-5">
+                        Are you sure you want to confirm?
+                      </p>
+                      <div className="flex justify-end">
+                        <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold">
+                          NO
+                        </button>
+                        <button
+                          className="bg-teal-900 px-5 py-1 rounded-md ml-3 text-white"
+                          onClick={() => handleChange(commissionlog._id)}
+                        >
+                          {" "}
+                          YES
+                        </button>
+                      </div>
+                    </Modal>
                   </td>
                 </tr>
               ))}

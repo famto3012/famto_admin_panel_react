@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
+import CustomerSub from "./components/model/SubscriptionModels/CustomerSub";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -147,7 +148,6 @@ function App() {
               path="/delivery-management"
               element={<DeliveryManagement />}
             />
-
             <Route path="/agent-payout" element={<AgentPayout />} />
           </Routes>
         </Suspense>
