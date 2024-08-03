@@ -6,28 +6,43 @@ import { mappls } from "mappls-web-maps";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useLocation } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-const AddGeofence = ({heading}) => {
+const AddGeofence = ({ heading }) => {
   const { token } = useContext(UserContext);
-  const [geofences, setGeofences] = useState([]);
+  const [geofences, setGeofences] = useState({});
+  const [newGeofence, setNewGeofence] = useState({
+    name: "",
+    description: "",
+    color: "",
+    coordinates: [],
+  });
   const [color, setColor] = useState("#4931a0");
   const mapContainerRef = useRef(null);
-  const [mapObject, setMapObject] = useState(null); // default color 
+  const [mapObject, setMapObject] = useState(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const mapplsClassObject = new mappls();
+  const toast = useToast();
+  let map, drawData, geoJSON, polyArray;
 
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
   };
 
   const query = useQuery();
-  const id = query.get('id')
+  const id = query.get("id");
 
   const handleColorChange = (event) => {
     setColor(event.target.value);
+    setNewGeofence({ ...newGeofence, color: event.target.value });
+    setGeofences({ ...geofences, color: event.target.value });
   };
 
   const handleInputChange = (e) => {
     setGeofences({ ...geofences, [e.target.name]: e.target.value });
+    setNewGeofence({ ...newGeofence, [e.target.name]: e.target.value });
   };
 
   const signupAction = (e) => {
@@ -37,69 +52,233 @@ const AddGeofence = ({heading}) => {
   };
 
   useEffect(() => {
-    const mapProps = {
-      center: [8.528818999999999, 76.94310683333333],
-      traffic: true,
-      zoom: 12,
-      geolocation: true,
-      clickableIcons: true,
-    };
+    const script = document.createElement("script");
+    script.src = "https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap";
+    script.async = true;
+    document.body.appendChild(script);
 
-    const mapplsClassObject = new mappls();
+    window.initMap = () => {
+      const map = new window.mappls.Map("map", {
+        center: [8.528818999999999, 76.94310683333333],
+        zoomControl: true,
+        geolocation: false,
+        fullscreenControl: false,
+        zoom: 12,
+      });
 
-    mapplsClassObject.initialize(
-      "9a632cda78b871b3a6eb69bddc470fef",
-      async () => {
-        if (mapContainerRef.current) {
-          console.log("Initializing map...");
-          const map = await mapplsClassObject.Map({
-            id: "map",
-            properties: mapProps,
-          });
+      if (map && typeof map.on === "function") {
+        console.log("Map initialized successfully.");
 
-          if (map && typeof map.on === "function") {
-            console.log("Map initialized successfully.");
-            map.on("load", () => {
-              console.log("Map loaded.");
-              setMapObject(map);
-            });
-          } else {
-            console.error(
-              "mapObject.on is not a function or mapObject is not defined"
-            );
-          }
-        } else {
-          console.error("Map container not found");
-        }
+        map.on("load", () => {
+          console.log("Map loaded.");
+          setMapObject(map);
+          setIsMapLoaded(true);
+
+          window.mappls.polygonDraw(
+            {
+              map: map,
+              data: geoJSON,
+            },
+            function (data) {
+              drawData = data;
+              console.log("Mappls Polygon Draw Data:", window.mappls);
+              drawData.control(true);
+              polyArray = drawData.data?.geometry.coordinates[0];
+              console.log("Draw Data:", data);
+
+              const formattedCoordinates = drawData?.data?.geometry?.coordinates[0].map(
+                ([lng, lat]) => [lat, lng]
+              );
+              console.log("Formatted Coordinates:", formattedCoordinates);
+
+              setNewGeofence((prevState) => ({
+                ...prevState,
+                coordinates: formattedCoordinates,
+              }));
+            }
+          );
+        });
+      } else {
+        console.error("Map container not found");
       }
-    );
+    };
   }, []);
 
   useEffect(() => {
-    if(heading === "Edit Geofence"){
-      getSingleGeofence()
+    if (heading === "Edit Geofence") {
+      getSingleGeofence();
     }
-   
-  }, [])
+  }, [heading]);
 
-  const getSingleGeofence = async()=>{
+  const getSingleGeofence = async () => {
     try {
-      console.log(token);
-      const response = await axios.get(
-        `${BASE_URL}/admin/geofence/get-geofence/${id}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/admin/geofence/get-geofence/${id}`, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.status === 200) {
+        setColor(response.data.geofence.color);
         setGeofences(response.data.geofence);
       }
     } catch (err) {
       console.log("Error in fetching geofences: ", err);
     }
-  }
+  };
 
+  // const GeoJsonComponent = ({ map }) => {
+  //   const geoJsonRef = useRef(null);
+
+  //   useEffect(() => {
+  //     if (!map || !geofences.coordinates) return;
+
+  //     geoJSON = {
+  //       type: "FeatureCollection",
+  //       features: [
+  //         {
+  //           type: "Feature",
+  //           properties: {
+  //             class_id: geofences._id,
+  //             name: geofences.name,
+  //             stroke: color,
+  //             "stroke-opacity": 0.4,
+  //             "stroke-width": 3,
+  //             fill: color,
+  //             "fill-opacity": 0.4,
+  //           },
+  //           geometry: {
+  //             type: "Polygon",
+  //             coordinates: [geofences.coordinates],
+  //           },
+  //         },
+  //       ],
+  //     };
+  //     console.log("GeoJson", geoJSON);
+
+  //     if (geoJsonRef.current) {
+  //       mapplsClassObject.removeLayer({ map, layer: geoJsonRef.current });
+  //     }
+  //     geoJsonRef.current = mapplsClassObject.addGeoJson({
+  //       map,
+  //       data: geoJSON,
+  //       overlap: false,
+  //       fitbounds: true,
+  //       preserveViewport: true,
+  //     });
+  //   }, [map, geofences, color]);
+
+  //   return null;
+  // };
+
+  const GeoJsonComponent = ({ map, geofences, color, setNewGeofence }) => {
+    const geoJsonRef = useRef(null);
+  
+    useEffect(() => {
+      if (!map || !geofences.coordinates || !Array.isArray(geofences.coordinates)) return;
+  
+      // Convert the coordinates to Mappls format
+      const pts = geofences.coordinates.map(coord => {
+        if (!Array.isArray(coord) || coord.length !== 2) {
+          console.error('Invalid coordinate format:', coord);
+          return null;
+        }
+        const [lat, lng] = coord;
+        return { lat, lng };
+      }).filter(coord => coord !== null);
+      console.log("path", pts);
+  
+      const poly = window.mappls.Polygon({
+        map: map,
+        paths: pts,
+        fillColor: color,
+        fitbounds: true,
+      });
+  
+      // Enable editing of the polygon
+      poly.setEditable(true);
+  
+      // Save the edited coordinates back to the state
+      console.log("poly", poly)
+        // const newCoordinates = poly.getPath().getArray().map(point => [point.lat(), point.lng()]);
+        // console.log("newcoordinates", newCoordinates);
+        // setNewGeofence(prevState => ({
+        //   ...prevState,
+        //   coordinates: [newCoordinates],
+        // }));
+      
+  
+      // Add event listeners to capture changes
+      // poly.addListener('click', updateCoordinates);
+      // poly.addListener('dblclick', updateCoordinates);
+  
+      // // Clean up listeners on component unmount
+      // return () => {
+      //   poly.removeListener('mouseup', updateCoordinates);
+      //   poly.removeListener('dblclick', updateCoordinates);
+      // };
+    }, [map, geofences, color, setNewGeofence]);
+  
+    return null;
+  };
+  
+ 
+  
+  const addGeofence = async () => {
+    try {
+      const addGeofenceResponse = await axios.post(
+        `${BASE_URL}/admin/geofence/add-geofence`,
+        newGeofence,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (addGeofenceResponse.status === 201) {
+        toast({
+          title: "Geofence added successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log("Error in adding geofence: ", err);
+      toast({
+        title: "Error adding geofence",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const editGeofence = async()=>{
+    try {
+      const editGeofenceResponse = await axios.put(
+        `${BASE_URL}/admin/geofence/edit-geofence/${id}`,
+        geofences,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (editGeofenceResponse.status === 200) {
+        toast({
+          title: "Geofence updated successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log("Error in updating geofence: ", err);
+      toast({
+        title: "Error updating geofence",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
     <>
@@ -111,13 +290,10 @@ const AddGeofence = ({heading}) => {
         <h1 className="font-bold text-lg mx-10">{heading}</h1>
         <div className="flex justify-between gap-3">
           <div className="mt-8 p-6 bg-white  rounded-lg shadow-sm w-1/3 ms-10">
-            <form onSubmit={signupAction}>
+            <form>
               <div className="flex flex-col gap-3 ">
                 <div>
-                  <label
-                    className="w-1/3 text-md font-medium"
-                    htmlFor="regionName"
-                  >
+                  <label className="w-1/3 text-md font-medium" htmlFor="regionName">
                     Colour
                   </label>
                   <div className="relative rounded-full">
@@ -134,61 +310,62 @@ const AddGeofence = ({heading}) => {
                   </div>
                 </div>
                 <div>
-                  <label
-                    className="w-1/3 text-md font-medium"
-                    htmlFor="regionName"
-                  >
-                    Region name
+                  <label className="w-1/3 text-md font-medium" htmlFor="regionName">
+                    Name
                   </label>
-                  <input
-                    type="text"
-                    name="regionName"
-                    placeholder="Region Name"
-                    className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                    value={geofences.name}
-                    onChange={handleInputChange}
-                  />
+                  <div className="relative mt-2">
+                    <input
+                      type="text"
+                      name="name"
+                      id="regionName"
+                      value={geofences.name || ""}
+                      onChange={handleInputChange}
+                      className="py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 sm:text-sm w-full"
+                    />
+                  </div>
                 </div>
                 <div>
-                  <label
-                    className="w-1/3 text-md font-medium"
-                    htmlFor="regionDescription"
-                  >
-                    Region description
+                  <label className="w-1/3 text-md font-medium" htmlFor="regionDescription">
+                    Description
                   </label>
-                  <input
-                    type="text"
-                    name="regionDescription"
-                    placeholder="Region Description"
-                    className=" w-full p-2 bg-white mt-3 rounded focus:outline-none outline-none border border-gray-300"
-                    value={geofences.description}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="flex justify-end gap-4 mt-6">
-                  <button
-                    className="bg-cyan-50 px-7 py-1 rounded-md"
-                    type="button"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-teal-700 text-white px-8 py-1 rounded-md"
-                    type="submit"
-                    onClick={signupAction}
-                  >
-                    Save
-                  </button>
+                  <div className="relative mt-2">
+                    <textarea
+                      name="description"
+                      id="regionDescription"
+                      value={geofences.description || ""}
+                      onChange={handleInputChange}
+                      className="py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 sm:text-sm w-full"
+                    />
+                  </div>
                 </div>
               </div>
             </form>
+            <div className="flex flex-row gap-2 mt-6">
+              <button
+                onClick={signupAction}
+                className="w-1/2 bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                onClick={heading === "Edit Geofence" ? editGeofence : addGeofence }
+                className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+              >
+                {heading === "Edit Geofence" ? "Update" : "Add"}
+              </button>
+            </div>
           </div>
-          <div className="w-3/4 mt-[25px] bg-white h-[560px]">
-            <div
-              id="map"
-              ref={mapContainerRef}
-              style={{ width: "99%", height: "550px", display: "inline-block" }}
-            ></div>
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-sm w-2/3 me-10">
+            <div ref={mapContainerRef} id="map" className="map-container w-full h-[600px]"></div>
+            {isMapLoaded && geofences.coordinates && Array.isArray(geofences.coordinates) && (
+              <GeoJsonComponent
+                map={mapObject}
+                geofences={geofences}
+                color={color}
+                setNewGeofence={setNewGeofence}
+              />
+            )}
           </div>
         </div>
       </div>

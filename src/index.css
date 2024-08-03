@@ -39,3 +39,23 @@
 /* ::-webkit-scrollbar {
   display: none;
 } */
+
+.mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319711.png?alt=media&token=cead6e99-1bd4-492a-984c-6de4250c32ab") !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 10px;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_trash {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319713.png?alt=media&token=89eb8ad0-7dcd-4bd3-a5f1-baf24d220786") !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 10px;
+}
