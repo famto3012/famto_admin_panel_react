@@ -8,27 +8,26 @@ const AddProductItemModal = ({
   handleCancel,
   BASE_URL,
   token,
-  role
+  role,
 }) => {
-    const [addData, setAddData] = useState({
-        name: "",
-        price: "",
-        availableQty: "",
-        alertQty: "",
-        minQty: "",
-        maxQty: "",
-        costPrice: "",
-        sku: "",
-        discount: "",
-        boughtTogether: "",
-        preparationTime: "",
-        searchTag: "",
-        description: "",
-        longDescription: "",
-        type: "",
-        imageUrl: "",
-      });
-    
+  const [addData, setAddData] = useState({
+    name: "",
+    price: "",
+    availableQty: "",
+    alertQty: "",
+    minQty: "",
+    maxQty: "",
+    costPrice: "",
+    sku: "",
+    discount: "",
+    boughtTogether: "",
+    preparationTime: "",
+    searchTag: "",
+    description: "",
+    longDescription: "",
+    type: "",
+    imageUrl: "",
+  });
 
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });

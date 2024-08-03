@@ -36,7 +36,6 @@ const Agentapp = () => {
     }
 
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const response = await axios.get(
           `${BASE_URL}/admin/app-customization/agent-app`,
@@ -53,7 +52,6 @@ const Agentapp = () => {
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
-        setIsLoading(false);
       }
     };
 
@@ -313,7 +311,7 @@ const Agentapp = () => {
             type="submit"
             onClick={submitAction}
           >
-            Save Changes
+            {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>

@@ -7,45 +7,46 @@ import CustomerSub from "../../../components/model/SubscriptionModels/CustomerSu
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-const Subscriptioncustomer = () => {
-  const [customerlog, setCustomerlog] = useState([]);
-  const [merchantlog, setMerchantlog] = useState([]);
-  const [isMerchant, setIsMerchant] = useState(false);
-  const [isLoading,setIsLoading] = useState(false)
-  const {token,role} = useContext(UserContext);
-  const navigate= useNavigate();
+
+const SubscriptionCustomer = () => {
+  const [customerLog, setCustomerLog] = useState([]);
+  const [merchantLog, setMerchantLog] = useState([]);
   const [isSubscription, setIsSubscription] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const dateInputRef = useRef(null);
 
   useEffect(() => {
     if (!token || role !== "Admin") {
-      navigate("auth/login");
+      navigate("/auth/login");
       return;
     }
 
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        const [merchantResponse, customerResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/subscription-payment/merchant-subscription-log`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/subscription-payment/customer-subscription-log`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        const [merchantResponse, customerResponse] =
-          await Promise.all([
-            axios.get(`${BASE_URL}/admin/subscription-payment/merchant-subscription-log`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            axios.get(`${BASE_URL}/admin/subscription-payment/customer-subscription-log`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),  
-          ]);
         if (merchantResponse.status === 200) {
-          setMerchantlog(merchantResponse.data.data);
+          setMerchantLog(merchantResponse.data.data);
         }
         if (customerResponse.status === 200) {
-          setCustomerlog(customerResponse.data.data);
+          setCustomerLog(customerResponse.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        console.error(`Error fetching data: ${err}`);
       } finally {
         setIsLoading(false);
       }
@@ -57,11 +58,10 @@ const Subscriptioncustomer = () => {
   const handleToggle = () => {
     setIsSubscription(!isSubscription);
   };
-  const dateInputRef = useRef(null);
+
   const openDatePicker = () => {
-    console.log("clicked");
     if (dateInputRef.current) {
-      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+      dateInputRef.current.showPicker(); // Open the date picker
     }
   };
 
@@ -71,7 +71,7 @@ const Subscriptioncustomer = () => {
       <div className="pl-[290px] bg-gray-100">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <ArrowBack className="ml-7" />{" "}
+            <ArrowBack className="ml-7" />
             <span className="text-lg font-semibold ml-3">Subscription log</span>
           </div>
           <div className="flex justify-end p-4 gap-7">
@@ -83,10 +83,7 @@ const Subscriptioncustomer = () => {
                 placeholder="Search"
                 className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mr-6"
               />
-              <button
-                type="submit"
-                className="absolute right-0 top-0 mt-2 mr-9"
-              >
+              <button type="submit" className="absolute right-0 top-0 mt-2 mr-9">
                 <SearchOutlined className="text-xl text-gray-500" />
               </button>
             </div>
@@ -94,57 +91,81 @@ const Subscriptioncustomer = () => {
         </div>
 
         <div className="mx-3 mt-5">
-          <div className="flex justify-between items-center gap-3 ml-2 ">
+          <div className="flex justify-between items-center gap-3 ml-2">
             <div>
-              <label
-                htmlFor="Toggle3"
-                className="inline-flex outline-none gap-5 cursor-pointer "
-              >
+              <label htmlFor="Toggle3" className="inline-flex outline-none gap-5 cursor-pointer">
                 <input
                   id="Toggle3"
                   type="checkbox"
-                  className="hidden peer "
+                  className="hidden peer"
                   onChange={handleToggle}
                 />
-
                 <span
-                  className={`px-4 py-2 rounded-lg dark:bg-gray-100 ${
-                    isSubscription
-                      ? "peer-checked:dark:bg-teal-800 text-white"
-                      : "peer-checked:dark:bg-gray-100"
+                  className={`px-4 py-2 rounded-lg ${
+                    isSubscription ? "peer-checked:dark:bg-gray-100 text-white" : "peer-checked:dark:bg-teal-800"
                   }`}
                 >
-                  Customer
+                  Subscription
                 </span>
                 <span
-                  className={`px-4 py-2 rounded-lg dark:bg-teal-800 ${
-                    isSubscription
-                      ? "peer-checked:dark:bg-gray-100"
-                      : "peer-checked:dark:bg-teal-800 text-white"
+                  className={`px-4 py-2 rounded-lg ${
+                    !isSubscription ? "peer-checked:dark:bg-gray-100 text-white" : "peer-checked:dark:bg-teal-800"
                   }`}
                 >
-                  Merchant
+                  Commission
                 </span>
               </label>
             </div>
-            {isSubscription ? <CustomerSub /> : <MerchantSub />}
+            <div className="flex gap-10">
+              {!isSubscription && (
+                <div className="rounded-lg flex items-center">
+                  <select
+                    name="type"
+                    defaultValue=""
+                    className="bg-cyan-100 px-2 py-2 rounded-lg outline-none focus:outline-none"
+                  >
+                    <option hidden value="">MerchantName</option>
+                    <option value="customer">Option1</option>
+                    <option value="agent">Option2</option>
+                    <option value="merchant">Option3</option>
+                  </select>
+                </div>
+              )}
+              <div className="flex items-center">
+                <input
+                  type="date"
+                  ref={dateInputRef}
+                  onClick={openDatePicker}
+                  className="p-2 rounded"
+                />
+              </div>
+              <div className="flex items-center">
+                <FilterAltOutlined className="text-gray-400" />
+              </div>
+              <div className="relative flex justify-end">
+                <input
+                  type="search"
+                  name="search"
+                  placeholder="Search merchant name"
+                  className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none"
+                />
+                <button type="submit" className="absolute right-0 mt-2 mr-4">
+                  <SearchOutlined className="text-xl text-gray-500" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        {/* {isSubscription ? (
+
+        {isSubscription ? (
           <div className="overflow-auto mt-[40px]">
-            <table className="text-start w-full ">
+            <table className="text-start w-full">
               <thead>
                 <tr>
-                  {[
-                    "Customer Name",
-                    "Subscription Plans",
-                    "Total Amount",
-                    "Payment Mode",
-                    "Status",
-                  ].map((header, index) => (
+                  {["Customer Name", "Subscription Plans", "Total Amount", "Payment Mode", "Status"].map((header, index) => (
                     <th
                       key={index}
-                      className="bg-teal-700 text-center text-white py-[15px]  border-r-2 border-[#eee]/50"
+                      className="bg-teal-700 text-center text-white py-[15px] border-r-2 border-[#eee]/50"
                     >
                       {header}
                     </th>
@@ -152,34 +173,24 @@ const Subscriptioncustomer = () => {
                 </tr>
               </thead>
               <tbody>
-                {customerlog.map((customerlog) => (
-                  <tr
-                    key={customerlog.id}
-                    className="align-middle border-b border-gray-300 text-center "
-                  >
-                    <td className="p-3">{customerlog.customerName}</td>
-                    <td>{customerlog.subsciptionPlans}</td>
-                    <td>{customerlog.totalAmount}</td>
-                    <td>{customerlog.paymentMode}</td>
-                    <td className="px-[25px]">{customerlog.status}</td>
+                {customerLog.map((log) => (
+                  <tr key={log.id} className="align-middle border-b border-gray-300 text-center">
+                    <td className="p-3">{log.customerName}</td>
+                    <td>{log.subscriptionPlans}</td>
+                    <td>{log.totalAmount}</td>
+                    <td>{log.paymentMode}</td>
+                    <td className="px-[25px]">{log.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="overflow-auto mt-[40px]  pl-[10px]">
-            <table className="text-start w-full ">
+          <div className="overflow-auto mt-[40px] pl-[10px]">
+            <table className="text-start w-full">
               <thead>
                 <tr>
-                  {[
-                    "Merchant Name",
-                    "Subscription Plans",
-                    "Total Amount",
-                    "Payment Mode",
-                    "Date",
-                    "Status",
-                  ].map((header, index) => (
+                  {["Merchant Name", "Subscription Plans", "Total Amount", "Payment Mode", "Date", "Status"].map((header, index) => (
                     <th
                       key={index}
                       className="bg-teal-700 text-center text-white py-[15px] px-[10px] border-r-2 border-[#eee]/50"
@@ -190,20 +201,16 @@ const Subscriptioncustomer = () => {
                 </tr>
               </thead>
               <tbody>
-                {merchantlog.map((merchantlog) => (
-                  <tr
-                    key={merchantlog.id}
-                    className="align-middle border-b border-gray-300 text-center"
-                  >
-                    <td>{merchantlog.merchantName}</td>
-                    <td>{merchantlog.subsciptionPlans}</td>
-                    <td>{merchantlog.totalAmount}</td>
-                    <td>{merchantlog.paymentMode}</td>
-                    <td>{merchantlog.date}</td>
-
+                {merchantLog.map((log) => (
+                  <tr key={log.id} className="align-middle border-b border-gray-300 text-center">
+                    <td>{log.merchantName}</td>
+                    <td>{log.subscriptionPlans}</td>
+                    <td>{log.totalAmount}</td>
+                    <td>{log.paymentMode}</td>
+                    <td>{log.date}</td>
                     <td className="flex items-center justify-center gap-6 px-[15px] py-4">
-                      {merchantlog.status}
-                      <button className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center ">
+                      {log.status}
+                      <button className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center">
                         Set as paid
                       </button>
                     </td>
@@ -212,10 +219,10 @@ const Subscriptioncustomer = () => {
               </tbody>
             </table>
           </div>
-        )} */}
+        )}
       </div>
     </>
   );
 };
 
-export default Subscriptioncustomer;
+export default SubscriptionCustomer;

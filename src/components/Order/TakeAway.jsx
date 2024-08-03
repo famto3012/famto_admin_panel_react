@@ -254,6 +254,11 @@ const TakeAway = ({ data }) => {
       newCustomer: data.newCustomer,
       deliveryOption: data.deliveryOption,
       deliveryMode: data.deliveryMode,
+      ifScheduled: {
+        startDate: data?.ifScheduled?.startDate,
+        endDate: data?.ifScheduled?.endDate,
+        time: data?.ifScheduled?.time,
+      },
       items: formattedItems,
       instructionToMerchant: takeAwayData.instructionToMerchant,
       merchantId: takeAwayData.merchantId,
@@ -389,7 +394,7 @@ const TakeAway = ({ data }) => {
 
           <div className="flex items-center">
             <label className="w-1/3 px-6">Selected Products</label>
-            <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
+            <div className="relative w-[50%] flex gap-4 overflow-x-auto">
               {takeAwayData.items.map((item, itemIndex) => (
                 <div
                   key={item.productId}

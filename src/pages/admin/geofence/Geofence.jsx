@@ -1,17 +1,15 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
-import { BellOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
-import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { mappls } from "mappls-web-maps";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { Modal } from "antd";
-import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
-import AddGeofenceModal from "../../../components/model/AddGeofenceModel/AddGeofenceModel";
+import { Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Geofence = () => {
@@ -20,48 +18,95 @@ const Geofence = () => {
   const { token } = useContext(UserContext);
   const [geofences, setGeofences] = useState([]);
   const [visibleDeleteModal, setVisibleDeleteModal] = useState({});
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const toast = useToast()
 
   useEffect(() => {
     getAllGeofence();
-    const mapProps = {
-      center: [8.528818999999999, 76.94310683333333],
-      traffic: true,
-      zoom: 12,
-      geolocation: true,
-      clickableIcons: true,
-    };
-
-    const mapplsClassObject = new mappls();
-
-    mapplsClassObject.initialize(
-      "9a632cda78b871b3a6eb69bddc470fef",
-      async () => {
-        if (mapContainerRef.current) {
-          console.log("Initializing map...");
-          const map = await mapplsClassObject.Map({
-            id: "map",
-            properties: mapProps,
-          });
-
-          if (map && typeof map.on === "function") {
-            console.log("Map initialized successfully.");
-            map.on("load", () => {
-              console.log("Map loaded.");
-              setMapObject(map);
-              addGeofencesToMap(map); // Save the map object to state
-            });
-          } else {
-            console.error(
-              "mapObject.on is not a function or mapObject is not defined"
-            );
-          }
-        } else {
-          console.error("Map container not found");
-        }
-      }
-    );
   }, []);
-  
+
+  const mapplsClassObject = new mappls();
+
+  useEffect(() => {
+    if (geofences.length >= 0) {
+      const mapProps = {
+        center: [8.528818999999999, 76.94310683333333],
+        traffic: true,
+        zoom: 12,
+        geolocation: true,
+        clickableIcons: true,
+      };
+
+      console.log("Mappls", mapplsClassObject);
+
+      mapplsClassObject.initialize(
+        "9a632cda78b871b3a6eb69bddc470fef",
+        async () => {
+          if (mapContainerRef.current) {
+            console.log("Initializing map...");
+            const map = await mapplsClassObject.Map({
+              id: "map",
+              properties: mapProps,
+            });
+
+            if (map && typeof map.on === "function") {
+              console.log("Map initialized successfully.");
+              map.on("load", async () => {
+                console.log("Map loaded.");
+                setMapObject(map);
+                setIsMapLoaded(true);
+              });
+            } else {
+              console.error(
+                "mapObject.on is not a function or mapObject is not defined"
+              );
+            }
+          } else {
+            console.error("Map container not found");
+          }
+        }
+      );
+    }
+  }, [geofences]);
+
+  const GeoJsonComponent = ({ map }) => {
+    const geoJsonRef = useRef(null);
+    const geoJSON = {
+      type: "FeatureCollection",
+      features: geofences.map((geofence) => ({
+        type: "Feature",
+        properties: {
+          class_id: geofence.id,
+          name: geofence.name,
+          stroke: geofence.color,
+          "stroke-opacity": 0.4,
+          "stroke-width": 3,
+          fill: geofence.color,
+          "fill-opacity": 0.4,
+        },
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            geofence.coordinates.map((coord) => [coord[0], coord[1]]),
+          ],
+        },
+      })),
+    };
+    console.log("geoJSON", geoJSON)
+
+    useEffect(() => {
+      if (geoJsonRef.current) {
+        mapplsClassObject.removeLayer({ map: map, layer: geoJsonRef.current });
+      }
+      geoJsonRef.current = mapplsClassObject.addGeoJson({
+        map: map,
+        data: geoJSON,
+        overlap: false,
+        fitbounds: true,
+        preserveViewport: false,
+      });
+    }, [map]); // Ensure this only runs when `map` or `geoJSON` change
+  };
 
   const getAllGeofence = async () => {
     try {
@@ -81,32 +126,27 @@ const Geofence = () => {
     }
   };
 
-  const addGeofencesToMap = (map) => {
-    const mapplsClassObject = new mappls();
-    geofences.forEach((geofence) => {
-      const coordinates = geofence.coordinates.map((coord) => [
-        coord[0],
-        coord[1],
-      ]);
-      const polygon = new mapplsClassObject.Polygon({
-        paths: coordinates,
-        strokeColor: geofence.color,
-        strokeWeight: 2,
-        fillColor: geofence.color,
-        fillOpacity: 0.4,
-      });
-      polygon.setMap(map);
-
-      const popup = new mapplsClassObject.Popup({
-        content: `<div>${geofence.name}</div>`,
-        position: coordinates[0],
-      });
-
-      polygon.addListener("click", () => {
-        popup.open(map);
-      });
-    });
-  };
+  const handleDelete = async(id)=>{
+    try{
+      const deleteResponse = await axios.delete(
+        `${BASE_URL}/admin/geofence/delete-geofence/${id}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (deleteResponse.status === 200) {
+        toast({
+          title: "Geofence deleted successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    }catch(err){
+      console.log("Error in deleting geofence: ", err.message);
+    }
+  }
 
   const showModalDeleteTask = (taskId) => {
     setVisibleDeleteModal((prev) => ({ ...prev, [taskId]: true }));
@@ -115,7 +155,6 @@ const Geofence = () => {
   const showModalDeleteCancelTask = (taskId) => {
     setVisibleDeleteModal((prev) => ({ ...prev, [taskId]: false }));
   };
-
 
   return (
     <>
@@ -128,9 +167,9 @@ const Geofence = () => {
           <h1 className="font-bold text-lg">Geofence</h1>
           <Link
             to="/add-geofence"
-            className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 " 
+            className="bg-teal-700 text-white rounded-md flex items-center px-9 py-2 "
           >
-            <PlusOutlined className="mr-2"/> Add Geofence
+            <PlusOutlined className="mr-2" /> Add Geofence
           </Link>
         </div>
         <p className=" text-gray-500  mx-10 mt-5">
@@ -165,10 +204,18 @@ const Geofence = () => {
                         <MoreHorizOutlinedIcon />
                       </MenuButton>
                       <MenuList>
-                        <MenuItem className="text-black" to="">
-                          Edit
+                        <MenuItem>
+                          <Link
+                            className="text-black "
+                            to={`/edit-geofence?id=${data._id}`}
+                          >
+                            Edit
+                          </Link>
                         </MenuItem>
-                        <MenuItem className="text-black" onClick={() => showModalDeleteTask(data._id)}>
+                        <MenuItem
+                          className="text-black"
+                          onClick={() => showModalDeleteTask(data._id)}
+                        >
                           Delete
                         </MenuItem>
                       </MenuList>
@@ -185,23 +232,24 @@ const Geofence = () => {
                   footer={null}
                 >
                   <p className="font-semibold text-[14px] mb-5">
-                Are you sure you want to delete?
-              </p>
-              <div className="flex justify-end">
-                <button
-                  className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                 // onClick={showModalDeleteCancel1}
-                >
-                  Cancel
-                </button>
-                <button className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700" 
-                //onClick={()=>{handleDelete(alertItem._id)
-                //  showModalCancelTask(alertItem._id)
-                //}}
-                >
-                  Delete
-                </button>
-              </div>
+                    Are you sure you want to delete?
+                  </p>
+                  <div className="flex justify-end">
+                    <button
+                      className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                      // onClick={showModalDeleteCancel1}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                      onClick={()=>{handleDelete(data._id)
+                        showModalDeleteCancelTask(data._id)
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </Modal>
               </Card>
             ))}
@@ -211,7 +259,11 @@ const Geofence = () => {
               id="map"
               ref={mapContainerRef}
               style={{ width: "99%", height: "510px", display: "inline-block" }}
-            ></div>
+            >
+              {isMapLoaded && geofences.length >= 0 && (
+                <GeoJsonComponent map={mapObject} />
+              )}
+            </div>
           </div>
         </div>
       </div>

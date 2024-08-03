@@ -202,7 +202,6 @@ const PromoCode = () => {
       }
     });
   };
-  
 
   return (
     <div>

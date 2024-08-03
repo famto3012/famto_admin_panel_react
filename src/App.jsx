@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
 import CustomerSub from "./components/model/SubscriptionModels/CustomerSub";
@@ -73,6 +73,8 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<GIFLoader />}>
           <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+
             {/* Auth Routes */}
             <Route path="/auth">
               <Route path="login" element={<LoginPage />} />
@@ -90,8 +92,10 @@ function App() {
             />
             <Route path="/add-manager" element={<AddManager />} />
             {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
-            <Route path="/update-manager/:managerId" element={<UpdateManager />} />
-
+            <Route
+              path="/update-manager/:managerId"
+              element={<UpdateManager />}
+            />
 
             <Route path="/settings" element={<Settings />} />
 
@@ -126,20 +130,25 @@ function App() {
             <Route path="/create-order" element={<CreateOrder />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/commission" element={<Commission />} />
-            <Route path="/home" element={<HomePage />} />
+            <Route path="/home" index element={<HomePage />} />
             <Route path="/all-agents" element={<DeliveryAgent />} />
             <Route path="/agent-details/:agentId" element={<AgentDetails />} />
 
             <Route path="/products" element={<Products />} />
             <Route path="/geofence" element={<Geofence />} />
-            <Route path="/add-geofence" element={<AddGeofence />} />
+            <Route
+              path="/add-geofence"
+              element={<AddGeofence heading="Add Geofence" />}
+            />
+            <Route
+              path="/edit-geofence"
+              element={<AddGeofence heading="Edit Geofence" />}
+            />
             <Route
               path="/delivery-management"
               element={<DeliveryManagement />}
             />
-            <Route path="/customer-sub" element={<CustomerSub/>} />
-
-            <Route path="/agent-payout" element={<AgentPayout/>} />
+            <Route path="/agent-payout" element={<AgentPayout />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

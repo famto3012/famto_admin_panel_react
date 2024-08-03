@@ -137,7 +137,7 @@ const NotificationSettings = () => {
         );
         setNotification(
           notification.map((n) =>
-            n._id === notificationId ? { ...n, status: updatedStatus } :n
+            n._id === notificationId ? { ...n, status: updatedStatus } : n
           )
         );
       }
@@ -226,9 +226,10 @@ const NotificationSettings = () => {
                   <td>
                     <div className="flex justify-center items-center gap-3">
                       <div>
-                        <Switch 
-                         checked={notification.status}
-                         onChange={() => handleToggle(notification._id)}/>
+                        <Switch
+                          checked={notification.status}
+                          onChange={() => handleToggle(notification._id)}
+                        />
                       </div>
                       <button onClick={() => showModalEdit(notification._id)}>
                         <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />

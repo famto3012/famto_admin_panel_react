@@ -544,7 +544,7 @@ const Pricing = () => {
         );
         setCustomerPricing(
           customerpricing.map((c) =>
-            c._id === customerpricingId ? { ...c, status: updatedStatus } :c
+            c._id === customerpricingId ? { ...c, status: updatedStatus } : c
           )
         );
       }
@@ -753,9 +753,10 @@ const Pricing = () => {
                   <td className="py-3 ">
                     <div className="flex items-center gap-3 justify-end mx-4">
                       <div>
-                        <Switch 
-                        checked={agentsurge.status}
-                        onChange={() => handleToggleAs(agentsurge._id)} />
+                        <Switch
+                          checked={agentsurge.status}
+                          onChange={() => handleToggleAs(agentsurge._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button onClick={() => showModalEditAs(agentsurge._id)}>
@@ -857,9 +858,10 @@ const Pricing = () => {
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
                       <div>
-                        <Switch 
-                        checked={merchantpricing.status} 
-                        onChange={() => handleToggleMr(merchantpricing._id)}/>
+                        <Switch
+                          checked={merchantpricing.status}
+                          onChange={() => handleToggleMr(merchantpricing._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button
@@ -955,9 +957,9 @@ const Pricing = () => {
                     <div className="flex items-center gap-3 justify-end mx-4">
                       <div>
                         <Switch
-                         checked={merchantsurge.status}
-                         onChange={() => handleToggleMs(merchantsurge._id)}
-                          />
+                          checked={merchantsurge.status}
+                          onChange={() => handleToggleMs(merchantsurge._id)}
+                        />
                       </div>
                       <div className="flex item-center">
                         <button
@@ -1066,8 +1068,10 @@ const Pricing = () => {
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
                       <div>
-                        <Switch checked={customerpricing.status}
-                        onChange={() => handleToggleCr(customerpricing._id)} />
+                        <Switch
+                          checked={customerpricing.status}
+                          onChange={() => handleToggleCr(customerpricing._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button
@@ -1163,8 +1167,10 @@ const Pricing = () => {
                   <td className="py-3 ">
                     <div className="flex items-center gap-3 justify-end mx-4">
                       <div>
-                        <Switch checked={customersurge.status}
-                        onChange={() => handleToggleCs(customersurge._id)} />
+                        <Switch
+                          checked={customersurge.status}
+                          onChange={() => handleToggleCs(customersurge._id)}
+                        />
                       </div>
                       <div className="flex items-center">
                         <button

@@ -33,7 +33,7 @@ const DeleteCustomerPricingModal = ({
           status: "success",
           duration: 1000,
           isClosable: true,
-      });
+        });
       }
     } catch (error) {
       console.error("Error deleting surge:", error);
@@ -43,7 +43,7 @@ const DeleteCustomerPricingModal = ({
         status: "error",
         duration: 1000,
         isClosable: true,
-    });
+      });
     } finally {
       setConfirmLoading(false);
     }
@@ -78,5 +78,4 @@ const DeleteCustomerPricingModal = ({
   );
 };
 
-export default  DeleteCustomerPricingModal
-    
+export default DeleteCustomerPricingModal;

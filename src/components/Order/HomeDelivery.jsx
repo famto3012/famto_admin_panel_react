@@ -14,6 +14,7 @@ const HomeDelivery = ({ data }) => {
     customerId: data.customerId,
     deliveryMode: data.deliveryMode,
     deliveryOption: data.deliveryOption,
+    newCustomer: data.newCustomer,
     merchantId: "",
     customerAddressType: "",
     customerAddressOtherAddressId: "",
@@ -45,10 +46,8 @@ const HomeDelivery = ({ data }) => {
   const [isFormVisible, setFormVisible] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-    }
-  }, [token]);
+    setAllCustomerAddress(data.customerAddress);
+  }, [data]);
 
   const handleInputChange = (e) => {
     setHomeDeliveryData({
@@ -177,11 +176,18 @@ const HomeDelivery = ({ data }) => {
     setMerchantName(merchant.merchantName);
     setMerchantResults([]);
     setAllCustomerAddress(data?.customerAddress);
+    console.log(data.newCustomer);
   };
 
   const handleSelectAddressType = (type) => {
-    setSelectedAddress(type);
-    setHomeDeliveryData({ ...homeDeliveryData, customerAddressType: type });
+    // Check if the type is already selected
+    const newSelectedAddress = selectedAddress === type ? "" : type;
+
+    setSelectedAddress(newSelectedAddress);
+    setHomeDeliveryData({
+      ...homeDeliveryData,
+      customerAddressType: newSelectedAddress,
+    });
   };
 
   const handleSelectOtherAddress = (id) => {
@@ -240,7 +246,6 @@ const HomeDelivery = ({ data }) => {
     e.preventDefault();
     try {
       setIsInvoiceLoading(true);
-      console.log(homeDeliveryData);
 
       // Format the items to include the selected variantId
       const formattedItems = homeDeliveryData?.items?.map((item) => ({
@@ -252,8 +257,17 @@ const HomeDelivery = ({ data }) => {
 
       const invoiceData = {
         ...homeDeliveryData,
+        ifScheduled: {
+          startDate: data?.ifScheduled?.startDate,
+          endDate: data?.ifScheduled?.endDate,
+          time: data?.ifScheduled?.time,
+        },
+        customerId: data.customerId,
+        newCustomer: data.newCustomer,
         items: formattedItems,
       };
+
+      console.log("invoiceData", invoiceData);
 
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
@@ -292,9 +306,47 @@ const HomeDelivery = ({ data }) => {
     }
   };
 
-  const createOrderHandler = (e) => {
+  const createOrderHandler = async (e) => {
     e.preventDefault();
-    console.log(homeDeliveryData);
+    try {
+      setIsOrderLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order`,
+        {
+          paymentMode,
+          cartId: cartData.cartId,
+          deliveryMode: cartData.deliveryMode,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        toast({
+          title: "Success",
+          description: response.data.message,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setIsOrderLoading(false);
+    }
   };
 
   return (
@@ -466,14 +518,13 @@ const HomeDelivery = ({ data }) => {
             />
           </div>
 
-          <div className="flex items-start ">
-            <label className="w-1/3 px-6" htmlFor="address">
-              Select Delivery Address
-            </label>
+          {allCustomerAddress?.length > 0 && (
+            <div className="flex items-start ">
+              <label className="w-1/3 px-6" htmlFor="address">
+                Select Delivery Address
+              </label>
 
-            {allCustomerAddress?.length === 0 && <p>No address found</p>}
-
-            {allCustomerAddress?.length > 0 && (
+              {/* {allCustomerAddress?.length > 0 && ( */}
               <div className="">
                 {allCustomerAddress?.map((address, index) => (
                   <input
@@ -517,8 +568,9 @@ const HomeDelivery = ({ data }) => {
                   </div>
                 )}
               </div>
-            )}
-          </div>
+              {/* )} */}
+            </div>
+          )}
 
           {selectedAddress === "home" && (
             <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
@@ -589,10 +641,7 @@ const HomeDelivery = ({ data }) => {
               </button>
             </div>
             {isFormVisible && (
-              <NewAddress
-                toggleNewAddressForm={toggleNewAddressForm}
-                onAddCustomerAddress={handleAddCustomerAddress}
-              />
+              <NewAddress onAddCustomerAddress={handleAddCustomerAddress} />
             )}
           </div>
 
@@ -750,7 +799,6 @@ const HomeDelivery = ({ data }) => {
             </button>
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md"
-              type="submit"
               onClick={createOrderHandler}
             >
               {isOrderLoading

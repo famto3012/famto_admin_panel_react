@@ -11,7 +11,7 @@ const AgentPayout = () => {
   const [payment, setPayment] = useState("");
   const [agents, setAgents] = useState("");
   const [geofence, setGeofence] = useState("");
-  const [isModalVisible,setIsModalVisible] =useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const showModalApprove = () => {
     setIsModalVisible(true);
   };
@@ -41,8 +41,6 @@ const AgentPayout = () => {
     };
     fetchData();
   }, []);
-
-
 
   return (
     <>
@@ -167,38 +165,27 @@ const AgentPayout = () => {
                   <td>{payout.cih}</td>
                   <td>{payout.totalEarnings}</td>
                   <td>
-                    <button
-                    onClick={() => showModalApprove()}>
-                    <CheckCircleOutlined
-                     className="text-3xl cursor-pointer text-green-500" 
-                     />
-                     <Modal
-                      onCancel={handleCancel}
-                      footer={null}
-                      open={isModalVisible}
-                      centered
-                    >
-                      <p className="font-semibold text-[18px] mb-5">
-
+                    <button onClick={() => showModalApprove()}>
+                      <CheckCircleOutlined className="text-3xl cursor-pointer text-green-500" />
+                      <Modal
+                        onCancel={handleCancel}
+                        footer={null}
+                        open={isModalVisible}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
                           Are you sure you want to Confirm?
-                    
-                      </p>
-                      <div className="flex justify-end">
-                        <button
-                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                          
-                        >
-                          Cancel
-                        </button>
-                        <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
-                          
-                
-                          Confirm
-                        </button>
-                      </div>
-
-                     </Modal>
-                     </button>
+                        </p>
+                        <div className="flex justify-end">
+                          <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold">
+                            Cancel
+                          </button>
+                          <button className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white">
+                            Confirm
+                          </button>
+                        </div>
+                      </Modal>
+                    </button>
                   </td>
                   <td></td>
                 </tr>

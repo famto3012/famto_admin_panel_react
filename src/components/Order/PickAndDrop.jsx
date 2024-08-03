@@ -1,153 +1,242 @@
+import { useContext, useEffect, useState } from "react";
+
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+
+import NewAddress from "./NewAddress";
+import { UserContext } from "../../context/UserContext";
+
 import { PlusOutlined } from "@ant-design/icons";
 import { AddOutlined } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { RiDeleteBinLine } from "react-icons/ri";
-import NewAddress from "./NewAddress";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
-const PickAndDrop = () => {
-  const [formData, setFormData] = useState({
-    pickdata: {
-      firstName: "",
-      emailId: "",
-      phone: "",
-      orderId: "",
-      orderTime: "",
-      instructions: "",
-      tips: "",
-      deliveryCharges: "",
-      discount: "",
-      paymentType: "",
-      subtotal: "",
-      items: [],
-      address: [],
-    },
-    dropdata: {
-      firstName: "",
-      emailId: "",
-      phone: "",
-      orderId: "",
-      orderTime: "",
-      instructions: "",
-      tips: "",
-      deliveryCharges: "",
-      discount: "",
-      paymentType: "",
-      subtotal: "",
-      items: [],
-      address: [],
-    },
+import { itemTypes } from "../../utils/DefaultData";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
+const PickAndDrop = ({ data }) => {
+  const [pickAndDropData, setPickAndDropData] = useState({
+    items: [],
+    pickUpAddressType: "",
+    pickUpAddressOtherAddressId: "",
+    deliveryAddressType: "",
+    deliveryAddressOtherAddressId: "",
+    newPickupAddress: {},
+    newDeliveryAddress: {},
+    vehicleType: "",
+    instructionInPickup: "",
+    instructionInDelivery: "",
+    addedTip: 0,
   });
+
+  const [allCustomerAddress, setAllCustomerAddress] = useState([]);
+
+  const [cartData, setCartData] = useState({});
+
+  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
+  const [isOrderLoading, setIsOrderLoading] = useState(false);
+
+  const [paymentMode, setPaymentMode] = useState("");
+
+  const [selectedVehicle, setSelectedVehicle] = useState("");
+
+  const [selectedPickUpAddress, setSelectedPickUpAddress] = useState("");
+  const [selectedPickOtherAddressId, setSelectedPickOtherAddressId] =
+    useState("");
+
+  const [selectedDeliveryAddress, setSelectedDeliveryAddress] = useState("");
+  const [selectedDeliveryOtherAddressId, setSelectedDeliveryOtherAddressId] =
+    useState("");
+
+  const [isNewPickupAddressVisible, setIsNewPickupAddressVisible] =
+    useState(false);
+  const [isNewDeliveryAddressVisible, setIsNewDeliveryAddressVisible] =
+    useState(false);
+
+  const { token } = useContext(UserContext);
+  const toast = useToast();
+
+  useEffect(() => {
+    setAllCustomerAddress(data.customerAddress);
+  }, [data]);
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    const [section, key] = name.split(".");
-    setFormData((prevData) => ({
-      ...prevData,
-      [section]: {
-        ...prevData[section],
-        [key]: value,
-      },
-    }));
+    setPickAndDropData({
+      ...pickAndDropData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleItemChange = (section, index, e) => {
+  const handleItemChange = (index, e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => {
-      const items = [...prevData[section].items];
+    setPickAndDropData((prevData) => {
+      const items = [...prevData.items];
       items[index] = { ...items[index], [name]: value };
       return {
         ...prevData,
-        [section]: {
-          ...prevData[section],
-          items,
-        },
+        items,
       };
     });
   };
 
-  const handleAddItem = (section) => {
-    setFormData((prevData) => ({
+  const handleAddItem = () => {
+    setPickAndDropData((prevData) => ({
       ...prevData,
-      [section]: {
-        ...prevData[section],
-        items: [
-          ...prevData[section].items,
-          { type: "", length: "", width: "", height: "", weight: "" },
-        ],
-      },
+      items: [
+        ...prevData.items,
+        { type: "", length: "", width: "", height: "", weight: "" },
+      ],
     }));
   };
 
-  const handleRemoveItem = (section, index) => {
-    setFormData((prevData) => {
-      const items = [...prevData[section].items];
+  const handleRemoveItem = (index) => {
+    setPickAndDropData((prevData) => {
+      const items = [...prevData.items];
       items.splice(index, 1);
       return {
         ...prevData,
-        [section]: {
-          ...prevData[section],
-          items,
-        },
+        items,
       };
     });
   };
 
-  const formSubmit = (e) => {
+  const toggleNewPickupAddress = () => {
+    setIsNewPickupAddressVisible(!isNewPickupAddressVisible);
+  };
+
+  const toggleNewDeliveryAddress = () => {
+    setIsNewDeliveryAddressVisible(!isNewDeliveryAddressVisible);
+  };
+
+  const handlePickUpAddress = () => {};
+  const handleDeliveryAddress = () => {};
+
+  const createInvoice = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    try {
+      setIsInvoiceLoading(true);
+      const invoiceData = {
+        customerId: data.customerId,
+        newCustomer: data.newCustomer,
+        deliveryOption: data.deliveryOption,
+        deliveryMode: data.deliveryMode,
+        ifScheduled: {
+          startDate: data?.ifScheduled?.startDate,
+          endDate: data?.ifScheduled?.endDate,
+          time: data?.ifScheduled?.time,
+        },
+        items: pickAndDropData.items,
+        ...pickAndDropData,
+      };
+
+      console.log(invoiceData);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order-invoice`,
+        invoiceData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const { data } = response.data;
+        setCartData(data);
+        toast({
+          title: "Invoice",
+          description: "Invoice created successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating invoice: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsInvoiceLoading(false);
+    }
   };
 
-  const [order, setOrder] = useState([]);
-  useEffect(() => {
-    const fetchOrder = async () => {
-      const dummyData = [
-        {
-          item: "Price",
-          amount: "₹257",
-        },
-        {
-          item: "Delivery Charges",
-          amount: "₹257",
-        },
-        {
-          item: "Added Tip",
-          amount: "₹257",
-        },
-        {
-          item: "Discount",
-          amount: "₹257",
-        },
-        {
-          item: "Sub Total",
-          amount: "₹257",
-        },
-        {
-          item: "GST(inclusive all taxes)",
-          amount: "₹257",
-        },
-        // Add more customers as needed
-      ];
+  const createOrder = async (e) => {
+    e.preventDefault();
+    try {
+      setIsOrderLoading(true);
 
-      setOrder(dummyData);
-    };
+      const response = await axios.post(
+        `${BASE_URL}/orders/admin/create-order`,
+        {
+          paymentMode,
+          cartId: cartData.cartId,
+          deliveryMode: cartData.deliveryMode,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    fetchOrder();
-  }, []);
-
-  const [selectedAddress, setSelectedAddress] = useState("");
-
-  const handleAddressChange = (address) => {
-    setSelectedAddress(address);
+      if (response.status === 201) {
+        toast({
+          title: "Success",
+          description: response.data.message,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in creating invoice",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setIsOrderLoading(false);
+    }
   };
-  const [isFormVisible1, setFormVisible1] = useState(false);
 
-  const toggleFormVisibility1 = () => {
-    setFormVisible1(!isFormVisible1);
+  const handleSelectPickUpAddress = (type) => {
+    // Check if the type is already selected
+    const newSelectedAddress = selectedPickUpAddress === type ? "" : type;
+
+    setSelectedPickUpAddress(newSelectedAddress);
+    setPickAndDropData({
+      ...pickAndDropData,
+      pickUpAddressType: newSelectedAddress,
+    });
   };
-  const [isFormVisible2, setFormVisible2] = useState(false);
 
-  const toggleFormVisibility2 = () => {
-    setFormVisible2(!isFormVisible2);
+  const handleSelectDeliveryAddress = (type) => {
+    // Check if the type is already selected
+    const newSelectedAddress = selectedDeliveryAddress === type ? "" : type;
+
+    setSelectedDeliveryAddress(newSelectedAddress);
+    setPickAndDropData({
+      ...pickAndDropData,
+      deliveryAddressType: newSelectedAddress,
+    });
+  };
+
+  const handleSelectVehicle = (type) => {
+    setSelectedVehicle(type);
+    setPickAndDropData({ ...pickAndDropData, vehicleType: type });
   };
 
   return (
@@ -156,138 +245,181 @@ const PickAndDrop = () => {
         Pick Up
       </h1>
 
-      <form onSubmit={formSubmit}>
+      <form>
         <div className="flex flex-col gap-6">
-          <h4 className="px-6 mt-10 font-semibold">Pickup Location Details</h4>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.firstName">
-              First Name *
-            </label>
-            <input
-              type="text"
-              name="pickdata.firstName"
-              id="pickdata.firstName"
-              placeholder="First Name"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.firstName}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.emailId">
-              Email ID *
-            </label>
-            <input
-              type="email"
-              name="pickdata.emailId"
-              id="pickdata.emailId"
-              placeholder="Email Id"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.emailId}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.phone">
-              Phone Number *
-            </label>
-            <input
-              type="tel"
-              name="pickdata.phone"
-              id="pickdata.phone"
-              placeholder="Phone Number"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.phone}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.id">
-              Order ID *
-            </label>
-            <input
-              type="id"
-              name="pickdata.id"
-              id="pickdata.id"
-              placeholder="Order ID"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.id}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center ">
+          <div className="flex items-center mt-[30px]">
             <label className="w-1/3 px-6" htmlFor="address">
-              Select Delivery Address
+              Select Pickup Address
             </label>
-            {["Home", "Office", "Others"].map((address) => (
-              <button
-                key={address}
-                type="button"
-                className={`py-2 px-4 rounded border ${
-                  selectedAddress === address ? "bg-gray-300" : "bg-white"
-                }`}
-                onClick={() => handleAddressChange(address)}
-              >
-                {address}
-              </button>
-            ))}
+
+            {allCustomerAddress?.length === 0 && <p>No address found</p>}
+
+            {allCustomerAddress?.length > 0 && (
+              <div className="">
+                {allCustomerAddress?.map((address, index) => (
+                  <input
+                    key={index}
+                    type="button"
+                    className={`py-2 px-4 me-2 rounded border capitalize cursor-pointer ${
+                      selectedPickUpAddress === address.type
+                        ? "bg-gray-300"
+                        : "bg-white"
+                    }`}
+                    value={address.type}
+                    onClick={() => handleSelectPickUpAddress(address.type)}
+                  />
+                ))}
+
+                {selectedPickUpAddress === "other" && (
+                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                    {data?.customerAddress
+                      .find((addr) => addr.type === "other")
+                      ?.otherAddress?.map((otherAddr) => (
+                        <div
+                          key={otherAddr.id}
+                          className="flex items-center gap-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
+                        >
+                          <input
+                            type="radio"
+                            name="otherAddress"
+                            value={otherAddr.id}
+                            checked={
+                              selectedPickOtherAddressId === otherAddr.id
+                            }
+                            onChange={() => {
+                              setSelectedPickOtherAddressId(otherAddr.id);
+                              setPickAndDropData({
+                                ...pickAndDropData,
+                                selectedPickOtherAddressId: otherAddr.id,
+                              });
+                            }}
+                          />
+                          <span className="flex flex-col gap-1 ms-2 ">
+                            <span>{otherAddr.flat}</span>
+                            <span>{otherAddr.area}</span>
+                            <span>{otherAddr.landmark}</span>
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+          {selectedPickUpAddress === "home" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "home")
+                ?.homeAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedPickUpAddress === "work" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "work")
+                ?.workAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div>
-            <div className=" flex">
+            <div className="flex">
               <label className="w-1/3"></label>
               <button
                 type="button"
                 className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                onClick={toggleFormVisibility1}
+                onClick={toggleNewPickupAddress}
               >
                 <span>Add Address</span>
                 <PlusOutlined />
               </button>
             </div>
-            {isFormVisible1 && <NewAddress />}
+            {isNewPickupAddressVisible && (
+              <NewAddress onAddCustomerAddress={handlePickUpAddress} />
+            )}
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.orderTime">
+            <label className="w-1/3 px-6" htmlFor="orderTime">
               Order Time
             </label>
             <input
-              type="time"
-              name="pickdata.orderTime"
-              id="pickdata.orderTime"
-              placeholder="In scheduled order,it will filled automatically as scheduled"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.orderTime}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.instructions">
-              Pick Instructions(if any)
-            </label>
-            <input
               type="text"
-              name="pickdata.instructions"
-              id="pickdata.instructions"
-              placeholder="Instructions"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.instructions}
+              name="orderTime"
+              placeholder="In scheduled order, it will be filled automatically as scheduled"
+              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
+              value={data?.ifScheduled?.time}
               onChange={handleInputChange}
             />
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3 px-6"> Task Specifications</label>
+            <label className="w-1/3 px-6" htmlFor="pickData.instructions">
+              Pick Instructions (if any)
+            </label>
+            <input
+              type="text"
+              name="instructionInPickup"
+              placeholder="Instructions"
+              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
+              value={pickAndDropData.instructionInPickup}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="flex items-center">
+            <label className="w-1/3 px-6">Task Specifications</label>
             <button
               type="button"
               className="bg-zinc-200 w-1/2 rounded-md p-2"
-              onClick={() => handleAddItem("pickdata")}
+              onClick={() => handleAddItem("pickData")}
             >
               <AddOutlined /> Add Item
             </button>
           </div>
+
           <div>
-            {formData.pickdata.items.map((item, index) => (
+            {pickAndDropData?.items?.map((item, index) => (
               <div
                 key={index}
                 className="bg-gray-100 mx-6 p-10 rounded-lg mb-4"
@@ -295,14 +427,19 @@ const PickAndDrop = () => {
                 <div className="flex">
                   <label className="w-1/3">Item type</label>
                   <select
-                    name="type"
-                    value={item.type}
-                    onChange={(e) => handleItemChange("pickdata", index, e)}
-                    className="w-1/2 p-3"
+                    name="itemName"
+                    value={item.itemName}
+                    onChange={(e) => handleItemChange("pickData", index, e)}
+                    className="w-1/2 p-3 outline-none focus:outline-none"
                   >
-                    <option value="">Select</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
+                    <option defaultValue={"Select item type"} hidden>
+                      Select item type
+                    </option>
+                    {itemTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex mt-5">
@@ -313,7 +450,7 @@ const PickAndDrop = () => {
                         type="text"
                         name="length"
                         value={item.length}
-                        onChange={(e) => handleItemChange("pickdata", index, e)}
+                        onChange={(e) => handleItemChange("pickData", index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
                         placeholder="Length"
                       />
@@ -321,7 +458,7 @@ const PickAndDrop = () => {
                         type="text"
                         name="width"
                         value={item.width}
-                        onChange={(e) => handleItemChange("pickdata", index, e)}
+                        onChange={(e) => handleItemChange("pickData", index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
                         placeholder="Width"
                       />
@@ -329,7 +466,7 @@ const PickAndDrop = () => {
                         type="text"
                         name="height"
                         value={item.height}
-                        onChange={(e) => handleItemChange("pickdata", index, e)}
+                        onChange={(e) => handleItemChange("pickData", index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
                         placeholder="Height"
                       />
@@ -339,7 +476,7 @@ const PickAndDrop = () => {
                         type="text"
                         name="weight"
                         value={item.weight}
-                        onChange={(e) => handleItemChange("pickdata", index, e)}
+                        onChange={(e) => handleItemChange("pickData", index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-full"
                         placeholder="Weight (in kg)"
                       />
@@ -350,460 +487,344 @@ const PickAndDrop = () => {
                   <button
                     type="button"
                     className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                    onClick={() => handleAddItem("pickdata")}
+                    onClick={() => handleAddItem("pickData")}
                   >
                     <AddOutlined /> Add Item
                   </button>
                   <button
                     type="button"
                     className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                    onClick={() => handleRemoveItem("pickdata", index)}
+                    onClick={() => handleRemoveItem("pickData", index)}
                   >
-                    <RiDeleteBinLine className="text-red-500 text-[18px]" />{" "}
-                    Delete Item
+                    <RiDeleteBinLine /> Remove Item
                   </button>
                 </div>
               </div>
             ))}
           </div>
-          <h4 className="px-6 mt-5 font-semibold">Pricing Charges</h4>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.tips">
-              Tips
-            </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md  outline-none focus:outline-none"
-              type="text"
-              placeholder="Tips"
-              id="pickdata.tips"
-              name="pickdata.tips"
-              value={formData.pickdata.tips}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.deliveryCharges">
-              Delivery Charges
-            </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              type="text"
-              placeholder="Delivery Charges"
-              id="pickdata.deliveryCharges"
-              name="pickdata.deliveryCharges"
-              value={formData.pickdata.deliveryCharges}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.discount">
-              Discount *
-            </label>
-            <input
-              type="text"
-              name="pickdata.discount"
-              id="pickdata.discount"
-              placeholder="Discount"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.pickdata.discount}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.paymentType">
-              Payment Type
-            </label>
-            <select
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              type="text"
-              placeholder="Payment Type"
-              id="pickdata.paymentType"
-              name="pickdata.paymentType"
-              value={formData.pickdata.paymentType}
-              onChange={handleInputChange}
-            >
-              <option hidden value=""></option>
-              <option value="option1" className="bg-white">
-                option1
-              </option>
-              <option value="option2" className="bg-white">
-                option2
-              </option>
-              <option value="option3" className="bg-white">
-                option3
-              </option>
-            </select>
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="pickdata.subtotal">
-              Sub Total
-            </label>
-            <input
-              type="number"
-              name="pickdata.subtotal"
-              id="pickdata.subtotal"
-              placeholder="Sub Total"
-              className="h-10 px-5  text-sm border-2 w-1/2 outline-none rounded-md focus:outline-none relative"
-              value={formData.pickdata.subtotal}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="px-6">
-            <button className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[85%] ">
-              <PlusOutlined className="mr-3" /> Add More Pick
-            </button>
-          </div>
         </div>
 
-        <h1 className="bg-teal-800 text-white px-6 py-4 text-xl font-semibold mt-8">
-          Drop
+        <h1 className="bg-teal-800 text-white px-6 py-4 text-xl font-semibold mt-[40px]">
+          Drop Off
         </h1>
 
         <div className="flex flex-col gap-6">
-          <h4 className="px-6 mt-10 font-semibold">
-            Delivery Location Details
-          </h4>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.firstName">
-              First Name *
-            </label>
-            <input
-              type="text"
-              name="dropdata.firstName"
-              id="dropdatafirstName"
-              placeholder="First Name"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.firstName}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.emailId">
-              Email ID *
-            </label>
-            <input
-              type="email"
-              name="dropdata.emailId"
-              id="dropdata.emailId"
-              placeholder="Email Id"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.emailId}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.phone">
-              Phone Number *
-            </label>
-            <input
-              type="tel"
-              name="dropdata.phone"
-              id="dropdata.phone"
-              placeholder="Phone Number"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.phone}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.id">
-              Order ID *
-            </label>
-            <input
-              type="id"
-              name="dropdata.id"
-              id="dropdata.id"
-              placeholder="Order ID"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.id}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center ">
+          <div className="flex items-center mt-[30px]">
             <label className="w-1/3 px-6" htmlFor="address">
-              Select Delivery Address
+              Select Drop Address
             </label>
-            {["Home", "Office", "Others"].map((address) => (
-              <button
-                key={address}
-                type="button"
-                className={`py-2 px-4 rounded border ${
-                  selectedAddress === address ? "bg-gray-300" : "bg-white"
-                }`}
-                onClick={() => handleAddressChange(address)}
-              >
-                {address}
-              </button>
-            ))}
+            {allCustomerAddress?.length === 0 && <p>No address found</p>}
+
+            {allCustomerAddress?.length > 0 && (
+              <div className="">
+                {allCustomerAddress?.map((address, index) => (
+                  <input
+                    key={index}
+                    type="button"
+                    className={`py-2 px-4 me-2 rounded border capitalize ${
+                      selectedDeliveryAddress === address.type
+                        ? "bg-gray-300"
+                        : "bg-white"
+                    }`}
+                    value={address.type}
+                    onClick={() => handleSelectDeliveryAddress(address.type)}
+                  />
+                ))}
+
+                {selectedDeliveryAddress === "other" && (
+                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                    {data?.customerAddress
+                      .find((addr) => addr.type === "other")
+                      ?.otherAddress?.map((otherAddr) => (
+                        <div
+                          key={otherAddr.id}
+                          className="flex items-center gap-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
+                        >
+                          <input
+                            type="radio"
+                            name="otherAddress"
+                            value={otherAddr.id}
+                            checked={
+                              selectedDeliveryOtherAddressId === otherAddr.id
+                            }
+                            onChange={() => {
+                              setSelectedDeliveryOtherAddressId(otherAddr.id);
+                              setPickAndDropData({
+                                ...pickAndDropData,
+                                deliveryAddressOtherAddressId: otherAddr.id,
+                              });
+                            }}
+                          />
+                          <span className="flex flex-col gap-1 ms-2 ">
+                            <span>{otherAddr.flat}</span>
+                            <span>{otherAddr.area}</span>
+                            <span>{otherAddr.landmark}</span>
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          {selectedDeliveryAddress === "home" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "home")
+                ?.homeAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "home")
+                        .homeAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedDeliveryAddress === "work" && (
+            <div className="px-6 py-2 border-2 rounded-md ms-[33%] bg-gray-100 w-fit">
+              {data?.customerAddress.find((addr) => addr.type === "work")
+                ?.workAddress && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.flat
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.area
+                    }
+                  </span>
+                  <span>
+                    {
+                      data.customerAddress.find((addr) => addr.type === "work")
+                        .workAddress.landmark
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div>
-            <div className=" flex">
+            <div className="flex">
               <label className="w-1/3"></label>
               <button
                 type="button"
                 className="w-1/2 bg-gray-200 font-semibold py-2 rounded flex justify-between items-center px-4 border border-gray-300"
-                onClick={toggleFormVisibility2}
+                onClick={toggleNewDeliveryAddress}
               >
                 <span>Add Address</span>
                 <PlusOutlined />
               </button>
             </div>
-            {isFormVisible2 && <NewAddress />}
+            {isNewDeliveryAddressVisible && (
+              <NewAddress onAddCustomerAddress={handleDeliveryAddress} />
+            )}
           </div>
+
           <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.orderTime">
-              Order Time
-            </label>
-            <input
-              type="time"
-              name="dropdata.orderTime"
-              id="dropdata.orderTime"
-              placeholder="In scheduled order,it will filled automatically as scheduled"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.orderTime}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.instructions">
-              Pick Instructions(if any)
+            <label className="w-1/3 px-6" htmlFor="deliveryTime">
+              Delivery Time
             </label>
             <input
               type="text"
-              name="dropdata.instructions"
-              id="dropdata.instructions"
+              name="deliveryime"
+              placeholder="In scheduled order, it will be filled automatically as scheduled"
+              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
+              value={data?.deliveryTime}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="flex items-center">
+            <label className="w-1/3 px-6" htmlFor="dropData.instructions">
+              Drop Instructions (if any)
+            </label>
+            <input
+              type="text"
+              name="instructionInDelivery"
               placeholder="Instructions"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.instructions}
+              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
+              value={pickAndDropData.instructionInDelivery}
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
-            <label className="w-1/3 px-6"> Task Specifications</label>
-            <button
-              type="button"
-              className="bg-zinc-200 w-1/2 rounded-md p-2"
-              onClick={() => handleAddItem("dropdata")}
-            >
-              <AddOutlined /> Add Item
-            </button>
+            <label className="w-1/3 px-6" htmlFor="dropData.addedTip">
+              Add Tip
+            </label>
+            <input
+              type="text"
+              name="addedTip"
+              placeholder="Tip for the delivery"
+              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
+              value={pickAndDropData.addedTip}
+              onChange={handleInputChange}
+            />
           </div>
-          <div>
-            {formData.dropdata.items.map((item, index) => (
-              <div
-                key={index}
-                className="bg-gray-100 mx-6 p-10 rounded-lg mb-4"
+
+          <div className="flex items-center">
+            <label className="w-1/3 px-6" htmlFor="dropData.addedTip">
+              Vehicle type
+            </label>
+            {["Bike", "Scooter"].map((vehicle) => (
+              <button
+                key={vehicle}
+                type="button"
+                className={`py-2 px-4 rounded border me-2 ${
+                  selectedVehicle === vehicle ? "bg-gray-300" : "bg-white"
+                }`}
+                onClick={() => handleSelectVehicle(vehicle)}
               >
-                <div className="flex">
-                  <label className="w-1/3">Item type</label>
-                  <select
-                    name="type"
-                    value={item.type}
-                    onChange={(e) => handleItemChange("dropdata", index, e)}
-                    className="w-1/2 p-3"
-                  >
-                    <option value="">Select</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                  </select>
-                </div>
-                <div className="flex mt-5">
-                  <label className="w-1/3">Dimensions (in cm)</label>
-                  <div className="w-1/2 gap-2">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        name="length"
-                        value={item.length}
-                        onChange={(e) => handleItemChange("dropdata", index, e)}
-                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
-                        placeholder="Length"
-                      />
-                      <input
-                        type="text"
-                        name="width"
-                        value={item.width}
-                        onChange={(e) => handleItemChange("dropdata", index, e)}
-                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
-                        placeholder="Width"
-                      />
-                      <input
-                        type="text"
-                        name="height"
-                        value={item.height}
-                        onChange={(e) => handleItemChange("dropdata", index, e)}
-                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
-                        placeholder="Height"
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name="weight"
-                        value={item.weight}
-                        onChange={(e) => handleItemChange("dropdata", index, e)}
-                        className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-full"
-                        placeholder="Weight (in kg)"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="mx-3 flex justify-between mt-3 gap-3">
-                  <button
-                    type="button"
-                    className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                    onClick={() => handleAddItem("dropdata")}
-                  >
-                    <AddOutlined /> Add Item
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                    onClick={() => handleRemoveItem("dropdata", index)}
-                  >
-                    <RiDeleteBinLine className="text-red-500 text-[18px]" />{" "}
-                    Delete Item
-                  </button>
-                </div>
-              </div>
+                {vehicle}
+              </button>
             ))}
-          </div>
-          <h4 className="px-6 mt-5 font-semibold">Pricing Charges</h4>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.tips">
-              Tips
-            </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              type="text"
-              placeholder="Tips"
-              id="dropdata.tips"
-              name="dropdata.tips"
-              value={formData.dropdata.tips}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.deliveryCharges">
-              Delivery Charges
-            </label>
-            <input
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md  outline-none focus:outline-none"
-              type="text"
-              placeholder="Delivery Charges"
-              id="dropdata.deliveryCharges"
-              name="dropdata.deliveryCharges"
-              value={formData.dropdata.deliveryCharges}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.discount">
-              Discount *
-            </label>
-            <input
-              type="discount"
-              name="dropdata.discount"
-              id="dropdata.discount"
-              placeholder="Discount"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.discount}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.paymentType">
-              Payment Type
-            </label>
-            <select
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              type="text"
-              placeholder="Payment Type"
-              id="dropdata.paymentType"
-              name="dropdata.paymentType"
-              value={formData.dropdata.paymentType}
-              onChange={handleInputChange}
-            >
-              <option hidden value=""></option>
-              <option value="option1" className="bg-white">
-                option1
-              </option>
-              <option value="option2" className="bg-white">
-                option2
-              </option>
-              <option value="option3" className="bg-white">
-                option3
-              </option>
-            </select>
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="dropdata.subtotal">
-              Sub Total *
-            </label>
-            <input
-              type="number"
-              name="dropdata.subtotal"
-              id="dropdata.subtotal"
-              placeholder="Sub Total"
-              className="h-10 px-5  text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none relative"
-              value={formData.dropdata.subtotal}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="px-6">
-            <button className="bg-gray-300 rounded-md flex items-center justify-center font-semibold p-3 w-[85%] ">
-              <PlusOutlined className="mr-3" /> Add More Drop
-            </button>
           </div>
         </div>
 
-        <div className="flex mt-8">
-          <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-          <div className="overflow-auo w-2/3">
-            <table className="border-2 border-teal-700  text-left w-[75%]">
-              <thead>
-                <tr>
-                  {["Item", "Amount"].map((header, index) => (
-                    <th
-                      key={index}
-                      className="bg-teal-700  text-white p-4  border-[#eee]/50"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {order.map((order) => (
-                  <tr key={order.id} className="text-left">
-                    <td className="p-4">{order.item}</td>
-                    <td className="p-4">{order.amount}</td>
-                  </tr>
-                ))}
-                <tr className="bg-teal-700 text-white font-semibold text-[18px]">
-                  <td className="p-4">Net Payable Amount</td>
-                  <td className="p-4">₹ 257</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div className="flex justify-end gap-4 mt-16 mx-10">
+        <div className="flex justify-end">
           <button
-            className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-            type="button"
-          >
-            <SaveAltIcon /> Bill
-          </button>
-          <button
-            className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
-            onClick={formSubmit}
+            onClick={createInvoice}
+            className="ms-auto me-[6rem] xl:me-[12rem] my-[30px] bg-teal-700 text-white py-2 px-4 rounded-md capitalize"
           >
-            Create Order ₹534
+            {isInvoiceLoading ? `Creating invoice...` : `Create invoice`}
           </button>
         </div>
       </form>
+
+      {cartData?.items && (
+        <>
+          <div className="flex items-center">
+            <label className="w-1/3 px-6" htmlFor="paymentType">
+              Payment Type
+            </label>
+            <select
+              name="paymentMode"
+              value={paymentMode}
+              className="w-1/2 py-2 ps-3 outline-none focus:outline-none border-2"
+              onChange={(e) => setPaymentMode(e.target.value)}
+            >
+              <option defaultValue="Select payment mode" hidden>
+                Select payment mode
+              </option>
+              <option value="Online-payment">Online payment</option>
+              <option value="Cash-on-delivery">Cash on delivery</option>
+            </select>
+          </div>
+
+          <div className="flex mt-5">
+            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
+            <div className="overflow-auto w-1/2">
+              <table className="border-2 border-teal-700 w-full text-left ">
+                <thead>
+                  <tr>
+                    {["Item", "Amount"].map((header, index) => (
+                      <th
+                        key={index}
+                        className="bg-teal-700 text-white p-4 border-[#eee]/50"
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {cartData?.items && (
+                    <>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">ItemTotal</td>
+                        <td className="p-4">{cartData.billDetail.itemTotal}</td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Delivery charges</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.discountedDeliveryCharge ||
+                            cartData?.billDetail?.originalDeliveryCharge ||
+                            0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Added tip</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.addedTip || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Discount</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.discountedAmount || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">Surge charge</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.surgePrice || 0}
+                        </td>
+                      </tr>
+                      <tr key={data.index} className="text-left align-middle">
+                        <td className="p-4">GST (Inclusive of all Taxes)</td>
+                        <td className="p-4">
+                          {cartData?.billDetail?.taxAmount || 0}
+                        </td>
+                      </tr>
+                      <tr className="bg-teal-700 text-white font-semibold text-[18px]">
+                        <td className="p-4">Net Payable Amount</td>
+                        <td className="p-4">
+                          ₹{" "}
+                          {cartData?.billDetail?.discountedGrandTotal ||
+                            cartData?.billDetail?.originalGrandTotal ||
+                            0}
+                        </td>
+                      </tr>
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4 mt-16 mx-10">
+            <button
+              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
+              type="button"
+            >
+              <SaveAltIcon /> Bill
+            </button>
+            <button
+              className="bg-teal-700 text-white py-2 px-4 rounded-md"
+              onClick={createOrder}
+            >
+              {isOrderLoading
+                ? `Creating Order....`
+                : `Create Order of ₹${
+                    cartData.billDetail.discountedGrandTotal ||
+                    cartData.billDetail.originalGrandTotal
+                  }`}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

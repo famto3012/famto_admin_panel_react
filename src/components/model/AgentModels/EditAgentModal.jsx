@@ -4,94 +4,90 @@ import React, { useContext, useEffect, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-const EditAgentModal = ({
-  isVisible,
-  handleCancel,
-}) => {
+
+const EditAgentModal = ({ isVisible, handleCancel }) => {
   const { agentId } = useParams();
-const [agent, setAgent] = useState({});
-const { token, role } = useContext(UserContext);
-const [isLoading,setIsLoading] = useState(false);
-const [geofence, setGeofence] = useState([]);
-const [salary, setSalary] = useState([]);
-const [manager, setManager] = useState([]);
-const navigate = useNavigate();
+  const [agent, setAgent] = useState({});
+  const { token, role } = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [geofence, setGeofence] = useState([]);
+  const [salary, setSalary] = useState([]);
+  const [manager, setManager] = useState([]);
+  const navigate = useNavigate();
 
-useEffect(() => {
-  if (!token) {
-    navigate("/auth/login");
-    return;
-  }
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const [agentResponse,geofenceResponse,managerResponse,salaryResponse] =
-      await Promise.all([
-      axios.get(
-        `${BASE_URL}/admin/agents/${agentId}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [
+          agentResponse,
+          geofenceResponse,
+          managerResponse,
+          salaryResponse,
+        ] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/agents/${agentId}`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/managers`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        if (salaryResponse.status === 200) {
+          setSalary(salaryResponse.data.data);
+          console.log("salary", salary);
         }
-      ),
-      axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      axios.get(
-        `${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`,{
-        withCredentials:true,
-        headers:{Authorization: `Bearer ${token}`}
-      }),
-      axios.get(
-        `${BASE_URL}/admin/managers`,{
-        withCredentials:true,
-        headers:{Authorization: `Bearer ${token}`}
-      }),
-    ]);
-    if (salaryResponse.status === 200) {
-      setSalary(salaryResponse.data.data);
-      console.log("salary",salary)
-    }
-    if (managerResponse.status === 200) {
-      setManager(managerResponse.data.data);
-      console.log("managers",manager)
-    }
-    if (geofenceResponse.status === 200) {
-      setGeofence(geofenceResponse.data.geofences);
-    }
-      if (agentResponse.status === 200) {
-        // const { data } = agentResponse.data;
-        console.log("data in response is", agentResponse.data.data);
-        setAddData(agentResponse.data.data);
-        
+        if (managerResponse.status === 200) {
+          setManager(managerResponse.data.data);
+          console.log("managers", manager);
+        }
+        if (geofenceResponse.status === 200) {
+          setGeofence(geofenceResponse.data.geofences);
+        }
+        if (agentResponse.status === 200) {
+          // const { data } = agentResponse.data;
+          console.log("data in response is", agentResponse.data.data);
+          setAddData(agentResponse.data.data);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+        // console.log("data in state", agent);
       }
-    } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
-    } finally {
-      setIsLoading(false);
-      // console.log("data in state", agent);
-    }
-  };
+    };
 
-  fetchData();
+    fetchData();
+    console.log("agent", agent);
+  }, [token, role, navigate, agentId]);
+
   console.log("agent", agent);
-}, [token, role, navigate, agentId]);
-  
-console.log("agent",agent)
   // console.log("agent data in modal", agent);
-  const [addData, setAddData] = useState(
-    {
-    fullName:"",
+  const [addData, setAddData] = useState({
+    fullName: "",
     phoneNumber: "",
     email: "",
     managerId: "",
     geofenceId: "",
-    salaryStructureId:"",
-    tag:"",
-    accountHolderName:"",
+    salaryStructureId: "",
+    tag: "",
+    accountHolderName: "",
     accountNumber: "",
     IFSCCode: "",
     UPIId: "",
@@ -107,18 +103,13 @@ console.log("agent",agent)
     drivingLicenseFrontImage: null,
     drivingLicenseBackImage: null,
     agentImage: null,
-    
-  }
-);
+  });
 
-
-console.log("da",addData)
+  console.log("da", addData);
 
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
   };
-
-
 
   const [agentFile, setAgentFile] = useState(null);
   const [agentPreviewURL, setAgentPreviewURL] = useState(null);
@@ -198,9 +189,9 @@ console.log("da",addData)
           },
         }
       );
- 
+
       if (addAgentResponse.status === 200) {
-        setAddData(addAgentResponse.data.data)
+        setAddData(addAgentResponse.data.data);
         setAadharBackPreviewURL(null);
         setAadharFrontPreviewURL(null);
         setAgentFile(null);
@@ -221,8 +212,8 @@ console.log("da",addData)
 
   console.log("testing token", token);
   console.log("testing url", BASE_URL);
-  
-   return (
+
+  return (
     <Modal
       title="Edit Agent"
       open={isVisible}
@@ -328,7 +319,9 @@ console.log("da",addData)
                   name="rcFrontImage"
                   id="rcFrontImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setRcFrontFile, setRcFrontPreviewURL)}
+                  onChange={(e) =>
+                    handleImageChange(e, setRcFrontFile, setRcFrontPreviewURL)
+                  }
                 />
                 <label htmlFor="rcFrontImage" className="cursor-pointer">
                   {rcFrontPreviewURL ? (
@@ -353,8 +346,9 @@ console.log("da",addData)
                   name="rcBackImage"
                   id="rcBackImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setRcBackFile, setRcBackPreviewURL)}
-
+                  onChange={(e) =>
+                    handleImageChange(e, setRcBackFile, setRcBackPreviewURL)
+                  }
                 />
                 <label htmlFor="rcBackImage" className="cursor-pointer">
                   {rcBackPreviewURL ? (
@@ -451,14 +445,22 @@ console.log("da",addData)
                   name="aadharFrontImage"
                   id="aadharFrontImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setAadharFrontFile, setAadharFrontPreviewURL)}
-
+                  onChange={(e) =>
+                    handleImageChange(
+                      e,
+                      setAadharFrontFile,
+                      setAadharFrontPreviewURL
+                    )
+                  }
                 />
                 <label htmlFor="aadharFrontImage" className="cursor-pointer">
                   {addData?.governmentCertificateDetail?.aadharFrontImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={addData?.governmentCertificateDetail?.aadharFrontImageURL}
+                        src={
+                          addData?.governmentCertificateDetail
+                            ?.aadharFrontImageURL
+                        }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -477,14 +479,22 @@ console.log("da",addData)
                   name="aadharBackImage"
                   id="aadharBackImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setAadharBackFile, setAadharBackPreviewURL)}
-
+                  onChange={(e) =>
+                    handleImageChange(
+                      e,
+                      setAadharBackFile,
+                      setAadharBackPreviewURL
+                    )
+                  }
                 />
                 <label htmlFor="aadharBackImage" className="cursor-pointer">
-                  { addData?.governmentCertificateDetail?.aadharBackImageURL? (
+                  {addData?.governmentCertificateDetail?.aadharBackImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={addData?.governmentCertificateDetail?.aadharBackImageURL}
+                        src={
+                          addData?.governmentCertificateDetail
+                            ?.aadharBackImageURL
+                        }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -510,7 +520,9 @@ console.log("da",addData)
               <input
                 className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                 type="text"
-                value={addData?.governmentCertificateDetail?.drivingLicenseNumber}
+                value={
+                  addData?.governmentCertificateDetail?.drivingLicenseNumber
+                }
                 id="drivingLicenseNumber"
                 name="drivingLicenseNumber"
                 onChange={handleInputChange}
@@ -523,13 +535,22 @@ console.log("da",addData)
                   name="drivingLicenseFrontImage"
                   id="drivingLicenseFrontImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setDriFrontFile, setDriFrontPreviewURL)}
+                  onChange={(e) =>
+                    handleImageChange(e, setDriFrontFile, setDriFrontPreviewURL)
+                  }
                 />
-                <label htmlFor="drivingLicenseFrontImage" className="cursor-pointer">
-                  {addData?.governmentCertificateDetail?.drivingLicenseFrontImageURL ? (
+                <label
+                  htmlFor="drivingLicenseFrontImage"
+                  className="cursor-pointer"
+                >
+                  {addData?.governmentCertificateDetail
+                    ?.drivingLicenseFrontImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={addData?.governmentCertificateDetail?.drivingLicenseFrontImageURL}
+                        src={
+                          addData?.governmentCertificateDetail
+                            ?.drivingLicenseFrontImageURL
+                        }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -548,13 +569,22 @@ console.log("da",addData)
                   name="drivingLicenseBackImage"
                   id="drivingLicenseBackImage"
                   className="hidden"
-                  onChange={(e) => handleImageChange(e, setDriBackFile, setDriBackPreviewURL)}
+                  onChange={(e) =>
+                    handleImageChange(e, setDriBackFile, setDriBackPreviewURL)
+                  }
                 />
-                <label htmlFor="drivingLicenseBackImage" className="cursor-pointer">
-                  {addData?.governmentCertificateDetail?.drivingLicenseBackImageURL ? (
+                <label
+                  htmlFor="drivingLicenseBackImage"
+                  className="cursor-pointer"
+                >
+                  {addData?.governmentCertificateDetail
+                    ?.drivingLicenseBackImageURL ? (
                     <figure className=" h-16 w-16 rounded relative">
                       <img
-                        src={addData?.governmentCertificateDetail?.drivingLicenseBackImageURL}
+                        src={
+                          addData?.governmentCertificateDetail
+                            ?.drivingLicenseBackImageURL
+                        }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
@@ -582,14 +612,13 @@ console.log("da",addData)
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
               <option hidden value="">
-              {addData?.workStructure?.managerId?.name} 
+                {addData?.workStructure?.managerId?.name}
               </option>
               {manager.map((managers) => (
                 <option value={managers?._id} key={managers?._id}>
                   {managers?.name}
                 </option>
               ))}
-          
             </select>
           </div>
           <div className="flex mt-5  gap-4">
@@ -603,15 +632,14 @@ console.log("da",addData)
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-                <option hidden value="">
+              <option hidden value="">
                 {addData?.workStructure?.salaryStructureId?.ruleName}
               </option>
-               {salary.map((salary) => (
+              {salary.map((salary) => (
                 <option value={salary._id} key={salary._id}>
                   {salary.ruleName}
                 </option>
               ))}
-          
             </select>
           </div>
           <div className="flex mt-5  gap-4">
@@ -626,7 +654,7 @@ console.log("da",addData)
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
               <option hidden value="">
-              {addData?.geofenceId?.name}
+                {addData?.geofenceId?.name}
               </option>
               {geofence.map((geoFence) => (
                 <option value={geoFence._id} key={geoFence._id}>
@@ -654,12 +682,12 @@ console.log("da",addData)
               <div className="bg-cyan-100 ml-5 mt-5 h-16 w-16 rounded-md" />
             )}
             <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
-                <img
-                  src={addData?.agentImageURL}
-                  alt="profile"
-                  className="w-full rounded h-full object-cover "
-                />
-              </figure> 
+              <img
+                src={addData?.agentImageURL}
+                alt="profile"
+                className="w-full rounded h-full object-cover "
+              />
+            </figure>
             {agentPreviewURL && (
               <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
                 <img
@@ -674,7 +702,9 @@ console.log("da",addData)
               name="agentImage"
               id="agentImage"
               className="hidden"
-              onChange={(e) => handleImageChange(e, setAgentFile, setAgentPreviewURL)}
+              onChange={(e) =>
+                handleImageChange(e, setAgentFile, setAgentPreviewURL)
+              }
             />
             <label htmlFor="agentImage" className="cursor-pointer ">
               <MdCameraAlt

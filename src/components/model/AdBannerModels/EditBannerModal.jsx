@@ -65,15 +65,13 @@ const EditBannerModal = ({
     }));
   };
 
-  
-
-  const handleAppBannerImageChange = async(e) => {
+  const handleAppBannerImageChange = async (e) => {
     e.preventDefault();
     const file = e.target.files[0];
     setSelectedFile(file);
     await setPreviewURL(URL.createObjectURL(file));
-    if(previewURL){
-      console.log("preview added", previewURL)
+    if (previewURL) {
+      console.log("preview added", previewURL);
     }
     setPreviewURL(URL.createObjectURL(file));
     // setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
@@ -91,7 +89,6 @@ const EditBannerModal = ({
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
       if (selectedFile) {
         appBannerDataToSend.append("appBannerImage", selectedFile);
-        
       }
 
       const addBannerResponse = await axios.put(
@@ -183,7 +180,7 @@ const EditBannerModal = ({
             <div className="flex items-center gap-[30px]">
               {/* Render the current banner image only if no new image is selected */}
 
-              {previewURL && appBanner.appBannerImage &&(
+              {previewURL && appBanner.appBannerImage && (
                 <figure className="mt-3 h-16 w-16 rounded-md">
                   <img
                     src={previewURL}
@@ -229,8 +226,9 @@ const EditBannerModal = ({
             Cancel
           </button>
           <button
-            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${confirmLoading ? "opacity-50" : ""
-              }`}
+            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${
+              confirmLoading ? "opacity-50" : ""
+            }`}
             type="submit"
             disabled={isLoading}
           >

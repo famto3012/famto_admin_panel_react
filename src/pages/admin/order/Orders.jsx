@@ -63,6 +63,7 @@ const Orders = () => {
   }, [token]);
 
   useEffect(() => {
+    if (!orderStatus && !paymentMode && !deliveryMode) return;
     const filterHandler = async () => {
       try {
         setIsTableLoading(true);

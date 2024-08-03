@@ -11,6 +11,7 @@ const AddBannerModal = ({
   token,
   allGeofence,
   BASE_URL,
+  onAddBanner
 }) => {
   const [appBanner, setAppData] = useState({
     name: "",
@@ -77,6 +78,7 @@ const AddBannerModal = ({
       );
 
       if (addBannerResponse.status === 201) {
+        onAddBanner(addBannerResponse.data.data);
         setNotificationFile(null);
         setNotificationPreviewURL(null);
         handleCancel();

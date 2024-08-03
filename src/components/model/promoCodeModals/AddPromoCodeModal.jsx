@@ -128,23 +128,6 @@ const AddPromoCodeModal = ({
           isClosable: true,
           duration: 9000,
         });
-        // You may want to clear the form here
-        // setAddPromocode({
-        //   promoCode: "",
-        //   promoType: "",
-        //   discount: "",
-        //   description: "",
-        //   fromDate: "",
-        //   toDate: "",
-        //   applicationMode: "",
-        //   maxDiscountValue: "",
-        //   minOrderAmount: "",
-        //   maxAllowedUsers: "",
-        //   appliedOn: "",
-        //   merchantId: "",
-        //   geofenceId: "",
-        //   imageUrl: "",
-        // });
       }
     } catch (err) {
       console.log(`Error in adding data: ${err.message}`);
@@ -205,7 +188,7 @@ const AddPromoCodeModal = ({
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">Discount</label>
             <input
-              type="text"
+              type="number"
               name="discount"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               value={addPromocode.discount}

@@ -33,7 +33,7 @@ const DeleteAgentPricingModal = ({
           status: "success",
           duration: 1000,
           isClosable: true,
-      });
+        });
       }
     } catch (error) {
       console.error("Error deleting tax:", error);
@@ -43,7 +43,7 @@ const DeleteAgentPricingModal = ({
         status: "error",
         duration: 1000,
         isClosable: true,
-    });
+      });
     } finally {
       setConfirmLoading(false);
     }

@@ -28,7 +28,7 @@ const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
   const signupAction = async (e) => {
     e.preventDefault();
     try {
-        setConfirmLoading(true)
+      setConfirmLoading(true);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/notification/notification-setting`,
         formData,
@@ -40,13 +40,13 @@ const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
       if (addResponse === 201) {
         handleCancel();
         toast({
-            title:"Created Notification",
-            description:"Notification Created Successfully",
-            status:"success",
-            duration:9000,
-            isClosable:true
-        })
-        navigate("/notification-settings")
+          title: "Created Notification",
+          description: "Notification Created Successfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        navigate("/notification-settings");
       }
     } catch (err) {
       console.log(`Error in fetching data:${err}`);
@@ -56,9 +56,9 @@ const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
         status: "error",
         duration: 9000,
         isClosable: true,
-    });
-    }finally{
-    setConfirmLoading(false)
+      });
+    } finally {
+      setConfirmLoading(false);
     }
     console.log(formData);
   };

@@ -11,3 +11,7 @@
 input[type="radio"] {
   accent-color: #115e59 !important;
 }
+
+.react-daterange-picker__wrapper {
+  border: none !important; /* Change this to your desired border color */
+}
