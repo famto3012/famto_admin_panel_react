@@ -11,6 +11,7 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const LoyalityPoint = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);

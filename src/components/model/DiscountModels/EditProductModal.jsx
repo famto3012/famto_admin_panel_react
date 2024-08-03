@@ -43,7 +43,11 @@ const EditProductModal = ({
           }
         );
         if (response.status === 200) {
-          setProductDiscount(response.data.data);
+          const productData = response.data.data;
+
+          productData.validFrom = formatDate(productData.validFrom);
+          productData.validTo = formatDate(productData.validTo);
+          setProductDiscount(productData);
         }
       } catch (err) {
         console.error(`Error in fetch data ${err.message}`);
@@ -104,6 +108,16 @@ const EditProductModal = ({
 
   const handleInputChange = (e) => {
     setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
+  };
+
+   // Helper function to format date to "yyyy-MM-dd"
+   const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   return (

@@ -11,6 +11,7 @@ const AddIndividualModal = ({
   token,
   allGeofence,
   BASE_URL,
+  onAddIndBanner
 }) => {
   const [individualdata, SetIndividualData] = useState({
     name: "",
@@ -25,6 +26,7 @@ const AddIndividualModal = ({
     geofenceId: "",
     appBannerImage: "",
   });
+  
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
@@ -56,7 +58,8 @@ const AddIndividualModal = ({
         }
       );
 
-      if (IndBannerResponse.status === 200) {
+      if (IndBannerResponse.status === 201) {
+        onAddIndBanner(IndBannerResponse.data.data);
         setAdFile(null);
         setAdPreviewURL(null);
         handleCancel();
@@ -64,10 +67,9 @@ const AddIndividualModal = ({
           title: "Banner Created.",
           description: "The banner was created successfully.",
           status: "success",
-          duration: 9000,
+          duration: 100,
           isClosable: true,
         });
-        navigate(0);
       }
     } catch (err) {
       console.error(`Error in fetch data: ${err.message}`);

@@ -17,10 +17,10 @@ const AddDiscountModal = ({
   const [merchantDiscount, setMerchantDiscount] = useState({
     merchantId: "",
     discountName: "",
-    maxCheckoutValue: "",
-    maxDiscountValue: "",
+    maxCheckoutValue: null,
+    maxDiscountValue: null,
     discountType: "",
-    discountValue: "",
+    discountValue: null,
     description: "",
     validFrom: "",
     validTo: "",
@@ -36,11 +36,6 @@ const AddDiscountModal = ({
 
     try {
       setIsLoading(true);
-
-      // const endpoint =
-      // role === "Admin"
-      //   ? `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`
-      //   : `${BASE_URL}/admin/shop-discount/add-merchant-discount`;
 
       const response = await axios.post(
         `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`,
@@ -85,8 +80,7 @@ const AddDiscountModal = ({
     });
   };
 
-  console.log("id", selectedMerchant);
-  console.log("merchant", geofence);
+
   console.log("merchant Discount", merchantDiscount);
 
   return (

@@ -105,19 +105,16 @@ const Adbanner = () => {
 
   const showModalIndividualEdit = (bannerEditId) => {
     setCurrentIndBanner(bannerEditId);
-    console.log(bannerEditId);
     setIsModalVisibleIndividualEdit(true);
   };
 
   const showModalDelete = (bannerId) => {
     setCurrentBanner(bannerId);
-    console.log(bannerId);
     setIsShowModalDelete(true);
   };
 
   const showModalDeleteIndividual = (currentIndBannerId) => {
     setCurrentIndBanner(currentIndBannerId);
-    console.log(currentIndBannerId);
     setShowModalDeleteIndividual(true);
   };
 
@@ -133,9 +130,20 @@ const Adbanner = () => {
   const handleAddBanner = (newBanner) => {
     setBanner((prevBanners) => {
       if (Array.isArray(prevBanners)) {
-        return [...prevBanners,newBanner];
+        return [...prevBanners, newBanner];
       } else {
         [newBanner];
+      }
+    });
+  };
+
+  const handleAddIndBanner = (newBanner) => {
+    setIndividualBanner((indBanner) => {
+      // Ensure Individual Banner is an array before adding the new promo code
+      if (Array.isArray(indBanner)) {
+        return [...indBanner, newBanner];
+      } else {
+        return [newBanner];
       }
     });
   };
@@ -150,7 +158,7 @@ const Adbanner = () => {
     setIsShowModalDelete(false);
     setCurrentBanner(null);
   };
-  // api calling to delete Aapp banner..      
+  // api calling to delete App banner..
   const handleBannerDelete = async (currentBanner) => {
     try {
       setConfirmLoading(true);
@@ -167,12 +175,12 @@ const Adbanner = () => {
         removeBanner(currentBanner);
         handleConfirmDelete();
         toast({
-          title:"Banner Deleted",
-          description:"The Banner Deleted Successfully.",
-          status:"success",
-          duration:100,
-          isClosable:"true"
-        })
+          title: "Banner Deleted",
+          description: "The Banner Deleted Successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: "true",
+        });
       } else {
         console.error(`Unexpected status code: ${deleteResponse.status}`);
       }
@@ -191,7 +199,7 @@ const Adbanner = () => {
   const removeIndBanner = (currentIndBannerId) => {
     setIndividualBanner(
       individualBanner.filter(
-        (individualBanner) => individualBanner._id || currentIndBannerId
+        (individualBanner) => individualBanner._id !== currentIndBannerId
       )
     );
   };
@@ -209,16 +217,16 @@ const Adbanner = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (indDeleteResponse === 200) {
+      if (indDeleteResponse.status === 200) {
         removeIndBanner(currentIndBanner);
         handleConfirmIndBannerDelete();
         toast({
-          title:"Banner Deleted",
-          description:"The Banner Deleted Successfully.",
-          status:"success",
-          duration:100,
-          isClosable:"true"
-        })
+          title: "Banner Deleted",
+          description: "The Banner Deleted Successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: "true",
+        });
       } else {
         console.error(`Unexpected status code: ${indDeleteResponse.status}`);
       }
@@ -250,7 +258,7 @@ const Adbanner = () => {
           title: "Status updated",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 100,
+          duration: 900,
           isClosable: true,
         });
 
@@ -270,10 +278,21 @@ const Adbanner = () => {
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 100,
+        duration: 900,
         isClosable: true,
       });
     }
+  };
+
+  const onEditIndBanner = (newBanner) => {
+    setIndividualBanner((indBanner) => {
+      // Ensure Individual Banner is an array before adding the new promo code
+      if (Array.isArray(indBanner)) {
+        return [...indBanner, newBanner];
+      } else {
+        return [newBanner];
+      }
+    });
   };
 
   const handleIndToggle = async (IndBannerId) => {
@@ -299,7 +318,7 @@ const Adbanner = () => {
           title: "Status updated",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 100,
+          duration: 900,
           isClosable: true,
         });
 
@@ -319,7 +338,7 @@ const Adbanner = () => {
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 100,
+        duration: 900,
         isClosable: true,
       });
     }
@@ -499,6 +518,7 @@ const Adbanner = () => {
                   BASE_URL={BASE_URL}
                   token={token}
                   allGeofence={allGeofence}
+                  onAddIndBanner={handleAddIndBanner}
                 />
               </div>
             </div>
@@ -524,7 +544,7 @@ const Adbanner = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {individualBanner.map((individualBanner, index) => (
+                  {individualBanner?.map((individualBanner, index) => (
                     <tr
                       className="text-center bg-white h-20"
                       style={{
@@ -544,8 +564,9 @@ const Adbanner = () => {
                       <td>{individualBanner.merchantId}</td>
                       <td>{individualBanner.geofenceId}</td>
                       <td>
+                        {" "}
                         <Switch
-                          checked={individualBanner.status}
+                          checked={individualBanner?.status}
                           onChange={() => handleIndToggle(individualBanner._id)}
                         />
                       </td>
@@ -565,6 +586,7 @@ const Adbanner = () => {
                             BASE_URL={BASE_URL}
                             currentIndBanner={currentIndBanner}
                             token={token}
+                            onEditIndBanner={onEditIndBanner}
                             allGeofence={allGeofence}
                           />
                           <button>

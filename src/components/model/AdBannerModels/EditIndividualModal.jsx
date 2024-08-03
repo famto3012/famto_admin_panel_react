@@ -12,6 +12,7 @@ const EditIndividualModal = ({
   currentIndBanner,
   handleCancel,
   allGeofence,
+  onEditIndBanner
 }) => {
   const [individualdata, setIndividualData] = useState({
     name: "",
@@ -68,20 +69,6 @@ const EditIndividualModal = ({
     }
   }, [currentIndBanner, token, BASE_URL]);
 
-  // Populate initial state when currentIndBanner changes
-  // useEffect(() => {
-  //   if (currentIndBanner) {
-  //     setIndividualData({
-  //       name: currentIndBanner.name || "",
-  //       merchantId: currentIndBanner.merchantId || "",
-  //       geofence: currentIndBanner.geofenceId || "",
-  //       bannerImage: currentIndBanner.bannerImage || "",
-  //     });
-
-  //     setAdPreviewURL(currentIndBanner.bannerImage || null);
-  //   }
-  // }, [currentIndBanner]);
-
   const handleInputChangeIndividual = (e) => {
     setIndividualData({
       ...individualdata,
@@ -118,6 +105,7 @@ const EditIndividualModal = ({
       );
 
       if (IndBannerResponse.status === 200) {
+        onEditIndBanner(IndBannerResponse.data.data);
         setAdFile(null);
         setAdPreviewURL(null);
         handleCancel();
@@ -128,7 +116,6 @@ const EditIndividualModal = ({
           duration: 9000,
           isClosable: true,
         });
-        navigate(0);
       }
     } catch (err) {
       console.error(`Error in fetch data: ${err.message}`);
