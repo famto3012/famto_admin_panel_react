@@ -2,7 +2,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { mappls } from "mappls-web-maps";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useLocation } from "react-router-dom";
@@ -23,7 +22,6 @@ const AddGeofence = ({ heading }) => {
   const mapContainerRef = useRef(null);
   const [mapObject, setMapObject] = useState(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const mapplsClassObject = new mappls();
   const toast = useToast();
   let map, drawData, geoJSON, polyArray;
 
@@ -125,100 +123,55 @@ const AddGeofence = ({ heading }) => {
     }
   };
 
-  // const GeoJsonComponent = ({ map }) => {
-  //   const geoJsonRef = useRef(null);
-
-  //   useEffect(() => {
-  //     if (!map || !geofences.coordinates) return;
-
-  //     geoJSON = {
-  //       type: "FeatureCollection",
-  //       features: [
-  //         {
-  //           type: "Feature",
-  //           properties: {
-  //             class_id: geofences._id,
-  //             name: geofences.name,
-  //             stroke: color,
-  //             "stroke-opacity": 0.4,
-  //             "stroke-width": 3,
-  //             fill: color,
-  //             "fill-opacity": 0.4,
-  //           },
-  //           geometry: {
-  //             type: "Polygon",
-  //             coordinates: [geofences.coordinates],
-  //           },
-  //         },
-  //       ],
-  //     };
-  //     console.log("GeoJson", geoJSON);
-
-  //     if (geoJsonRef.current) {
-  //       mapplsClassObject.removeLayer({ map, layer: geoJsonRef.current });
-  //     }
-  //     geoJsonRef.current = mapplsClassObject.addGeoJson({
-  //       map,
-  //       data: geoJSON,
-  //       overlap: false,
-  //       fitbounds: true,
-  //       preserveViewport: true,
-  //     });
-  //   }, [map, geofences, color]);
-
-  //   return null;
-  // };
-
-  const GeoJsonComponent = ({ map, geofences, color, setNewGeofence }) => {
+  const GeoJsonComponent = ({ map, geofences, color }) => {
     const geoJsonRef = useRef(null);
   
     useEffect(() => {
       if (!map || !geofences.coordinates || !Array.isArray(geofences.coordinates)) return;
   
       // Convert the coordinates to Mappls format
-      const pts = geofences.coordinates.map(coord => {
+      const pts = geofences.coordinates.map((coord) => {
         if (!Array.isArray(coord) || coord.length !== 2) {
-          console.error('Invalid coordinate format:', coord);
+          console.error("Invalid coordinate format:", coord);
           return null;
         }
         const [lat, lng] = coord;
         return { lat, lng };
-      }).filter(coord => coord !== null);
+      }).filter((coord) => coord !== null);
       console.log("path", pts);
   
+      // Create the polygon
       const poly = window.mappls.Polygon({
         map: map,
         paths: pts,
         fillColor: color,
+        fillOpacity: 0.3,
         fitbounds: true,
       });
   
       // Enable editing of the polygon
       poly.setEditable(true);
   
-      // Save the edited coordinates back to the state
-      console.log("poly", poly)
-        // const newCoordinates = poly.getPath().getArray().map(point => [point.lat(), point.lng()]);
-        // console.log("newcoordinates", newCoordinates);
-        // setNewGeofence(prevState => ({
-        //   ...prevState,
-        //   coordinates: [newCoordinates],
-        // }));
-      
+      // Function to update coordinates
+      const updateCoordinates = () => {
+        const newCoordinates = poly.getPath()[0].map((point) => [point.lat, point.lng]);
+       // console.log("poly", poly.getPath()[0].map((point) => [point.lat, point.lng]))
+        console.log("newCoordinates", newCoordinates);
+  
+        setGeofences((prevState) => ({
+          ...prevState,
+          coordinates: newCoordinates,
+        }));
+      };
   
       // Add event listeners to capture changes
-      // poly.addListener('click', updateCoordinates);
-      // poly.addListener('dblclick', updateCoordinates);
+      poly.addListener("dblclick", updateCoordinates);
   
-      // // Clean up listeners on component unmount
-      // return () => {
-      //   poly.removeListener('mouseup', updateCoordinates);
-      //   poly.removeListener('dblclick', updateCoordinates);
-      // };
-    }, [map, geofences, color, setNewGeofence]);
+    }, [map, geofences, color]);
   
     return null;
   };
+  
   
  
   
@@ -253,6 +206,7 @@ const AddGeofence = ({ heading }) => {
 
   const editGeofence = async()=>{
     try {
+      console.log("geofence", geofences)
       const editGeofenceResponse = await axios.put(
         `${BASE_URL}/admin/geofence/edit-geofence/${id}`,
         geofences,
@@ -363,7 +317,6 @@ const AddGeofence = ({ heading }) => {
                 map={mapObject}
                 geofences={geofences}
                 color={color}
-                setNewGeofence={setNewGeofence}
               />
             )}
           </div>
