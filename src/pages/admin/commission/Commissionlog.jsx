@@ -96,7 +96,7 @@ const Commissionlog = () => {
     } else {
       setCommissionlog([]);
     }
-    console.log(searchDate)
+    console.log(searchDate);
   };
 
   const handleDateChangeFilter = async (searchDate) => {
@@ -118,8 +118,8 @@ const Commissionlog = () => {
     }
   };
 
-   // Function to trigger the date input click
-   const openDatePicker = () => {
+  // Function to trigger the date input click
+  const openDatePicker = () => {
     console.log("clicked");
     if (dateInputRef.current) {
       dateInputRef.current.showPicker(); // Open the date picker using showPicker()
@@ -246,21 +246,21 @@ const Commissionlog = () => {
               onChange={onDateChange}
               className="right-4 p-2"
             /> */}
-             <input
-                  type="date"
-                  name="date"
-                  ref={dateInputRef} // Attach the ref to the input
-                  value={dateFilter}
-                  onChange={onDateChange}
-                  className="hidden top-80" // Keep the input hidden
-                  style={{ right: "40px", top: "200px" }}
-                />
-                 <button
-                  onClick={openDatePicker}
-                  className="flex items-center justify-center"
-                >
-                  <FaCalendar className="text-gray-400 text-xl" />
-                </button>
+            <input
+              type="date"
+              name="date"
+              ref={dateInputRef} // Attach the ref to the input
+              value={dateFilter}
+              onChange={onDateChange}
+              className="hidden top-80" // Keep the input hidden
+              style={{ right: "40px", top: "200px" }}
+            />
+            <button
+              onClick={openDatePicker}
+              className="flex items-center justify-center"
+            >
+              <FaCalendar className="text-gray-400 text-xl" />
+            </button>
             <FilterAltOutlined className="text-gray-400 mx-7" />
             <input
               type="search"
@@ -319,15 +319,16 @@ const Commissionlog = () => {
                   </td>
                   <td className="px-4">{commissionlog.payableAmountToFamto}</td>
                   <td className="flex items-center gap-6 px-[15px] py-4">
-                    {commissionlog.status ==="Unpaid" ?
+                    {commissionlog.status === "Unpaid" ? (
                       <button
-                      className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
-                      onClick={() => showModal(commissionlog._id)}
-                    >
-                      Set as paid
-                    </button>:
-                    <p>Paid</p>
-}
+                        className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
+                        onClick={() => showModal(commissionlog._id)}
+                      >
+                        Set as paid
+                      </button>
+                    ) : (
+                      <p>Paid</p>
+                    )}
 
                     <Modal
                       onCancel={handleCancel}

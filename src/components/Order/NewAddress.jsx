@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MapModal from "./MapModal";
+import axios from "axios";
 
-const NewAddress = ({ onAddCustomerAddress }) => {
+const NewAddress = ({ onAddCustomerAddress, token, BASE_URL }) => {
   const [addressData, setAddressData] = useState({
     type: "",
     latitude: null,
@@ -15,6 +16,28 @@ const NewAddress = ({ onAddCustomerAddress }) => {
   });
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [authToken, setAuthToken] = useState("");
+
+  useEffect(() => {
+    const getAuthToken = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setAuthToken(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getting auth token`);
+      }
+    };
+
+    getAuthToken();
+  }, []);
 
   const handleChangeAddress = (e) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
@@ -164,6 +187,7 @@ const NewAddress = ({ onAddCustomerAddress }) => {
                   isVisible={modalVisible}
                   onClose={() => setModalVisible(false)}
                   setCoordinates={setCoordinates}
+                  authToken={authToken}
                 />
               </div>
 

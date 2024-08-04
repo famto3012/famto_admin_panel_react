@@ -9,6 +9,11 @@ import MapModal from "./MapModal";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { UserContext } from "../../context/UserContext";
+import {
+  deleteFileFromFirebase,
+  uploadFileToFirebase,
+} from "../../utils/fileOperation";
+import ShowBill from "./ShowBill";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -51,9 +56,26 @@ const CustomOrder = ({ data }) => {
     });
   };
 
-  const handleRemoveItem = (index) => {
+  const handleRemoveItem = async (index) => {
     const updatedItems = [...customOrderData.items];
+    const itemToRemove = updatedItems[index];
+
+    // Check if the item has an image URL to delete
+    if (itemToRemove && itemToRemove.itemImageURL) {
+      try {
+        await deleteFileFromFirebase(itemToRemove.itemImageURL);
+        console.log(
+          `Image deleted from Firebase: ${itemToRemove.itemImageURL}`
+        );
+      } catch (error) {
+        console.error("Failed to delete image:", error);
+      }
+    }
+
+    // Remove the item from the array
     updatedItems.splice(index, 1);
+
+    // Update the state with the new items array
     setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
 
@@ -62,6 +84,33 @@ const CustomOrder = ({ data }) => {
     const updatedItems = [...customOrderData.items];
     updatedItems[index] = { ...updatedItems[index], [name]: value };
     setCustomOrderData({ ...customOrderData, items: updatedItems });
+  };
+
+  const handleImageChange = async (index, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const itemImageURL = await uploadFileToFirebase(
+          file,
+          "Custom-order-item-Image"
+        );
+        console.log("File available at", itemImageURL);
+
+        // const reader = new FileReader();
+        // reader.onloadend = () => {
+        const updatedItems = [...customOrderData.items];
+        updatedItems[index] = {
+          ...updatedItems[index],
+          itemImageURL,
+          // preview: reader.result,
+        };
+        setCustomOrderData({ ...customOrderData, items: updatedItems });
+        // };
+        // reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Upload failed:", error);
+      }
+    }
   };
 
   const handleInputChange = (e) => {
@@ -211,7 +260,7 @@ const CustomOrder = ({ data }) => {
                 onClick={() => setModalVisible(true)}
                 className="font-medium bg-teal-700 text-white w-[80%] rounded-md  py-2 flex items-center justify-center"
               >
-                Mark location{" "}
+                Mark location
                 <LocationOnOutlinedIcon className="text-[18px] ms-2" />
               </button>
 
@@ -261,7 +310,7 @@ const CustomOrder = ({ data }) => {
                     type="text"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3"
+                    className="w-1/2 p-3 outline-none focus:outline-none"
                   />
                 </div>
 
@@ -272,22 +321,33 @@ const CustomOrder = ({ data }) => {
                     type="text"
                     value={item.numOfUnits}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3"
+                    className="w-1/2 p-3 outline-none focus:outline-none"
                   />
                 </div>
 
-                <div className="flex items-center gap-[30px]"></div>
+                {item.itemImageURL && (
+                  <div className="flex items-center gap-[30px]">
+                    <figure className="h-20 w-20 bg-gray-400 ms-4 rounded">
+                      <img
+                        src={item.itemImageURL}
+                        alt="Item image"
+                        className="w-full h-full object-cover rounded"
+                      />
+                    </figure>
+                  </div>
+                )}
+
                 <div className="mx-3 flex justify-between mt-3 gap-3">
                   <input
                     type="file"
                     name="adImage"
-                    id="adImage"
+                    id={`adImage-${index}`}
                     className="hidden"
-                    // onChange={handleAdImageChange}
+                    onChange={(e) => handleImageChange(index, e)}
                   />
                   <label
-                    htmlFor="adImage"
-                    className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    htmlFor={`adImage-${index}`}
+                    className="bg-zinc-300 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
                   >
                     <AddOutlined />
                     Upload Photo
@@ -473,118 +533,7 @@ const CustomOrder = ({ data }) => {
         </div>
       </form>
 
-      {cartData?.items && (
-        <>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="paymentType">
-              Payment Type
-            </label>
-            <select
-              name="paymentMode"
-              value={paymentMode}
-              className="w-1/2 py-2 ps-3 outline-none focus:outline-none border-2"
-              onChange={(e) => setPaymentMode(e.target.value)}
-            >
-              <option defaultValue="Select payment mode" hidden>
-                Select payment mode
-              </option>
-              <option value="Online-payment">Online payment</option>
-              <option value="Cash-on-delivery">Cash on delivery</option>
-            </select>
-          </div>
-
-          <div className="flex mt-5">
-            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-            <div className="overflow-auto w-1/2">
-              <table className="border-2 border-teal-700 w-full text-left ">
-                <thead>
-                  <tr>
-                    {["Item", "Amount"].map((header, index) => (
-                      <th
-                        key={index}
-                        className="bg-teal-700 text-white p-4 border-[#eee]/50"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {cartData?.items && (
-                    <>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">ItemTotal</td>
-                        <td className="p-4">{cartData.billDetail.itemTotal}</td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Delivery charges</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.discountedDeliveryCharge ||
-                            cartData?.billDetail?.originalDeliveryCharge ||
-                            0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Added tip</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.addedTip || 0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Discount</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.discountedAmount || 0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Surge charge</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.surgePrice || 0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">GST (Inclusive of all Taxes)</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.taxAmount || 0}
-                        </td>
-                      </tr>
-                      <tr className="bg-teal-700 text-white font-semibold text-[18px]">
-                        <td className="p-4">Net Payable Amount</td>
-                        <td className="p-4">
-                          ₹{" "}
-                          {cartData?.billDetail?.discountedGrandTotal ||
-                            cartData?.billDetail?.originalGrandTotal ||
-                            0}
-                        </td>
-                      </tr>
-                    </>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4 mt-16 mx-10">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-              type="button"
-            >
-              <SaveAltIcon /> Bill
-            </button>
-            <button
-              className="bg-teal-700 text-white py-2 px-4 rounded-md"
-              onClick={createOrder}
-            >
-              {isOrderLoading
-                ? `Creating Order....`
-                : `Create Order of ₹${
-                    cartData.billDetail.discountedGrandTotal ||
-                    cartData.billDetail.originalGrandTotal
-                  }`}
-            </button>
-          </div>
-        </>
-      )}
+      {cartData?.items && <ShowBill data={cartData} />}
     </div>
   );
 };

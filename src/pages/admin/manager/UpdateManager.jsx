@@ -8,14 +8,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const UpdateManager = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { managerId } = useParams();
-  const [geofence, setGeofence] = useState([]);
-  const { token, role } = useContext(UserContext);
-  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-  const navigate = useNavigate();
-  const toast = useToast();
   const [managerData, setManagerData] = useState({
     name: "",
     email: "",
@@ -36,6 +31,15 @@ const UpdateManager = () => {
     geofenceId: "",
     viewCustomers: null,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [geofence, setGeofence] = useState([]);
+  const { token, role } = useContext(UserContext);
+
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const { managerId } = useParams();
   useEffect(() => {
     console.log(managerId);
     if (!token) {
@@ -46,7 +50,7 @@ const UpdateManager = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [addResponse, geofenceResponse] = await Promise.all([
+        const [managerResponse, geofenceResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/managers/${managerId}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -60,11 +64,11 @@ const UpdateManager = () => {
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
         }
-        if (addResponse.status === 200) {
+        if (managerResponse.status === 200) {
           // const { data } = agentResponse.data;
-          console.log("data in response is", addResponse.data.data);
-          setManagerData(addResponse.data.data);
-          console.log(addResponse.data.message);
+          console.log("data in response is", managerResponse.data.data);
+          setManagerData(managerResponse.data.data);
+          console.log(managerResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -289,7 +293,7 @@ const UpdateManager = () => {
                 <div className="flex flex-col w-2/3">
                   <select
                     name="geofenceId"
-                    value={managerData.geofenceId._id}
+                    value={managerData?.geofenceId?._id}
                     className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
                     onChange={inputChange}
                   >

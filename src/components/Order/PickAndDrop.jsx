@@ -9,9 +9,9 @@ import { UserContext } from "../../context/UserContext";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddOutlined } from "@mui/icons-material";
 import { RiDeleteBinLine } from "react-icons/ri";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 import { itemTypes } from "../../utils/DefaultData";
+import ShowBill from "./ShowBill";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -35,9 +35,6 @@ const PickAndDrop = ({ data }) => {
   const [cartData, setCartData] = useState({});
 
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
-  const [isOrderLoading, setIsOrderLoading] = useState(false);
-
-  const [paymentMode, setPaymentMode] = useState("");
 
   const [selectedVehicle, setSelectedVehicle] = useState("");
 
@@ -166,49 +163,6 @@ const PickAndDrop = ({ data }) => {
       });
     } finally {
       setIsInvoiceLoading(false);
-    }
-  };
-
-  const createOrder = async (e) => {
-    e.preventDefault();
-    try {
-      setIsOrderLoading(true);
-
-      const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order`,
-        {
-          paymentMode,
-          cartId: cartData.cartId,
-          deliveryMode: cartData.deliveryMode,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        toast({
-          title: "Success",
-          description: response.data.message,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      console.log(`Error in creating order: ${err}`);
-      toast({
-        title: "Error",
-        description: "Error in creating invoice",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    } finally {
-      setIsOrderLoading(false);
     }
   };
 
@@ -412,13 +366,13 @@ const PickAndDrop = ({ data }) => {
             <button
               type="button"
               className="bg-zinc-200 w-1/2 rounded-md p-2"
-              onClick={() => handleAddItem("pickData")}
+              onClick={() => handleAddItem()}
             >
               <AddOutlined /> Add Item
             </button>
           </div>
 
-          <div>
+          <div className="max-h-[500px] overflow-y-auto">
             {pickAndDropData?.items?.map((item, index) => (
               <div
                 key={index}
@@ -429,7 +383,7 @@ const PickAndDrop = ({ data }) => {
                   <select
                     name="itemName"
                     value={item.itemName}
-                    onChange={(e) => handleItemChange("pickData", index, e)}
+                    onChange={(e) => handleItemChange(index, e)}
                     className="w-1/2 p-3 outline-none focus:outline-none"
                   >
                     <option defaultValue={"Select item type"} hidden>
@@ -450,7 +404,7 @@ const PickAndDrop = ({ data }) => {
                         type="text"
                         name="length"
                         value={item.length}
-                        onChange={(e) => handleItemChange("pickData", index, e)}
+                        onChange={(e) => handleItemChange(index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
                         placeholder="Length"
                       />
@@ -458,7 +412,7 @@ const PickAndDrop = ({ data }) => {
                         type="text"
                         name="width"
                         value={item.width}
-                        onChange={(e) => handleItemChange("pickData", index, e)}
+                        onChange={(e) => handleItemChange(index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
                         placeholder="Width"
                       />
@@ -466,7 +420,7 @@ const PickAndDrop = ({ data }) => {
                         type="text"
                         name="height"
                         value={item.height}
-                        onChange={(e) => handleItemChange("pickData", index, e)}
+                        onChange={(e) => handleItemChange(index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-1/3"
                         placeholder="Height"
                       />
@@ -476,25 +430,18 @@ const PickAndDrop = ({ data }) => {
                         type="text"
                         name="weight"
                         value={item.weight}
-                        onChange={(e) => handleItemChange("pickData", index, e)}
+                        onChange={(e) => handleItemChange(index, e)}
                         className="outline-none focus:outline-none border border-gray-200 p-3 rounded w-full"
                         placeholder="Weight (in kg)"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="mx-3 flex justify-between mt-3 gap-3">
-                  <button
-                    type="button"
-                    className="bg-zinc-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                    onClick={() => handleAddItem("pickData")}
-                  >
-                    <AddOutlined /> Add Item
-                  </button>
+                <div className="mx-3 flex justify-end mt-3 gap-3">
                   <button
                     type="button"
                     className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
-                    onClick={() => handleRemoveItem("pickData", index)}
+                    onClick={() => handleRemoveItem(index)}
                   >
                     <RiDeleteBinLine /> Remove Item
                   </button>
@@ -713,118 +660,7 @@ const PickAndDrop = ({ data }) => {
         </div>
       </form>
 
-      {cartData?.items && (
-        <>
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="paymentType">
-              Payment Type
-            </label>
-            <select
-              name="paymentMode"
-              value={paymentMode}
-              className="w-1/2 py-2 ps-3 outline-none focus:outline-none border-2"
-              onChange={(e) => setPaymentMode(e.target.value)}
-            >
-              <option defaultValue="Select payment mode" hidden>
-                Select payment mode
-              </option>
-              <option value="Online-payment">Online payment</option>
-              <option value="Cash-on-delivery">Cash on delivery</option>
-            </select>
-          </div>
-
-          <div className="flex mt-5">
-            <h1 className="px-6 w-1/3 font-semibold">Bill Summary</h1>
-            <div className="overflow-auto w-1/2">
-              <table className="border-2 border-teal-700 w-full text-left ">
-                <thead>
-                  <tr>
-                    {["Item", "Amount"].map((header, index) => (
-                      <th
-                        key={index}
-                        className="bg-teal-700 text-white p-4 border-[#eee]/50"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {cartData?.items && (
-                    <>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">ItemTotal</td>
-                        <td className="p-4">{cartData.billDetail.itemTotal}</td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Delivery charges</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.discountedDeliveryCharge ||
-                            cartData?.billDetail?.originalDeliveryCharge ||
-                            0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Added tip</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.addedTip || 0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Discount</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.discountedAmount || 0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">Surge charge</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.surgePrice || 0}
-                        </td>
-                      </tr>
-                      <tr key={data.index} className="text-left align-middle">
-                        <td className="p-4">GST (Inclusive of all Taxes)</td>
-                        <td className="p-4">
-                          {cartData?.billDetail?.taxAmount || 0}
-                        </td>
-                      </tr>
-                      <tr className="bg-teal-700 text-white font-semibold text-[18px]">
-                        <td className="p-4">Net Payable Amount</td>
-                        <td className="p-4">
-                          ₹{" "}
-                          {cartData?.billDetail?.discountedGrandTotal ||
-                            cartData?.billDetail?.originalGrandTotal ||
-                            0}
-                        </td>
-                      </tr>
-                    </>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4 mt-16 mx-10">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
-              type="button"
-            >
-              <SaveAltIcon /> Bill
-            </button>
-            <button
-              className="bg-teal-700 text-white py-2 px-4 rounded-md"
-              onClick={createOrder}
-            >
-              {isOrderLoading
-                ? `Creating Order....`
-                : `Create Order of ₹${
-                    cartData.billDetail.discountedGrandTotal ||
-                    cartData.billDetail.originalGrandTotal
-                  }`}
-            </button>
-          </div>
-        </>
-      )}
+      {cartData?.items && <ShowBill data={cartData} />}
     </div>
   );
 };
