@@ -20,12 +20,15 @@ import avatar from "/avatar.svg";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
+import { CSVLink } from "react-csv";
+import { orderBillCSVDatHeading } from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const OrderDetails = () => {
   const [orderDetail, setOrderDetail] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [billData, setBillData] = useState([]);
 
   const { orderId } = useParams();
 
@@ -52,8 +55,10 @@ const OrderDetails = () => {
         });
 
         if (response.status === 200) {
-          setOrderDetail(response.data.data);
-          console.log(response.data.data);
+          const { data } = response.data;
+          setOrderDetail(data);
+          setBillData(data.billDetail);
+          console.log(billData);
         }
       } catch (err) {
         console.log(`Error in getting order detail: ${err}`);
@@ -94,13 +99,19 @@ const OrderDetails = () => {
             <p className="flex gap-[20px] mb-0">
               <ArrowLeftOutlined onClick={() => navigate("/all-orders")} />
               <p className="font-[600] mb-0">
-                Order information #{orderDetail._id}
+                Order information #{orderDetail?._id}
               </p>
             </p>
           </div>
           <div>
             <button className="bg-blue-100 px-4 p-2 rounded-md">
-              <DownloadOutlined /> Bill
+              <CSVLink
+                data={""}
+                headers={orderBillCSVDatHeading}
+                filename={`Order Bill ()`}
+              >
+                <DownloadOutlined /> Bill
+              </CSVLink>
             </button>
           </div>
         </div>

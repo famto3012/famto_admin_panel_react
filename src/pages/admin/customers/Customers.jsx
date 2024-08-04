@@ -9,6 +9,7 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import GIFLoader from "../../../components/GIFLoader";
 import { CSVLink } from "react-csv";
+import { allCustomerCSVDataHeading } from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -43,7 +44,6 @@ const Customers = () => {
 
         if (customersResponse.status === 200) {
           setCustomers(customersResponse.data.data);
-          console.log(customersResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
           setAllGeofence(geofenceResponse.data.geofences);
@@ -82,16 +82,6 @@ const Customers = () => {
     }
   };
 
-  const csvData = [
-    { label: "ID", key: "_id" },
-    { label: "Name", key: "fullName" },
-    { label: "Email", key: "email" },
-    { label: "Phone Number", key: "phoneNumber" },
-    { label: "Last Platform Used", key: "lastPlatformUsed" },
-    { label: "Registration Date", key: "registrationDate" },
-    { label: "Rating", key: "averageRating" },
-  ];
-
   return (
     <div>
       {isLoading ? (
@@ -108,8 +98,8 @@ const Customers = () => {
               <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
                 <CSVLink
                   data={customers}
-                  headers={csvData}
-                  filename={"customerData.csv"}
+                  headers={allCustomerCSVDataHeading}
+                  filename={"All_Customer_Data.csv"}
                 >
                   <ArrowDownOutlined /> <span>CSV</span>
                 </CSVLink>
