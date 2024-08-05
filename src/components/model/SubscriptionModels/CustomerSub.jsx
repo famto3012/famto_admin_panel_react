@@ -1,9 +1,51 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { FilterAltOutlined } from '@mui/icons-material'
-import React from 'react'
+import axios from 'axios'
+import React, { useRef, useState } from 'react'
 import { FaCalendar } from 'react-icons/fa6'
 
-const CustomerSub = () => {
+const CustomerSub = (
+  setCustomerlog,
+  token,
+  BASE_URL
+) => {
+  const [searchFilter,setSearchFilter] = useState()
+  // const dateInputRef = useRef(null);
+  // const openDatePicker = () => {
+  //   console.log("clicked");
+  //   if (dateInputRef.current) {
+  //     dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+  //   }
+  // };
+  const onSearchChange = (e) => {
+    const searchService = e.target.value;
+    setSearchFilter(searchService);
+    if (searchService !== "") {
+      handleSearchChangeFilter(searchService);
+    } else {
+      setCustomerlog([]);
+    }
+  };
+
+  const handleSearchChangeFilter = async (searchService) => {
+    try {
+      console.log(token);
+      const searchResponse = await axios.get(
+        `${BASE_URL}/admin/subscription-payment/customer-subscription-log-search`,
+        {
+          params: { name: searchService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (searchResponse.status === 200) {
+        setCustomerlog(searchResponse.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching data`, err);
+    }
+  };
+
   return (
   
     <div className="flex gap-7">
@@ -33,6 +75,9 @@ const CustomerSub = () => {
           name="search"
           placeholder="Search customer name"
           className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
+          value={searchFilter}
+          onChange={onSearchChange}
+
         />
         <button type="submit" className="absolute right-0 mt-2 mr-4 ">
           <SearchOutlined className="text-xl text-gray-500" />

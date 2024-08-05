@@ -182,7 +182,7 @@ const EditCustomerSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              value={customerSurge.geofenceId}
+              value={customerSurge.geofenceId._id}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >

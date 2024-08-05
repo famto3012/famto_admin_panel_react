@@ -3,6 +3,14 @@ import React, { useEffect, useState } from "react";
 import { FaCalendar } from "react-icons/fa6";
 
 const MerchantSub = () => {
+  const dateInputRef = useRef(null);
+  const openDatePicker = () => {
+    console.log("clicked");
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+    }
+  };
+
   return (
     <div className="flex gap-7">
       <select
@@ -27,14 +35,14 @@ const MerchantSub = () => {
         <input
           type="date"
           name="date"
-          // ref={dateInputRef} // Attach the ref to the input
-          // value={dateFilter}
+          ref={dateInputRef} // Attach the ref to the input
+          value={dateFilter}
           // onChange={onDateChange}
           className="hidden top-80" // Keep the input hidden
           style={{ right: "40px", top: "200px" }}
         />
         <button
-          // onClick={openDatePicker}
+          onClick={openDatePicker}
           className="flex items-center justify-center"
         >
           <FaCalendar className="text-gray-400 text-xl" />

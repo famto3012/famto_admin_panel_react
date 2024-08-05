@@ -2,11 +2,13 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const CommissionComponent = () => {
   const [isLoading,setIsLoading]=useState(false);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
+  const toast = useToast()
   const [isForm, setIsForm] = useState({
 
     commissionType:"Fixed",
@@ -39,9 +41,23 @@ const CommissionComponent = () => {
         )
         if(addResponse.status===201){
           console.log(isForm);
+          toast({
+            title:"Created",
+            description:"Commission Created Successfully",
+            status:"success",
+            duration:900,
+            isClosable:true,
+          })
         }
     }catch(err){
      console.log(`Error in fetching data:${err}`)
+     toast({
+      title:"Error",
+      description:"There was an error occured",
+      status:"error",
+      duration:900,
+      isClosable:true,
+    })
     }finally{
      setIsLoading(false);
     }

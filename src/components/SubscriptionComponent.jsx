@@ -12,59 +12,28 @@ import DeleteSubMerchantModal from "./model/SubscriptionModels/DeleteSubMerchant
 import AddSubCustomerModal from "./model/SubscriptionModels/AddSubCustomerModal";
 import EditSubCustomerModal from "./model/SubscriptionModels/EditSubCustomerModal";
 import DeleteSubCustomerModal from "./model/SubscriptionModels/DeleteSubCustomerModal";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const SubscriptionComponent = () => {
-  const [isLoading,setIsLoading]=useState(false)
-  const {token,role} = useContext(UserContext)
-  const [subscriptionMerchant,setSubscriptionMerchant] = useState([])
-  const [subscriptionCustomer,setSubscriptionCustomer] = useState([])
-  const [currentEditMerchant,setCurrentEditMerchant] = useState(null)
-  const [currentEditCustomer,setCurrentEditCustomer] = useState(null)
-  
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (!token || role !== "Admin") {
-      navigate("auth/login");
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-
-        const [merchantResponse ,customerResponse] =
-          await Promise.all([
-            axios.get(`${BASE_URL}/admin/subscription/get-merchant-subscription`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }), 
-            axios.get(`${BASE_URL}/admin/subscription/get-customer-subscription`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }), 
-          ]);
-        if (merchantResponse.status === 200) {
-          setSubscriptionMerchant(merchantResponse.data.data);
-          console.log(subscriptionMerchant)
-        }
-        if (customerResponse.status === 200) {
-          setSubscriptionCustomer(customerResponse.data.data);
-          console.log(subscriptionCustomer)
-        }
-       
-      } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [token, role, navigate]);
-
- 
-
+  const [isLoading, setIsLoading] = useState(false);
+  const { token, role } = useContext(UserContext);
+  const [subscriptionMerchant, setSubscriptionMerchant] = useState([]);
+  const [subscriptionCustomer, setSubscriptionCustomer] = useState([]);
+  const [tax,setTax] = useState([])
+  const [currentEditMerchant, setCurrentEditMerchant] = useState(null);
+  const [currentEditCustomer, setCurrentEditCustomer] = useState(null);
+  const [currentDeleteMerchant, setCurrentDeleteMerchant] = useState(null);
+  const [currentDeleteCustomer, setCurrentDeleteCustomer] = useState(null);
+  const [isModalVisibleMerchant, setIsModalVisibleMerchant] = useState(false);
+  const [isModalVisibleMerchantEdit, setIsModalVisibleMerchantEdit] =
+    useState(false);
+  const [deleteModalMerchant, setIsModalMerchantDelete] = useState(false);
+  const [isModalVisibleCustomer, setIsModalVisibleCustomer] = useState(false);
+  const [isModalVisibleCustomerEdit, setIsModalVisibleCustomerEdit] =
+    useState(false);
+  const [deleteModalCustomer, setIsModalCustomerDelete] = useState(false);
+  const navigate = useNavigate();
   const [merchant, setMerchant] = useState({
     planId: "",
     userId: "",
@@ -77,86 +46,125 @@ const SubscriptionComponent = () => {
     paymentMode: "",
   });
 
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const [merchantResponse, customerResponse,taxResponse] = await Promise.all([
+          axios.get(
+            `${BASE_URL}/admin/subscription/get-merchant-subscription`,
+            {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          axios.get(
+            `${BASE_URL}/admin/subscription/get-customer-subscription`,
+            {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          axios.get(
+            `${BASE_URL}/admin/taxes/all-tax`,
+            {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+        ]);
+        if (merchantResponse.status === 200) {
+          setSubscriptionMerchant(merchantResponse.data.data);
+          console.log(subscriptionMerchant);
+        }
+        if (customerResponse.status === 200) {
+          setSubscriptionCustomer(customerResponse.data.data);
+          console.log(subscriptionCustomer);
+        }
+        if (taxResponse.status === 200) {
+          setTax(taxResponse.data.data);
+          console.log(taxResponse);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token, role, navigate]);
+
   const handleCustomer = (e) => {
     const { name, value } = e.target;
     setCustomer({ ...customer, [name]: value });
-   
   };
 
-  const submitCustomer = async(e) => {
+  const submitCustomer = async (e) => {
     e.preventDefault();
-    try{
-      setIsLoading(true)
-      const addResponse= await axios.post(
-        `${BASE_URL}/admin/subscription-payment/customer-subscription-payment`,customer,{
-          withCredentials:true,
-          headers:{Authorization:`Bearer ${token}`}
+    try {
+      setIsLoading(true);
+      const addResponse = await axios.post(
+        `${BASE_URL}/admin/subscription-payment/customer-subscription-payment`,
+        customer,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
         }
-      )
-      if(addResponse.status===201)
-      {
-        console.log(addResponse.data.message)
+      );
+      if (addResponse.status === 201) {
+        console.log(addResponse.data.message);
       }
-    }catch(err){
-       console.log(`Error in fetching data:${err}`);
-       
+    } catch (err) {
+      console.log(`Error in fetching data:${err}`);
     }
     console.log("Customer", customer);
-   
   };
 
   const handleMerchant = (e) => {
     const { name, value } = e.target;
     setMerchant({ ...merchant, [name]: value });
-   
   };
 
-  const submitMerchant = async(e) => {
+  const submitMerchant = async (e) => {
     e.preventDefault();
-    try{
-      setIsLoading(true)
-      const addResponse= await axios.post(
-        `${BASE_URL}/admin/subscription-payment/merchant-subscription-payment`,merchant,{
-          withCredentials:true,
-          headers:{Authorization:`Bearer ${token}`}
+    try {
+      setIsLoading(true);
+      const addResponse = await axios.post(
+        `${BASE_URL}/admin/subscription-payment/merchant-subscription-payment`,
+        merchant,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
         }
-      )
-      if(addResponse.status===201)
-      {
-        console.log(addResponse.data.message)
+      );
+      if (addResponse.status === 201) {
+        console.log(addResponse.data.message);
       }
-    }catch(err){
-       console.log(`Error in fetching data:${err}`);
-       
+    } catch (err) {
+      console.log(`Error in fetching data:${err}`);
     }
     console.log("Merchant", merchant);
   };
 
- 
-
-  const [isModalVisibleMerchant, setIsModalVisibleMerchant] = useState(false);
-
+  // Modal for Add Merchant Subscription
   const showModalAddMerchant = () => {
     setIsModalVisibleMerchant(true);
   };
 
-  const handleCancel = () => {
-    setIsModalVisibleMerchant(false);
-    setIsModalVisibleMerchantEdit(false);
-    setIsModalMerchantDelete(false);
-    setIsModalVisibleCustomer(false)
-    setIsModalVisibleCustomerEdit(false)
-  };
- 
-  const [isModalVisibleMerchantEdit, setIsModalVisibleMerchantEdit] = useState(false);
-
+  // Modal for Edit Merchant Subscription
   const showModalEditMerchant = (id) => {
     setCurrentEditMerchant(id);
     setIsModalVisibleMerchantEdit(true);
   };
 
-  const [currentDeleteMerchant,setCurrentDeleteMerchant] = useState(null)
-  const [deleteModalMerchant, setIsModalMerchantDelete] = useState(false);
+  // Modal for Delete Merchant Subscription
   const showModalDeleteMerchant = (id) => {
     setCurrentDeleteMerchant(id);
     setIsModalMerchantDelete(true);
@@ -168,29 +176,22 @@ const SubscriptionComponent = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteMerchant = () => {
     setIsModalMerchantDelete(false);
     setCurrentDeleteMerchant(null);
   };
 
-
-
-  const [isModalVisibleCustomer, setIsModalVisibleCustomer] = useState(false);
-
+  // Modal for Add Customer Subscription
   const showModalAddCustomer = () => {
     setIsModalVisibleCustomer(true);
   };
 
-  const [isModalVisibleCustomerEdit, setIsModalVisibleCustomerEdit] = useState(false);
-
+  // Modal for Edit Customer Subscription
   const showModalEditCustomer = (id) => {
     setCurrentEditCustomer(id);
     setIsModalVisibleCustomerEdit(true);
   };
 
-  const [currentDeleteCustomer,setCurrentDeleteCustomer] = useState(null)
-  const [deleteModalCustomer, setIsModalCustomerDelete] = useState(false);
   const showModalDeleteCustomer = (id) => {
     setCurrentDeleteCustomer(id);
     setIsModalCustomerDelete(true);
@@ -198,7 +199,7 @@ const SubscriptionComponent = () => {
 
   const removeCustomer = (id) => {
     setSubscriptionCustomer(
-      subscriptionCustomer.filter((subscriptions) => subscriptions._id !== id)
+      subscriptionCustomer.filter((subscription) => subscription._id !== id)
     );
   };
 
@@ -208,6 +209,13 @@ const SubscriptionComponent = () => {
     setCurrentDeleteCustomer(null);
   };
 
+  const handleCancel = () => {
+    setIsModalVisibleMerchant(false);
+    setIsModalVisibleMerchantEdit(false);
+    setIsModalMerchantDelete(false);
+    setIsModalVisibleCustomer(false);
+    setIsModalVisibleCustomerEdit(false);
+  };
 
   return (
     <>
@@ -223,9 +231,12 @@ const SubscriptionComponent = () => {
             </p>
             <Switch />
           </div>
-          <div className="flex w-2/3 justify-between mt-10">
-            <p>Merchant Subscription Setup</p>
-            <button className="bg-zinc-200 p-2 rounded-lg" onClick={showModalAddMerchant}>
+          <div className="flex items-center mt-10">
+            <label className="w-1/3">Merchant Subscription Setup</label>
+            <button
+              className="bg-zinc-200 p-2 rounded-lg w-1/3"
+              onClick={showModalAddMerchant}
+            >
               Add New Merchant Subscription Plan{" "}
               <PlusOutlined className="ml-10" />
             </button>
@@ -233,16 +244,17 @@ const SubscriptionComponent = () => {
               isVisible={isModalVisibleMerchant}
               handleCancel={handleCancel}
               token={token}
+              tax={tax}
               BASE_URL={BASE_URL}
             />
           </div>
         </div>
 
-        <div className="bg-white mx-5 p-5 rounded-lg mt-5">
+        <div className="bg-white mx-5 p-5 pb-10 rounded-lg mt-5">
           <h1>Apply Subscription</h1>
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>
-            <div className="w-2/3 grid grid-cols-2 gap-5">
+            <div className="w-fit ml-6 grid xl:grid-cols-2 grid-cols-1 gap-5">
               {subscriptionMerchant.map((subscriptions) => (
                 <div className="bg-zinc-50 shadow rounded-lg flex">
                   <div>
@@ -258,22 +270,25 @@ const SubscriptionComponent = () => {
                     <p className="m-3">{subscriptions.description}</p>
                     <div className="mb-5 flex">
                       <button
-                        className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
+                        className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 mx-3 mt-5"
                         onClick={() => showModalEditMerchant(subscriptions._id)}
                       >
                         <BiEdit className="text-[22px] mr-1" /> Edit
                       </button>
                       <EditSubMerchantModal
-                       isVisible={isModalVisibleMerchantEdit}
+                        isVisible={isModalVisibleMerchantEdit}
                         handleCancel={handleCancel}
                         currentEditMerchant={currentEditMerchant}
                         token={token}
+                        tax={tax}
                         BASE_URL={BASE_URL}
-                       />
+                      />
 
                       <button
-                        className="bg-teal-800 flex  rounded-3xl p-3 items-center text-white ml-3 px-8 mt-5"
-                        onClick={() => showModalDeleteMerchant(subscriptions._id)}
+                        className="bg-teal-800 flex  rounded-3xl p-3 items-center text-white mx-3 px-8 mt-5"
+                        onClick={() =>
+                          showModalDeleteMerchant(subscriptions._id)
+                        }
                       >
                         <RiDeleteBinLine className="text-[20px] mr-1" />
                         Delete
@@ -281,7 +296,9 @@ const SubscriptionComponent = () => {
                       <DeleteSubMerchantModal
                         isVisible={deleteModalMerchant}
                         handleCancel={handleCancel}
-                        handleConfirmDeleteMerchant={handleConfirmDeleteMerchant}
+                        handleConfirmDeleteMerchant={
+                          handleConfirmDeleteMerchant
+                        }
                         currentDeleteMerchant={currentDeleteMerchant}
                         token={token}
                         BASE_URL={BASE_URL}
@@ -293,8 +310,8 @@ const SubscriptionComponent = () => {
                     <input
                       type="radio"
                       name="planId"
-                      value={subscriptions.name}
-                      checked={merchant.planId === subscriptions.name}
+                      value={subscriptions._id}
+                      checked={merchant.planId === subscriptions._id}
                       className="size-5 bg-teal-800"
                       onChange={handleMerchant}
                     />
@@ -359,10 +376,10 @@ const SubscriptionComponent = () => {
             </p>
             <Switch />
           </div>
-          <div className="flex w-2/3 justify-between mt-10">
-            <p>Customerr Subscription Setup</p>
+          <div className="flex item-center mt-10">
+            <label className="w-1/3">Customer Subscription Setup</label>
             <button
-              className="bg-zinc-200 p-2 rounded-lg"
+              className="bg-zinc-200 p-2 rounded-lg w-1/3"
               onClick={showModalAddCustomer}
             >
               Add New Customer Subscription Plan{" "}
@@ -372,6 +389,7 @@ const SubscriptionComponent = () => {
               isVisible={isModalVisibleCustomer}
               handleCancel={handleCancel}
               token={token}
+              tax={tax}
               BASE_URL={BASE_URL}
             />
           </div>
@@ -381,38 +399,41 @@ const SubscriptionComponent = () => {
           <h1>Apply Subscription</h1>
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>
-            <div className="w-2/3  grid grid-cols-2 gap-5">
-              {subscriptionCustomer.map((subscriptions) => (
+            <div className="w-fit grid xl:grid-cols-2 grid-cols-1 gap-5">
+              {subscriptionCustomer.map((subscription) => (
                 <div className="bg-zinc-50 shadow-md rounded-lg flex">
                   <div>
                     <div className="flex justify-between m-3">
-                      <p>{subscriptions.name}</p>
-                      <p>{subscriptions.amount}</p>
+                      <p>{subscription.name}</p>
+                      <p>{subscription.amount}</p>
                     </div>
                     <div className="flex justify-between mt-5 m-3">
-                      <p>{subscriptions.duration}</p>
-                      <p>{subscriptions.renewalReminder}</p>
+                      <p>{subscription.duration}</p>
+                      <p>{subscription.renewalReminder}</p>
                     </div>
-                    <p className="m-3">{subscriptions.taxId}</p>
-                    <p className="m-3">{subscriptions.noOfOrder}</p>
-                    <p className="m-3">{subscriptions.description}</p>
+                    <p className="m-3">{subscription.taxId}</p>
+                    <p className="m-3">{subscription.noOfOrder}</p>
+                    <p className="m-3">{subscription.description}</p>
                     <div className="mb-5 flex">
                       <button
                         className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
-                        onClick={() => showModalEditCustomer(subscriptions._id)}
+                        onClick={() => showModalEditCustomer(subscription._id)}
                       >
                         <BiEdit className="text-[22px] mr-1" /> Edit
                       </button>
                       <EditSubCustomerModal
-                       isVisible={isModalVisibleCustomerEdit}
+                        isVisible={isModalVisibleCustomerEdit}
                         handleCancel={handleCancel}
                         currentEditCustomer={currentEditCustomer}
                         token={token}
+                        tax={tax}
                         BASE_URL={BASE_URL}
-                       />
+                      />
                       <button
                         className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
-                        onClick={() => showModalDeleteCustomer(subscriptions._id)}
+                        onClick={() =>
+                          showModalDeleteCustomer(subscription._id)
+                        }
                       >
                         <RiDeleteBinLine className="text-[20px] mr-1" />
                         Delete
@@ -420,7 +441,9 @@ const SubscriptionComponent = () => {
                       <DeleteSubCustomerModal
                         isVisible={deleteModalCustomer}
                         handleCancel={handleCancel}
-                        handleConfirmDeleteCustomer={handleConfirmDeleteCustomer}
+                        handleConfirmDeleteCustomer={
+                          handleConfirmDeleteCustomer
+                        }
                         currentDeleteCustomer={currentDeleteCustomer}
                         token={token}
                         BASE_URL={BASE_URL}
@@ -428,12 +451,12 @@ const SubscriptionComponent = () => {
                       />
                     </div>
                   </div>
-                  <div className="bg-white  shadow ml-auto rounded-lg w-14 flex items-center justify-center">
+                  <div className="bg-white shadow ml-auto rounded-lg w-14 flex items-center justify-center">
                     <input
                       type="radio"
                       name="planId"
-                      value={subscriptions.name}
-                      checked={customer.planId === subscriptions.name}
+                      value={subscription._id}
+                      checked={customer.planId === subscription._id}
                       className="size-5 bg-teal-800"
                       onChange={handleCustomer}
                     />

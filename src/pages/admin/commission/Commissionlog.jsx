@@ -7,6 +7,8 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { Modal } from "antd";
 import { FaCalendar } from "react-icons/fa6";
+import GIFLoader from "../../../components/GIFLoader";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -21,7 +23,7 @@ const Commissionlog = () => {
   const [currentId, setCurrentId] = useState(null);
   const navigate = useNavigate();
   const dateInputRef = useRef(null);
-
+  const [isTableLoading,setIsTableLoading] = useState(false)
   const { token, role } = useContext(UserContext);
   useEffect(() => {
     if (!token) {
@@ -72,6 +74,7 @@ const Commissionlog = () => {
 
   const handleSearchChangeFilter = async (searchService) => {
     try {
+      setIsTableLoading(true)
       console.log(token);
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/commission/commission-log-name`,
@@ -86,6 +89,9 @@ const Commissionlog = () => {
       }
     } catch (err) {
       console.log(`Error in fetching data`, err);
+      setCommissionlog([])
+    } finally{
+      setIsTableLoading(false)
     }
   };
   const onDateChange = (e) => {
@@ -101,6 +107,7 @@ const Commissionlog = () => {
 
   const handleDateChangeFilter = async (searchDate) => {
     try {
+      setIsTableLoading(true)
       console.log(token);
       const dateResponse = await axios.get(
         `${BASE_URL}/admin/commission/commission-log-date`,
@@ -110,11 +117,16 @@ const Commissionlog = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (dateResponse.status === 200) {
-        setCommissionlog(dateResponse.data.data);
+      if (dateResponse.status === 200){
+        setCommissionlog(dateResponse.data.data) 
       }
+       
+      
     } catch (err) {
       console.log(`Error in fetching data`, err);
+      setCommissionlog([]);
+    } finally{
+      setIsTableLoading(false)
     }
   };
 
@@ -138,6 +150,7 @@ const Commissionlog = () => {
 
   const handleMerchantChangeFilter = async (searchMerchant) => {
     try {
+      setIsTableLoading(true)
       console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/commission/commission-log/${searchMerchant}`,
@@ -151,6 +164,8 @@ const Commissionlog = () => {
       }
     } catch (err) {
       console.log(`Error in fetching data`, err);
+    } finally{
+      setIsTableLoading(false)
     }
   };
   const showModal = (id) => {
@@ -195,6 +210,10 @@ const Commissionlog = () => {
     }
   };
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
     <>
       <Sidebar />
       <div className="w-full h-screen pl-[290px] bg-gray-100">
@@ -239,28 +258,21 @@ const Commissionlog = () => {
             ))}
           </select>
           <div className="flex items-center ">
-            {/* <input
-              type="date"
-              name="date"
-              value={dateFilter}
-              onChange={onDateChange}
-              className="right-4 p-2"
-            /> */}
-            <input
-              type="date"
-              name="date"
-              ref={dateInputRef} // Attach the ref to the input
-              value={dateFilter}
-              onChange={onDateChange}
-              className="hidden top-80" // Keep the input hidden
-              style={{ right: "40px", top: "200px" }}
-            />
-            <button
-              onClick={openDatePicker}
-              className="flex items-center justify-center"
-            >
-              <FaCalendar className="text-gray-400 text-xl" />
-            </button>
+             <input
+                  type="date"
+                  name="date"
+                  ref={dateInputRef} // Attach the ref to the input
+                  value={dateFilter}
+                  onChange={onDateChange}
+                  className="hidden top-80" // Keep the input hidden
+                  style={{ right: "40px", top: "200px" }}
+                />
+                 <button
+                  onClick={openDatePicker}
+                  className="flex items-center justify-center"
+                >
+                  <FaCalendarAlt className="text-gray-400 text-xl" />
+                </button>
             <FilterAltOutlined className="text-gray-400 mx-7" />
             <input
               type="search"
@@ -298,11 +310,27 @@ const Commissionlog = () => {
               </tr>
             </thead>
             <tbody>
-              {commissionlog?.map((commissionlog) => (
+           
+            {isTableLoading && (
+                  <tr>
+                    <td colSpan={7} className="text-center h-20">
+                      Loading Data...
+                    </td>
+                  </tr>
+                )}
+              {!isTableLoading && commissionlog?.length === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <p className="flex items-center justify-center h-20">No data available</p>
+                  </td>
+                </tr>
+              )}
+              {!isTableLoading && commissionlog?.map((commissionlog) => (
                 <tr
                   key={commissionlog._id}
                   className="align-middle border-b border-gray-300 text-center h-20"
                 >
+
                   <td>
                     <Link
                       to="/home"
@@ -358,8 +386,11 @@ const Commissionlog = () => {
             </tbody>
           </table>
         </div>
+      
       </div>
     </>
+    )}
+    </div>
   );
 };
 

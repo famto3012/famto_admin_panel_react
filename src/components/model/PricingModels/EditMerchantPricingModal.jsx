@@ -25,8 +25,8 @@ const EditMerchantPricingModal = ({
     fareAfterBaseWeight: "",
     waitingTime: "",
     waitingFare: "",
-    purchaseFareHour: "",
-    geofenceid: "",
+    purchaseFarePerHour: "",
+    geofenceId: "",
   });
   useEffect(() => {
     // console.log(currentEditMr)
@@ -249,12 +249,12 @@ const EditMerchantPricingModal = ({
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="geofence">
+            <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
               Geofence
             </label>
             <select
               name="geofenceId"
-              value={mpricing.geofenceId}
+              value={mpricing.geofenceId._id}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >

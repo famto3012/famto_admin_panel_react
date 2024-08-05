@@ -13,7 +13,7 @@ const AddCustomerPricingModal = ({
 }) => {
   const toast = useToast();
   const [cpricing, setCpricing] = useState({
-    vehicleType: null,
+    vehicleType: "",
     ruleName: "",
     baseFare: "",
     baseDistance: "",
@@ -25,7 +25,7 @@ const AddCustomerPricingModal = ({
     purchaseFarePerHour: "",
     geofenceId: "",
     deliveryMode: "Home Delivery",
-    businessCategoryId: null,
+    businessCategoryId: "",
   });
   const handleRadioChange = (e) => {
     const { value } = e.target;
@@ -265,7 +265,7 @@ const AddCustomerPricingModal = ({
               <label className="w-1/3 text-gray-500" htmlFor="business"></label>
               <select
                 name="businessCategoryId"
-                value={cpricing.businessCategoryId || ""}
+                value={cpricing?.businessCategoryId}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -292,7 +292,7 @@ const AddCustomerPricingModal = ({
               <select
                 id="vehicleType"
                 name="vehicleType"
-                value={cpricing.vehicleType || ""}
+                value={cpricing?.vehicleType}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -310,7 +310,7 @@ const AddCustomerPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={cpricing.geofenceId || ""}
+              value={cpricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >
