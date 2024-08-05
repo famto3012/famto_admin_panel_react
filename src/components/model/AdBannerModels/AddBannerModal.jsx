@@ -79,6 +79,7 @@ const AddBannerModal = ({
 
       if (addBannerResponse.status === 201) {
         onAddBanner(addBannerResponse.data.data);
+        console.log("resposne",addBannerResponse.data.data);
         setNotificationFile(null);
         setNotificationPreviewURL(null);
         handleCancel();
@@ -116,7 +117,7 @@ const AddBannerModal = ({
     }
   };
 
-  console.log(appBanner);
+  
 
   return (
     <Modal

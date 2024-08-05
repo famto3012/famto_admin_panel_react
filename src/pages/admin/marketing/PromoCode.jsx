@@ -89,7 +89,8 @@ const PromoCode = () => {
     setCurrentPromo(null);
   };
 
-  const handlePromoDelete = async (currentPromo) => {
+  const handlePromoDelete = async (e,currentPromo) => {
+    e.preventDefault();
     try {
       setIsLoading(true);
       const deleteResponse = await axios.delete(
@@ -112,9 +113,7 @@ const PromoCode = () => {
       }
     } catch (err) {
       console.error(
-        `Error in deleting promoCode: ${
-          err.response?.data?.message || err.message
-        }`
+        `Error in deleting promoCode: ${err.message}`
       );
     } finally {
       setIsLoading(false);
@@ -339,7 +338,7 @@ const PromoCode = () => {
                               </button>
                               <button
                                 className="bg-red-100 px-5 py-2 rounded-lg font-semibold text-red-600"
-                                onClick={() => handlePromoDelete(currentPromo)}
+                                onClick={(e) => handlePromoDelete(e,currentPromo)}
                               >
                                 Delete
                               </button>

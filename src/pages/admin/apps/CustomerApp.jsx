@@ -10,7 +10,6 @@ import {
   PlusOutlined,
   FacebookFilled,
 } from "@ant-design/icons";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +18,7 @@ import { useToast } from "@chakra-ui/react";
 import BusinessCategory from "../../../components/CustomerApp/BusinessCategory";
 import CustomerOrder from "../../../components/CustomerApp/CustomerOrder";
 import PickAndDrop from "../../../components/CustomerApp/PickAndDrop";
+import ServiceCategory from "../../../components/CustomerApp/ServiceCategory";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -40,15 +40,6 @@ const CustomerApp = () => {
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
   const toast = useToast();
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const [service, setService] = useState({
-    title: "",
-    geofence: "",
-    imageURL: "",
-  });
-
 
   console.log("Customer Data", customerData);
   //API for fetch data..
@@ -145,16 +136,6 @@ const CustomerApp = () => {
     }
   };
 
-  const handleServiceChange = (e) => {
-    setService({ ...service, [e.target.name]: e.target.value });
-  };
-
-  const handleService = (e) => {
-    e.preventDefault();
-
-    console.log("Service : ", service);
-  };
-
   const onChange = (name, checked) => {
     setCustomerData({ ...customerData, [name]: checked });
   };
@@ -169,15 +150,7 @@ const CustomerApp = () => {
     setNotificationPreviewURL(URL.createObjectURL(file));
   };
 
-  const [serviceFile, setServiceFile] = useState(null);
-  const [servicePreviewURL, setServicePreviewURL] = useState(null);
 
-  const handleServiceImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setServiceFile(file);
-    setServicePreviewURL(URL.createObjectURL(file));
-  };
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -345,168 +318,8 @@ const CustomerApp = () => {
                 </div>
               </div>
             </div>
-            <div className="border-b-2 border-gray-200 pb-5">
-              <div className="flex justify-between mx-5 mt-10">
-                <h1>Services</h1>
-                <p className="text-gray-500">
-                  This enables to add, edit, change thumbnail of the listed
-                  services
-                </p>
-                <button
-                  onClick={showModal}
-                  className="bg-teal-800 text-white px-5 rounded-lg p-2"
-                >
-                  <PlusOutlined /> Add Services
-                </button>
-                <Modal
-                  title="Add Service icon"
-                  open={isModalVisible}
-                  className="mt-24"
-                  onCancel={handleCancel}
-                  footer={null} // Custom footer to include form buttons
-                >
-                  <form onSubmit={handleService}>
-                    <div className="flex mt-5 gap-4">
-                      <label className="w-1/2 text-gray-500">
-                        Service title
-                      </label>
-                      <input
-                        type="text"
-                        className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-                        name="title"
-                        value={service.title}
-                        onChange={handleServiceChange}
-                      />
-                    </div>
-                    <div className="flex mt-5  gap-4">
-                      <label className="w-1/2 text-gray-500">Geofence</label>
-                      <select
-                        name="geofence"
-                        value={service.geofence}
-                        onChange={handleServiceChange}
-                        className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-                      >
-                        <option value="select" hidden selected>
-                          Geofence
-                        </option>
-                        <option value="Option 1">Option 1</option>
-                      </select>
-                    </div>
-                    <div className="flex">
-                      <label className="mt-5">Image (342px x 160px)</label>
-                      <div className=" flex items-center gap-[30px]">
-                        {!servicePreviewURL && (
-                          <div className="bg-gray-400 ml-20 mt-5 h-16 w-16 rounded-md" />
-                        )}
-                        {servicePreviewURL && (
-                          <figure className="ml-20 mt-5 h-16 w-16 rounded-md relative">
-                            <img
-                              src={servicePreviewURL}
-                              alt="profile"
-                              className="w-full rounded h-full object-cover "
-                            />
-                          </figure>
-                        )}
-                        <input
-                          type="file"
-                          name="serviceImage"
-                          id="serviceImage"
-                          className="hidden"
-                          onChange={handleServiceImageChange}
-                        />
-                        <label
-                          htmlFor="serviceImage"
-                          className="cursor-pointer "
-                        >
-                          <MdCameraAlt
-                            className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                            size={30}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                    <div className="flex justify-end mt-10  gap-4">
-                      <button
-                        className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                        onClick={handleCancel}
-                        type="submit"
-                      >
-                        {" "}
-                        Cancel
-                      </button>
-                      <button
-                        className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-                        type="submit"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </form>
-                </Modal>
-              </div>
-              <div className="grid justify-center mt-5">
-                <div className="w-96 h-48">
-                  <div className=" bg-gray-300 rounded-lg">
-                    <div className="flex relative ">
-                      <DragIndicatorIcon className="mt-14 text-3xl ml-3" />
-                      <img
-                        className="ml-3 rounded"
-                        src="Delivery-card.svg"
-                        alt=""
-                      />
-                      <p className="text-white absolute bottom-1 right-1">
-                        Delivery
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-96 h-48">
-                  <div className=" bg-gray-300 rounded-lg">
-                    <div className="flex relative ">
-                      <DragIndicatorIcon className="mt-14 text-3xl ml-3" />
-                      <img
-                        className="ml-3 rounded"
-                        src="Taxi-card.svg"
-                        alt=""
-                      />
-                      <p className="text-white absolute bottom-1 right-1">
-                        Taxi
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-96 h-48">
-                  <div className=" bg-gray-300 rounded-lg">
-                    <div className="flex relative ">
-                      <DragIndicatorIcon className="mt-14 text-3xl ml-3" />
-                      <img
-                        className="ml-3 rounded"
-                        src="OnlineConsultation-card.svg"
-                        alt=""
-                      />
-                      <p className="text-white absolute w-16 bottom-1 right-6">
-                        Online Consultation
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-96 h-48">
-                  <div className=" bg-gray-300 rounded-lg">
-                    <div className="flex relative ">
-                      <DragIndicatorIcon className="mt-14 text-3xl ml-3" />
-                      <img
-                        className="ml-3 rounded"
-                        src="HandymanServices-card.svg"
-                        alt=""
-                      />
-                      <p className="text-white w-16 absolute bottom-1 right-2 text-end">
-                        Handyman Services
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
+            <ServiceCategory />
 
             <BusinessCategory />
 

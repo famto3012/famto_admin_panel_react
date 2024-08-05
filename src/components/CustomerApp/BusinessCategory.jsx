@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
-import { Switch, Modal } from "antd";
+import { Switch, Modal, Spin } from "antd";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { PlusOutlined } from "@ant-design/icons";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -15,6 +15,7 @@ const BusinessCategory = () => {
   const [getBusiness, setGetBusiness] = useState([]);
   const [allGeofence, setAllGeofence] = useState([]);
   const [currentBanner, setCurrentBanner] = useState(null);
+  const [currentBannerGet, setCurrentBannerGet] = useState(null);
   const [business, setBusiness] = useState({
     title: "",
     geofenceId: "",
@@ -23,6 +24,10 @@ const BusinessCategory = () => {
 
   const { token } = useContext(UserContext);
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [IsSaveLoading, setIsSaveLoading] = useState(false);
   const [isModalVisibleBusiness, setIsModalVisibleBusiness] = useState(false);
   const [isModalVisibleBuinessEdit, setIsModalVisibleBusinessEdit] =
     useState(false);
@@ -37,6 +42,7 @@ const BusinessCategory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const [response, geofenceResponse] = await Promise.all([
           axios.get(
             `${BASE_URL}/admin/business-categories/get-all-business-category`,
@@ -58,11 +64,52 @@ const BusinessCategory = () => {
         }
       } catch (err) {
         console.error(`Error in fetching data ${err.message}`);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, [token]);
+
+  useEffect(() => {
+    const fetchBusinessCategory = async (currentBannerGet) => {
+      try {
+        setDataLoading(true);
+        const categoryResponse = await axios.get(
+          `${BASE_URL}/admin/business-categories/${currentBannerGet}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (categoryResponse.status === 200) {
+          const data = categoryResponse.data.data;
+          setBusiness({
+            title: data.title,
+            geofenceId: data.geofenceId?._id,
+            bannerImage: data.bannerImageURL,
+          });
+        }
+      } catch (err) {
+        console.error(`Error fetching business category ${err.message}`);
+        toast({
+          title: "Error",
+          description: "Failed to fetch business category.",
+          status: "error",
+          duration: 900,
+          isClosable: true,
+        });
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    if (currentBannerGet) {
+      fetchBusinessCategory(currentBannerGet);
+    }
+  }, [currentBannerGet, token]);
 
   // API to Add Business Category...
 
@@ -70,6 +117,7 @@ const BusinessCategory = () => {
     e.preventDefault();
 
     try {
+      setIsSaveLoading(true);
       const businessDataToSend = new FormData();
       businessDataToSend.append("geofenceId", business.geofenceId);
       businessDataToSend.append("title", business.title);
@@ -99,11 +147,54 @@ const BusinessCategory = () => {
       }
     } catch (err) {
       console.error(`Error in creating business ${err.message}`);
+    } finally {
+      setIsSaveLoading(false);
+    }
+  };
+
+  // API to Add Business Category...
+
+  const handleBusinessEdit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setIsSaveLoading(true);
+      const businessDataToSend = new FormData();
+      businessDataToSend.append("geofenceId", business.geofenceId);
+      businessDataToSend.append("title", business.title);
+      businessDataToSend.append("bannerImage", businessFile);
+
+      const response = await axios.put(
+        `${BASE_URL}/admin/business-categories/edit-business-category/${currentBannerGet}`,
+        businessDataToSend,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.status === 200) {
+        handleAddBanner(response.data.data);
+        toast({
+          title: "Created",
+          description: "Business Category Created Successfully.",
+          duration: 900,
+          status: "success",
+          isClosable: true,
+        });
+        handleCancel();
+      }
+    } catch (err) {
+      console.error(`Error in creating business ${err.message}`);
+    } finally {
+      setIsSaveLoading(false);
     }
   };
 
   const handleAddBanner = (newCategory) => {
-    setBusiness((prevBanners) => {
+    setGetBusiness((prevBanners) => {
       if (Array.isArray(prevBanners)) {
         return [...prevBanners, newCategory];
       } else {
@@ -171,10 +262,14 @@ const BusinessCategory = () => {
     setBusinessPreviewURL(URL.createObjectURL(file));
   };
 
-  const handleBusinessEditImageChange = (e) => {
+  const handleBusinessEditImageChange = async (e) => {
     e.preventDefault();
     const file = e.target.files[0];
     setBusinessEditFile(file);
+    await setBusinessEditPreviewURL(URL.createObjectURL(file));
+    if (businessPreviewURL) {
+      console.log("preview added", businessPreviewURL);
+    }
     setBusinessEditPreviewURL(URL.createObjectURL(file));
   };
 
@@ -182,7 +277,8 @@ const BusinessCategory = () => {
     setIsModalVisibleBusiness(true);
   };
 
-  const showModalBusinessEdit = () => {
+  const showModalBusinessEdit = (Id) => {
+    setCurrentBannerGet(Id);
     setIsModalVisibleBusinessEdit(true);
   };
 
@@ -194,68 +290,71 @@ const BusinessCategory = () => {
   const handleCancel = () => {
     setIsModalVisibleBusiness(false);
     setIsModalVisibleBusinessEdit(false);
+    setIsShowModalDelete(false);
   };
 
- // Function to remove a banner from the state
-const removeBanner = (Id) => {
-  setGetBusiness((prevBusiness) =>
-    prevBusiness.filter((business) => business._id !== Id)
-  );
-};
-
-// Function to handle confirm delete
-const handleConfirmDelete = () => {
-  setIsShowModalDelete(false);
-  setCurrentBanner(null);
-};
-
-// API call to delete app banner
-const handleBannerDelete = async (Id) => {
-  try {
-    setConfirmLoading(true);
-
-    const deleteResponse = await axios.delete(
-      `${BASE_URL}/admin/business-categories/delete-business-category/${Id}`,
-      {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      }
+  // Function to remove a banner from the state
+  const removeBanner = (Id) => {
+    setGetBusiness((prevBusiness) =>
+      prevBusiness.filter((business) => business._id !== Id)
     );
+  };
 
-    if (deleteResponse.status === 200) {
-      removeBanner(Id);
-      handleConfirmDelete();
-      toast({
-        title: "Banner Deleted",
-        description: "The banner was deleted successfully.",
-        status: "success",
-        duration: 900,
-        isClosable: true,
-      });
-    } else {
-      console.error(`Unexpected status code: ${deleteResponse.status}`);
+  // Function to handle confirm delete
+  const handleConfirmDelete = () => {
+    setIsShowModalDelete(false);
+    setCurrentBanner(null);
+  };
+
+  // API call to delete app banner
+  const handleBannerDelete = async (currentBanner) => {
+    try {
+      setConfirmLoading(true);
+
+      const deleteResponse = await axios.delete(
+        `${BASE_URL}/admin/business-categories/delete-business-category/${currentBanner}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (deleteResponse.status === 200) {
+        removeBanner(currentBanner);
+        handleConfirmDelete();
+        toast({
+          title: "Banner Deleted",
+          description: "The banner was deleted successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
+      } else {
+        console.error(`Unexpected status code: ${deleteResponse.status}`);
+        toast({
+          title: "Error",
+          description: "Failed to delete the banner. Unexpected status code.",
+          status: "error",
+          duration: 900,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.error(`Error deleting banner: ${err.message}`);
       toast({
         title: "Error",
-        description: "Failed to delete the banner. Unexpected status code.",
+        description: "Failed to delete the banner.",
         status: "error",
         duration: 900,
         isClosable: true,
       });
+    } finally {
+      setConfirmLoading(false);
     }
-  } catch (err) {
-    console.error("Error in deleting banner:", err.message);
-    toast({
-      title: "Error",
-      description: "Failed to delete the banner. Please try again.",
-      status: "error",
-      duration: 900,
-      isClosable: true,
-    });
-  } finally {
-    setConfirmLoading(false);
-  }
-};
+  };
 
+  console.log("single category Id", currentBannerGet);
+  console.log("banner", business);
 
   return (
     <>
@@ -288,7 +387,7 @@ const handleBannerDelete = async (Id) => {
                   type="text"
                   className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
                   name="title"
-                  value={business.title}
+                  value={business?.title}
                   onChange={handleBusinessChange}
                 />
               </div>
@@ -296,12 +395,12 @@ const handleBannerDelete = async (Id) => {
                 <label className="w-1/2 text-gray-500">Geofence</label>
                 <select
                   name="geofenceId"
-                  value={business.geofenceId}
+                  value={business?.geofenceId}
                   onChange={handleBusinessChange}
                   className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
                 >
-                  <option value="select" hidden selected>
-                    Geofence
+                  <option defaultValue="select" hidden>
+                    Select Geofence
                   </option>
                   {allGeofence.map((geofence) => (
                     <option value={geofence._id} key={geofence._id}>
@@ -353,7 +452,7 @@ const handleBannerDelete = async (Id) => {
                   className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
                   type="submit"
                 >
-                  Add
+                  {IsSaveLoading ? "Adding" : "Add"}
                 </button>
               </div>
             </form>
@@ -361,151 +460,170 @@ const handleBannerDelete = async (Id) => {
         </div>
       </div>
 
-      <div className="grid justify-center mt-10 gap-5  border-b-2 border-gray-200 pb-10">
-        {getBusiness?.map((data) => (
-          <div className="bg-white rounded-lg p-3 px-5 flex items-center justify-between gap-5">
-            <DragIndicatorIcon />
-            <figure className="h-10 w-10">
-              <img
-                src={data.bannerImageURL}
-                className="object-cover w-full h-full rounded-full"
+      <Spin spinning={isLoading} size="large">
+        <div className="grid justify-center mt-10 gap-5  border-b-2 border-gray-200 pb-10">
+          {getBusiness?.map((data) => (
+            <div
+              className="bg-white rounded-lg p-3 px-5 flex items-center justify-between gap-5"
+              key={data?._id}
+            >
+              <DragIndicatorIcon />
+              <figure className="h-10 w-10">
+                <img
+                  src={data?.bannerImageURL}
+                  className="object-cover w-full h-full rounded-full"
+                />
+              </figure>
+              <p>{data?.title}</p>
+              <Switch
+                checked={data?.status}
+                onChange={() => handleToggle(data?._id)}
+                className="ml-24"
               />
-            </figure>
-            <p>{data.title}</p>
-            <Switch
-              checked={data.status}
-              onChange={() => handleToggle(data._id)}
-              className="ml-24"
-            />
-            <button
-              onClick={showModalBusinessEdit}
-              className="bg-gray-200 p-3 rounded-lg"
-            >
-              <MdOutlineEdit className="bg-gray-200 text-[18px] rounded-lg" />
-            </button>
-            <Modal
-              title="Edit Business Category"
-              open={isModalVisibleBuinessEdit}
-              className="mt-24"
-              onCancel={handleCancel}
-              footer={null} // Custom footer to include form buttons
-            >
-              <form onSubmit={handleBusiness}>
-                <div className="flex mt-5 gap-4">
-                  <label className="w-1/2 text-gray-500">Service title</label>
-                  <input
-                    type="text"
-                    className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-                    name="title"
-                    value={business.title}
-                    onChange={handleBusinessChange}
-                  />
-                </div>
-                <div className="flex mt-5  gap-4">
-                  <label className="w-1/2 text-gray-500">Geofence</label>
-                  <select
-                    name="geofence"
-                    value={business.geofence}
-                    onChange={handleBusinessChange}
-                    className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-                  >
-                    <option value="select" hidden selected>
-                      Geofence
-                    </option>
-                    {allGeofence?.map((geofence) => (
-                      <option value={geofence._id} key={geofence._id}>
-                        {geofence.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex">
-                  <label className="mt-5">Image (342px x 160px)</label>
-                  <div className=" flex items-center gap-[30px]">
-                    {!businessEditPreviewURL && (
-                      <div className="bg-gray-400 ml-20 mt-5 h-16 w-16 rounded-md" />
-                    )}
-                    {businessEditPreviewURL && (
-                      <figure className="ml-20 mt-5 h-16 w-16 rounded-md relative">
-                        <img
-                          src={businessEditPreviewURL}
-                          alt="profile"
-                          className="w-full rounded h-full object-cover "
-                        />
-                      </figure>
-                    )}
+              <button
+                onClick={() => showModalBusinessEdit(data?._id)}
+                className="bg-gray-200 p-3 rounded-lg"
+              >
+                <MdOutlineEdit className="bg-gray-200 text-[18px] rounded-lg" />
+              </button>
+              <Modal
+                title="Edit Business Category"
+                open={isModalVisibleBuinessEdit}
+                className="mt-24"
+                onCancel={handleCancel}
+                footer={null} // Custom footer to include form buttons
+              >
+                <form onSubmit={handleBusinessEdit}>
+                  <div className="flex mt-5 gap-4">
+                    <label className="w-1/2 text-gray-500">Service title</label>
                     <input
-                      type="file"
-                      name="businessEditImage"
-                      id="businessEditImage"
-                      className="hidden"
-                      onChange={handleBusinessEditImageChange}
+                      type="text"
+                      className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
+                      name="title"
+                      id="title"
+                      placeholder={dataLoading ? "Loading data..." : ""}
+                      value={business?.title}
+                      onChange={handleBusinessChange}
                     />
-                    <label
-                      htmlFor="businessEditImage"
-                      className="cursor-pointer "
-                    >
-                      <MdCameraAlt
-                        className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
-                        size={30}
-                      />
-                    </label>
                   </div>
-                </div>
-                <div className="flex justify-end mt-10  gap-4">
-                  <button
-                    className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                    onClick={handleCancel}
-                    type="submit"
-                  >
-                    {" "}
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-teal-800 rounded-lg px-6 py-3 text-white font-semibold justify-end"
-                    type="submit"
-                  >
-                    Add
-                  </button>
-                </div>
-              </form>
-            </Modal>
-            <button
-              onClick={() => showModalDelete(data._id)}
-              className="bg-red-100 p-3 rounded-lg"
-            >
-              <RiDeleteBinLine className=" text-[18px] text-red-900 " />
-            </button>
-            <Modal
-              onCancel={handleCancel}
-              footer={null}
-              open={isShowModalDelete}
-              centered
-            >
-              <form>
-                <p className="font-bold text-[20px] mb-5">
-                  Are you sure want to delete?
-                </p>
-                <div className="flex justify-end">
-                  <button
-                    className="bg-zinc-200 p-2 rounded-md font-semibold"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700"
-                    onClick={() => handleBannerDelete(currentBanner)}
-                  >
-                    {" "}
-                    Delete
-                  </button>
-                </div>
-              </form>
-            </Modal>
-          </div>
-        ))}
-      </div>
+                  <div className="flex mt-5  gap-4">
+                    <label className="w-1/2 text-gray-500">Geofence</label>
+                    <select
+                      name="geofenceId"
+                      id="geofenceId"
+                      value={business?.geofenceId}
+                      onChange={handleBusinessChange}
+                      className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
+                    >
+                      <option defaultValue="" hidden>
+                        Select Geofence
+                      </option>
+                      {allGeofence?.map((geofence) => (
+                        <option value={geofence._id} key={geofence._id}>
+                          {geofence.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex">
+                    <label className="mt-5">Image (342px x 160px)</label>
+                    <div className=" flex items-center gap-[30px]">
+                      {!businessEditPreviewURL && (
+                        <div className="bg-gray-400 ml-20 mt-5 h-16 w-16 rounded-md" />
+                      )}
+                      {businessEditPreviewURL && business?.bannerImage && (
+                        <figure className="ml-20 mt-5 h-16 w-16 rounded-md relative">
+                          <img
+                            src={businessEditPreviewURL}
+                            alt="profile"
+                            className="w-full rounded h-full object-cover "
+                          />
+                        </figure>
+                      )}
+
+                      {!businessEditPreviewURL && business?.bannerImage && (
+                        <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
+                          <img
+                            src={business?.bannerImage}
+                            alt="Current Banner"
+                            className="w-full h-full"
+                          />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        name="bannerImage"
+                        id="bannerImage"
+                        className="hidden"
+                        onChange={handleBusinessEditImageChange}
+                      />
+                      <label htmlFor="bannerImage" className="cursor-pointer ">
+                        <MdCameraAlt
+                          className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
+                          size={30}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-10  gap-4">
+                    <button
+                      className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
+                      onClick={handleCancel}
+                      type="submit"
+                    >
+                      {" "}
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-teal-800 rounded-lg px-6 py-3 text-white font-semibold justify-end"
+                      type="submit"
+                    >
+                      {IsSaveLoading ? "Adding..." : "Add"}
+                    </button>
+                  </div>
+                </form>
+              </Modal>
+              <button
+                onClick={() => showModalDelete(data._id)}
+                className="bg-red-100 p-3 rounded-lg"
+              >
+                <RiDeleteBinLine className=" text-[18px] text-red-900 " />
+              </button>
+              <Modal
+                onCancel={handleCancel}
+                footer={null}
+                open={isShowModalDelete}
+                centered
+              >
+                <form>
+                  <p className="font-bold text-[20px] mb-5">
+                    <Spin spinning={confirmLoading}>
+                      Are you sure want to delete?
+                    </Spin>
+                  </p>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      className="bg-zinc-200 p-2 rounded-md font-semibold"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="bg-red-100 p-2 rounded-md ml-3 px-2 text-red-700"
+                      onClick={() => handleBannerDelete(currentBanner)}
+                    >
+                      {" "}
+                      {confirmLoading ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
+                </form>
+              </Modal>
+            </div>
+          ))}
+        </div>
+      </Spin>
     </>
   );
 };

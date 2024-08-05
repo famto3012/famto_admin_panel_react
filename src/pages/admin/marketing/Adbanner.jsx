@@ -416,7 +416,7 @@ const Adbanner = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {banner.map((bannerData, index) => (
+                  {banner?.map((bannerData, index) => (
                     <tr
                       className="text-center bg-white h-20"
                       style={{
@@ -435,7 +435,7 @@ const Adbanner = () => {
                       </td>
                       <td>{bannerData.name}</td>
                       <td>{bannerData.merchantId}</td>
-                      <td>{bannerData.geofenceId.name}</td>
+                      <td>{bannerData?.geofenceId?.name}</td>
                       <td>
                         <Switch
                           checked={bannerData.status}

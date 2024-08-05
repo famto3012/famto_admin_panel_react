@@ -153,7 +153,7 @@ const Discount = () => {
           title: "Discount Deleted",
           description: "Discount Deleted Successfully.",
           status: "success",
-          duration: 100,
+          duration: 900,
           isClosable: true,
         });
       }
@@ -164,7 +164,7 @@ const Discount = () => {
         description: "Error in deleting Discount.",
         status: "error",
         isClosable: true,
-        duration: 100,
+        duration: 900,
       });
     } finally {
       setConfirmLoading(false);
@@ -243,7 +243,7 @@ const Discount = () => {
           title: "Discount Deleted",
           description: "Discount Deleted Successfully.",
           status: "success",
-          duration: 100,
+          duration: 900,
           isClosable: true,
         });
       }
@@ -254,7 +254,7 @@ const Discount = () => {
         description: "Error in deleting Discount.",
         status: "error",
         isClosable: true,
-        duration: 100,
+        duration: 900,
       });
     } finally {
       setConfirmLoading(false);
@@ -286,7 +286,7 @@ const Discount = () => {
           title: "Status updated",
           description: "Discount Status Updated Successfully.",
           status: "success",
-          duration: 100,
+          duration: 900,
           isClosable: true,
         });
 
@@ -304,7 +304,7 @@ const Discount = () => {
         title: "Error",
         description: "Failed to update discount status.",
         status: "error",
-        duration: 100,
+        duration: 900,
         isClosable: true,
       });
     }
@@ -333,7 +333,7 @@ const Discount = () => {
           title: "Status updated",
           description: "Discount Status Updated Successfully.",
           status: "success",
-          duration: 100,
+          duration: 900,
           isClosable: true,
         });
 
@@ -351,7 +351,7 @@ const Discount = () => {
         title: "Error",
         description: "Failed to update discount status.",
         status: "error",
-        duration: 100,
+        duration: 900,
         isClosable: true,
       });
     }
