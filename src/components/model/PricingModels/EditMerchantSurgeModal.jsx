@@ -182,7 +182,7 @@ const EditMerchantSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              value={merchantSurge.geofenceId}
+              value={merchantSurge.geofenceId._id}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >

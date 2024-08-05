@@ -17,7 +17,7 @@ const EditCustomerPricingModal = ({
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [cpricing, setCpricing] = useState({
-    vehicleType: null,
+    vehicleType: "",
     ruleName: "",
     baseFare: "",
     baseDistance: "",
@@ -30,7 +30,7 @@ const EditCustomerPricingModal = ({
     addedTip: "",
     geofenceId: "",
     deliveryMode: "Home Delivery",
-    businessCategoryId: null,
+    businessCategoryId: "",
   });
 
   useEffect(() => {
@@ -351,13 +351,10 @@ const EditCustomerPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={cpricing.geofenceId}
+              value={cpricing.geofenceId._id}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >
-              <option hidden value="">
-                Geofence
-              </option>
               {geofence.map((geoFence) => (
                 <option value={geoFence._id} key={geoFence._id}>
                   {geoFence.name}

@@ -7,6 +7,7 @@ const AddSubCustomerModal =  ({
     isVisible,
     handleCancel,
     token,
+    tax,
     BASE_URL,
   }) => {
     const toast = useToast()
@@ -116,14 +117,23 @@ const AddSubCustomerModal =  ({
           <label className="w-1/3 text-gray-500" htmlFor="taxId">
             Tax Id
           </label>
-          <input
+          <select
             className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
             type="text"
             value={customerData.taxId}
             id="taxId"
             name="taxId"
             onChange={handleInputChange}
-          />
+          >
+             <option hidden value="">
+                  Tax Id
+                </option>
+                {tax.map((tax) => (
+                  <option value={tax._id} key={tax._id}>
+                    {tax._id}
+                  </option>
+                ))}
+          </select>
         </div>
         <div className="flex items-center">
           <label className="w-1/3 text-gray-500" htmlFor="renewalReminder">

@@ -26,7 +26,10 @@ import DeleteCustomerPricingModal from "../../../components/model/PricingModels/
 import DeleteCustomerSurgeModal from "../../../components/model/PricingModels/DeleteCustomerSurgeModal";
 import AddCustomerPricingModal from "../../../components/model/PricingModels/AddCustomerPricingModal";
 import EditCustomerPricingModal from "../../../components/model/PricingModels/EditCustomerPricingModal";
+import GIFLoader from "../../../components/GIFLoader";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const Pricing = () => {
   const [agentpricing, setAgentPricing] = useState([]);
   const [agentsurge, setAgentSurge] = useState([]);
@@ -34,23 +37,40 @@ const Pricing = () => {
   const [merchantsurge, setMerchantSurge] = useState([]);
   const [customerpricing, setCustomerPricing] = useState([]);
   const [customersurge, setCustomerSurge] = useState([]);
+  const [isModalVisibleAr, setIsModalVisibleAr] = useState(false);
+  const [isModalVisibleAs, setIsModalVisibleAs] = useState(false);
+  const [isModalVisibleMr, setIsModalVisibleMr] = useState(false);
+  const [isModalVisibleMs, setIsModalVisibleMs] = useState(false);
+  const [isModalVisibleCr, setIsModalVisibleCr] = useState(false);
+  const [isModalVisibleCs, setIsModalVisibleCs] = useState(false);
+  const [isModalVisibleEditAr, setIsModalVisibleEditAr] = useState(false);
+  const [currentEditAr, setCurrentEditAr] = useState(null);
+  const [isModalVisibleEditAs, setIsModalVisibleEditAs] = useState(false);
+  const [currentEditAs, setCurrentEditAs] = useState(null);
+  const [isModalVisibleEditMr, setIsModalVisibleEditMr] = useState(false);
+  const [currentEditMr, setCurrentEditMr] = useState(null);
+  const [isModalVisibleEditMs, setIsModalVisibleEditMs] = useState(false);
+  const [currentEditMs, setCurrentEditMs] = useState(null);
+  const [isModalVisibleEditCr, setIsModalVisibleEditCr] = useState(false);
+  const [currentEditCr, setCurrentEditCr] = useState(null);
+  const [isModalVisibleEditCs, setIsModalVisibleEditCs] = useState(false);
+  const [currentEditCs, setCurrentEditCs] = useState(null);
+  const [deleteModalVisibleAr, setDeleteModalVisibleAr] = useState(false);
+  const [currentDeleteAr, setCurrentDeleteAr] = useState(null);
+  const [deleteModalVisibleAs, setDeleteModalVisibleAs] = useState(false);
+  const [currentDeleteAs, setCurrentDeleteAs] = useState(null);
+  const [deleteModalVisibleMr, setDeleteModalVisibleMr] = useState(false);
+  const [currentDeleteMr, setCurrentDeleteMr] = useState(null);
+  const [deleteModalVisibleMs, setDeleteModalVisibleMs] = useState(false);
+  const [currentDeleteMs, setCurrentDeleteMs] = useState(null);
+  const [deleteModalVisibleCr, setDeleteModalVisibleCr] = useState(false);
+  const [currentDeleteCr, setCurrentDeleteCr] = useState(null);
+  const [deleteModalVisibleCs, setDeleteModalVisibleCs] = useState(false);
+  const [currentDeleteCs, setCurrentDeleteCs] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
   const [business, setBusiness] = useState([]);
   const { token, role } = useContext(UserContext);
-  const [currentEditAr, setCurrentEditAr] = useState(null);
-  const [currentEditAs, setCurrentEditAs] = useState(null);
-  const [currentEditMr, setCurrentEditMr] = useState(null);
-  const [currentEditMs, setCurrentEditMs] = useState(null);
-  const [currentEditCr, setCurrentEditCr] = useState(null);
-  const [currentEditCs, setCurrentEditCs] = useState(null);
-  const [currentDeleteAr, setCurrentDeleteAr] = useState(null);
-  const [currentDeleteAs, setCurrentDeleteAs] = useState(null);
-  const [currentDeleteMr, setCurrentDeleteMr] = useState(null);
-  const [currentDeleteMs, setCurrentDeleteMs] = useState(null);
-  const [currentDeleteCr, setCurrentDeleteCr] = useState(null);
-  const [currentDeleteCs, setCurrentDeleteCs] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -155,131 +175,89 @@ const Pricing = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  const [isModalVisibleEditAr, setIsModalVisibleEditAr] = useState(false);
+  // Modal function for Add rule in Agent Pricing
+
+  const showModalAr = () => {
+    setIsModalVisibleAr(true);
+  };
+
+  // Modal function for Add surge in Agent Surge
+
+  const showModalAs = () => {
+    setIsModalVisibleAs(true);
+  };
+
+  // Modal function for Add rule in Merchant Pricing
+
+  const showModalMr = () => {
+    setIsModalVisibleMr(true);
+  };
+
+  // Modal function for Add surge in Merchant Surge
+
+  const showModalMs = () => {
+    setIsModalVisibleMs(true);
+  };
+
+  // Modal function for Add rule in Customer Pricing
+
+  const showModalCr = () => {
+    setIsModalVisibleCr(true);
+  };
+
+  // Modal function for Add surge in Customer Surge
+
+  const showModalCs = () => {
+    setIsModalVisibleCs(true);
+  };
+
+  // Modal function for Edit rule in Agent Pricing
 
   const showModalEditAr = (agentPricingId) => {
     setCurrentEditAr(agentPricingId);
     setIsModalVisibleEditAr(true);
   };
-  const handleEditCancelAr = () => {
-    setIsModalVisibleEditAr(false);
-  };
 
-  const [isModalVisibleEditAs, setIsModalVisibleEditAs] = useState(false);
+  // Modal function for Edit surge in Agent Surge
 
   const showModalEditAs = (agentsurgeId) => {
     setCurrentEditAs(agentsurgeId);
     setIsModalVisibleEditAs(true);
   };
-  const handleEditCancelAs = () => {
-    setIsModalVisibleEditAs(false);
-  };
 
-  const [isModalVisibleEditMr, setIsModalVisibleEditMr] = useState(false);
+  // Modal function for Edit rule in Merchant Pricing
 
   const showModalEditMr = (merchantPricingId) => {
     setCurrentEditMr(merchantPricingId);
     setIsModalVisibleEditMr(true);
   };
 
-  const handleEditCancelMr = () => {
-    setIsModalVisibleEditMr(false);
-  };
-  const [isModalVisibleEditMs, setIsModalVisibleEditMs] = useState(false);
+  // Modal function for Edit surge in Merchant Surge
 
   const showModalEditMs = (merchantsurgeId) => {
     setCurrentEditMs(merchantsurgeId);
     setIsModalVisibleEditMs(true);
   };
-  const handleEditCancelMs = () => {
-    setIsModalVisibleEditMs(false);
-  };
 
-  const [isModalVisibleEditCr, setIsModalVisibleEditCr] = useState(false);
+  // Modal function for  Edit rule in Customer pricing
 
   const showModalEditCr = (customerpricingId) => {
     setCurrentEditCr(customerpricingId);
     setIsModalVisibleEditCr(true);
   };
-  const handleEditCancelCr = () => {
-    setIsModalVisibleEditCr(false);
-  };
-  const [isModalVisibleEditCs, setIsModalVisibleEditCs] = useState(false);
+
+  // Modal function for  Edit surge in agent Customer Surge
 
   const showModalEditCs = (customersurgeId) => {
     setCurrentEditCs(customersurgeId);
     setIsModalVisibleEditCs(true);
   };
-  const handleEditCancelCs = () => {
-    setIsModalVisibleEditCs(false);
-  };
 
-  const [isModalVisibleAr, setIsModalVisibleAr] = useState(false);
+  // Modal function for Delete rule in Agent Pricing
 
-  const showModalAr = () => {
-    setIsModalVisibleAr(true);
-  };
-
-  const handleCancelAr = () => {
-    setIsModalVisibleAr(false);
-  };
-
-  const [isModalVisibleMr, setIsModalVisibleMr] = useState(false);
-
-  const showModalMr = () => {
-    setIsModalVisibleMr(true);
-  };
-
-  const handleCancelMr = () => {
-    setIsModalVisibleMr(false);
-  };
-
-  const [isModalVisibleCr, setIsModalVisibleCr] = useState(false);
-
-  const showModalCr = () => {
-    setIsModalVisibleCr(true);
-  };
-  const handleCancelCr = () => {
-    setIsModalVisibleCr(false);
-  };
-
-  const [isModalVisibleAs, setIsModalVisibleAs] = useState(false);
-
-  const showModalAs = () => {
-    setIsModalVisibleAs(true);
-  };
-
-  const handleCancelAs = () => {
-    setIsModalVisibleAs(false);
-  };
-
-  const [isModalVisibleMs, setIsModalVisibleMs] = useState(false);
-
-  const showModalMs = () => {
-    setIsModalVisibleMs(true);
-  };
-
-  const handleCancelMs = () => {
-    setIsModalVisibleMs(false);
-  };
-
-  const [isModalVisibleCs, setIsModalVisibleCs] = useState(false);
-
-  const showModalCs = () => {
-    setIsModalVisibleCs(true);
-  };
-  const handleCancelCs = () => {
-    setIsModalVisibleCs(false);
-  };
-
-  const [deleteModalVisibleAr, setDeleteModalVisibleAr] = useState(false);
   const showModalDeleteAr = (agentPricingId) => {
     setCurrentDeleteAr(agentPricingId);
     setDeleteModalVisibleAr(true);
-  };
-
-  const handleCancelDeleteAr = () => {
-    setDeleteModalVisibleAr(false);
   };
 
   const removeAr = (agentPricingId) => {
@@ -288,20 +266,16 @@ const Pricing = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteAr = () => {
     setDeleteModalVisibleAr(false);
     setCurrentDeleteAr(null);
   };
 
-  const [deleteModalVisibleAs, setDeleteModalVisibleAs] = useState(false);
+  // Modal function for Delete surge in Agent Surge
+
   const showModalDeleteAs = (agentSurgeId) => {
     setCurrentDeleteAs(agentSurgeId);
     setDeleteModalVisibleAs(true);
-  };
-
-  const handleCancelDeleteAs = () => {
-    setDeleteModalVisibleAs(false);
   };
 
   const removeAs = (agentSurgeId) => {
@@ -310,20 +284,16 @@ const Pricing = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteAs = () => {
     setDeleteModalVisibleAs(false);
     setCurrentDeleteAs(null);
   };
 
-  const [deleteModalVisibleMr, setDeleteModalVisibleMr] = useState(false);
+  // Modal function for Delete rule in Merchant Pricing
+
   const showModalDeleteMr = (merchantPricingId) => {
     setCurrentDeleteMr(merchantPricingId);
     setDeleteModalVisibleMr(true);
-  };
-
-  const handleCancelDeleteMr = () => {
-    setDeleteModalVisibleMr(false);
   };
 
   const removeMr = (merchantPricingId) => {
@@ -334,20 +304,16 @@ const Pricing = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteMr = () => {
     setDeleteModalVisibleMr(false);
     setCurrentDeleteMr(null);
   };
 
-  const [deleteModalVisibleMs, setDeleteModalVisibleMs] = useState(false);
+  // Modal function for Delete surge in Merchant Surge
+
   const showModalDeleteMs = (merchantsurgeId) => {
     setCurrentDeleteMs(merchantsurgeId);
     setDeleteModalVisibleMs(true);
-  };
-
-  const handleCancelDeleteMs = () => {
-    setDeleteModalVisibleMs(false);
   };
 
   const removeMs = (merchantsurgeId) => {
@@ -358,20 +324,16 @@ const Pricing = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteMs = () => {
     setDeleteModalVisibleMs(false);
     setCurrentDeleteMs(null);
   };
 
-  const [deleteModalVisibleCr, setDeleteModalVisibleCr] = useState(false);
+  // Modal function for Delete rule in Customer Pricing
+
   const showModalDeleteCr = (customerpricingId) => {
     setCurrentDeleteCr(customerpricingId);
     setDeleteModalVisibleCr(true);
-  };
-
-  const handleCancelDeleteCr = () => {
-    setDeleteModalVisibleCr(false);
   };
 
   const removeCr = (customerpricingId) => {
@@ -382,20 +344,16 @@ const Pricing = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteCr = () => {
     setDeleteModalVisibleCr(false);
     setCurrentDeleteCr(null);
   };
 
-  const [deleteModalVisibleCs, setDeleteModalVisibleCs] = useState(false);
+  // Modal function for Delete surge in Customer Surge
+
   const showModalDeleteCs = (customersurgeId) => {
     setCurrentDeleteCs(customersurgeId);
     setDeleteModalVisibleCs(true);
-  };
-
-  const handleCancelDeleteCs = () => {
-    setDeleteModalVisibleCs(false);
   };
 
   const removeCs = (customersurgeId) => {
@@ -406,11 +364,35 @@ const Pricing = () => {
     );
   };
 
-  // New function to handle confirm delete
   const handleConfirmDeleteCs = () => {
     setDeleteModalVisibleCs(false);
     setCurrentDeleteCs(null);
   };
+
+  // Cancel function for all Modals
+
+  const handleCancel = () => {
+    setIsModalVisibleAr(false);
+    setIsModalVisibleAs(false);
+    setIsModalVisibleMr(false);
+    setIsModalVisibleMs(false);
+    setIsModalVisibleCr(false);
+    setIsModalVisibleCs(false);
+    setIsModalVisibleEditAr(false);
+    setIsModalVisibleEditAs(false);
+    setIsModalVisibleEditMr(false);
+    setIsModalVisibleEditMs(false);
+    setIsModalVisibleEditCr(false);
+    setIsModalVisibleEditCs(false);
+    setDeleteModalVisibleAr(false);
+    setDeleteModalVisibleAs(false);
+    setDeleteModalVisibleMr(false);
+    setDeleteModalVisibleMs(false);
+    setDeleteModalVisibleCr(false);
+    setDeleteModalVisibleCs(false);
+  };
+
+  // Status Changing function for Add rule in Agent Pricing
 
   const handleToggleAr = async (agentPricingId) => {
     try {
@@ -440,6 +422,9 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
+  // Status Changing function for Add surge in Agent Surge
+
   const handleToggleAs = async (agentsurgeId) => {
     try {
       const agentResponse = agentsurge.find(
@@ -468,6 +453,9 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
+  // Status Changing function for Add rule in Merchant Pricing
+
   const handleToggleMr = async (merchantPricingId) => {
     try {
       const merchantResponse = merchantpricing.find(
@@ -496,6 +484,9 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
+  // Status Changing function for Add surge in Merchant Surge
+
   const handleToggleMs = async (merchantsurgeId) => {
     try {
       const merchantResponse = merchantsurge.find(
@@ -524,6 +515,9 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
+  // Status Changing function for Add rule in Customer Pricing
+
   const handleToggleCr = async (customerpricingId) => {
     try {
       const customerResponse = customerpricing.find(
@@ -552,6 +546,9 @@ const Pricing = () => {
       console.log(`Error in toggling status: ${err}`);
     }
   };
+
+  // Status Changing function for Add surge in Customer Surge
+
   const handleToggleCs = async (customersurgeId) => {
     try {
       const customerResponse = customersurge.find(
@@ -582,6 +579,10 @@ const Pricing = () => {
   };
 
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
     <>
       <Sidebar />
       <div className="w-full h-screen pl-[300px] bg-gray-100">
@@ -602,7 +603,7 @@ const Pricing = () => {
 
             <AddAgentPricingModal
               isVisible={isModalVisibleAr}
-              handleCancel={handleCancelAr}
+              handleCancel={handleCancel}
               token={token}
               BASE_URL={BASE_URL}
               geofence={geofence}
@@ -623,7 +624,6 @@ const Pricing = () => {
                   "Waiting Fare",
                   "Waiting Time",
                   "Purchase Fare per hour",
-                  // "Added Tip",
                   "Geofence",
                   "Status",
                 ].map((header, index) => (
@@ -650,7 +650,6 @@ const Pricing = () => {
                   <td className="p-4">{agentpricing.waitingFare}</td>
                   <td className="p-4 px-2">{agentpricing.waitingTime}</td>
                   <td className="p-4">{agentpricing.purchaseFarePerHour}</td>
-                  {/* <td className="p-4">{agentpricing.addedTip}</td> */}
                   <td className="p-4">{agentpricing.geofenceId.name}</td>
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
@@ -668,7 +667,7 @@ const Pricing = () => {
                         </button>
                         <EditAgentPricingModal
                           isVisible={isModalVisibleEditAr}
-                          handleCancel={handleEditCancelAr}
+                          handleCancel={handleCancel}
                           token={token}
                           currentEditAr={currentEditAr}
                           BASE_URL={BASE_URL}
@@ -682,7 +681,7 @@ const Pricing = () => {
                       </button>
                       <DeleteAgentPricingModal
                         isVisible={deleteModalVisibleAr}
-                        handleCancel={handleCancelDeleteAr}
+                        handleCancel={handleCancel}
                         handleConfirmDeleteAr={handleConfirmDeleteAr}
                         currentDeleteAr={currentDeleteAr}
                         token={token}
@@ -708,7 +707,7 @@ const Pricing = () => {
             </button>
             <AddAgentSurgeModal
               isVisible={isModalVisibleAs}
-              handleCancel={handleCancelAs}
+              handleCancel={handleCancel}
               token={token}
               BASE_URL={BASE_URL}
               geofence={geofence}
@@ -764,7 +763,7 @@ const Pricing = () => {
                         </button>
                         <EditAgentSurgeModal
                           isVisible={isModalVisibleEditAs}
-                          handleCancel={handleEditCancelAs}
+                          handleCancel={handleCancel}
                           token={token}
                           currentEditAs={currentEditAs}
                           BASE_URL={BASE_URL}
@@ -776,7 +775,7 @@ const Pricing = () => {
                       </button>
                       <DeleteAgentSurgeModal
                         isVisible={deleteModalVisibleAs}
-                        handleCancel={handleCancelDeleteAs}
+                        handleCancel={handleCancel}
                         handleConfirmDeleteAs={handleConfirmDeleteAs}
                         currentDeleteAs={currentDeleteAs}
                         token={token}
@@ -803,7 +802,7 @@ const Pricing = () => {
             </button>
             <AddMerchantPricingModal
               isVisible={isModalVisibleMr}
-              handleCancel={handleCancelMr}
+              handleCancel={handleCancel}
               token={token}
               BASE_URL={BASE_URL}
               geofence={geofence}
@@ -847,7 +846,7 @@ const Pricing = () => {
                   <td className="p-4">{merchantpricing.baseFare}</td>
                   <td className="p-4">{merchantpricing.baseDistance}</td>
                   <td className="p-4">
-                    {merchantpricing.fareAfterbaseDistance}
+                    {merchantpricing.fareAfterBaseDistance}
                   </td>
                   <td className="p-4">{merchantpricing.baseWeightUpTo}</td>
                   <td className="p-4">{merchantpricing.fareAfterBaseWeight}</td>
@@ -871,7 +870,7 @@ const Pricing = () => {
                         </button>
                         <EditMerchantPricingModal
                           isVisible={isModalVisibleEditMr}
-                          handleCancel={handleEditCancelMr}
+                          handleCancel={handleCancel}
                           token={token}
                           currentEditMr={currentEditMr}
                           BASE_URL={BASE_URL}
@@ -885,7 +884,7 @@ const Pricing = () => {
                       </button>
                       <DeleteMerchantPrcingModal
                         isVisible={deleteModalVisibleMr}
-                        handleCancel={handleCancelDeleteMr}
+                        handleCancel={handleCancel}
                         handleConfirmDeleteMr={handleConfirmDeleteMr}
                         currentDeleteMr={currentDeleteMr}
                         token={token}
@@ -911,7 +910,7 @@ const Pricing = () => {
             </button>
             <AddMerchantSurgeModal
               isVisible={isModalVisibleMs}
-              handleCancel={handleCancelMs}
+              handleCancel={handleCancel}
               token={token}
               BASE_URL={BASE_URL}
               geofence={geofence}
@@ -969,7 +968,7 @@ const Pricing = () => {
                         </button>
                         <EditMerchantSurgeModal
                           isVisible={isModalVisibleEditMs}
-                          handleCancel={handleEditCancelMs}
+                          handleCancel={handleCancel}
                           token={token}
                           currentEditMs={currentEditMs}
                           BASE_URL={BASE_URL}
@@ -983,7 +982,7 @@ const Pricing = () => {
                       </button>
                       <DeleteMerchantSurgeModal
                         isVisible={deleteModalVisibleMs}
-                        handleCancel={handleCancelDeleteAr}
+                        handleCancel={handleCancel}
                         handleConfirmDeleteMs={handleConfirmDeleteMs}
                         currentDeleteMs={currentDeleteMs}
                         token={token}
@@ -1010,7 +1009,7 @@ const Pricing = () => {
             </button>
             <AddCustomerPricingModal
               isVisible={isModalVisibleCr}
-              handleCancel={handleCancelCr}
+              handleCancel={handleCancel}
               token={token}
               BASE_URL={BASE_URL}
               geofence={geofence}
@@ -1033,7 +1032,6 @@ const Pricing = () => {
                   "Purchase Fare per hour",
                   "Waiting Fare",
                   "Waiting Time",
-                  "Added Tip",
                   "Geofence",
                   "Status",
                 ].map((header, index) => (
@@ -1058,12 +1056,11 @@ const Pricing = () => {
                   <td className="p-4">
                     {customerpricing.fareAfterBaseDistance}
                   </td>
-                  <td className="p-4">{customerpricing.baseWeightUpTo}</td>
+                  <td className="p-4">{customerpricing.baseWeightUpto}</td>
                   <td className="p-4">{customerpricing.fareAfterBaseWeight}</td>
                   <td className="p-4">{customerpricing.purchaseFarePerHour}</td>
                   <td className="p-4">{customerpricing.waitingFare}</td>
                   <td className="p-4 px-2">{customerpricing.waitingTime}</td>
-                  <td className="p-4">{customerpricing.addedTip}</td>
                   <td className="p-4">{customerpricing.geofenceId.name}</td>
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
@@ -1081,7 +1078,7 @@ const Pricing = () => {
                         </button>
                         <EditCustomerPricingModal
                           isVisible={isModalVisibleEditCr}
-                          handleCancel={handleEditCancelCr}
+                          handleCancel={handleCancel}
                           token={token}
                           currentEditCr={currentEditCr}
                           BASE_URL={BASE_URL}
@@ -1096,7 +1093,7 @@ const Pricing = () => {
                       </button>
                       <DeleteCustomerPricingModal
                         isVisible={deleteModalVisibleCr}
-                        handleCancel={handleCancelDeleteCr}
+                        handleCancel={handleCancel}
                         handleConfirmDeleteCr={handleConfirmDeleteCr}
                         currentDeleteCr={currentDeleteCr}
                         token={token}
@@ -1122,7 +1119,7 @@ const Pricing = () => {
             </button>
             <AddCustomerSurgeModal
               isVisible={isModalVisibleCs}
-              handleCancel={handleCancelCs}
+              handleCancel={handleCancel}
               token={token}
               BASE_URL={BASE_URL}
               geofence={geofence}
@@ -1180,7 +1177,7 @@ const Pricing = () => {
                         </button>
                         <EditCustomerSurgeModal
                           isVisible={isModalVisibleEditCs}
-                          handleCancel={handleEditCancelCs}
+                          handleCancel={handleCancel}
                           token={token}
                           currentEditCs={currentEditCs}
                           BASE_URL={BASE_URL}
@@ -1194,7 +1191,7 @@ const Pricing = () => {
                       </button>
                       <DeleteCustomerSurgeModal
                         isVisible={deleteModalVisibleCs}
-                        handleCancel={handleCancelDeleteCs}
+                        handleCancel={handleCancel}
                         handleConfirmDeleteCs={handleConfirmDeleteCs}
                         currentDeleteCs={currentDeleteCs}
                         token={token}
@@ -1210,6 +1207,8 @@ const Pricing = () => {
         </div>
       </div>
     </>
+    )}
+    </div>
   );
 };
 
