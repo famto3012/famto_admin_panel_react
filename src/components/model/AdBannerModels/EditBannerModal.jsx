@@ -165,7 +165,7 @@ const EditBannerModal = ({
               value={appBanner.geofenceId}
               onChange={handleInputChange}
             >
-              <option value="" disabled hidden>
+              <option defaultValue="" disabled hidden>
                 Select geofence
               </option>
               {allGeofence.map((geofence) => (

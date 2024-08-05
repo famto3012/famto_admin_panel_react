@@ -9,7 +9,6 @@ const AddDiscountModal = ({
   token,
   merchant,
   BASE_URL,
-  role,
   geofence,
   onDiscountAdd,
   handleCancel,
