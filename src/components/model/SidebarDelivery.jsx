@@ -86,7 +86,7 @@ const SidebarDelivery = () => {
         </Link>
       </ul>
 
-      <div className="dropside">
+      {/* <div className="dropside">
         <button onClick={toggleSidebar1}>
           <CaretRightOutlined />
         </button>
@@ -203,7 +203,7 @@ const SidebarDelivery = () => {
             <SettingsOutlinedIcon className="m-2" />
           </Link>
         </ul>
-      )}
+      )} */}
     </div>
   );
 };

@@ -11,6 +11,10 @@ import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
+import { Pagination } from "@mui/material";
+import { CSVLink } from "react-csv";
+import { allOrdersCSVDataHeading } from "../../../utils/DefaultData";
+import { formatDate } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -21,6 +25,9 @@ const Orders = () => {
   const [paymentMode, setPaymentMode] = useState("");
   const [deliveryMode, setDeliveryMode] = useState("");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(15);
+  const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
 
@@ -45,12 +52,14 @@ const Orders = () => {
             : `${BASE_URL}/orders/all-orders`;
 
         const response = await axios.get(endpoint, {
+          params: { page, limit },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.status === 200) {
           setOrders(response.data.data);
+          setPagination(response.data.pagination);
         }
       } catch (err) {
         console.log(`Error in getting all orders: ${err}`);
@@ -60,7 +69,7 @@ const Orders = () => {
     };
 
     getAllOrders();
-  }, [token]);
+  }, [token, page, limit, role]);
 
   useEffect(() => {
     if (!orderStatus && !paymentMode && !deliveryMode) return;
@@ -82,12 +91,14 @@ const Orders = () => {
         }
 
         const response = await axios.get(endpoint, {
+          params: { page, limit },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.status === 200) {
           setOrders(response.data.data);
+          setPagination(response.data.pagination);
         }
       } catch (err) {
         console.log(`Error in filtering orders: ${err}`);
@@ -97,7 +108,7 @@ const Orders = () => {
     };
 
     filterHandler();
-  }, [orderStatus, paymentMode, deliveryMode, token, role]);
+  }, [orderStatus, paymentMode, deliveryMode, token, role, page, limit]);
 
   useEffect(() => {
     const searchOrder = async () => {
@@ -111,12 +122,14 @@ const Orders = () => {
               : `${BASE_URL}/orders/search?query=${search}`;
 
           const response = await axios.get(endpoint, {
+            params: { page, limit },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           });
 
           if (response.status === 200) {
             setOrders(response.data.data);
+            setPagination(response.data.pagination);
           }
         }
       } catch (err) {
@@ -135,7 +148,7 @@ const Orders = () => {
     return () => {
       clearTimeout(timeOut);
     };
-  }, [search, token, role]);
+  }, [search, token, role, page, limit]);
 
   const handleConfirmOrder = async (orderId) => {
     try {
@@ -197,6 +210,10 @@ const Orders = () => {
     }
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <>
       <Sidebar />
@@ -209,7 +226,13 @@ const Orders = () => {
           <h1 className="text-[18px] font-semibold">Orders</h1>
           <div className="flex space-x-2 justify-end">
             <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-              <ArrowDownOutlined /> <span>CSV</span>
+              <CSVLink
+                data={orders}
+                headers={allOrdersCSVDataHeading}
+                filename={`All_Orders_Data - (${formatDate(new Date())}).csv`}
+              >
+                <ArrowDownOutlined /> <span>CSV</span>
+              </CSVLink>
             </button>
             <div>
               <button className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold flex items-center space-x-1">
@@ -234,6 +257,7 @@ const Orders = () => {
               <option defaultValue={"Order status"} hidden>
                 Order Status
               </option>
+              <option value="All">All</option>
               <option value="Pending">Pending</option>
               <option value="On-going">On-going</option>
               <option value="Completed">Completed</option>
@@ -250,6 +274,7 @@ const Orders = () => {
               <option defaultValue={"Payment mode"} hidden>
                 Payment Mode
               </option>
+              <option value="All">All</option>
               <option value="Cash-on-delivery">Cash on delivery</option>
               <option value="Online-payment">Online payment</option>
               <option value="Famto-cash">Famto cash</option>
@@ -265,6 +290,7 @@ const Orders = () => {
               <option defaultValue={"Delivery mode"} hidden>
                 Delivery Mode
               </option>
+              <option value="All">All</option>
               <option value="Home Delivery">Home Delivery</option>
               <option value="Take Away">Take Away</option>
               <option value="Pick and Drop">Pick and Drop</option>
@@ -405,6 +431,18 @@ const Orders = () => {
                 ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="my-[30px] flex justify-center">
+          <Pagination
+            count={pagination.totalPages || 0}
+            page={pagination.currentPage}
+            onChange={handlePageChange}
+            shape="rounded"
+            siblingCount={0}
+            hidePrevButton={!pagination.hasPrevPage}
+            hideNextButton={!pagination.hasNextPage}
+          />
         </div>
       </main>
     </>

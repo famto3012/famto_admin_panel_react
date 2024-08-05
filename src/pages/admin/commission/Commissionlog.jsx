@@ -102,7 +102,7 @@ const Commissionlog = () => {
     } else {
       setCommissionlog([]);
     }
-    console.log(searchDate)
+    console.log(searchDate);
   };
 
   const handleDateChangeFilter = async (searchDate) => {
@@ -130,8 +130,8 @@ const Commissionlog = () => {
     }
   };
 
-   // Function to trigger the date input click
-   const openDatePicker = () => {
+  // Function to trigger the date input click
+  const openDatePicker = () => {
     console.log("clicked");
     if (dateInputRef.current) {
       dateInputRef.current.showPicker(); // Open the date picker using showPicker()
@@ -347,15 +347,16 @@ const Commissionlog = () => {
                   </td>
                   <td className="px-4">{commissionlog.payableAmountToFamto}</td>
                   <td className="flex items-center gap-6 px-[15px] py-4">
-                    {commissionlog.status ==="Unpaid" ?
+                    {commissionlog.status === "Unpaid" ? (
                       <button
-                      className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
-                      onClick={() => showModal(commissionlog._id)}
-                    >
-                      Set as paid
-                    </button>:
-                    <p>Paid</p>
-}
+                        className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
+                        onClick={() => showModal(commissionlog._id)}
+                      >
+                        Set as paid
+                      </button>
+                    ) : (
+                      <p>Paid</p>
+                    )}
 
                     <Modal
                       onCancel={handleCancel}
