@@ -1,7 +1,8 @@
 import { Modal } from "antd";
-import React, { useState } from "react";
-import { RiDeleteBinLine } from "react-icons/ri";
+import { useEffect, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const AddProductItemModal = ({
   isVisible,
@@ -9,66 +10,174 @@ const AddProductItemModal = ({
   BASE_URL,
   token,
   role,
+  categoryId,
+  merchantId,
+  onAddProduct,
 }) => {
-  const [addData, setAddData] = useState({
-    name: "",
+  const [productData, setProductData] = useState({
+    productName: "",
     price: "",
-    availableQty: "",
-    alertQty: "",
-    minQty: "",
-    maxQty: "",
+    minQuantityToOrder: "",
+    maxQuantityPerOrder: "",
     costPrice: "",
     sku: "",
-    discount: "",
-    boughtTogether: "",
-    preparationTime: "",
-    searchTag: "",
+    discountId: "",
+    oftenBoughtTogetherId: "",
+    preperationTime: "",
+    searchTags: "",
     description: "",
     longDescription: "",
     type: "",
-    imageUrl: "",
+    availableQuantity: "",
+    alert: "",
   });
+  const [allProductDiscount, setAllProductDiscount] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+  const [isLoading, setIsLoading] = useState(null);
+
+  const toast = useToast();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const discountEndPoint =
+        role === "Admin"
+          ? `${BASE_URL}/merchant/product-discount/get-product-discount-admin/${merchantId}`
+          : `${BASE_URL}/merchant/product-discount/get-product-discount`;
+
+      const [discountResponse] = await Promise.all([
+        axios.get(discountEndPoint, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ]);
+
+      if (discountResponse.status === 200) {
+        setAllProductDiscount(discountResponse.data.data);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleInputChange = (e) => {
-    setAddData({ ...addData, [e.target.name]: e.target.value });
+    setProductData({ ...productData, [e.target.name]: e.target.value });
   };
 
-  const signupAction = (e) => {
-    e.preventDefault();
-    console.log(addData);
-  };
-
-  const [agentFile, setAgentFile] = useState(null);
-  const [agentPreviewURL, setAgentPreviewURL] = useState(null);
-
-  const handleAgentImageChange = (e) => {
+  const handleSelectImage = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-    setAgentFile(file);
-    setAgentPreviewURL(URL.createObjectURL(file));
+    setSelectedFile(file);
+    setPreviewURL(URL.createObjectURL(file));
+  };
+
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+
+      const dataToSend = new FormData();
+      dataToSend.append("categoryId", categoryId);
+      dataToSend.append("productName", productData.productName);
+      dataToSend.append("price", productData.price);
+      dataToSend.append("minQuantityToOrder", productData.minQuantityToOrder);
+      dataToSend.append("maxQuantityPerOrder", productData.maxQuantityPerOrder);
+      dataToSend.append("costPrice", productData.costPrice);
+      dataToSend.append("sku", productData.sku);
+      dataToSend.append("discountId", productData.discountId);
+      dataToSend.append(
+        "oftenBoughtTogetherId",
+        productData.oftenBoughtTogetherId
+      );
+      dataToSend.append("preperationTime", productData.preperationTime);
+      dataToSend.append("searchTags", productData.searchTags);
+      dataToSend.append("description", productData.description);
+      dataToSend.append("longDescription", productData.longDescription);
+      dataToSend.append("type", productData.type);
+      dataToSend.append("availableQuantity", productData.availableQuantity);
+      dataToSend.append("alert", productData.alert);
+      if (selectedFile) {
+        dataToSend.append("productImage", selectedFile);
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/products/add-product`,
+        dataToSend,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        onAddProduct(productData.productName);
+        setProductData({
+          productName: "",
+          price: "",
+          minQuantityToOrder: "",
+          maxQuantityPerOrder: "",
+          costPrice: "",
+          sku: "",
+          discountId: "",
+          oftenBoughtTogetherId: "",
+          preperationTime: "",
+          searchTags: "",
+          description: "",
+          longDescription: "",
+          type: "",
+          availableQuantity: "",
+          alert: "",
+        });
+        setSelectedFile(null);
+        setPreviewURL(null);
+        handleCancel();
+        toast({
+          title: "Category Added",
+          description: response.data.message,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in creating new product: ${err}`);
+      toast({
+        title: "Error",
+        description: `Error in adding new category`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Modal
-      title="Add Products"
+      title="Add Product"
       onCancel={handleCancel}
-      // onOk={showModalOkItems}
-      width="60rem"
+      width="600px"
       footer={null}
       open={isVisible}
     >
-      <form onSubmit={signupAction} className="max-h-[30rem] overflow-auto">
+      <form onSubmit={handleAddProduct} className="max-h-[30rem] overflow-auto">
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="name">
+            <label className="w-1/3 text-gray-500" htmlFor="productName">
               Product Name
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.name}
-              id="name"
-              name="name"
+              name="productName"
+              placeholder="Product name"
+              value={productData.productName}
               onChange={handleInputChange}
             />
           </div>
@@ -79,61 +188,67 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.price}
-              id="price"
               name="price"
+              placeholder="Price"
+              value={productData.price}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="availableQty">
+            <label className="w-1/3 text-gray-500" htmlFor="availableQuantity">
               Available Quantity
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.availableQty}
-              id="availableQty"
-              name="availableQty"
+              name="availableQuantity"
+              placeholder="Available quantity"
+              value={productData.availableQuantity}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="alertQty">
+            <label className="w-1/3 text-gray-500" htmlFor="alert">
               Alert Quantity
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.alertQty}
-              id="alertQty"
-              name="alertQty"
+              name="alert"
+              placeholder="Alert quantity"
+              value={productData.alert}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500 " htmlFor="minQty">
+            <label
+              className="w-1/3 text-gray-500 "
+              htmlFor="minQuantityToOrder"
+            >
               Minimum Quantity to Order
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.minQty}
-              id="minQty"
-              name="minQty"
+              name="minQuantityToOrder"
+              placeholder="Minimum quantity to order"
+              value={productData.minQuantityToOrder}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="maxQty">
+            <label
+              className="w-1/3 text-gray-500"
+              htmlFor="maxQmaxQuantityPerOrderty"
+            >
               Maximum Quantity to Order
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.maxQty}
-              id="maxQty"
-              name="maxQty"
+              name="maxQuantityPerOrder"
+              placeholder="Maximum quantity to order"
+              value={productData.maxQuantityPerOrder}
               onChange={handleInputChange}
             />
           </div>
@@ -144,9 +259,9 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.costPrice}
-              id="costPrice"
               name="costPrice"
+              placeholder="Cost price"
+              value={productData.costPrice}
               onChange={handleInputChange}
             />
           </div>
@@ -157,42 +272,44 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.sku}
-              id="sku"
               name="sku"
+              placeholder="SKU"
+              value={productData.sku}
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex mt-5  gap-4">
-            <label className="w-1/2 text-gray-500" htmlFor="discount">
+          <div className="flex items-center">
+            <label className="w-1/3 text-gray-500" htmlFor="discountId">
               Discount
             </label>
             <select
-              name="discount"
-              id="discount"
-              value={addData.discount}
+              name="discountId"
+              value={productData.discountId}
               onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
+              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
             >
-              <option value="select" hidden selected>
-                Discount
+              <option defaultValue={"Select discount"} hidden>
+                Select discount
               </option>
-              <option value="Option 1">Option 1</option>
+              {allProductDiscount?.map((discount) => (
+                <option value={discount._id}>
+                  {discount.discountName.toUpperCase()}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="flex mt-5  gap-4">
-            <label className="w-1/2 text-gray-500" htmlFor="boughtTogether">
+          <div className="flex items-center">
+            <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
               Often bought together
             </label>
             <select
-              name="boughtTogether"
-              id="boughtTogether"
-              value={addData.boughtTogether}
+              name="oftenBoughtTogetherId"
+              value={productData.oftenBoughtTogetherId}
               onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
+              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
             >
-              <option value="select" hidden selected>
-                often bought Together
+              <option defaultValue={"Select product"} hidden>
+                Select product
               </option>
               <option value="Option 1">Option 1</option>
             </select>
@@ -204,9 +321,9 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.preparationTime}
-              id="preparationTime"
-              name="preparationTime"
+              name="preperationTime"
+              placeholder="Preperation time"
+              value={productData.preperationTime}
               onChange={handleInputChange}
             />
           </div>
@@ -217,9 +334,9 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.searchTag}
-              id="searchTag"
-              name="searchTag"
+              name="searchTags"
+              placeholder="Search tags"
+              value={productData.searchTags}
               onChange={handleInputChange}
             ></input>
           </div>
@@ -230,24 +347,25 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              value={addData.description}
-              id="description"
               name="description"
+              placeholder="Description"
+              value={productData.description}
               onChange={handleInputChange}
             ></input>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-start">
             <label className="w-1/3 text-gray-500" htmlFor="longDescription">
               Long description
             </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+            <textarea
+              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none resize-y"
               type="text"
-              value={addData.longDescription}
-              id="longDescription"
               name="longDescription"
+              placeholder="Long description"
+              value={productData.longDescription}
+              rows={5}
               onChange={handleInputChange}
-            ></input>
+            ></textarea>
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="type">
@@ -256,18 +374,18 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
               type="radio"
-              value="veg"
-              checked={addData.type === "veg"}
               name="type"
+              value="Veg"
+              checked={productData.type === "Veg"}
               onChange={handleInputChange}
             />
             Veg
             <input
               className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
               type="radio"
-              value="non-veg"
-              checked={addData.type === "non-veg"}
               name="type"
+              value="Non-veg"
+              checked={productData.type === "Non-veg"}
               onChange={handleInputChange}
             />
             non-veg
@@ -278,13 +396,13 @@ const AddProductItemModal = ({
             </label>
 
             <div className=" flex items-center gap-[30px]">
-              {!agentPreviewURL && (
+              {!previewURL && (
                 <div className="bg-gray-400  mt-5 h-16 w-16 rounded-md" />
               )}
-              {agentPreviewURL && (
+              {previewURL && (
                 <figure className=" mt-5 h-16 w-16 rounded-md relative">
                   <img
-                    src={agentPreviewURL}
+                    src={previewURL}
                     alt="profile"
                     className="w-full rounded h-full object-cover "
                   />
@@ -295,7 +413,7 @@ const AddProductItemModal = ({
                 name="agentImage"
                 id="agentImage"
                 className="hidden"
-                onChange={handleAgentImageChange}
+                onChange={handleSelectImage}
               />
               <label htmlFor="agentImage" className="cursor-pointer ">
                 <MdCameraAlt
@@ -317,9 +435,8 @@ const AddProductItemModal = ({
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
               type="submit"
-              // onClick={showModalOkItems}
             >
-              Add
+              {isLoading ? `Adding...` : `Add`}
             </button>
           </div>
         </div>
