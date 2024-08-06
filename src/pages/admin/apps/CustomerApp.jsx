@@ -150,16 +150,6 @@ const CustomerApp = () => {
     setNotificationPreviewURL(URL.createObjectURL(file));
   };
 
-
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setIsModalVisibleBannerEdit(false);
-  };
-
   return (
     <div>
       {isLoading ? (
