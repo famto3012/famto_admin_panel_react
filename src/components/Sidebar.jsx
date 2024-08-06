@@ -115,15 +115,17 @@ const Sidebar = () => {
           <BookOutlinedIcon className="m-2" />
           Orders
         </Link>
-        <Link
-          to="/all-merchants"
-          className={`ps-4 side ${
-            selectedLink === "/all-merchants" ? "selected-link" : ""
-          }`}
-        >
-          <StorefrontOutlinedIcon className="m-2" />
-          Merchants
-        </Link>
+        {role === "Admin" && (
+          <Link
+            to="/all-merchants"
+            className={`ps-4 side ${
+              selectedLink === "/all-merchants" ? "selected-link" : ""
+            }`}
+          >
+            <StorefrontOutlinedIcon className="m-2" />
+            Merchants
+          </Link>
+        )}
         <Link
           to="/products"
           className={`ps-4 side ${

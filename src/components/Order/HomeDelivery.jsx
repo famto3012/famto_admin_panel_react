@@ -268,8 +268,6 @@ const HomeDelivery = ({ data }) => {
         items: formattedItems,
       };
 
-      console.log("invoiceData", invoiceData);
-
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
         invoiceData,

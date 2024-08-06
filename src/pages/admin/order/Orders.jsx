@@ -293,8 +293,12 @@ const Orders = () => {
               <option value="All">All</option>
               <option value="Home Delivery">Home Delivery</option>
               <option value="Take Away">Take Away</option>
-              <option value="Pick and Drop">Pick and Drop</option>
-              <option value="Custom Order">Custom Order</option>
+              {role === "Admin" && (
+                <>
+                  <option value="Pick and Drop">Pick and Drop</option>
+                  <option value="Custom Order">Custom Order</option>
+                </>
+              )}
             </select>
           </div>
 

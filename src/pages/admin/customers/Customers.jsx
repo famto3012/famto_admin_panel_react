@@ -31,8 +31,13 @@ const Customers = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
+        const customerEndPoint =
+          role === "Admin"
+            ? `${BASE_URL}/admin/customers/get-all`
+            : `${BASE_URL}/admin/customers/customer-of-merchant`;
+
         const [customersResponse, geofenceResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/customers/get-all`, {
+          axios.get(customerEndPoint, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -173,7 +178,11 @@ const Customers = () => {
                       <td className="p-4">
                         <Link
                           to={`/customer-detail/${customer._id}`}
-                          className="underline underline-offset-4"
+                          className={`${
+                            role === "Admin"
+                              ? "underline underline-offset-4 cursor-pointer"
+                              : "cursor-auto"
+                          }`}
                         >
                           {customer._id}
                         </Link>

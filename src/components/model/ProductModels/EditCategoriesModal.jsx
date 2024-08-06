@@ -28,8 +28,10 @@ const EditCategoriesModal = ({
   const toast = useToast();
 
   useEffect(() => {
+    if (!categoryId || !merchantId) return;
+
     const fetchData = async () => {
-      const endPoint =
+      const getCategoryEndPoint =
         role === "Admin"
           ? `${BASE_URL}/categories/admin/${merchantId}/${categoryId}`
           : `${BASE_URL}/categories/${categoryId}`;
@@ -44,7 +46,7 @@ const EditCategoriesModal = ({
             },
           }
         ),
-        axios.get(endPoint, {
+        axios.get(getCategoryEndPoint, {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,6 +59,7 @@ const EditCategoriesModal = ({
       }
       if (categoryResponse.status === 200) {
         setCategoryData(categoryResponse.data.data);
+        console.log(categoryResponse.data.data);
       }
     };
 
@@ -149,9 +152,6 @@ const EditCategoriesModal = ({
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option value="" disabled>
-                Select a business category
-              </option>
               {allBusinessCategory.map((business) => (
                 <option key={business._id} value={business._id}>
                   {business.title}

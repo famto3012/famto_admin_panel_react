@@ -64,7 +64,7 @@ const CustomerDetails = () => {
   // }, [token, role, navigate, customerId]);
 
   useEffect(() => {
-    if (!token) {
+    if (!token || role !== "Admin") {
       navigate("/auth/login");
       return;
     }

@@ -25,7 +25,7 @@ const DeleteCategoryModal = ({
       const endpoint =
         role === "Admin"
           ? `${BASE_URL}/categories/admin/delete-category/${merchantId}/${categoryId}`
-          : `${BASE_URL}/categories/delete-category/${categoryId}`;
+          : `${BASE_URL}/categories/${categoryId}`;
 
       const response = await axios.delete(endpoint, {
         withCredentials: true,

@@ -23,7 +23,7 @@ const AddProductItemModal = ({
     sku: "",
     discountId: "",
     oftenBoughtTogetherId: "",
-    preperationTime: "",
+    preparationTime: "",
     searchTags: "",
     description: "",
     longDescription: "",
@@ -32,6 +32,7 @@ const AddProductItemModal = ({
     alert: "",
   });
   const [allProductDiscount, setAllProductDiscount] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
@@ -39,28 +40,48 @@ const AddProductItemModal = ({
   const toast = useToast();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const discountEndPoint =
-        role === "Admin"
-          ? `${BASE_URL}/merchant/product-discount/get-product-discount-admin/${merchantId}`
-          : `${BASE_URL}/merchant/product-discount/get-product-discount`;
+    if (!categoryId || !merchantId) return;
 
-      const [discountResponse] = await Promise.all([
-        axios.get(discountEndPoint, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
+    if (isVisible) {
+      const fetchData = async () => {
+        console.log("started", merchantId);
+        const discountEndPoint =
+          role === "Admin"
+            ? `${BASE_URL}/merchant/product-discount/get-product-discount-admin/${merchantId}`
+            : `${BASE_URL}/merchant/product-discount/get-product-discount`;
 
-      if (discountResponse.status === 200) {
-        setAllProductDiscount(discountResponse.data.data);
-      }
-    };
+        const [discountResponse, allProductResponse] = await Promise.all([
+          axios.get(discountEndPoint, {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
 
-    fetchData();
-  }, []);
+          axios.get(
+            `${BASE_URL}/products/all-products-of-merchant/${merchantId}`,
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          ),
+        ]);
+
+        if (discountResponse.status === 200) {
+          setAllProductDiscount(discountResponse.data.data);
+        }
+        if (allProductResponse.status === 200) {
+          setAllProducts(allProductResponse.data.data);
+        }
+
+        console.log("finished", merchantId);
+      };
+
+      fetchData();
+    }
+  }, [categoryId, merchantId, isVisible, role, token, BASE_URL]);
 
   const handleInputChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
@@ -78,29 +99,18 @@ const AddProductItemModal = ({
     try {
       setIsLoading(true);
 
+      console.log("productData", productData);
+
       const dataToSend = new FormData();
-      dataToSend.append("categoryId", categoryId);
-      dataToSend.append("productName", productData.productName);
-      dataToSend.append("price", productData.price);
-      dataToSend.append("minQuantityToOrder", productData.minQuantityToOrder);
-      dataToSend.append("maxQuantityPerOrder", productData.maxQuantityPerOrder);
-      dataToSend.append("costPrice", productData.costPrice);
-      dataToSend.append("sku", productData.sku);
-      dataToSend.append("discountId", productData.discountId);
-      dataToSend.append(
-        "oftenBoughtTogetherId",
-        productData.oftenBoughtTogetherId
+
+      Object.keys(productData).forEach((key) =>
+        dataToSend.append(key, productData[key])
       );
-      dataToSend.append("preperationTime", productData.preperationTime);
-      dataToSend.append("searchTags", productData.searchTags);
-      dataToSend.append("description", productData.description);
-      dataToSend.append("longDescription", productData.longDescription);
-      dataToSend.append("type", productData.type);
-      dataToSend.append("availableQuantity", productData.availableQuantity);
-      dataToSend.append("alert", productData.alert);
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
       }
+
+      console.log("Data to be sent:", dataToSend.entries());
 
       const response = await axios.post(
         `${BASE_URL}/products/add-product`,
@@ -114,6 +124,8 @@ const AddProductItemModal = ({
         }
       );
 
+      console.log("response", response);
+
       if (response.status === 201) {
         onAddProduct(productData.productName);
         setProductData({
@@ -125,7 +137,7 @@ const AddProductItemModal = ({
           sku: "",
           discountId: "",
           oftenBoughtTogetherId: "",
-          preperationTime: "",
+          preparationTime: "",
           searchTags: "",
           description: "",
           longDescription: "",
@@ -145,7 +157,7 @@ const AddProductItemModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in creating new product: ${err}`);
+      console.log(`Error in creating new product: ${err.stack}`);
       toast({
         title: "Error",
         description: `Error in adding new category`,
@@ -292,7 +304,7 @@ const AddProductItemModal = ({
                 Select discount
               </option>
               {allProductDiscount?.map((discount) => (
-                <option value={discount._id}>
+                <option key={discount._id} value={discount._id}>
                   {discount.discountName.toUpperCase()}
                 </option>
               ))}
@@ -311,7 +323,11 @@ const AddProductItemModal = ({
               <option defaultValue={"Select product"} hidden>
                 Select product
               </option>
-              <option value="Option 1">Option 1</option>
+              {allProducts?.map((product) => (
+                <option key={product._id} value={product._id}>
+                  {product.productName}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex items-center">
@@ -321,9 +337,9 @@ const AddProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              name="preperationTime"
+              name="preparationTime"
               placeholder="Preperation time"
-              value={productData.preperationTime}
+              value={productData.preparationTime}
               onChange={handleInputChange}
             />
           </div>
@@ -388,7 +404,7 @@ const AddProductItemModal = ({
               checked={productData.type === "Non-veg"}
               onChange={handleInputChange}
             />
-            non-veg
+            Non-veg
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="photos">
@@ -417,7 +433,7 @@ const AddProductItemModal = ({
               />
               <label htmlFor="agentImage" className="cursor-pointer ">
                 <MdCameraAlt
-                  className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
+                  className=" bg-teal-800  text-[40px] text-white p-5 h-16 w-16 mt-5 rounded"
                   size={30}
                 />
               </label>
