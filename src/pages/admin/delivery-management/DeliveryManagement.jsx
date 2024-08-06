@@ -69,6 +69,27 @@ const DeliveryManagement = () => {
     },
   ];
 
+  const [authToken, setAuthToken] = useState("");
+
+
+    const getAuthToken = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setAuthToken(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getting auth token`);
+      }
+    };
+
+
   const { activeStep } = useSteps({
     index: 2,
     count: steps.length,
@@ -343,9 +364,11 @@ const DeliveryManagement = () => {
 
   // Initialize the map
   useEffect(() => {
+    getAuthToken();
     handleStatusFilter("Free");
     handleGetAllAgent();
     getAutoAllocation();
+  //  console.log("Token", authToken)
     const mapProps = {
       center: [8.528818999999999, 76.94310683333333],
       traffic: true,
@@ -355,9 +378,9 @@ const DeliveryManagement = () => {
     };
 
     const mapplsClassObject = new mappls();
-    if (allAgentData) {
+    if (allAgentData && authToken) {
       mapplsClassObject.initialize(
-        "9a632cda78b871b3a6eb69bddc470fef",
+        `${authToken}`,
         async () => {
           if (mapContainerRef.current) {
             console.log("Initializing map...");
@@ -383,7 +406,7 @@ const DeliveryManagement = () => {
         }
       );
     }
-  }, []);
+  }, [authToken]);
 
   // Add markers once agentData is fetched
   useEffect(() => {

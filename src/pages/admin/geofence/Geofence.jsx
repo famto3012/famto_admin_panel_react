@@ -21,7 +21,31 @@ const Geofence = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const toast = useToast()
 
+  const [authToken, setAuthToken] = useState("");
+
+
+    const getAuthToken = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setAuthToken(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getting auth token`);
+      }
+    };
+
+   
+ 
+
   useEffect(() => {
+    getAuthToken();
     getAllGeofence();
   }, []);
 
@@ -29,6 +53,7 @@ const Geofence = () => {
 
   useEffect(() => {
     if (geofences.length >= 0) {
+      console.log("Token", authToken)
       const mapProps = {
         center: [8.528818999999999, 76.94310683333333],
         traffic: true,
@@ -40,7 +65,7 @@ const Geofence = () => {
       console.log("Mappls", mapplsClassObject);
 
       mapplsClassObject.initialize(
-        "9a632cda78b871b3a6eb69bddc470fef",
+        `${authToken}`,
         async () => {
           if (mapContainerRef.current) {
             console.log("Initializing map...");

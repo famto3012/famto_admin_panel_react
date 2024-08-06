@@ -25,6 +25,29 @@ const AddGeofence = ({ heading }) => {
   const toast = useToast();
   let map, drawData, geoJSON, polyArray;
 
+  const [authToken, setAuthToken] = useState("");
+
+ 
+    const getAuthToken = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setAuthToken(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getting auth token`);
+      }
+    };
+
+   
+
+
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
   };
@@ -50,8 +73,10 @@ const AddGeofence = ({ heading }) => {
   };
 
   useEffect(() => {
+    getAuthToken();
+    console.log("Token",authToken)
     const script = document.createElement("script");
-    script.src = "https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap";
+    script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
     script.async = true;
     document.body.appendChild(script);
 
@@ -100,7 +125,7 @@ const AddGeofence = ({ heading }) => {
         console.error("Map container not found");
       }
     };
-  }, []);
+  }, [authToken]);
 
   useEffect(() => {
     if (heading === "Edit Geofence") {
