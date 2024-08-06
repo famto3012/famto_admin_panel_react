@@ -90,7 +90,7 @@ const EditDiscountModal = (
       );
       if (response.status === 200) {
         handleCancel();
-        // onEditDiscount(response.data.data);
+        onEditDiscount(response.data.data);
         toast({
           title: "Discount Updated",
           description: "Successfully Updated Discount",

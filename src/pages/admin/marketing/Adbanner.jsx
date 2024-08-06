@@ -137,6 +137,14 @@ const Adbanner = () => {
     });
   };
 
+  const handleEditNewBanner = (newBanner) => {
+    setBanner((prevBanner) => 
+      prevBanner.map((banner) => 
+        banner?._id === newBanner?._id ? newBanner : banner
+      )
+    );
+  }
+
   const handleAddIndBanner = (newBanner) => {
     setIndividualBanner((indBanner) => {
       // Ensure Individual Banner is an array before adding the new promo code
@@ -455,6 +463,7 @@ const Adbanner = () => {
                             banner={banner}
                             currentBannerEdit={currentBannerEdit}
                             allGeofence={allGeofence}
+                            onAddAppData={handleEditNewBanner}
                           />
 
                           <button>

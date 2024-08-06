@@ -182,15 +182,14 @@ const Discount = () => {
     });
   };
 
-  // const handleEditDiscount = (editDiscount) => {
-  //   setDiscount((prevDiscounts) => {
-  //     if (Array.isArray(prevDiscounts)) {
-  //       return [...prevDiscounts, editDiscount];
-  //     } else {
-  //       return [editDiscount];
-  //     }
-  //   });
-  // };
+   // Function to update the discount in the list
+   const handleEditDiscount = (updatedDiscount) => {
+    setDiscount((prevDiscounts) =>
+      prevDiscounts.map((discount) =>
+        discount._id === updatedDiscount._id ? updatedDiscount : discount
+      )
+    );
+  };
 
   const handleAddProduct = (newProduct) => {
     setDiscount((prevProducts) => {
@@ -203,13 +202,11 @@ const Discount = () => {
   };
 
   const handleEditProduct = (editProduct) => {
-    setDiscount((prevProduct) => {
-      if (Array.isArray(prevProduct)) {
-        return [...prevProduct, editProduct];
-      } else {
-        return [editProduct];
-      }
-    });
+    setDiscount((prevProduct) =>
+      prevProduct.map((discount) =>
+        discount._id === editProduct._id ? editProduct : discount
+      )
+    );
   };
 
   // Delete Current Product...
@@ -540,7 +537,7 @@ const Discount = () => {
                               currentDiscount={currentDiscount}
                               BASE_URL={BASE_URL}
                               handleCancel={handleCancel}
-                              // onEditDiscount={handleEditDiscount}
+                              onEditDiscount={handleEditDiscount}
                             />
                           </div>
                           <button

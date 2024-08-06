@@ -10,6 +10,7 @@ const EditBannerModal = ({
   allGeofence,
   currentBannerEdit,
   BASE_URL,
+  onAddAppData
 }) => {
   // Initialize state with currentBannerEdit details if available
   const [appBanner, setAppData] = useState({
@@ -26,9 +27,10 @@ const EditBannerModal = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      
       console.log("Fetching data for currentBannerEdit:", currentBannerEdit);
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `${BASE_URL}/admin/app-banner/get-app-banner/${currentBannerEdit}`,
           {
@@ -87,9 +89,7 @@ const EditBannerModal = ({
       appBannerDataToSend.append("name", appBanner.name);
       appBannerDataToSend.append("merchantId", appBanner.merchantId);
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
-      if (selectedFile) {
         appBannerDataToSend.append("appBannerImage", selectedFile);
-      }
 
       const addBannerResponse = await axios.put(
         `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
@@ -104,7 +104,7 @@ const EditBannerModal = ({
       );
 
       if (addBannerResponse.status === 200) {
-        setAppData(addBannerResponse.data.data);
+        onAddAppData(addBannerResponse.data.data);
         handleCancel();
       } else {
         console.error("Failed to update banner:", addBannerResponse.data);
@@ -113,7 +113,6 @@ const EditBannerModal = ({
       console.error(`Error in updating data: ${err}`);
     } finally {
       setConfirmLoading(false);
-      console.log("edit data", appBanner);
     }
   };
 
@@ -133,10 +132,10 @@ const EditBannerModal = ({
             </label>
             <input
               type="text"
-              placeholder="Name"
+              placeholder={isLoading ? "Loading Data..." : "Name"}
               id="name"
               name="name"
-              value={appBanner.name}
+              value={appBanner?.name}
               onChange={handleInputChange}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
@@ -150,7 +149,7 @@ const EditBannerModal = ({
               placeholder="Merchant ID"
               id="merchantId"
               name="merchantId"
-              value={appBanner.merchantId}
+              value={appBanner?.merchantId}
               onChange={handleInputChange}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
@@ -162,7 +161,7 @@ const EditBannerModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
-              value={appBanner.geofenceId}
+              value={appBanner?.geofenceId}
               onChange={handleInputChange}
             >
               <option defaultValue="" disabled hidden>
@@ -180,7 +179,7 @@ const EditBannerModal = ({
             <div className="flex items-center gap-[30px]">
               {/* Render the current banner image only if no new image is selected */}
 
-              {previewURL && appBanner.appBannerImage && (
+              {previewURL && appBanner?.appBannerImage && (
                 <figure className="mt-3 h-16 w-16 rounded-md">
                   <img
                     src={previewURL}
@@ -190,10 +189,10 @@ const EditBannerModal = ({
                 </figure>
               )}
 
-              {!previewURL && appBanner.appBannerImage && (
+              {!previewURL && appBanner?.appBannerImage && (
                 <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
                   <img
-                    src={appBanner.appBannerImage}
+                    src={appBanner?.appBannerImage}
                     alt="Current Banner"
                     className="w-full h-full"
                   />
@@ -226,13 +225,10 @@ const EditBannerModal = ({
             Cancel
           </button>
           <button
-            className={`bg-teal-700 text-white py-2 px-4 rounded-md ${
-              confirmLoading ? "opacity-50" : ""
-            }`}
+            className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
-            disabled={isLoading}
           >
-            {isLoading ? "Saving..." : "Save"}
+          {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

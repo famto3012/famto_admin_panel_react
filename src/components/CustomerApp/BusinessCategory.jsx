@@ -176,7 +176,7 @@ const BusinessCategory = () => {
         }
       );
       if (response.status === 200) {
-        handleAddBanner(response.data.data);
+        // handleAddBanner(response.data.data);
         toast({
           title: "Created",
           description: "Business Category Created Successfully.",
@@ -198,7 +198,7 @@ const BusinessCategory = () => {
       if (Array.isArray(prevBanners)) {
         return [...prevBanners, newCategory];
       } else {
-        [newCategory];
+        return [newCategory];
       }
     });
   };
