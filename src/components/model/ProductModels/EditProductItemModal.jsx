@@ -33,6 +33,7 @@ const EditProductItemModal = ({
     productImageURL: "",
   });
   const [allProductDiscount, setAllProductDiscount] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
@@ -40,38 +41,66 @@ const EditProductItemModal = ({
   const toast = useToast();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const discountEndPoint =
-        role === "Admin"
-          ? `${BASE_URL}/merchant/product-discount/get-product-discount-admin/${merchantId}`
-          : `${BASE_URL}/merchant/product-discount/get-product-discount`;
+    if (!productId || !categoryId || !merchantId) return;
 
-      const [discountResponse, productResponse] = await Promise.all([
-        axios.get(discountEndPoint, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(`${BASE_URL}/products/${productId}`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
+    if (isVisible) {
+      const fetchData = async () => {
+        console.log("started", merchantId);
+        const discountEndPoint =
+          role === "Admin"
+            ? `${BASE_URL}/merchant/product-discount/get-product-discount-admin/${merchantId}`
+            : `${BASE_URL}/merchant/product-discount/get-product-discount`;
 
-      if (discountResponse.status === 200) {
-        setAllProductDiscount(discountResponse.data.data);
-      }
-      if (productResponse.status === 200) {
-        setProductData(productResponse.data.data);
-        console.log(productData);
-      }
-    };
+        const [discountResponse, allProductResponse, singleProductResponse] =
+          await Promise.all([
+            axios.get(discountEndPoint, {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }),
 
-    fetchData();
-  }, []);
+            axios.get(
+              `${BASE_URL}/products/all-products-of-merchant/${merchantId}`,
+              {
+                withCredentials: true,
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            ),
+
+            axios.get(`${BASE_URL}/products/${productId}`, {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }),
+          ]);
+
+        if (discountResponse.status === 200) {
+          setAllProductDiscount(discountResponse.data.data);
+        }
+
+        if (allProductResponse.status === 200) {
+          setAllProducts(allProductResponse.data.data);
+        }
+
+        if (singleProductResponse.status === 200) {
+          const { data } = singleProductResponse.data;
+          setProductData({
+            ...data,
+            discountId: null ? "" : data.discountId,
+            oftenBoughtTogetherId: null ? "" : data.oftenBoughtTogetherId,
+          });
+        }
+
+        console.log("finished", merchantId);
+      };
+
+      fetchData();
+    }
+  }, [isVisible, BASE_URL, token, role, merchantId, productId, categoryId]);
 
   const handleInputChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
@@ -90,26 +119,11 @@ const EditProductItemModal = ({
       setIsLoading(true);
 
       const dataToSend = new FormData();
-      dataToSend.append("categoryId", categoryId);
-      dataToSend.append("productName", productData.productName);
-      dataToSend.append("price", productData.price);
-      dataToSend.append("minQuantityToOrder", productData.minQuantityToOrder);
-      dataToSend.append("maxQuantityPerOrder", productData.maxQuantityPerOrder);
-      dataToSend.append("costPrice", productData.costPrice);
-      dataToSend.append("sku", productData.sku);
-      dataToSend.append("discountId", productData.discountId);
-      dataToSend.append(
-        "oftenBoughtTogetherId",
-        productData.oftenBoughtTogetherId
+
+      Object.keys(productData).forEach((key) =>
+        dataToSend.append(key, productData[key])
       );
-      dataToSend.append("preperationTime", productData.preperationTime);
-      dataToSend.append("searchTags", productData.searchTags);
-      dataToSend.append("description", productData.description);
-      dataToSend.append("longDescription", productData.longDescription);
-      dataToSend.append("type", productData.type);
-      dataToSend.append("availableQuantity", productData.availableQuantity);
-      dataToSend.append("alert", productData.alert);
-      dataToSend.append("productImageURL", productData.alert);
+
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
       }
@@ -127,7 +141,6 @@ const EditProductItemModal = ({
       );
 
       if (response.status === 200) {
-        // onAddProduct(productData.productName);
         setProductData({
           productName: "",
           price: "",
@@ -306,7 +319,7 @@ const EditProductItemModal = ({
                 Select discount
               </option>
               {allProductDiscount?.map((discount) => (
-                <option value={discount._id}>
+                <option key={discount._id} value={discount._id}>
                   {discount.discountName.toUpperCase()}
                 </option>
               ))}
@@ -325,7 +338,11 @@ const EditProductItemModal = ({
               <option defaultValue={"Select product"} hidden>
                 Select product
               </option>
-              <option value="Option 1">Option 1</option>
+              {allProducts?.map((product) => (
+                <option key={product._id} value={product._id}>
+                  {product.productName}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex items-center">
@@ -383,7 +400,7 @@ const EditProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="type">
-              Veg/Non-veg
+              Type
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"

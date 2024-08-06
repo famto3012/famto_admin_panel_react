@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
@@ -28,14 +28,6 @@ const AddCategoriesModal = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
-
-  useEffect(() => {
-    setCategoryData((prevData) => ({
-      ...prevData,
-      merchantId,
-    }));
-    console.log("MERCHANT ID", merchantId);
-  }, []);
 
   useEffect(() => {
     const getAllBusinessCategories = async () => {
