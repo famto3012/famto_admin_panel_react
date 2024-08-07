@@ -13,11 +13,12 @@ const AddProductModal = ({
   onAddProduct,
 }) => {
   const [productResults, setProductResults] = useState([]);
+  const [selectedProductName, setSelectedProductName] = useState(""); // State for selected product name
   const [productDiscount, setProductDiscount] = useState({
     discountName: "",
-    maxAmount: null,
+    maxAmount: "",
     discountType: "",
-    discountValue: null,
+    discountValue: "",
     description: "",
     merchantId: "",
     validFrom: "",
@@ -26,13 +27,6 @@ const AddProductModal = ({
     productId: "",
     onAddOn: false,
   });
-
-  const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleInputChange = (e) => {
-    setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,7 +71,7 @@ const AddProductModal = ({
     const query = e.target.value;
 
     if (query.length < 2) {
-      // Only search when query length is 3 or more characters
+      // Only search when query length is 2 or more characters
       setProductResults([]);
       return;
     }
@@ -96,15 +90,25 @@ const AddProductModal = ({
     }
   };
 
-  const handleProductSelect = (productId) => {
+  const handleProductSelect = (productId, productName) => {
     setProductDiscount({ ...productDiscount, productId });
+    setSelectedProductName(productName); // Store the selected product name
   };
 
   const handleToggle = (checked) => {
     setProductDiscount({ ...productDiscount, onAddOn: checked });
   };
 
-  console.log("product discount", productDiscount);
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleInputChange = (e) => {
+    setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
+  };
+
+  // Debugging logs
+  console.log("Product Discount:", productDiscount);
+  console.log("Selected Product Name:", selectedProductName);
 
   return (
     <Modal
@@ -135,7 +139,7 @@ const AddProductModal = ({
               ))}
             </select>
           </div>
-          <div className="flex mt-5  gap-4">
+          <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">Discount Name</label>
             <input
               type="text"
@@ -160,7 +164,7 @@ const AddProductModal = ({
               Fixed discount
               <input
                 type="radio"
-                className=" border-gray-300 mr-3 rounded ml-5 "
+                className="border-gray-300 mr-3 rounded ml-5"
                 name="discountType"
                 value="Percentage-discount"
                 checked={productDiscount.discountType === "Percentage-discount"}
@@ -199,12 +203,12 @@ const AddProductModal = ({
               type="search"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="productId"
-              // value={productDiscount.productId}
+              // value={selectedProductName} // Bind input value to selected product name
               onChange={handleSearchProduct}
             />
           </div>
           <div className="mt-2">
-            <ul className=" border-gray-300 rounded-md max-h-40 overflow-y-auto">
+            <ul className="border-gray-300 rounded-md max-h-40 overflow-y-auto">
               {productResults.map((product) => (
                 <li
                   key={product._id}
@@ -213,7 +217,9 @@ const AddProductModal = ({
                       ? "bg-teal-200"
                       : ""
                   }`}
-                  onClick={() => handleProductSelect(product._id)}
+                  onClick={
+                    () => handleProductSelect(product._id, product.productName) // Pass product name to the handler
+                  }
                 >
                   {product.productName}
                 </li>
@@ -282,7 +288,7 @@ const AddProductModal = ({
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
               onClick={handleCancel}
-              type="button"  // Changed to "button" to prevent accidental form submission
+              type="button" // Changed to "button" to prevent accidental form submission
             >
               Cancel
             </button>

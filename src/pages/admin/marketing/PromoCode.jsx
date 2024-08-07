@@ -22,6 +22,7 @@ const PromoCode = () => {
   const [currentPromo, setCurrentPromo] = useState(null);
   const [currentPromoEdit, setCurrentPromoEdit] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -34,7 +35,6 @@ const PromoCode = () => {
       navigate("/auth/login");
       return;
     }
-
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -58,25 +58,7 @@ const PromoCode = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const showModalEdit = (id) => {
-    setCurrentPromoEdit(id);
-    setIsModalVisibleEdit(true);
-  };
-
-  const showModalDelete = (promoId) => {
-    setCurrentPromo(promoId);
-    setIsShowModalDelete(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setIsShowModalDelete(false);
-    setIsModalVisibleEdit(false);
-  };
+  // to delete the Promocode.
 
   const removePromo = (currentPromo) => {
     setAllPromocode(
@@ -89,10 +71,11 @@ const PromoCode = () => {
     setCurrentPromo(null);
   };
 
-  const handlePromoDelete = async (e,currentPromo) => {
+  const handlePromoDelete = async (e, currentPromo) => {
     e.preventDefault();
+
     try {
-      setIsLoading(true);
+      setConfirmLoading(true);
       const deleteResponse = await axios.delete(
         `${BASE_URL}/admin/promocode/delete-promocode/${currentPromo}`,
         {
@@ -105,18 +88,23 @@ const PromoCode = () => {
         handleConfirmDelete();
         toast({
           title: "PromoCode Deleted.",
-          description: "Promocode Deleted Successfully..",
-          duration: 9000,
+          description: "Promocode Deleted Successfully.",
+          duration: 900,
           isClosable: true,
           status: "success",
         });
       }
     } catch (err) {
-      console.error(
-        `Error in deleting promoCode: ${err.message}`
-      );
+      console.error(`Error in deleting promoCode: ${err.message}`);
+      toast({
+        title: "Error",
+        description: "Failed to delete promo code.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
     } finally {
-      setIsLoading(false);
+      setConfirmLoading(false);
     }
   };
 
@@ -202,6 +190,34 @@ const PromoCode = () => {
     });
   };
 
+  const handleEditPromoCode = (updatedPromo) => {
+    setAllPromocode((prevPromo) =>
+      prevPromo.map((promocode) =>
+        promocode._id === updatedPromo._id ? updatedPromo : promocode
+      )
+    );
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const showModalEdit = (id) => {
+    setCurrentPromoEdit(id);
+    setIsModalVisibleEdit(true);
+  };
+
+  const showModalDelete = (promoId) => {
+    setCurrentPromo(promoId);
+    setIsShowModalDelete(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setIsShowModalDelete(false);
+    setIsModalVisibleEdit(false);
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -211,7 +227,7 @@ const PromoCode = () => {
           <Sidebar />
 
           <div className="pl-[300px] bg-gray-100 w-full h-fit">
-            <div className="">
+            <div>
               <nav className="p-5">
                 <GlobalSearch />
               </nav>
@@ -221,16 +237,17 @@ const PromoCode = () => {
                 <Switch checked={status} onChange={toggleChange} />
               </div>
 
-              <p className="m-5 text-gray-500">
+              <div className="m-5 text-gray-500">
                 Promo codes are exclusive discount vouchers that can be redeemed
                 by the customers during the checkout process
-                <span className="flex justify-start">
+                <div className="flex justify-start">
                   You can create customized promotional codes with a detailed
                   description that will be visible to customers
-                </span>
-              </p>
+                </div>
+              </div>
               <div className="flex justify-end pr-5 mb-10">
                 <button
+                  type="button"
                   className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center  space-x-1 outline-none focus:outline-none"
                   onClick={showModal} // Call the function directly
                 >
@@ -302,7 +319,10 @@ const PromoCode = () => {
                             />
                           </div>
                           <div className="flex items-center">
-                            <button onClick={() => showModalEdit(data._id)}>
+                            <button
+                              type="button"
+                              onClick={() => showModalEdit(data._id)}
+                            >
                               <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                             </button>
 
@@ -313,32 +333,41 @@ const PromoCode = () => {
                               currentPromoEdit={currentPromoEdit}
                               allPromocode={allPromocode}
                               BASE_URL={BASE_URL}
+                              onAddPromocode={handleEditPromoCode}
                             />
                           </div>
-                          <button onClick={() => showModalDelete(data._id)}>
+                          <button
+                            type="button"
+                            onClick={() => showModalDelete(data._id)}
+                          >
                             <RiDeleteBinLine className="bg-red-100 text-red-600 mr-3 p-2 text-[35px] rounded-lg" />
                           </button>
+
                           <Modal
                             onCancel={handleCancel}
                             footer={null}
                             open={isShowModalDelete}
                             centered
                           >
-                            <p className="font-semibold text-[18px] mb-5">
-                              <Spin spinning={isLoading}>
+                            <div className="font-semibold text-[18px] mb-5">
+                              <Spin spinning={confirmLoading}>
                                 Are you sure you want to delete?
                               </Spin>
-                            </p>
+                            </div>
                             <div className="flex justify-end gap-5">
                               <button
+                                type="button"
                                 className="bg-cyan-100 px-5 py-2 rounded-lg"
                                 onClick={handleCancel}
                               >
                                 Cancel
                               </button>
                               <button
+                                type="button"
                                 className="bg-red-100 px-5 py-2 rounded-lg font-semibold text-red-600"
-                                onClick={(e) => handlePromoDelete(e,currentPromo)}
+                                onClick={(e) =>
+                                  handlePromoDelete(e, currentPromo)
+                                }
                               >
                                 Delete
                               </button>

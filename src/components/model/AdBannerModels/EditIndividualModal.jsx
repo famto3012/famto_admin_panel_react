@@ -3,7 +3,7 @@ import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
-import axios from "axios"; // Import axios
+import axios from "axios";
 
 const EditIndividualModal = ({
   isVisible,
@@ -12,13 +12,13 @@ const EditIndividualModal = ({
   currentIndBanner,
   handleCancel,
   allGeofence,
-  onEditIndBanner
+  onEditIndBanner,
 }) => {
   const [individualdata, setIndividualData] = useState({
     name: "",
     merchantId: "",
     geofence: "",
-    bannerImage: "",
+    imageUrl: "",
   });
 
   const [errors, setErrors] = useState({
@@ -29,17 +29,15 @@ const EditIndividualModal = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [adFile, setAdFile] = useState(null);
+  const [adPreviewURL, setAdPreviewURL] = useState(null);
+
   const toast = useToast();
   const navigate = useNavigate();
-
-  console.log("data", individualdata);
-
-  //api connection to get individual banner details
 
   useEffect(() => {
     const getData = async () => {
       setConfirmLoading(true);
-
       try {
         const response = await axios.get(
           `${BASE_URL}/admin/banner/get-banner/${currentIndBanner}`,
@@ -48,6 +46,7 @@ const EditIndividualModal = ({
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
         if (response.status === 200) {
           const data = response.data.data;
           setIndividualData({
@@ -56,9 +55,10 @@ const EditIndividualModal = ({
             geofence: data.geofenceId,
             bannerImage: data.imageUrl,
           });
+          setAdPreviewURL(data.imageUrl); // Set the initial preview URL
         }
       } catch (err) {
-        console.error(`Error in fetch data ${response.data.message}`);
+        console.error(`Error fetching data: ${err.message}`);
       } finally {
         setConfirmLoading(false);
       }
@@ -76,8 +76,6 @@ const EditIndividualModal = ({
     });
   };
 
-  console.log("individual banner Id", currentIndBanner);
-
   const formSubmit = async (e) => {
     e.preventDefault();
 
@@ -88,13 +86,14 @@ const EditIndividualModal = ({
       IndBannerDataToSend.append("name", individualdata.name);
       IndBannerDataToSend.append("merchantId", individualdata.merchantId);
       IndBannerDataToSend.append("geofenceId", individualdata.geofence);
+
       if (adFile) {
-        IndBannerDataToSend.append("bannerImage", adFile);
+        IndBannerDataToSend.append("imageUrl", adFile);
       }
 
       const IndBannerResponse = await axios.put(
         `${BASE_URL}/admin/banner/edit-banner/${currentIndBanner}`,
-        IndBannerDataToSend, // Send FormData directly
+        IndBannerDataToSend,
         {
           withCredentials: true,
           headers: {
@@ -118,7 +117,7 @@ const EditIndividualModal = ({
         });
       }
     } catch (err) {
-      console.error(`Error in fetch data: ${err.message}`);
+      console.error(`Error updating banner: ${err.message}`);
 
       if (err.response && err.response.data && err.response.data.errors) {
         const { errors } = err.response.data;
@@ -142,13 +141,12 @@ const EditIndividualModal = ({
     }
   };
 
-  const [adFile, setAdFile] = useState(null);
-  const [adPreviewURL, setAdPreviewURL] = useState(null);
-
   const handleAdImageChange = (e) => {
     const file = e.target.files[0];
-    setAdFile(file);
-    setAdPreviewURL(URL.createObjectURL(file));
+    if (file) {
+      setAdFile(file);
+      setAdPreviewURL(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -217,12 +215,9 @@ const EditIndividualModal = ({
             )}
           </div>
           <div className="flex items-center">
-            <label className=" w-1/3">Banner Image (390px x 400px)</label>
+            <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              {!adPreviewURL && (
-                <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
-              )}
-              {adPreviewURL && (
+              {adPreviewURL ? (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
                     src={adPreviewURL}
@@ -230,7 +225,15 @@ const EditIndividualModal = ({
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
-              )}
+              ) : individualdata?.imageUrl ? (
+                <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
+                  <img
+                    src={individualdata?.imageUrl}
+                    className="w-full rounded h-full object-cover"
+                  />
+                </div>
+              ) : null}
+
               <input
                 type="file"
                 name="adImage"
@@ -272,3 +275,4 @@ const EditIndividualModal = ({
 };
 
 export default EditIndividualModal;
+

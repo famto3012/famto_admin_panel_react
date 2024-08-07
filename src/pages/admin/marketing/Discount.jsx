@@ -171,43 +171,6 @@ const Discount = () => {
     }
   };
 
-  const handleDiscountAdd = (newDiscount) => {
-    setDiscount((prevDiscounts) => {
-      // Ensure prevPromocodes is an array before adding the new promo code
-      if (Array.isArray(prevDiscounts)) {
-        return [...prevDiscounts, newDiscount];
-      } else {
-        return [newDiscount];
-      }
-    });
-  };
-
-   // Function to update the discount in the list
-   const handleEditDiscount = (updatedDiscount) => {
-    setDiscount((prevDiscounts) =>
-      prevDiscounts.map((discount) =>
-        discount._id === updatedDiscount._id ? updatedDiscount : discount
-      )
-    );
-  };
-
-  const handleAddProduct = (newProduct) => {
-    setDiscount((prevProducts) => {
-      if (Array.isArray(prevProducts)) {
-        return [...prevProducts, newProduct];
-      } else {
-        return [newProduct];
-      }
-    });
-  };
-
-  const handleEditProduct = (editProduct) => {
-    setDiscount((prevProduct) =>
-      prevProduct.map((discount) =>
-        discount._id === editProduct._id ? editProduct : discount
-      )
-    );
-  };
 
   // Delete Current Product...
 
@@ -354,6 +317,44 @@ const Discount = () => {
     }
   };
 
+  const handleDiscountAdd = (newDiscount) => {
+    setDiscount((prevDiscounts) => {
+      // Ensure prevPromocodes is an array before adding the new promo code
+      if (Array.isArray(prevDiscounts)) {
+        return [...prevDiscounts, newDiscount];
+      } else {
+        return [newDiscount];
+      }
+    });
+  };
+
+   // Function to update the discount in the list
+   const handleEditDiscount = (updatedDiscount) => {
+    setDiscount((prevDiscounts) =>
+      prevDiscounts.map((discount) =>
+        discount._id === updatedDiscount._id ? updatedDiscount : discount
+      )
+    );
+  };
+
+  const handleAddProduct = (newProduct) => {
+    setDiscount((prevProducts) => {
+      if (Array.isArray(prevProducts)) {
+        return [...prevProducts, newProduct];
+      } else {
+        return [newProduct];
+      }
+    });
+  };
+
+  const handleEditProduct = (editProduct) => {
+    setDiscount((prevProduct) =>
+      prevProduct.map((discount) =>
+        discount._id === editProduct._id ? editProduct : discount
+      )
+    );
+  };
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -394,9 +395,6 @@ const Discount = () => {
   // Filter discounts based on the presence of a productId
   const merchantDiscounts = discount.filter((item) => !item.productId);
   const productDiscounts = discount.filter((item) => item.productId);
-
-  console.log("GEOFENCES", geofence);
-  console.log("Delete", currentDiscountDelete);
 
   return (
     <div>
