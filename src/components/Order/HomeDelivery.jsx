@@ -161,7 +161,6 @@ const HomeDelivery = ({ data }) => {
                 price: type.price,
                 _id: type._id,
               })),
-              variantId: variant.variantTypes[0]._id,
             })),
           },
         ],
@@ -177,7 +176,6 @@ const HomeDelivery = ({ data }) => {
     setMerchantName(merchant.merchantName);
     setMerchantResults([]);
     setAllCustomerAddress(data?.customerAddress);
-    console.log(data.newCustomer);
   };
 
   const handleSelectAddressType = (type) => {
@@ -225,18 +223,14 @@ const HomeDelivery = ({ data }) => {
     });
   };
 
-  const handleVariantChange = (productId, variantTypeId, variantIndex) => {
+  const handleVariantChange = (productId, variantId) => {
     setHomeDeliveryData({
       ...homeDeliveryData,
       items: homeDeliveryData.items.map((item) =>
         item.productId === productId
           ? {
               ...item,
-              variants: item.variants.map((variant, index) =>
-                index === variantIndex
-                  ? { ...variant, variantId: variantTypeId }
-                  : variant
-              ),
+              selectedVariantId: variantId,
             }
           : item
       ),
@@ -248,13 +242,26 @@ const HomeDelivery = ({ data }) => {
     try {
       setIsInvoiceLoading(true);
 
-      // Format the items to include the selected variantId
-      const formattedItems = homeDeliveryData?.items?.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-        variantId: item.variants.length > 0 ? item.variants[0].variantId : null,
-      }));
+      // Format the items to include the selected variantId and its price
+      const formattedItems = homeDeliveryData.items.map((item) => {
+        // Find the selected variant type for the item
+        const selectedVariant = item.variants
+          .flatMap((variant) => variant.variantTypes)
+          .find((type) => type._id === item.selectedVariantId);
+
+        console.log("selectedVariant", selectedVariant);
+
+        // Determine the price based on whether a variant is selected or not
+        const price = selectedVariant ? selectedVariant.price : item.price;
+        console.log("price", price);
+
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          price: price,
+          variantId: item.selectedVariantId || null, // Use selectedVariantId if available
+        };
+      });
 
       const invoiceData = {
         ...homeDeliveryData,
@@ -292,7 +299,7 @@ const HomeDelivery = ({ data }) => {
         });
       }
     } catch (err) {
-      console.log(`Error in creating Take away invoice: ${err}`);
+      console.log(`Error in creating Home Delivery invoice: ${err}`);
       toast({
         title: "Error",
         description: "Error in creating invoice",
@@ -302,49 +309,6 @@ const HomeDelivery = ({ data }) => {
       });
     } finally {
       setIsInvoiceLoading(false);
-    }
-  };
-
-  const createOrderHandler = async (e) => {
-    e.preventDefault();
-    try {
-      setIsOrderLoading(true);
-
-      const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order`,
-        {
-          paymentMode,
-          cartId: cartData.cartId,
-          deliveryMode: cartData.deliveryMode,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        toast({
-          title: "Success",
-          description: response.data.message,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      console.log(`Error in creating order: ${err}`);
-      toast({
-        title: "Error",
-        description: "Error in creating invoice",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    } finally {
-      setIsOrderLoading(false);
     }
   };
 
@@ -445,38 +409,38 @@ const HomeDelivery = ({ data }) => {
                     className="flex items-center gap-3 py-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
                   >
                     <div>
-                      <div>
-                        <p className="text-gray-600 mb-2 w-[100px] truncate">
-                          {item.productName}
-                        </p>
-                        <p className="text-gray-600">
-                          {item?.variants?.length === 0 && `${item.price}`}
-                        </p>
-                      </div>
+                      <p className="text-gray-600 mb-2 w-[100px] truncate">
+                        {item.productName}
+                      </p>
+                      <p className="text-gray-600">
+                        {item.variants.length === 0 ? `₹${item.price}` : ""}
+                      </p>
 
-                      <div>
-                        {item.variants.map((variant, variantIndex) => (
+                      {item?.variants?.length > 0 && (
+                        <div>
                           <select
                             className="outline-none focus:outline-none bg-white p-2"
-                            key={variant.variantId}
-                            value={variant.variantId}
+                            value={item.selectedVariantId || ""}
                             onChange={(e) =>
                               handleVariantChange(
                                 item.productId,
-                                e.target.value,
-                                variantIndex
+                                e.target.value
                               )
                             }
                           >
-                            {variant.variantTypes.map((type) => (
-                              <option key={type._id} value={type._id}>
-                                {type.typeName} - ₹ {type.price}
-                              </option>
-                            ))}
+                            {item.variants.flatMap((variant) =>
+                              variant.variantTypes.map((type) => (
+                                <option key={type._id} value={type._id}>
+                                  {variant.variantName} - {type.typeName} - ₹
+                                  {type.price}
+                                </option>
+                              ))
+                            )}
                           </select>
-                        ))}
-                      </div>
+                        </div>
+                      )}
                     </div>
+
                     <div className="flex items-center border-2 border-gray-300 px-2">
                       <button
                         className="text-red-400 text-xl"

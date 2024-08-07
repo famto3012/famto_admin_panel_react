@@ -12,18 +12,19 @@ import EditTaxModal from "../../../components/model/Tax/EditTaxModal";
 import DeleteTaxModal from "../../../components/model/Tax/DeleteTaxModal";
 import { useNavigate } from "react-router-dom";
 import GIFLoader from "../../../components/GIFLoader";
+import { Spinner } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Tax = () => {
-  const [taxData, setTaxData] = useState([]);
+  const [allTax, setAllTax] = useState([]);
   const [allGeofence, setAllGeofence] = useState([]);
   const [allBusinessCategory, setBusinessCategory] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
 
   // Loading state
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(false);
 
   // State for each modal
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -42,7 +43,7 @@ const Tax = () => {
 
     const fetchData = async () => {
       try {
-        setIsLoading(true);
+        setIsTableLoading(true);
 
         const [taxResponse, geofenceResponse, businessCategoryResponse] =
           await Promise.all([
@@ -64,18 +65,20 @@ const Tax = () => {
           ]);
 
         if (taxResponse.status === 200) {
-          setTaxData(taxResponse.data.data);
+          setAllTax(taxResponse.data.data);
         }
+
         if (geofenceResponse.status === 200) {
           setAllGeofence(geofenceResponse.data.geofences);
         }
+
         if (businessCategoryResponse.status === 200) {
           setBusinessCategory(businessCategoryResponse.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
-        setIsLoading(false);
+        setIsTableLoading(false);
       }
     };
 
@@ -87,11 +90,7 @@ const Tax = () => {
   };
 
   const showEditModal = (taxId) => {
-    const singleTax = taxData.find(
-      (tax) => tax._id.toString() === taxId.toString()
-    );
-
-    setCurrentTax(singleTax);
+    setCurrentTax(taxId);
     setEditModalVisible(true);
   };
 
@@ -101,15 +100,15 @@ const Tax = () => {
   };
 
   const handleCancel = () => {
+    setCurrentTax(null);
     setAddModalVisible(false);
     setEditModalVisible(false);
     setDeleteModalVisible(false);
-    setCurrentTax(null);
   };
 
   const handleToggle = async (taxId) => {
     try {
-      const tax = taxData.find((tax) => tax._id === taxId);
+      const tax = allTax.find((tax) => tax._id === taxId);
       if (tax) {
         const updatedStatus = !tax.status;
         await axios.post(
@@ -123,8 +122,8 @@ const Tax = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setTaxData(
-          taxData.map((t) =>
+        setAllTax(
+          allTax.map((t) =>
             t._id === taxId ? { ...t, status: updatedStatus } : t
           )
         );
@@ -134,82 +133,98 @@ const Tax = () => {
     }
   };
 
-  const handleAddTax = (newTax) => {
-    setTaxData([...taxData, newTax]);
+  const handleAddedTax = (newTax) => {
+    setAllTax((prevTax) => [...prevTax, newTax]);
   };
 
-  // New function to remove a tax from the taxData state
-  const removeTax = (taxId) => {
-    setTaxData(taxData.filter((tax) => tax._id !== taxId));
+  const handleDeletedTax = (taxId) => {
+    setAllTax(allTax.filter((tax) => tax._id !== taxId));
   };
 
-  // New function to handle confirm delete
-  const handleConfirmDelete = () => {
-    setDeleteModalVisible(!deleteModalVisible);
-    setCurrentTax(null);
+  const handleEditedTax = (editedTax) => {
+    setAllTax((prevTax) =>
+      prevTax.map((tax) =>
+        tax._id === editedTax._id
+          ? {
+              ...tax,
+              taxName: editedTax.taxName,
+              tax: editedTax.tax,
+              taxType: editedTax.taxType,
+              assignToBusinessCategoryId: editedTax.assignToBusinessCategoryId,
+              geofenceId: editedTax.geofenceId,
+              status: editedTax.status,
+            }
+          : tax
+      )
+    );
   };
 
   return (
     <div>
-      {isLoading ? (
-        <GIFLoader />
-      ) : (
-        <>
-          <Sidebar />
-          <div className="pl-[300px] w-full">
-            <nav className="p-5">
-              <GlobalSearch />
-            </nav>
-            <div className="flex justify-between mt-5 mx-5">
-              <h1 className="font-bold">Tax</h1>
-              <button
-                onClick={showAddModal}
-                className="bg-teal-700 text-white px-5 rounded-lg p-2"
-              >
-                <PlusOutlined /> Add Tax
-              </button>
-              <AddTaxModal
-                isVisible={addModalVisible}
-                handleCancel={handleCancel}
-                token={token}
-                BASE_URL={BASE_URL}
-                allGeofence={allGeofence}
-                allBusinessCategory={allBusinessCategory}
-                onAddTax={handleAddTax}
-              />
-            </div>
-            <p className="ms-5 mt-8 text-gray-500">
-              Make sure that taxes aren't duplicated under the same name on the
-              platform.
-              <span className="text-red-700">
-                {" "}
-                Two taxes under the same name cannot coexist.
-              </span>
-            </p>
-            <div className="w-full">
-              <table className="bg-white mt-[45px] text-center w-full">
-                <thead>
+      <>
+        <Sidebar />
+        <div className="pl-[300px] w-full">
+          <nav className="p-5">
+            <GlobalSearch />
+          </nav>
+          <div className="flex justify-between mt-5 mx-5">
+            <h1 className="font-bold">Tax</h1>
+            <button
+              onClick={showAddModal}
+              className="bg-teal-700 text-white px-5 rounded-lg p-2"
+            >
+              <PlusOutlined /> Add Tax
+            </button>
+          </div>
+          <p className="ms-5 mt-8 text-gray-500">
+            Make sure that taxes aren't duplicated under the same name on the
+            platform.
+            <span className="text-red-700">
+              {" "}
+              Two taxes under the same name cannot coexist.
+            </span>
+          </p>
+          <div className="w-full">
+            <table className="bg-white mt-[45px] text-center w-full">
+              <thead>
+                <tr>
+                  {[
+                    // "Tax Id",
+                    "Tax name",
+                    "Tax",
+                    "Fixed/Percentage",
+                    "Assign to Business category",
+                    "Geofence",
+                    "Status",
+                  ].map((header) => (
+                    <th
+                      key={header}
+                      className="bg-teal-800 text-center h-[70px] text-white"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white">
+                {isTableLoading && (
                   <tr>
-                    {[
-                      // "Tax Id",
-                      "Tax name",
-                      "Tax",
-                      "Fixed/Percentage",
-                      "Assign to Business category",
-                      "Geofence",
-                      "Status",
-                    ].map((header) => (
-                      <th
-                        key={header}
-                        className="bg-teal-800 text-center h-[70px] text-white"
-                      >
-                        {header}
-                      </th>
-                    ))}
+                    <td colSpan={6} className="text-center text-[16px] py-6">
+                      Loading Data... <Spinner size={"sm"} />
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white">
-                  {taxData.map((tax) => (
+                )}
+
+                {!isTableLoading && allTax?.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center py-3">
+                      No Data available
+                    </td>
+                  </tr>
+                )}
+
+                {!isTableLoading &&
+                  allTax?.map((tax) => (
                     <tr key={tax._id}>
                       {/* <td className="py-2 px-4 border-b border-gray-100">
                         {tax._id}
@@ -228,11 +243,11 @@ const Tax = () => {
                       </td>
 
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {tax.assignToBusinessCategoryId.title}
+                        {tax?.assignToBusinessCategoryId?.title}
                       </td>
 
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {tax.geofenceId.name}
+                        {tax?.geofenceId?.name}
                       </td>
 
                       <td className="py-5 px-4 border-b border-gray-100">
@@ -255,35 +270,41 @@ const Tax = () => {
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
+              </tbody>
+            </table>
           </div>
-          {editModalVisible && (
-            <EditTaxModal
-              isVisible={editModalVisible}
-              handleCancel={handleCancel}
-              token={token}
-              BASE_URL={BASE_URL}
-              currentTax={currentTax}
-              allGeofence={allGeofence}
-              allBusinessCategory={allBusinessCategory}
-              setTaxData={setTaxData}
-            />
-          )}
-          {deleteModalVisible && (
-            <DeleteTaxModal
-              isVisible={deleteModalVisible}
-              handleCancel={handleCancel}
-              handleConfirmDelete={handleConfirmDelete}
-              currentTax={currentTax}
-              token={token}
-              BASE_URL={BASE_URL}
-              removeTax={removeTax}
-            />
-          )}
-        </>
-      )}
+        </div>
+
+        <AddTaxModal
+          isVisible={addModalVisible}
+          handleCancel={handleCancel}
+          token={token}
+          BASE_URL={BASE_URL}
+          allGeofence={allGeofence}
+          allBusinessCategory={allBusinessCategory}
+          onAddTax={handleAddedTax}
+        />
+
+        <EditTaxModal
+          isVisible={editModalVisible}
+          handleCancel={handleCancel}
+          token={token}
+          BASE_URL={BASE_URL}
+          taxId={currentTax}
+          allGeofence={allGeofence}
+          allBusinessCategory={allBusinessCategory}
+          onEditTax={handleEditedTax}
+        />
+
+        <DeleteTaxModal
+          isVisible={deleteModalVisible}
+          handleCancel={handleCancel}
+          currentTax={currentTax}
+          token={token}
+          BASE_URL={BASE_URL}
+          onDeleteTax={handleDeletedTax}
+        />
+      </>
     </div>
   );
 };

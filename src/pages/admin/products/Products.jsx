@@ -234,8 +234,8 @@ const Products = () => {
   const handleAddCategory = (category) =>
     setAllCategories([...allCategories, category]);
 
-  const handleAddProduct = (product) =>
-    setAllProducts([...allProducts, product]);
+  const handleAddProduct = (newProduct) =>
+    setAllProducts((prevProducts) => [...allProducts, newProduct]);
 
   const filterDeletedCategory = (categoryId) => {
     setAllCategories(
