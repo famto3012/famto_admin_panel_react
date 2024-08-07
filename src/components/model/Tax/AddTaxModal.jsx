@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const AddTaxModal = ({
   isVisible,
@@ -19,6 +20,10 @@ const AddTaxModal = ({
     geofenceId: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
+
   const handleInputChange = (e) => {
     setTaxData({ ...taxData, [e.target.name]: e.target.value });
   };
@@ -33,7 +38,7 @@ const AddTaxModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      console.log("taxData", taxData);
+      setIsLoading(true);
       const response = await axios.post(
         `${BASE_URL}/admin/taxes/add-tax`,
         taxData,
@@ -46,11 +51,34 @@ const AddTaxModal = ({
       );
 
       if (response.status === 201) {
+        onAddTax(response.data.data);
         handleCancel();
-        onAddTax(taxData);
+        setTaxData({
+          taxName: "",
+          tax: "",
+          taxType: "",
+          assignToBusinessCategoryId: "",
+          geofenceId: "",
+        });
+        toast({
+          title: "Success",
+          description: response.data.message,
+          duration: 5000,
+          status: "success",
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.log(`Error in adding new tax: ${err}`);
+      toast({
+        title: "Error",
+        description: `Error in adding new tax`,
+        duration: 5000,
+        status: "error",
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -155,7 +183,7 @@ const AddTaxModal = ({
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
               type="submit"
             >
-              Save
+              {isLoading ? `Adding...` : `Add`}
             </button>
           </div>
         </div>

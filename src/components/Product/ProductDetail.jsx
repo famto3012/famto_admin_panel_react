@@ -11,37 +11,45 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
     variants: [],
   });
 
-  const [variants, setVariants] = useState([{ name: "", price: "" }]);
+  // const [variants, setVariants] = useState([{ name: "", price: "" }]);
 
-  const [addVariantForm, setAddVariantForm] = useState(null);
+  const [showVariantForm, setShowVariantForm] = useState(false);
 
   useEffect(() => {
     setProductDetail(detail);
-    setAddVariantForm(productDetail?.varinats?.length > 0 ? true : false);
+    console.log(detail);
   }, [detail]);
 
   const handleChange = (e) => {
     setProductDetail({ ...productDetail, [e.target.name]: e.target.value });
   };
 
-  const toggleAddVariant = () => {
-    setAddVariantForm(true);
+  const toggleAddVariant = (e) => {
+    e.preventDefault();
+    setShowVariantForm(!showVariantForm);
   };
 
   const addVariant = () => {
-    setVariants([...variants, { name: "", price: "" }]);
+    setProductDetail((prevState) => ({
+      ...prevState,
+      variants: [...prevState.variants, { name: "", price: "" }],
+    }));
   };
 
   const removeVariant = (index) => {
-    const newVariants = [...variants];
-    newVariants.splice(index, 1);
-    setVariants(newVariants);
+    setProductDetail((prevState) => ({
+      ...prevState,
+      variants: prevState.variants.filter((_, i) => i !== index),
+    }));
   };
 
   const handleChangeVariant = (index, field, value) => {
-    const newVariants = [...variants];
-    newVariants[index][field] = value;
-    setVariants(newVariants);
+    const updatedVariants = [...productDetail.variants];
+    updatedVariants[index][field] = value;
+    setProductDetail((prevState) => ({
+      ...prevState,
+      variants: updatedVariants,
+    }));
   };
 
   return (
@@ -60,6 +68,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
             className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
+
         <div className="p-5 flex justify-between">
           <label className="w-1/3 text-gray-700 items-center mt-2">
             Product Price
@@ -73,6 +82,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
             className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
+
         <div className="p-5 flex justify-between">
           <label className="w-1/3 text-gray-700 items-center mt-2">
             Description
@@ -86,6 +96,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
             className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
+
         <div className="p-5 flex justify-between">
           <label className="w-1/3 text-gray-700 items-center mt-2">
             Available Qty
@@ -99,6 +110,21 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
             className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
+
+        <div className="p-5 flex justify-between">
+          <label className="w-1/3 text-gray-700 items-center mt-2">
+            Alerts <InfoCircleOutlined />
+          </label>
+          <input
+            type="text"
+            name="alert"
+            value={productDetail.alert}
+            placeholder="Alert"
+            onChange={handleChange}
+            className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
+          />
+        </div>
+
         <div className="p-5 flex justify-between">
           <label className="w-1/3 text-gray-700 items-center mt-2">
             Alerts <InfoCircleOutlined />
@@ -124,7 +150,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           </div>
         )}
 
-        {addVariantForm && (
+        {showVariantForm && (
           <>
             {productDetail?.variants[0]?.variantName && (
               <div className="p-5 flex justify-between">
@@ -136,7 +162,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
                   value={""}
                   className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
                 >
-                  {productDetail?.varinats?.map((variant) => (
+                  {productDetail?.variants?.map((variant) => (
                     <option value={variant.variantName}>
                       {variant.varinatName}
                     </option>
@@ -160,10 +186,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
                   className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
                 />
               </div>
-              <div className="flex justify-between w-2/3">
-                <p>Variant 1</p>
-                <p>value</p>
-              </div>
+
               {productDetail?.variants?.map((variant, index) => (
                 <div key={index} className="flex items-center mb-2">
                   <input
@@ -193,6 +216,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
                   </button>
                 </div>
               ))}
+
               <div className="flex justify-between gap-3 mx-3">
                 <button
                   type="submit"

@@ -15,3 +15,41 @@ input[type="radio"] {
 .react-daterange-picker__wrapper {
   border: none !important; /* Change this to your desired border color */
 }
+
+/* .tag-input-container {
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 4px;
+  display: inline-block;
+  width: 100%;
+} */
+
+/* .tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+} */
+
+/* .tag {
+  display: flex;
+  align-items: center;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  padding: 5px;
+  margin: 2px;
+} */
+
+/* .tag-remove {
+  background: none;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+} */
+
+/* .tag-input {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  padding: 5px;
+  min-width: 100px;
+} */
