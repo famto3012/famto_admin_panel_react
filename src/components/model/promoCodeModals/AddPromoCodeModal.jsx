@@ -36,14 +36,6 @@ const AddPromoCodeModal = ({
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   const toast = useToast();
 
-  const handleNotificationImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setNotificationFile(file);
-      setNotificationPreviewURL(URL.createObjectURL(file));
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -75,10 +67,6 @@ const AddPromoCodeModal = ({
     fetchData();
   }, [token]);
 
-  const handleChange = (e) => {
-    setAddPromocode({ ...addPromocode, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -99,7 +87,6 @@ const AddPromoCodeModal = ({
       addPromoToSend.append("appliedOn", addPromocode.appliedOn);
       addPromoToSend.append("merchantId", addPromocode.merchantId);
       addPromoToSend.append("geofenceId", addPromocode.geofenceId);
-
       if (notificationFile) {
         addPromoToSend.append("promoImage", notificationFile);
       }
@@ -140,6 +127,18 @@ const AddPromoCodeModal = ({
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setAddPromocode({ ...addPromocode, [e.target.name]: e.target.value });
+  };
+
+  const handleNotificationImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNotificationFile(file);
+      setNotificationPreviewURL(URL.createObjectURL(file));
     }
   };
 
@@ -239,7 +238,7 @@ const AddPromoCodeModal = ({
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option defaultValue={""} selected hidden>
+              <option defaultValue={""} hidden>
                 Select Application Mode
               </option>
               <option value="Public">Public</option>

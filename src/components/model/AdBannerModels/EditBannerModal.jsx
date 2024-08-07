@@ -10,7 +10,7 @@ const EditBannerModal = ({
   allGeofence,
   currentBannerEdit,
   BASE_URL,
-  onAddAppData
+  onAddAppData,
 }) => {
   // Initialize state with currentBannerEdit details if available
   const [appBanner, setAppData] = useState({
@@ -27,7 +27,6 @@ const EditBannerModal = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      
       console.log("Fetching data for currentBannerEdit:", currentBannerEdit);
       try {
         setIsLoading(true);
@@ -70,13 +69,8 @@ const EditBannerModal = ({
   const handleAppBannerImageChange = async (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-    setSelectedFile(file);
-    await setPreviewURL(URL.createObjectURL(file));
-    if (previewURL) {
-      console.log("preview added", previewURL);
-    }
-    setPreviewURL(URL.createObjectURL(file));
-    // setAppData((prev)=>({...prev, appBannerImage: URL.createObjectURL(file)}))
+      setSelectedFile(file);
+      setPreviewURL(URL.createObjectURL(file));
   };
 
   const saveAction = async (e) => {
@@ -89,7 +83,7 @@ const EditBannerModal = ({
       appBannerDataToSend.append("name", appBanner.name);
       appBannerDataToSend.append("merchantId", appBanner.merchantId);
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
-        appBannerDataToSend.append("appBannerImage", selectedFile);
+      appBannerDataToSend.append("appBannerImage", selectedFile);
 
       const addBannerResponse = await axios.put(
         `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
@@ -176,29 +170,25 @@ const EditBannerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
-            <div className="flex items-center gap-[30px]">
-              {/* Render the current banner image only if no new image is selected */}
-
-              {previewURL && appBanner?.appBannerImage && (
-                <figure className="mt-3 h-16 w-16 rounded-md">
+            <div className=" flex items-center gap-[30px]">
+              {appBanner?.appBannerImage && !previewURL && (
+                <figure className="bg-gray-400  mt-10 h-16 w-16 rounded-md">
                   <img
-                    src={previewURL}
-                    alt="New Preview"
+                    src={appBanner?.appBannerImage}
+                    alt="profile"
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
               )}
-
-              {!previewURL && appBanner?.appBannerImage && (
-                <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
+              {previewURL && (
+                <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
                   <img
-                    src={appBanner?.appBannerImage}
-                    alt="Current Banner"
-                    className="w-full h-full"
+                    src={previewURL}
+                    alt="profile"
+                    className="w-full rounded h-full object-cover"
                   />
-                </div>
+                </figure>
               )}
-
               <input
                 type="file"
                 name="appBannerImage"
@@ -206,9 +196,9 @@ const EditBannerModal = ({
                 className="hidden"
                 onChange={handleAppBannerImageChange}
               />
-              <label htmlFor="appBannerImage" className="cursor-pointer">
+              <label htmlFor="appBannerImage" className="cursor-pointer ">
                 <MdCameraAlt
-                  className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
+                  className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-10 rounded"
                   size={30}
                 />
               </label>
@@ -228,7 +218,7 @@ const EditBannerModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-          {confirmLoading ? "Saving..." : "Save"}
+            {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

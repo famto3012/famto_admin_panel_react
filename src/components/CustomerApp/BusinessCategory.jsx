@@ -134,7 +134,7 @@ const BusinessCategory = () => {
           },
         }
       );
-      if (response.status === 200) {
+      if (response.status === 201) {
         handleAddBanner(response.data.data);
         toast({
           title: "Created",

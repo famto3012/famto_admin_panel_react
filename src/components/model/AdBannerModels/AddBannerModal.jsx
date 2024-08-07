@@ -117,8 +117,6 @@ const AddBannerModal = ({
     }
   };
 
-  
-
   return (
     <Modal
       title="Add App Ad Banner"

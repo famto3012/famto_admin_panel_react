@@ -1,5 +1,5 @@
 import { useToast } from "@chakra-ui/react";
-import { Modal } from "antd";
+import { Modal, Spin } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
@@ -9,6 +9,7 @@ const EditPromoCodeModal = ({
   BASE_URL,
   currentPromoEdit,
   isVisible,
+  onAddPromocode,
   token,
 }) => {
   if (!currentPromoEdit) return;
@@ -35,6 +36,7 @@ const EditPromoCodeModal = ({
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
   const toast = useToast();
 
   // api call for get the promoCode details
@@ -42,6 +44,7 @@ const EditPromoCodeModal = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setDataLoading(true);
         const [response, geofenceResponse, merchantResponse] =
           await Promise.all([
             axios.get(`${BASE_URL}/admin/promocode/${currentPromoEdit}`, {
@@ -73,6 +76,8 @@ const EditPromoCodeModal = ({
         }
       } catch (err) {
         console.error(`Error in fetch data ${err}`);
+      } finally {
+        setDataLoading(false);
       }
     };
 
@@ -80,10 +85,6 @@ const EditPromoCodeModal = ({
       fetchData();
     }
   }, [token, currentPromoEdit, BASE_URL]);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   //API to edit the promo codes..
 
@@ -121,12 +122,13 @@ const EditPromoCodeModal = ({
       );
       if (response.status === 200) {
         handleCancel();
+        onAddPromocode(response.data.data);
         toast({
           title: "PromoCode Updated.",
           description: "Promocode updated Successfully",
-          duration: 9000,
+          duration: 900,
           isClosable: true,
-          status: "true",
+          status: "success",
         });
       }
     } catch (err) {
@@ -134,6 +136,10 @@ const EditPromoCodeModal = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleNotificationImageChange = (e) => {
@@ -172,6 +178,7 @@ const EditPromoCodeModal = ({
               name="promoCode"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               value={formData.promoCode}
+              placeholder={dataLoading ?"Loading data..." : ""}
               onChange={handleChange}
             />
           </div>
@@ -250,7 +257,7 @@ const EditPromoCodeModal = ({
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleChange}
             >
-              <option defaultValue={""} selected hidden>
+              <option defaultValue={""} hidden>
                 Select Application Mode
               </option>
               <option value="Public">Public</option>
@@ -350,18 +357,24 @@ const EditPromoCodeModal = ({
           <div className="flex">
             <label className="mt-16">Image (342px x 160px)</label>
             <div className=" flex items-center gap-[30px]">
-              {!notificationPreviewURL && (
-                <div className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md" />
-              )}
-              {notificationPreviewURL && (
-                <figure className="ml-[230px] mt-10 h-16 w-16 rounded-md relative">
-                  <img
-                    src={notificationPreviewURL}
-                    alt="profile"
-                    className="w-full rounded h-full object-cover "
-                  />
-                </figure>
-              )}
+            {formData?.imageUrl && !notificationPreviewURL && (
+                  <figure className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md">
+                    <img
+                      src={formData?.imageUrl}
+                      alt="profile"
+                      className="w-full rounded h-full object-cover"
+                    />
+                  </figure>
+                )}
+                {notificationPreviewURL && (
+                  <figure className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md" >
+                    <img
+                      src={notificationPreviewURL}
+                      alt="profile"
+                      className="w-full rounded h-full object-cover"
+                    />
+                  </figure>
+                )}
               <input
                 type="file"
                 name="imageUrl"
