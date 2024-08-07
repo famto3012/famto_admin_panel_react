@@ -1,8 +1,10 @@
 import { Modal } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const AddProductItemModal = ({
   isVisible,
@@ -22,9 +24,9 @@ const AddProductItemModal = ({
     costPrice: "",
     sku: "",
     discountId: "",
-    oftenBoughtTogetherId: "",
+    oftenBoughtTogetherId: [],
     preparationTime: "",
-    searchTags: "",
+    searchTags: [],
     description: "",
     longDescription: "",
     type: "",
@@ -37,7 +39,11 @@ const AddProductItemModal = ({
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
 
+  const [tagValue, setTagValue] = useState("");
+  const inputRef = useRef(null);
+
   const toast = useToast();
+  const animatedComponents = makeAnimated();
 
   useEffect(() => {
     if (!categoryId || !merchantId) return;
@@ -75,13 +81,43 @@ const AddProductItemModal = ({
         if (allProductResponse.status === 200) {
           setAllProducts(allProductResponse.data.data);
         }
-
-        console.log("finished", merchantId);
       };
 
       fetchData();
     }
   }, [categoryId, merchantId, isVisible, role, token, BASE_URL]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmedValue = tagValue.trim();
+      if (trimmedValue && !productData.searchTags.includes(trimmedValue)) {
+        setProductData({
+          ...productData,
+          searchTags: [...productData.searchTags, trimmedValue],
+        });
+        setTagValue("");
+        inputRef.current.focus();
+      }
+    } else if (e.key === "Backspace" && !tagValue) {
+      setProductData({
+        ...productData,
+        searchTags: productData.searchTags.slice(0, -1),
+      });
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    setProductData({
+      ...productData,
+      searchTags: productData.searchTags.filter((_, i) => i !== index),
+    });
+  };
+
+  const productOptions = allProducts.map((product) => ({
+    label: product.productName,
+    value: product._id,
+  }));
 
   const handleInputChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
@@ -94,23 +130,39 @@ const AddProductItemModal = ({
     setPreviewURL(URL.createObjectURL(file));
   };
 
+  const handleSelectProduct = (selectedOptions) => {
+    setProductData({
+      ...productData,
+      oftenBoughtTogetherId: selectedOptions.map((option) => option.value),
+    });
+  };
+
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
 
-      console.log("productData", productData);
-
       const dataToSend = new FormData();
 
-      Object.keys(productData).forEach((key) =>
-        dataToSend.append(key, productData[key])
-      );
+      Object.keys(productData).forEach((key) => {
+        if (Array.isArray(productData[key])) {
+          productData[key].forEach((item) => {
+            dataToSend.append(key, item);
+          });
+        } else {
+          dataToSend.append(key, productData[key]);
+        }
+      });
+      dataToSend.append("categoryId", categoryId);
+
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
       }
 
-      console.log("Data to be sent:", dataToSend.entries());
+      // Log FormData entries
+      for (let pair of dataToSend.entries()) {
+        console.log(pair[0] + ": " + pair[1]);
+      }
 
       const response = await axios.post(
         `${BASE_URL}/products/add-product`,
@@ -127,8 +179,9 @@ const AddProductItemModal = ({
       console.log("response", response);
 
       if (response.status === 201) {
-        onAddProduct(productData.productName);
+        onAddProduct(response.data.data);
         setProductData({
+          categoryId,
           productName: "",
           price: "",
           minQuantityToOrder: "",
@@ -136,9 +189,9 @@ const AddProductItemModal = ({
           costPrice: "",
           sku: "",
           discountId: "",
-          oftenBoughtTogetherId: "",
+          oftenBoughtTogetherId: [],
           preparationTime: "",
-          searchTags: "",
+          searchTags: [],
           description: "",
           longDescription: "",
           type: "",
@@ -149,7 +202,7 @@ const AddProductItemModal = ({
         setPreviewURL(null);
         handleCancel();
         toast({
-          title: "Category Added",
+          title: "Product Added",
           description: response.data.message,
           status: "success",
           duration: 5000,
@@ -157,10 +210,12 @@ const AddProductItemModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in creating new product: ${err.stack}`);
+      console.log(
+        `Error in creating new product: ${err.response?.data || err.message}`
+      );
       toast({
         title: "Error",
-        description: `Error in adding new category`,
+        description: `Error in adding new product`,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -177,6 +232,7 @@ const AddProductItemModal = ({
       width="600px"
       footer={null}
       open={isVisible}
+      centered
     >
       <form onSubmit={handleAddProduct} className="max-h-[30rem] overflow-auto">
         <div className="flex flex-col gap-4 mt-5">
@@ -310,26 +366,26 @@ const AddProductItemModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
               Often bought together
             </label>
-            <select
-              name="oftenBoughtTogetherId"
-              value={productData.oftenBoughtTogetherId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
-            >
-              <option defaultValue={"Select product"} hidden>
-                Select product
-              </option>
-              {allProducts?.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.productName}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={productOptions.filter((option) =>
+                productData.oftenBoughtTogetherId.includes(option.value)
+              )}
+              isMulti={true}
+              isSearchable={true}
+              onChange={handleSelectProduct}
+              options={productOptions}
+              placeholder="Select Product"
+              isClearable={true}
+              components={animatedComponents}
+            />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="preparationTime">
               Preparation Time
@@ -338,24 +394,47 @@ const AddProductItemModal = ({
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               name="preparationTime"
-              placeholder="Preperation time"
+              placeholder="Preparation time (in minutes)"
               value={productData.preparationTime}
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="searchTag">
               Search Tag
             </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="searchTags"
-              placeholder="Search tags"
-              value={productData.searchTags}
-              onChange={handleInputChange}
-            ></input>
+            <div className="w-2/3">
+              <div className="flex flex-wrap gap-1 mb-1">
+                {productData?.searchTags?.map((tag, index) => (
+                  <div
+                    className="flex items-center bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full"
+                    key={index}
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(index)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <input
+                ref={inputRef}
+                type="text"
+                name="searchTags"
+                placeholder="Search tags"
+                value={tagValue}
+                onChange={(e) => setTagValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full border-2 border-gray-100 rounded p-2 focus:outline-none"
+              />
+            </div>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
               Description

@@ -1,8 +1,10 @@
 import { Modal } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const EditProductItemModal = ({
   isVisible,
@@ -22,9 +24,9 @@ const EditProductItemModal = ({
     costPrice: "",
     sku: "",
     discountId: "",
-    oftenBoughtTogetherId: "",
-    preperationTime: "",
-    searchTags: "",
+    oftenBoughtTogetherId: [],
+    preparationTime: "",
+    searchTags: [],
     description: "",
     longDescription: "",
     type: "",
@@ -38,7 +40,11 @@ const EditProductItemModal = ({
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
 
+  const [tagValue, setTagValue] = useState("");
+  const inputRef = useRef(null);
+
   const toast = useToast();
+  const animatedComponents = makeAnimated();
 
   useEffect(() => {
     if (!productId || !categoryId || !merchantId) return;
@@ -90,8 +96,9 @@ const EditProductItemModal = ({
           const { data } = singleProductResponse.data;
           setProductData({
             ...data,
-            discountId: null ? "" : data.discountId,
-            oftenBoughtTogetherId: null ? "" : data.oftenBoughtTogetherId,
+            discountId: data.discountId || "",
+            oftenBoughtTogetherId: data.oftenBoughtTogetherId || [],
+            searchTags: data.searchTags || [],
           });
         }
 
@@ -101,6 +108,43 @@ const EditProductItemModal = ({
       fetchData();
     }
   }, [isVisible, BASE_URL, token, role, merchantId, productId, categoryId]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmedValue = tagValue.trim();
+      if (trimmedValue && !productData.searchTags.includes(trimmedValue)) {
+        setProductData({
+          ...productData,
+          searchTags: [...productData.searchTags, trimmedValue],
+        });
+        console.log(productData.searchTags);
+        setTagValue("");
+        inputRef.current.focus();
+      }
+    } else if (e.key === "Backspace" && !tagValue) {
+      setProductData({
+        ...productData,
+        searchTags: productData.searchTags.slice(0, -1),
+      });
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    // Create a new array without the tag at the specified index
+    const updatedTags = productData.searchTags.filter((_, i) => i !== index);
+
+    // Update the productData state with the new array
+    setProductData((prevState) => ({
+      ...prevState,
+      searchTags: updatedTags,
+    }));
+  };
+
+  const productOptions = allProducts.map((product) => ({
+    label: product.productName,
+    value: product._id,
+  }));
 
   const handleInputChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
@@ -113,16 +157,29 @@ const EditProductItemModal = ({
     setPreviewURL(URL.createObjectURL(file));
   };
 
-  const handleAddProduct = async (e) => {
+  const handleSelectProduct = (selectedOptions) => {
+    setProductData({
+      ...productData,
+      oftenBoughtTogetherId: selectedOptions.map((option) => option.value),
+    });
+  };
+
+  const handleEditProduct = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-
       const dataToSend = new FormData();
 
-      Object.keys(productData).forEach((key) =>
-        dataToSend.append(key, productData[key])
-      );
+      Object.keys(productData).forEach((key) => {
+        if (Array.isArray(productData[key])) {
+          productData[key].forEach((item) => {
+            dataToSend.append(key, item);
+          });
+        } else {
+          dataToSend.append(key, productData[key]);
+        }
+      });
+      dataToSend.append("categoryId", categoryId);
 
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
@@ -149,9 +206,9 @@ const EditProductItemModal = ({
           costPrice: "",
           sku: "",
           discountId: "",
-          oftenBoughtTogetherId: "",
-          preperationTime: "",
-          searchTags: "",
+          oftenBoughtTogetherId: [],
+          preparationTime: "",
+          searchTags: [],
           description: "",
           longDescription: "",
           type: "",
@@ -163,7 +220,7 @@ const EditProductItemModal = ({
         setPreviewURL(null);
         handleCancel();
         toast({
-          title: "Category Added",
+          title: "Product updated",
           description: response.data.message,
           status: "success",
           duration: 5000,
@@ -171,10 +228,10 @@ const EditProductItemModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in creating new product: ${err}`);
+      console.error(`Error in updating product: ${err}`);
       toast({
         title: "Error",
-        description: `Error in adding new category`,
+        description: "Error in updating product",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -193,7 +250,10 @@ const EditProductItemModal = ({
       open={isVisible}
       centered
     >
-      <form onSubmit={handleAddProduct} className="max-h-[30rem] overflow-auto">
+      <form
+        onSubmit={handleEditProduct}
+        className="max-h-[30rem] overflow-y-auto"
+      >
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="productName">
@@ -325,26 +385,26 @@ const EditProductItemModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
               Often bought together
             </label>
-            <select
-              name="oftenBoughtTogetherId"
-              value={productData.oftenBoughtTogetherId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
-            >
-              <option defaultValue={"Select product"} hidden>
-                Select product
-              </option>
-              {allProducts?.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.productName}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={productOptions.filter((option) =>
+                productData.oftenBoughtTogetherId.includes(option.value)
+              )}
+              isMulti={true}
+              isSearchable={true}
+              onChange={handleSelectProduct}
+              options={productOptions}
+              placeholder="Select Product"
+              isClearable={true}
+              components={animatedComponents}
+            />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="preparationTime">
               Preparation Time
@@ -352,25 +412,48 @@ const EditProductItemModal = ({
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
-              name="preperationTime"
-              placeholder="Preperation time"
-              value={productData.preperationTime}
+              name="preparationTime"
+              placeholder="Preparation time (in minutes)"
+              value={productData.preparationTime}
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="searchTag">
               Search Tag
             </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="searchTags"
-              placeholder="Search tags"
-              value={productData.searchTags}
-              onChange={handleInputChange}
-            ></input>
+            <div className="w-2/3">
+              <div className="flex flex-wrap gap-1 mb-1">
+                {productData?.searchTags?.map((tag, index) => (
+                  <div
+                    className="flex items-center bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full"
+                    key={index}
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(index)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <input
+                ref={inputRef}
+                type="text"
+                name="searchTags"
+                placeholder="Search tags"
+                value={tagValue}
+                onChange={(e) => setTagValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full border-2 border-gray-100 rounded p-2 focus:outline-none"
+              />
+            </div>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
               Description
@@ -382,7 +465,7 @@ const EditProductItemModal = ({
               placeholder="Description"
               value={productData.description}
               onChange={handleInputChange}
-            ></input>
+            />
           </div>
           <div className="flex items-start">
             <label className="w-1/3 text-gray-500" htmlFor="longDescription">

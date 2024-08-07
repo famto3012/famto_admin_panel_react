@@ -1,35 +1,62 @@
 import { useState, useEffect } from "react";
 import { Modal } from "antd";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const EditTaxModal = ({
   isVisible,
   handleCancel,
   token,
   BASE_URL,
+  taxId,
   allGeofence,
   allBusinessCategory,
-  currentTax,
+  onEditTax,
 }) => {
-  if (!currentTax) return null;
+  if (!taxId) return null;
 
-  const [editTaxData, setEditTaxData] = useState(currentTax);
+  const [editTaxData, setEditTaxData] = useState({
+    taxName: "",
+    tax: "",
+    taxType: "",
+    assignToBusinessCategoryId: "",
+    geofenceId: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
 
+  const toast = useToast();
+
   useEffect(() => {
-    setEditTaxData(currentTax);
-  }, [currentTax]);
+    const getTaxData = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/admin/taxes/${taxId}`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setEditTaxData(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in getiing tax data: ${err}`);
+      }
+    };
+
+    getTaxData();
+  }, [taxId]);
 
   const handleInputChange = (e) => {
     setEditTaxData({ ...editTaxData, [e.target.name]: e.target.value });
   };
 
-  const handleSelectChange = (e) => {
-    setEditTaxData({
-      ...editTaxData,
-      [e.target.name]: { ...editTaxData[e.target.name], _id: e.target.value },
-    });
-  };
+  // const handleSelectChange = (e) => {
+  //   setEditTaxData({
+  //     ...editTaxData,
+  //     [e.target.name]: { ...editTaxData[e.target.name], _id: e.target.value },
+  //   });
+  // };
 
   const handleRadioChange = (e) => {
     setEditTaxData((tax) => ({
@@ -43,7 +70,7 @@ const EditTaxModal = ({
     try {
       setIsLoading(true);
       const response = await axios.put(
-        `${BASE_URL}/admin/taxes/edit-tax/${editTaxData._id}`,
+        `${BASE_URL}/admin/taxes/edit-tax/${taxId}`,
         editTaxData,
         {
           withCredentials: true,
@@ -54,10 +81,32 @@ const EditTaxModal = ({
       );
 
       if (response.status === 200) {
+        onEditTax(response.data.data);
         handleCancel();
+        setEditTaxData({
+          taxName: "",
+          tax: "",
+          taxType: "",
+          assignToBusinessCategoryId: "",
+          geofenceId: "",
+        });
+        toast({
+          title: "Success",
+          description: response.data.message,
+          duration: 5000,
+          status: "success",
+          isClosable: true,
+        });
       }
     } catch (err) {
-      console.log(`Error in updating tax: ${err}`);
+      console.log(`Error in updating tax: ${err.stack}`);
+      toast({
+        title: "Error",
+        description: `Error in updating tax`,
+        duration: 5000,
+        status: "error",
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +122,6 @@ const EditTaxModal = ({
     >
       <form onSubmit={submitAction}>
         <div className="flex flex-col gap-4 justify-between">
-          {/* Form fields remain unchanged */}
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">Tax Name</label>
             <input
@@ -104,7 +152,7 @@ const EditTaxModal = ({
               name="taxType"
               value="Fixed-amount"
               checked={editTaxData.taxType === "Fixed-amount"}
-              onChange={handleRadioChange}
+              onChange={handleInputChange}
             />
             <label className="w-1/2 text-gray-500">Fixed Amount</label>
             <input
@@ -113,7 +161,7 @@ const EditTaxModal = ({
               name="taxType"
               value="Percentage"
               checked={editTaxData.taxType === "Percentage"}
-              onChange={handleRadioChange}
+              onChange={handleInputChange}
             />
             <label className="w-1/2 text-gray-500">Percentage</label>
           </div>
@@ -123,8 +171,8 @@ const EditTaxModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
-              value={editTaxData.geofenceId?._id || ""}
-              onChange={handleSelectChange}
+              value={editTaxData.geofenceId?._id}
+              onChange={handleInputChange}
             >
               {allGeofence.map((geofence) => (
                 <option key={geofence._id} value={geofence._id}>
@@ -141,8 +189,8 @@ const EditTaxModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="assignToBusinessCategoryId"
-              value={editTaxData.assignToBusinessCategoryId?._id || ""}
-              onChange={handleSelectChange}
+              value={editTaxData.assignToBusinessCategoryId?._id}
+              onChange={handleInputChange}
             >
               {allBusinessCategory.map((category) => (
                 <option key={category._id} value={category._id}>

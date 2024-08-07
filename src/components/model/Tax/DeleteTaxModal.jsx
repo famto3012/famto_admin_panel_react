@@ -1,23 +1,24 @@
-import React, { useState } from "react";
-import { Modal, Button, Spin } from "antd";
+import { useState } from "react";
+import { Modal } from "antd";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const DeleteTaxModal = ({
   isVisible,
   handleCancel,
-  handleConfirmDelete,
   currentTax,
   token,
   BASE_URL,
-  removeTax,
-  setModalLoading,
+  onDeleteTax,
 }) => {
-  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleOk = async () => {
-    setConfirmLoading(true);
-    setModalLoading(true);
+  const toast = useToast();
+
+  const handleDeleteTax = async () => {
     try {
+      setIsLoading(true);
+
       const response = await axios.delete(
         `${BASE_URL}/admin/taxes/delete-tax/${currentTax}`,
         {
@@ -26,14 +27,27 @@ const DeleteTaxModal = ({
         }
       );
       if (response.status === 200) {
-        removeTax(currentTax);
-        handleConfirmDelete();
+        onDeleteTax(currentTax);
+        handleCancel();
+        toast({
+          title: "Success",
+          description: response.data.message,
+          duration: 5000,
+          status: "success",
+          isClosable: true,
+        });
       }
     } catch (error) {
       console.error("Error deleting tax:", error);
+      toast({
+        title: "Error",
+        description: `Error in deleting tax`,
+        duration: 5000,
+        status: "error",
+        isClosable: true,
+      });
     } finally {
-      setConfirmLoading(false);
-      setModalLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -41,25 +55,24 @@ const DeleteTaxModal = ({
     <Modal
       title="Delete Tax"
       open={isVisible}
-      onOk={handleOk}
       onCancel={handleCancel}
-      confirmLoading={confirmLoading}
       footer={null}
       centered
     >
-      <Spin spinning={confirmLoading}>
-        <p>Are you sure you want to delete this tax?</p>
-      </Spin>
+      <p>Are you sure you want to delete this tax?</p>
 
       <div className="flex gap-[30px] justify-end">
-        <button className=" bg-teal-100 text-teal-600 p-2 rounded">
+        <button
+          onClick={handleCancel}
+          className=" bg-teal-200 text-teal-600 p-2 rounded"
+        >
           Cancel
         </button>
         <button
-          onClick={handleOk}
+          onClick={handleDeleteTax}
           className="bg-red-100 text-red-600 p-2 rounded"
         >
-          Delete
+          {isLoading ? `Deleting...` : `Delete`}
         </button>
       </div>
     </Modal>
