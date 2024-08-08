@@ -17,113 +17,25 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
+import GIFLoader from "../../../components/GIFLoader";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const DeliveryAgent = () => {
   const [agent, setAgent] = useState([]);
   const [geofence, setGeofence] = useState([]);
   const [salary, setSalary] = useState([]);
   const [manager, setManager] = useState([]);
-  const [geofenceFilter, setGeofenceFilter] = useState("");
   const { token, role } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [vehicleType, setVehicleType] = useState([]);
+  const [isTableLoading, setIsTableLoading] = useState(false);
   const [status, setStatus] = useState([]);
+  const [geofenceFilter, setGeofenceFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [vehicleTypeFilter, setFilterVehicleType] = useState("");
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
-  const [addModalVisible, setAddModalVisible] = useState(false);
-
-  const handleToggle = (id) => {
-    setAgent((prevAgent) =>
-      prevAgent.map((agent) =>
-        agent._id === id ? { ...agent, status: !agent.status } : agent
-      )
-    );
-  };
-
-  const handleApprove = async (id) => {
-    console.log("Agent to approve", id);
-    console.log("Token", token);
-    console.log("Base URL", BASE_URL);
-
-    try {
-      const response = await axios.patch(
-        `${BASE_URL}/admin/agents/approve-registration/${id}`,
-        {},
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        console.log(response.data.message); // Log the success message from the server
-        navigate(0); // Reload the page or component
-        toast({
-          title: "Agent Approved",
-          description: "Agent approved successfully.",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
-      } else {
-        console.log(`Unexpected response status: ${response.status}`);
-      }
-    } catch (err) {
-      console.error(`Error in handleApprove: ${err.message}`);
-      toast({
-        title: "Error Approving Agent",
-        description: err.response?.data?.message || err.message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleReject = async (id) => {
-    console.log("rejectID", id);
-    console.log("url", BASE_URL);
-    try {
-      const response = await axios.delete(
-        `${BASE_URL}/admin/agents/reject-registration/${id}`,
-
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        console.log(response.data.message);
-        toast({
-          title: "Agent Rejected",
-          description: "Agent Rejected successfully.",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
-      }
-      // else {
-      //   console.log(`Unexpected response status: ${response.status}`);
-      // }
-    } catch (err) {
-      console.error(err.message);
-      toast({
-        title: "Error Rejecting Agent",
-        description: err.response?.data?.message || err.message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    } finally {
-    }
-  };
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -180,6 +92,8 @@ const DeliveryAgent = () => {
     fetchAgent();
   }, [token, role, navigate]);
 
+  // API function for Geofence filter
+
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
     setGeofenceFilter(selectedService);
@@ -189,6 +103,7 @@ const DeliveryAgent = () => {
       setAgent([]);
     }
   };
+
   const handleGeofenceFilter = async (selectedService) => {
     try {
       console.log(token);
@@ -207,6 +122,9 @@ const DeliveryAgent = () => {
       console.log(`Error in fetching agent`, err);
     }
   };
+
+  // API function for Status filter
+
   const onStatusChange = (e) => {
     const selectedService = e.target.value;
     setStatusFilter(selectedService);
@@ -216,6 +134,7 @@ const DeliveryAgent = () => {
       setAgent([]);
     }
   };
+
   const handleStatusFilter = async (selectedService) => {
     try {
       console.log(token);
@@ -234,6 +153,9 @@ const DeliveryAgent = () => {
       console.log(`Error in fetching agent`, err);
     }
   };
+
+  // API function for vehicle type Filter
+
   const onVehicleTypeChange = (e) => {
     const selectedService = e.target.value;
     setFilterVehicleType(selectedService);
@@ -262,6 +184,100 @@ const DeliveryAgent = () => {
     }
   };
 
+  // Function for Approved Agent
+
+  const handleApprove = async (id) => {
+    console.log("Agent to approve", id);
+    console.log("Token", token);
+    console.log("Base URL", BASE_URL);
+
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/admin/agents/approve-registration/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data.message); // Log the success message from the server
+        navigate(0); // Reload the page or component
+        toast({
+          title: "Agent Approved",
+          description: "Agent approved successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        console.log(`Unexpected response status: ${response.status}`);
+      }
+    } catch (err) {
+      console.error(`Error in handleApprove: ${err.message}`);
+      toast({
+        title: "Error Approving Agent",
+        description: err.response?.data?.message || err.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // Function for Rejected Agent
+
+  const handleReject = async (id) => {
+    console.log("rejectID", id);
+    console.log("url", BASE_URL);
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/admin/agents/reject-registration/${id}`,
+
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data.message);
+        toast({
+          title: "Agent Rejected",
+          description: "Agent Rejected successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.error(err.message);
+      toast({
+        title: "Error Rejecting Agent",
+        description: err.response?.data?.message || err.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+    }
+  };
+
+  const handleToggle = (id) => {
+    setAgent((prevAgent) =>
+      prevAgent.map((agent) =>
+        agent._id === id ? { ...agent, status: !agent.status } : agent
+      )
+    );
+  };
+
+  // Function for Modal
+
   const showAddModal = () => {
     setAddModalVisible(true);
   };
@@ -269,6 +285,9 @@ const DeliveryAgent = () => {
   const handleCancel = () => {
     setAddModalVisible(false);
   };
+
+  // CSV
+
   const csvData = [
     { label: "AgentID", key: "_id" },
     { label: "FullName", key: "fullName" },
@@ -281,175 +300,200 @@ const DeliveryAgent = () => {
   ];
 
   return (
-    <>
-      <Sidebar />
-      <main className="pl-[300px] bg-gray-100 ">
-        <nav className="p-5">
-          <GlobalSearch />
-        </nav>
+    <div>
+      {isLoading ? (
+        <GIFLoader />
+      ) : (
+        <>
+          <Sidebar />
+          <main className="pl-[300px] bg-gray-100 ">
+            <nav className="p-5">
+              <GlobalSearch />
+            </nav>
 
-        <div className="flex justify-between mt-5 items-center px-[30px]">
-          <h1 className="text-[18px] font-semibold">Delivery Agent</h1>
-          <div className="flex space-x-2 justify-end ">
-            <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-              <CSVLink
-                data={agent}
-                headers={csvData}
-                filename={"agentData.csv"}
-              >
-                <ArrowDownOutlined /> <span>CSV</span>
-              </CSVLink>
-            </button>
-            <div>
-              <button
-                className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
-                onClick={showAddModal}
-              >
-                <PlusOutlined /> <span>Add Agent</span>
-              </button>
-              <AddAgentModal
-                isVisible={addModalVisible}
-                handleCancel={handleCancel}
-                token={token}
-                BASE_URL={BASE_URL}
-                geofence={geofence}
-                salary={salary}
-                manager={manager}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mt-10 px-[30px] bg-white mx-5 p-5 rounded-lg">
-          <div className="flex items-center justify-evenly gap-3 bg-white  rounded-lg p-6">
-            <select
-              id="status"
-              className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              value={statusFilter}
-              onChange={onStatusChange}
-            >
-              <option>Status</option>
-              <option value="open">true</option>
-              <option value="closed">false</option>
-            </select>
-
-            <select
-              id="vehicleType"
-              className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-              value={vehicleTypeFilter}
-              onChange={onVehicleTypeChange}
-            >
-              <option>Vehicle Type</option>
-              <option value="Scooter">Scooter</option>
-              <option value="Bike">Bike</option>
-            </select>
-
-            <select
-              name="type"
-              value={geofenceFilter}
-              className="bg-blue-50 p-2 outline-none rounded-lg focus:outline-none"
-              onChange={onGeofenceChange}
-            >
-              <option hidden value="">
-                Geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-[30px]">
-            <div>
-              <FilterAltOutlinedIcon className="mt-2 text-gray-400   " />
-            </div>
-            <input
-              type="search"
-              name="search"
-              placeholder="Search Agent ID"
-              className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
-            />
-            <button type="submit" className="absolute right-16 mt-2">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-auto mt-[20px] w-full">
-          <table className="text-start w-screen overflow-x-auto">
-            <thead>
-              <tr className="">
-                {[
-                  "Agent ID",
-                  "Full Name",
-                  "Email",
-                  "Phone",
-                  "Manager",
-                  "Geofence",
-                  "Online Status",
-                  "Registration Approval",
-                ].map((header) => (
-                  <th
-                    key={header}
-                    className="bg-teal-700 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
+            <div className="flex justify-between mt-5 items-center px-[30px]">
+              <h1 className="text-[18px] font-semibold">Delivery Agent</h1>
+              <div className="flex space-x-2 justify-end ">
+                <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
+                  <CSVLink
+                    data={agent}
+                    headers={csvData}
+                    filename={"agentData.csv"}
                   >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {agent.map((agent) => (
-                <tr
-                  key={agent._id}
-                  className="align-middle border-b border-gray-300 text-center"
-                >
-                  <td className="p-4 text-center">
-                    <Link to={`/agent-details/${agent._id}`}>{agent._id}</Link>
-                  </td>
-                  <td className="p-4">{agent.fullName}</td>
-                  <td className="p-4">{agent.email}</td>
-                  <td className="p-4">{agent.phoneNumber}</td>
-                  <td className="p-4">{agent.manager}</td>
-                  <td className="p-4">{agent.geofence}</td>
-                  <td className="p-4">
-                    <Switch
-                      checked={agent.status}
-                      onChange={() => handleToggle(agent._id)}
-                    />
-                  </td>
-                  <td className="p-4">
-                    <>
-                      {agent.isApproved === "Approved" && (
-                        <p className="text-green-500">Approved</p>
-                      )}
-                      {agent.isApproved === "Rejected" && (
-                        <p className="text-red-500">Rejected</p>
-                      )}
+                    <ArrowDownOutlined /> <span>CSV</span>
+                  </CSVLink>
+                </button>
+                <div>
+                  <button
+                    className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
+                    onClick={showAddModal}
+                  >
+                    <PlusOutlined /> <span>Add Agent</span>
+                  </button>
+                  <AddAgentModal
+                    isVisible={addModalVisible}
+                    handleCancel={handleCancel}
+                    token={token}
+                    BASE_URL={BASE_URL}
+                    geofence={geofence}
+                    salary={salary}
+                    manager={manager}
+                  />
+                </div>
+              </div>
+            </div>
 
-                      {agent.isApproved === "Pending" && (
-                        <div className="flex space-x-10 justify-center">
-                          <CheckCircleOutlined
-                            className="text-3xl cursor-pointer text-green-500"
-                            onClick={() => handleApprove(agent._id)}
+            <div className="flex items-center justify-between mt-10 px-[10px] bg-white  p-5 rounded-lg">
+              <div className="flex items-center justify-evenly gap-3 bg-white  rounded-lg p-6">
+                <select
+                  id="status"
+                  className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-4"
+                  value={statusFilter}
+                  onChange={onStatusChange}
+                >
+                  <option>Status</option>
+                  <option value="open">true</option>
+                  <option value="closed">false</option>
+                </select>
+
+                <select
+                  id="vehicleType"
+                  className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                  value={vehicleTypeFilter}
+                  onChange={onVehicleTypeChange}
+                >
+                  <option>Vehicle Type</option>
+                  <option value="Scooter">Scooter</option>
+                  <option value="Bike">Bike</option>
+                </select>
+
+                <select
+                  name="type"
+                  value={geofenceFilter}
+                  className="bg-blue-50 p-2 outline-none rounded-lg focus:outline-none"
+                  onChange={onGeofenceChange}
+                >
+                  <option hidden value="">
+                    Geofence
+                  </option>
+                  {geofence.map((geoFence) => (
+                    <option value={geoFence._id} key={geoFence._id}>
+                      {geoFence.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-[30px]">
+                <div>
+                  <FilterAltOutlinedIcon className="mt-2 text-gray-400   " />
+                </div>
+                <input
+                  type="search"
+                  name="search"
+                  placeholder="Search Agent ID"
+                  className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
+                />
+                <button type="submit" className="absolute right-16 mt-2">
+                  <SearchOutlined className="text-xl text-gray-600" />
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-auto mt-[20px] w-full">
+            <table className="text-start w-full mb-24">
+                <thead>
+                  <tr className="">
+                    {[
+                      "Agent ID",
+                      "Full Name",
+                      "Email",
+                      "Phone",
+                      "Manager",
+                      "Geofence",
+                      "Online Status",
+                      "Registration Approval",
+                    ].map((header) => (
+                      <th
+                        key={header}
+                        className="bg-teal-700 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {isTableLoading && (
+                    <tr>
+                      <td colSpan={8} className="text-center h-20">
+                        Loading Data...
+                      </td>
+                    </tr>
+                  )}
+                  {!isTableLoading && agent?.length === 0 && (
+                    <tr>
+                      <td colSpan={8}>
+                        <p className="flex items-center justify-center h-20">
+                          No data available
+                        </p>
+                      </td>
+                    </tr>
+                  )}
+                  {!isTableLoading &&
+                    agent.map((agent) => (
+                      <tr
+                        key={agent._id}
+                        className="align-middle border-b border-gray-300 text-center"
+                      >
+                        <td className="p-4 text-center">
+                          <Link to={`/agent-details/${agent._id}`}>
+                            {agent._id}
+                          </Link>
+                        </td>
+                        <td className="p-4">{agent.fullName}</td>
+                        <td className="p-4">{agent.email}</td>
+                        <td className="p-4">{agent.phoneNumber}</td>
+                        <td className="p-4">{agent.manager}</td>
+                        <td className="p-4">{agent.geofence}</td>
+                        <td className="p-4">
+                          <Switch
+                            checked={agent.status}
+                            onChange={() => handleToggle(agent._id)}
                           />
-                          <CloseCircleOutlined
-                            className="text-3xl  cursor-pointer text-red-500"
-                            onClick={() => handleReject(agent._id)}
-                          />
-                        </div>
-                      )}
-                    </>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </main>
-    </>
+                        </td>
+                        <td className="p-4">
+                          <>
+                            {agent.isApproved === "Approved" && (
+                              <p className="text-green-500">Approved</p>
+                            )}
+                            {agent.isApproved === "Rejected" && (
+                              <p className="text-red-500">Rejected</p>
+                            )}
+
+                            {agent.isApproved === "Pending" && (
+                              <div className="flex space-x-10 justify-center">
+                                <CheckCircleOutlined
+                                  className="text-3xl cursor-pointer text-green-500"
+                                  onClick={() => handleApprove(agent._id)}
+                                />
+                                <CloseCircleOutlined
+                                  className="text-3xl  cursor-pointer text-red-500"
+                                  onClick={() => handleReject(agent._id)}
+                                />
+                              </div>
+                            )}
+                          </>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </main>
+        </>
+      )}
+    </div>
   );
 };
 

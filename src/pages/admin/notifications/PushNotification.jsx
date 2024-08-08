@@ -10,16 +10,18 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
+import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const PushNotification = () => {
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-  const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentData, setCurrentData] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
   const [type, setType] = useState("");
-  const [data, setData] = useState([]);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+  const [data, setData] = useState([]);
   const [geofence, setGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ const PushNotification = () => {
     driver: false,
     pushNotificationImage: "",
   });
+
   useEffect(() => {
     if (!token || role !== "Admin") {
       navigate("auth/login");
@@ -70,8 +73,23 @@ const PushNotification = () => {
     fetchData();
   }, [token, role, navigate]);
 
+  // function for post Add Data in Notification
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleNotificationImageChange = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setNotificationFile(file);
+    setNotificationPreviewURL(URL.createObjectURL(file));
+  };
+
+  const onChange = (name, checked) => {
+    setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
+    console.log(formData.customer);
+    console.log(formData.merchant);
+    console.log(formData.driver);
   };
 
   const submitAction = async (e) => {
@@ -115,21 +133,7 @@ const PushNotification = () => {
     console.log(formData);
   };
 
-  const handleNotificationImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
-  };
-
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
-    console.log(formData.customer);
-    console.log(formData.merchant);
-    console.log(formData.driver);
-  };
-
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+// Modal for Delete
 
   const showModalDelete = (dataId) => {
     setCurrentData(dataId);
@@ -141,7 +145,6 @@ const PushNotification = () => {
     setData(data.filter((data) => data._id !== dataId));
   };
 
-  // New function to handle confirm delete
   const handleConfirmDelete = () => {
     setIsShowModalDelete(false);
     setCurrentManager(null);
@@ -150,6 +153,7 @@ const PushNotification = () => {
   const handleCancel = () => {
     setIsShowModalDelete(false);
   };
+
   const handleDelete = async (currentData) => {
     try {
       setConfirmLoading(true);
@@ -172,6 +176,9 @@ const PushNotification = () => {
       setConfirmLoading(false);
     }
   };
+
+  //Function for send Notification
+
   const sendNotification = async (id) => {
     try {
       const sendResponse = await axios.post(
@@ -189,6 +196,8 @@ const PushNotification = () => {
       console.error("Error in send notification:", err);
     }
   };
+
+  //Function for type user filter
 
   const onTypeChange = (e) => {
     const selectedType = e.target.value;
@@ -218,6 +227,9 @@ const PushNotification = () => {
       console.log(`Error in fetching notification`, err);
     }
   };
+
+  // Function for search
+
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -247,6 +259,10 @@ const PushNotification = () => {
     }
   };
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
     <>
       <Sidebar />
       <div className="pl-[300px] bg-gray-100">
@@ -341,7 +357,7 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10">Merchant App</label>
               <Switch
-                className="mt-11 ml-[200px]"
+                className="mt-11 ml-[175px]"
                 onChange={(checked) => onChange("merchant", checked)}
                 name="merchant"
               />
@@ -491,6 +507,8 @@ const PushNotification = () => {
         </table>
       </div>
     </>
+    )}
+    </div>
   );
 };
 

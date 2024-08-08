@@ -11,6 +11,7 @@ import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const Agentapp = () => {
   const toast = useToast();
@@ -28,6 +29,8 @@ const Agentapp = () => {
     loginViaApple: false,
     loginViaFacebook: false,
   });
+  const [notificationFile, setNotificationFile] = useState(null);
+  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -57,6 +60,17 @@ const Agentapp = () => {
 
     fetchData();
   }, [token, role, navigate]);
+
+  const onChange = (name, checked) => {
+    setFormData({ ...formData, [name]: checked });
+  };
+  
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setNotificationFile(file);
+    setNotificationPreviewURL(URL.createObjectURL(file));
+  };
+
 
   const submitAction = async (e) => {
     e.preventDefault();
@@ -117,20 +131,11 @@ const Agentapp = () => {
     console.log(formData);
   };
 
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked });
-  };
-
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
-  };
-
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader/>
+    ) : (
     <>
       <Sidebar />
       <div className="w-fit pl-[290px] h-screen bg-gray-100 ">
@@ -316,6 +321,8 @@ const Agentapp = () => {
         </div>
       </div>
     </>
+    )}
+    </div>
   );
 };
 

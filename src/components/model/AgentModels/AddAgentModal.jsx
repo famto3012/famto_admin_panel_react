@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
@@ -12,6 +13,7 @@ const AddAgentModal = ({
   manager,
   BASE_URL,
 }) => {
+  const toast = useToast();
   const [addData, setAddData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -37,11 +39,6 @@ const AddAgentModal = ({
     drivingLicenseBackImage: null,
     agentImage: null,
   });
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleInputChange = (e) => {
-    setAddData({ ...addData, [e.target.name]: e.target.value });
-  };
 
   const [agentFile, setAgentFile] = useState(null);
   const [agentPreviewURL, setAgentPreviewURL] = useState(null);
@@ -64,6 +61,12 @@ const AddAgentModal = ({
   const [rcBackFile, setRcBackFile] = useState(null);
   const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
 
+  // Function for Add Agent data
+
+  const handleInputChange = (e) => {
+    setAddData({ ...addData, [e.target.name]: e.target.value });
+  };
+
   // Generalized function to handle image changes
 
   const handleImageChange = (e, setFile, setPreviewURL) => {
@@ -79,8 +82,6 @@ const AddAgentModal = ({
     e.preventDefault();
     try {
       console.log("addData", addData);
-
-      setIsLoading(true);
       const addagentToSend = new FormData();
       addagentToSend.append("fullName", addData.fullName);
       addagentToSend.append("phoneNumber", addData.phoneNumber);
@@ -133,12 +134,25 @@ const AddAgentModal = ({
         setRcBackPreviewURL(null);
         setRcFrontPreviewURL(null);
         console.log("MESSAGE:", addAgentResponse.data.message);
+        
         handleCancel();
+        toast({
+          title: "Agent Creaated",
+          description: "Agent Created Successfully",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error(`Error in fetch datas : ${err.message}`);
-    } finally {
-      setIsLoading(false);
+      toast({
+        title: "Error",
+        description: "There was an error occured",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
     }
   };
 
@@ -631,14 +645,14 @@ const AddAgentModal = ({
             <button
               className="bg-cyan-50 py-2 px-4 rounded-md"
               type="button"
-              // onClick={handleCancel}
+              onClick={handleCancel}
             >
               Cancel
             </button>
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
               type="submit"
-              // onClick={handleOk}
+        
             >
               Add Agent
             </button>

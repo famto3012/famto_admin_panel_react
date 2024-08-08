@@ -3,7 +3,7 @@ import { Modal, Switch } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 
-const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
+const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL, onAddNotification }) => {
   const toast = useToast();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,6 +39,8 @@ const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL }) => {
       );
       if (addResponse === 201) {
         handleCancel();
+        onAddNotification(addResponse.data.data);
+
         toast({
           title: "Created Notification",
           description: "Notification Created Successfully",

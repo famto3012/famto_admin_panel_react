@@ -16,6 +16,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTableLoading,setIsTableLoading] = useState(false)
   const [allGeofence, setAllGeofence] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
@@ -64,7 +65,7 @@ const Customers = () => {
   }, [token, role, navigate]);
 
   const handleFilterChange = async (filterType, value) => {
-    setIsLoading(true);
+    setIsTableLoading(true);
     try {
       const response = await axios.get(
         `${BASE_URL}/admin/customers${
@@ -83,7 +84,7 @@ const Customers = () => {
     } catch (err) {
       console.log(`Error in fetching customers: ${err}`);
     } finally {
-      setIsLoading(false);
+      setIsTableLoading(false);
     }
   };
 
@@ -170,7 +171,21 @@ const Customers = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers.map((customer) => (
+                {isTableLoading && (
+                  <tr>
+                    <td colSpan={7} className="text-center h-20">
+                      Loading Data...
+                    </td>
+                  </tr>
+                )}
+                 {!isTableLoading && customers?.length === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <p className="flex items-center justify-center h-20">No data available</p>
+                  </td>
+                </tr>
+              )}
+                  {!isTableLoading && customers.map((customer) => (
                     <tr
                       key={customer._id}
                       className="align-middle border-b border-gray-300 text-center"
