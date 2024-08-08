@@ -25,6 +25,7 @@ const Commissionlog = () => {
   const dateInputRef = useRef(null);
   const [isTableLoading,setIsTableLoading] = useState(false)
   const { token, role } = useContext(UserContext);
+
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -62,6 +63,8 @@ const Commissionlog = () => {
     fetchData();
   }, [token, role, navigate]);
 
+  // API function search 
+
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -94,6 +97,9 @@ const Commissionlog = () => {
       setIsTableLoading(false)
     }
   };
+
+  // API function for date change
+
   const onDateChange = (e) => {
     const searchDate = e.target.value;
     setDateFilter(searchDate);
@@ -134,10 +140,11 @@ const Commissionlog = () => {
   const openDatePicker = () => {
     console.log("clicked");
     if (dateInputRef.current) {
-      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+      dateInputRef.current.showPicker(); 
     }
   };
 
+ // API Function  for Merchant Filter 
   const onMerchantChange = (e) => {
     const searchMerchant = e.target.value;
     setMerchantFilter(searchMerchant);
@@ -168,6 +175,9 @@ const Commissionlog = () => {
       setIsTableLoading(false)
     }
   };
+
+  // Modal Function
+
   const showModal = (id) => {
     setCurrentId(id);
     console.log(id);

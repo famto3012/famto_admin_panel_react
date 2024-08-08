@@ -83,7 +83,7 @@ const Subscriptioncustomer = () => {
     setIsSubscription(!isSubscription);
   };
 
-  
+  // API function for search in Customer Subscription log
 
   const onSearchCustomerChange = (e) => {
     const searchService = e.target.value;
@@ -117,6 +117,8 @@ const Subscriptioncustomer = () => {
       setIsTableLoading(false)
     }
   };
+
+  // API function for date change in Customer Subscriptionlog
 
   const onDateCustomerChange = (e) => {
     const searchDate = e.target.value;
@@ -157,9 +159,11 @@ const Subscriptioncustomer = () => {
    const openCustomerDatePicker = () => {
     console.log("clicked");
     if (dateCustomerInput.current) {
-      dateCustomerInput.current.showPicker(); // Open the date picker using showPicker()
+      dateCustomerInput.current.showPicker(); 
     }
   };
+
+  // API function for Merchant Filter in Merchant Subscription log
 
   const onMerchantChange = (e) => {
     const searchMerchant = e.target.value;
@@ -190,6 +194,8 @@ const Subscriptioncustomer = () => {
       setMerchantlog([]);
     }
   };
+
+  // API function for date in Merchant Subscription log
 
   const onDateMerchantChange = (e) => {
     const searchDate = e.target.value;
@@ -231,6 +237,8 @@ const Subscriptioncustomer = () => {
     }
   };
 
+  // API function for search in Merchant Subscription log
+
   const onSearchMerchantChange = (e) => {
     const searchService = e.target.value;
     setSearchMerchant(searchService);
@@ -265,6 +273,8 @@ const Subscriptioncustomer = () => {
     }
   };
   
+  // Modal Function
+
   const showModal = (id) => {
     setCurrentId(id);
     console.log(id);

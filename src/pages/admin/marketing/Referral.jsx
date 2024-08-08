@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import GIFLoader from "../../../components/GIFLoader";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const Referral = () => {
+
   const [isLoading, setIsLoading] = useState(false);
-  const { token, role } = useContext(UserContext);
-  const navigate = useNavigate();
-  const toast = useToast();
   const [formData, setFormData] = useState({
     referalType: "Flat-discount",
     referrerDiscount: "",
@@ -24,7 +25,10 @@ const Referral = () => {
     status: null,
     referalCodeOnCustomerSignUp: null,
   });
-
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const toast = useToast();
+  
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -60,8 +64,12 @@ const Referral = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     if (name === "referalType") {
-      fetchData(value); // Fetch data based on the selected referral type
+      fetchData(value);
     }
+  };
+
+  const onChange = (name, checked) => {
+    setFormData({ ...formData, [name]: checked });
   };
 
   const submitAction = async (e) => {
@@ -98,11 +106,11 @@ const Referral = () => {
     console.log(formData);
   };
 
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked });
-  };
-
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
     <>
       <Sidebar />
       <div className="pl-[300px] bg-gray-100 h-full">
@@ -302,6 +310,8 @@ const Referral = () => {
         </table>
       </div>
     </>
+    )}
+    </div>
   );
 };
 

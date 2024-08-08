@@ -96,27 +96,7 @@ const BusinessCategory = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
-      if (response.status === 201) {
-        handleAddBanner(response.data.data);
-        toast({
-          title: "Created",
-          description: "Business Category Created Successfully.",
-          duration: 5000,
-          status: "success",
-          isClosable: true,
-        });
-        handleCancel();
-      }
-    } catch (err) {
-      console.error(`Error in creating business ${err.message}`);
-    } finally {
-      setIsSaveLoading(false);
-    }
-  };
-
   // API to Add Business Category...
-
   const handleBusinessEdit = async (e) => {
     e.preventDefault();
     try {
@@ -124,7 +104,7 @@ const BusinessCategory = () => {
         title: "Status updated",
         description: "Business status updated successfully.",
         status: "success",
-        duration: 5000,
+        duration: 900,
         isClosable: true,
       });
 

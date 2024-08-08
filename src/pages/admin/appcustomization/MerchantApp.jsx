@@ -28,6 +28,8 @@ const MerchantApp = () => {
     loginViaApple: false,
     loginViaFacebook: false,
   });
+  const [notificationFile, setNotificationFile] = useState(null);
+  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -59,6 +61,16 @@ const MerchantApp = () => {
 
     fetchData();
   }, [token, role, navigate]);
+
+  const onChange = (name, checked) => {
+    setFormData({ ...formData, [name]: checked });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setNotificationFile(file);
+    setNotificationPreviewURL(URL.createObjectURL(file));
+  };
 
   const submitAction = async (e) => {
     e.preventDefault();
@@ -117,19 +129,6 @@ const MerchantApp = () => {
       setIsLoading(false);
     }
     console.log(formData);
-  };
-
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked });
-  };
-
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
   };
 
   return (

@@ -395,7 +395,6 @@ const PlaceSearchPlugin = ({ map }) => {
             markerRef.current.fitbounds();
           }
         );
-        markerRef.current.remove();
       }
     };
 
@@ -421,14 +420,13 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
   const modalMapRef = useRef(null);
 
   useEffect(() => {
-    if (isVisible && modalMapRef.current) {
+    if (isVisible) {
       const initializeMap = () => {
-        console.log("here")
         mapplsClassObject.initialize(
-          `${authToken}`,
+          authToken,
           { map: true, plugins: ["search"] },
           () => {
-            console.log("initializing map");
+            console.log("Initializing map");
 
             const newMap = mapplsClassObject.Map({
               id: "map",
@@ -454,35 +452,29 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
               },
             });
 
-            console.log("initializing completed");
+            newMap.on("load", () => {
+              console.log("Map loaded.");
+            });
 
-            if (newMap && typeof newMap.on === "function") {
-              mapRef.current = newMap;
+            newMap.on("click", (event) => {
+              const { lat, lng } = event.lngLat;
 
-              newMap.on("load", () => {
-                console.log("Map loaded.");
+              if (markerRef.current) {
+                markerRef.current.remove();
+              }
+
+              const newMarker = mapplsClassObject.Marker({
+                map: newMap,
+                position: { lat, lng },
+                draggable: false,
               });
 
-              newMap.on("click", (event) => {
-                const { lat, lng } = event.lngLat;
+              markerRef.current = newMarker;
+              setCoordinates({ latitude: lat, longitude: lng });
+              console.log(`Marker added at latitude: ${lat}, longitude: ${lng}`);
+            });
 
-                if (markerRef.current) {
-                  markerRef.current.remove();
-                }
-
-                const newMarker = mapplsClassObject.Marker({
-                  map: newMap,
-                  position: { lat, lng },
-                  draggable: false,
-                });
-
-                markerRef.current = newMarker;
-                setCoordinates({ latitude: lat, longitude: lng });
-                console.log(
-                  `Marker added at latitude: ${lat}, longitude: ${lng}`
-                );
-              });
-            }
+            mapRef.current = newMap;
           }
         );
       };
@@ -490,23 +482,18 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
       initializeMap();
 
       return () => {
-        console.log("return")
-       // initializeMap();
-        // if (mapRef.current) {
-        //   mapRef.current.remove();
-        //   mapRef.current = null;
-        // }
-        // if (markerRef.current) {
-        //   markerRef.current.remove();
-        //   markerRef.current = null;
-        // }
-        // if(modalMapRef.current){
-        // //  modalMapRef.current.remove();
-        //   modalMapRef.current = null
-        // }
+        if (mapRef.current) {
+          console.log("Removing map...");
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+        if (markerRef.current) {
+          markerRef.current.remove();
+          markerRef.current = null;
+        }
       };
     }
-  }, [isVisible, authToken, modalMapRef.current]);
+  }, [isVisible, authToken]);
 
   return (
     <Modal
