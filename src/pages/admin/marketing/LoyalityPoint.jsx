@@ -13,6 +13,7 @@ import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const LoyalityPoint = () => {
+
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
@@ -91,6 +92,24 @@ const LoyalityPoint = () => {
     }
     console.log(loyaltyData);
   };
+
+  const handleCancel = () => {
+    setLoyaltyData({
+      earningCriteriaRupee: "",
+      earningCriteriaPoint: "",
+      minOrderAmountForEarning: "",
+      maxEarningPoint: "",
+      expiryDuration: "",
+      redemptionCriteriaPoint: "",
+      redemptionCriteriaRupee: "",
+      minOrderAmountForRedemption: "",
+      minLoyaltyPointForRedemption: "",
+      maxRedemptionAmountPercentage: "",
+    });
+  };
+
+  // Updated status function 
+
   const onChange = async (name, checked) => {
     setLoyaltyData({ ...loyaltyData, [name]: checked });
     try {
@@ -110,20 +129,6 @@ const LoyalityPoint = () => {
     }
   };
 
-  const handleCancel = () => {
-    setLoyaltyData({
-      earningCriteriaRupee: "",
-      earningCriteriaPoint: "",
-      minOrderAmountForEarning: "",
-      maxEarningPoint: "",
-      expiryDuration: "",
-      redemptionCriteriaPoint: "",
-      redemptionCriteriaRupee: "",
-      minOrderAmountForRedemption: "",
-      minLoyaltyPointForRedemption: "",
-      maxRedemptionAmountPercentage: "",
-    });
-  };
 
   return (
     <div>

@@ -148,11 +148,11 @@ const AddCustomerSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              value={customerSurge.geofenceId}
+              // value={customerSurge.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >
-              <option hidden value="">
+              <option hidden value={"Geofence"}>
                 Geofence
               </option>
               {geofence.map((geoFence) => (
