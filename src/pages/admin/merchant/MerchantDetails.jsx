@@ -31,6 +31,8 @@ const MerchantDetails = () => {
     aadharPreviewURL: "",
   });
 
+  const [sponsorshipAmount, setSposorshipAmount] = useState(null);
+
   const navigate = useNavigate();
   const { token, role } = useContext(UserContext);
   const { merchantId } = useParams();
@@ -97,9 +99,9 @@ const MerchantDetails = () => {
     setShowRatingModal(!showRatingModal);
   };
 
-  // const handlePlanChange = (e) => {
-  //   setMerchantData({ sponsorshipDetail: e.target.value });
-  // };
+  const handlePlanChange = (e) => {
+    setSposorshipAmount(e.target.value);
+  };
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
@@ -116,9 +118,9 @@ const MerchantDetails = () => {
             ...prevState.merchantDetail.availability.specificDays,
             [day]: {
               ...prevState.merchantDetail.availability.specificDays[day],
-              openAllDay: type === "openAllDay" ? checked : false,
-              closedAllDay: type === "closedAllDay" ? checked : false,
-              specificTime: type === "specificTime" ? checked : false,
+              openAllDay: type === "openAllDay" ? true : false,
+              closedAllDay: type === "closedAllDay" ? true : false,
+              specificTime: type === "specificTime" ? true : false,
             },
           },
         },
@@ -167,13 +169,19 @@ const MerchantDetails = () => {
         <div className="flex justify-between my-[15px] mt-8 mb-8">
           <h3 className="font-[600] text-[18px] ms-3">Merchant name</h3>
           <div>
-            <Link className="bg-yellow-100 py-2 px-5 p-1 mr-5 rounded-xl">
-              <BlockIcon className="w-2 h-2 text-red-600" /> Block
+            <Link className="bg-yellow-100 py-2 px-5 mr-5 rounded-xl ">
+              <BlockIcon className="h-5 w-5 text-red-600" /> Block
             </Link>
             Status
             <Switch
               value={merchantData?.status}
               className="text-teal-700 ml-2"
+              onChange={(e) => {
+                setMerchantData({
+                  ...merchantData,
+                  status: !merchantData?.status,
+                });
+              }}
             />
           </div>
         </div>
@@ -182,88 +190,102 @@ const MerchantDetails = () => {
           className="bg-white shadow-md rounded-lg ms-3 p-3 w-full overflow-auto"
           onSubmit={handleSaveMerchant}
         >
-          {/* <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
-            <div className="flex flex-col ">
-              <div className="mb-4 flex items-center justify-between">
-                <label className="text-red-500 font-[600]">ID</label>
+          <div className="grid grid-cols-2 xl:grid-cols-6 gap-2">
+            <div className="flex flex-col col-span-2">
+              <div className="mb-4 flex items-center gap-[10px] w-[370px]">
+                <label className="text-red-500 font-[600] w-1/3">ID</label>
                 <input
                   type="text"
-                  className=" outline-none focus:outline-none p-[10px] bg-transparent rounded text-red-600 placeholder:text-red-600"
+                  className="outline-none focus:outline-none p-[10px] bg-transparent rounded text-red-600 placeholder:text-red-600"
                   disabled
                   value={merchantData._id}
                 />
               </div>
 
-              <div className="mb-4 flex items-center justify-between">
-                <label className="block text-gray-700">Merchant name*</label>
+              <div className="mb-4 flex items-center gap-[10px] w-[370px]">
+                <label className="block text-gray-700 w-1/3">
+                  Merchant name*
+                </label>
                 <input
                   type="text"
                   name="fullName"
-                  className=" outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded"
+                  className="merchantDetail-input"
                   placeholder="Merchant name"
+                  spellCheck={false}
                   value={merchantData?.merchantDetail?.merchantName}
-                  onChange={handleChange}
+                  onChange={handleChangeInput}
                 />
               </div>
 
-              <div className="mb-4 flex items-center justify-between">
-                <label className="block text-gray-700">Display address*</label>
+              <div className="mb-4 flex items-center gap-[10px] w-[370px]">
+                <label className="block text-gray-700 w-1/3">
+                  Display address*
+                </label>
                 <input
                   type="text"
                   name="displayAddress"
-                  className=" outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded"
+                  className="merchantDetail-input"
                   placeholder="Merchant Adress"
+                  spellCheck={false}
                   value={merchantData?.merchantDetail?.displayAddress}
-                  onChange={handleChange}
+                  onChange={handleChangeInput}
                 />
               </div>
 
-              <div className="mb-4 flex items-center justify-between">
-                <label className="block text-gray-700">Name of owner*</label>
+              <div className="mb-4 flex items-center gap-[10px] w-[370px]">
+                <label className="block text-gray-700 w-1/3">
+                  Name of owner*
+                </label>
                 <input
                   type="text"
                   name="merchantName"
-                  className=" outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded"
+                  className="merchantDetail-input"
                   placeholder="Merchant name"
+                  spellCheck={false}
                   value={merchantData.fullName}
-                  onChange={handleChange}
+                  onChange={handleChangeInput}
                 />
               </div>
             </div>
 
-            <div className="flex flex-col ">
-              <div className=" flex items-center justify-between mb-4">
-                <label className="">Email</label>
+            <div className="flex flex-col col-span-2">
+              <div className="mb-4 flex items-center gap-[10px] w-[370px] ">
+                <label className="block text-gray-700 w-1/3">Email</label>
                 <input
                   type="text"
                   name="email"
-                  className=" outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded"
+                  className="merchantDetail-input"
                   placeholder="Merchant name"
                   value={merchantData.email}
-                  onChange={handleChange}
+                  onChange={handleChangeInput}
                 />
               </div>
 
-              <div className="mb-4 flex items-center justify-between">
-                <label className="block text-gray-700">Phone</label>
+              <div className="mb-4 flex items-center gap-[10px] w-[370px]">
+                <label className="block text-gray-700 w-1/3">Phone</label>
                 <input
                   type="tel"
                   name="phoneNumber"
-                  className=" outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded"
+                  className="merchantDetail-input"
                   placeholder="Merchant name"
                   value={merchantData.phoneNumber}
-                  onChange={handleChange}
+                  onChange={handleChangeInput}
                 />
               </div>
 
-              <div className="mb-4 flex items-center justify-between">
-                <label className="block text-gray-700">
+              <div className="mb-4 flex items-center gap-[10px] w-[370px]">
+                <label className="block text-gray-700 w-1/3 ">
                   Registration status
                 </label>
                 <input
                   type="text"
-                  className=" outline-none focus:outline-none p-[10px] bg-transparent rounded"
-                  placeholder="Merchant name"
+                  className={`${
+                    merchantData?.isApproved === `Approved`
+                      ? `text-green-600`
+                      : merchantData?.isApproved === `Pending`
+                      ? ` text-orange-600`
+                      : ``
+                  }outline-none focus:outline-none p-[10px] bg-transparent rounded w-2/3`}
                   disabled
                   value={merchantData.isApproved}
                 />
@@ -346,9 +368,9 @@ const MerchantDetails = () => {
               BASE_URL={BASE_URL}
               token={token}
             />
-          </div> */}
+          </div>
 
-          {/* <div className=" max-w-[700px] mt-14 mb-[50px]">
+          <div className=" max-w-[700px] mt-14 mb-[50px]">
             <div className="mb-[20px] flex items-center justify-between gap-[30px]">
               <label className=" text-gray-700 text-[16px]">
                 Short Description <br /> (Max 10 characters)
@@ -359,7 +381,7 @@ const MerchantDetails = () => {
                 placeholder="Description"
                 value={merchantData?.merchantDetail?.description}
                 className="w-[20rem] border rounded-md p-2"
-                onChange={handleChange}
+                onChange={handleChangeInput}
               />
             </div>
 
@@ -368,7 +390,7 @@ const MerchantDetails = () => {
               <select
                 name="geoFence"
                 value={merchantData?.merchantDetail?.geofenceId}
-                onChange={handleChange}
+                onChange={handleChangeInput}
                 className="mt-2 p-2  w-[20rem] border rounded-md outline-none focus:outline-none"
               >
                 <option defaultValue={"Select geofence"}>
@@ -398,7 +420,7 @@ const MerchantDetails = () => {
                 type="text"
                 name="location"
                 value={merchantData?.merchantDetail?.location}
-                onChange={handleChange}
+                onChange={handleChangeInput}
                 className=" p-2  w-[20rem] border rounded-md"
               />
             </div>
@@ -418,9 +440,9 @@ const MerchantDetails = () => {
                 data={merchantData?.merchantDetail?.ratingByCustomers}
               />
             </div>
-          </div> */}
+          </div>
 
-          {/* <div className="mb-[50px] w-full">
+          <div className="mb-[50px] w-full">
             <h3 className="text-gray-700 font-bold mb-2">Documents provided</h3>
 
             <div className="flex justify-between items-center my-[20px] max-w-[700px]">
@@ -429,7 +451,7 @@ const MerchantDetails = () => {
                 type="text"
                 name="pancardNumber"
                 value={merchantData?.merchantDetail?.pancardNumber}
-                onChange={handleChange}
+                onChange={handleChangeInput}
                 className="p-2 border rounded-md w-[20rem] mx-[40px]"
               />
               <div className=" flex items-center gap-[30px]">
@@ -482,7 +504,7 @@ const MerchantDetails = () => {
                 type="text"
                 name="GSTINNumber"
                 value={merchantData?.merchantDetail?.GSTINNumber}
-                onChange={handleChange}
+                onChange={handleChangeInput}
                 className="p-2 border rounded-md w-[20rem] mx-[40px]"
               />
               <div className=" flex items-center gap-[30px]">
@@ -535,7 +557,7 @@ const MerchantDetails = () => {
                 type="text"
                 name="FSSAINumber"
                 value={merchantData?.merchantDetail?.FSSAINumber}
-                onChange={handleChange}
+                onChange={handleChangeInput}
                 className="p-2 border rounded-md w-[20rem] mx-[40px]"
               />
               <div className=" flex items-center gap-[30px]">
@@ -590,7 +612,7 @@ const MerchantDetails = () => {
                 type="text"
                 name="aadharNumber"
                 value={merchantData?.merchantDetail?.aadharNumber}
-                onChange={handleChange}
+                onChange={handleChangeInput}
                 className="p-2 border rounded-md w-[20rem] mx-[40px]"
               />
               <div className=" flex items-center gap-[30px]">
@@ -636,7 +658,7 @@ const MerchantDetails = () => {
                 </label>
               </div>
             </div>
-          </div> */}
+          </div>
 
           <div className="mb-6">
             <h3 className="text-gray-700 font-bold mb-2">Configuration</h3>
@@ -655,7 +677,9 @@ const MerchantDetails = () => {
                   Select business category
                 </option>
                 {allBusinessCategory?.map((category) => (
-                  <option value={category._id}>{category.title}</option>
+                  <option key={category._id} value={category._id}>
+                    {category.title}
+                  </option>
                 ))}
               </select>
             </div>
@@ -786,14 +810,14 @@ const MerchantDetails = () => {
                   name="servingRadius"
                   value={merchantData?.merchantDetail?.servingRadius}
                   onChange={handleChangeInput}
-                  className="mt-6 ml-[15rem] p-2 w-[20rem] border rounded-md"
+                  className="mt-6 ml-[15rem] p-2 w-[20rem] border rounded-md outline-none focus:outline-none"
                   placeholder="Serving Radius (in km)"
                 />
               )}
             </div>
           </div>
 
-          {/* <div className="mb-6 flex">
+          <div className="mb-6 flex">
             <div className="flex">
               <h3 className="text-gray-700 mb-2 mt-3 ">Sponsorship Status</h3>
               <div className="mb-4 w-[20rem] p-5 justify-center ml-[12rem] shadow-lg">
@@ -801,22 +825,22 @@ const MerchantDetails = () => {
                   Current Chosen Plan
                 </label>
                 <p className="text-gray-500">
-                  {merchantData.sponsorshipDetail}
+                  {merchantData?.sponsorshipDetail}
                 </p>
               </div>
             </div>
-          </div> */}
+          </div>
 
-          {/* <div className="mb-6 flex">
+          <div className="mb-6 flex">
             <h3 className="text-black mb-2 flex">Choose or Renew Plan</h3>
 
             <div className="grid ml-[11rem] gap-3">
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: "monthly", label: "Monthly", price: "₹250" },
-                  { value: "3months", label: "3 months", price: "₹750" },
-                  { value: "6months", label: "6 months", price: "₹1500" },
-                  { value: "yearly", label: "1 year", price: "₹3000" },
+                  { value: "monthly", label: "Monthly", price: "250" },
+                  { value: "3months", label: "3 months", price: "750" },
+                  { value: "6months", label: "6 months", price: "1500" },
+                  { value: "yearly", label: "1 year", price: "3000" },
                 ].map((plan, index) => (
                   <label
                     key={index}
@@ -830,7 +854,7 @@ const MerchantDetails = () => {
                       onChange={handlePlanChange}
                       className="mr-2 justify-between"
                     />{" "}
-                    {plan.label}({plan.price})
+                    {plan.label}({`₹ ${plan.price}`})
                   </label>
                 ))}
               </div>
@@ -847,9 +871,9 @@ const MerchantDetails = () => {
               </p>
             </div>
             <p className="right-5 ml-[6rem]">
-              <Switch />
+              <Switch value={true} />
             </p>
-          </div> */}
+          </div>
 
           <div className="mb-6 flex mt-10">
             <h3 className="text-gray-700 font-bold mb-2">
@@ -867,7 +891,8 @@ const MerchantDetails = () => {
                       "Full-time"
                     }
                     onChange={handleChangeInput}
-                  />{" "}
+                    className="me-2"
+                  />
                   Full time
                 </label>
                 <label className="mr-4 cursor-pointer">
@@ -880,7 +905,8 @@ const MerchantDetails = () => {
                       "Specific-time"
                     }
                     onChange={handleChangeInput}
-                  />{" "}
+                    className="me-2"
+                  />
                   Specific time
                 </label>
               </div>
@@ -893,7 +919,7 @@ const MerchantDetails = () => {
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
-                    <th className="py-2 px-4">Week day</th>
+                    <th className="py-2 px-4 text-start">Week day</th>
                     <th className="py-2 px-4">Open all day</th>
                     <th className="py-2 px-4">Close all day</th>
                     <th className="py-2 px-4">Specific Time</th>
@@ -966,7 +992,7 @@ const MerchantDetails = () => {
                                   ?.specificDays?.[day]?.startTime || ""
                               }
                               onChange={handleChangeTime}
-                              class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:outline-none block w-full p-2.5"
+                              className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:outline-none block w-full p-2.5"
                             />
                           </td>
                           <td>
@@ -978,7 +1004,7 @@ const MerchantDetails = () => {
                                   ?.specificDays?.[day]?.endTime || ""
                               }
                               onChange={handleChangeTime}
-                              class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:outline-none block w-full p-2.5"
+                              className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:outline-none block w-full p-2.5"
                             />
                           </td>
                         </>
