@@ -34,6 +34,10 @@
   .selected-link {
     @apply bg-cyan-400 text-white;
   }
+
+  .merchantDetail-input {
+    @apply outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded overflow-ellipsis w-2/3;
+  }
 }
 
 /* ::-webkit-scrollbar {
