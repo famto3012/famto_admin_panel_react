@@ -171,7 +171,7 @@ const AccountLogs = () => {
   // CSV Data
 
   const csvData = [
-    { label: "USERID", key: "userId" },
+    { label: "USERID", key: "_id" },
     { label: "USERNAME", key: "fullName" },
     { label: "Role", key: "role" },
     { label: "Description", key: "description" },

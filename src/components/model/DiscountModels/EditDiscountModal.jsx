@@ -19,6 +19,7 @@ const EditDiscountModal = (
     merchant: "",
     discountName: "",
     maxCheckoutValue: "",
+    maxDiscountValue: "",
     discountType: "",
     discountValue: "",
     description: "",
@@ -192,8 +193,8 @@ const EditDiscountModal = (
               type="radio"
               className="border-2 -ml-14 border-gray-300 rounded outline-none focus:outline-none"
               name="discountType"
-              value="Fixed-discount"
-              checked={merchantDiscount.discountType === "Fixed-discount"}
+              value="Flat-discount"
+              checked={merchantDiscount.discountType === "Flat-discount"}
               onChange={handleDiscount}
             />
             Fixed-discount

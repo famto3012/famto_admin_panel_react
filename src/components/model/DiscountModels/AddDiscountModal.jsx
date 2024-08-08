@@ -16,10 +16,10 @@ const AddDiscountModal = ({
   const [merchantDiscount, setMerchantDiscount] = useState({
     merchantId: "",
     discountName: "",
-    maxCheckoutValue: null,
-    maxDiscountValue: null,
+    maxCheckoutValue: "",
+    maxDiscountValue: "",
     discountType: "",
-    discountValue: null,
+    discountValue: "",
     description: "",
     validFrom: "",
     validTo: "",
@@ -140,7 +140,7 @@ const AddDiscountModal = ({
             <label className="w-1/2 text-gray-500">Max Amount</label>
 
             <input
-              type="text"
+              type="number"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="maxDiscountValue"
               value={merchantDiscount.maxDiscountValue}
@@ -153,8 +153,8 @@ const AddDiscountModal = ({
               type="radio"
               className="border-2 -ml-14 border-gray-300 rounded outline-none focus:outline-none"
               name="discountType"
-              value="Fixed-discount"
-              checked={merchantDiscount.discountType === "Fixed-discount"}
+              value="Flat-discount"
+              checked={merchantDiscount.discountType === "Flat-discount"}
               onChange={handleDiscount}
             />
             Fixed-discount
