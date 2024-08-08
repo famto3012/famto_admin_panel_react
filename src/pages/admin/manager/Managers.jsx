@@ -1,39 +1,41 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import GlobalSearch from "../../../components/GlobalSearch";
 import Sidebar from "../../../components/Sidebar";
-
 import { UserContext } from "../../../context/UserContext";
-
 import { Modal, Spin } from "antd";
-
 import { useToast } from "@chakra-ui/react";
-
 import { PlusOutlined } from "@ant-design/icons";
-import { SearchOutlined } from "@ant-design/icons";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import GIFLoader from "../../../components/GIFLoader";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Managers = () => {
   const [allManagers, setAllManagers] = useState([]);
-  const [currentManager, setCurrentManager] = useState(null);
-  const [confirmLoading, setConfirmLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
-  const [geofenceFilter, setGeofenceFilter] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-
+  const [currentManager, setCurrentManager] = useState(null);
+  const [geofenceFilter, setGeofenceFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   const { token, role } = useContext(UserContext);
-
   const toast = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("auth/login");
+      return;
+    }
+
+    fetchData();
+  }, [token, role, navigate]);
 
   const fetchData = async () => {
     try {
@@ -61,15 +63,8 @@ const Managers = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!token || role !== "Admin") {
-      navigate("auth/login");
-      return;
-    }
-
-    fetchData();
-  }, [token, role, navigate]);
+  
+  // API function for geofence
 
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
@@ -102,6 +97,9 @@ const Managers = () => {
     }
   };
 
+
+  //API function for search
+
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -133,6 +131,8 @@ const Managers = () => {
     }
   };
 
+  // Modal function for Delete
+
   const showModalDelete = (managerId) => {
     setCurrentManager(managerId);
 
@@ -140,7 +140,7 @@ const Managers = () => {
   };
 
   const removeBanner = (managerId) => {
-    setManager(manager.filter((manager) => manager._id !== managerId));
+    setAllManagers(allManagers.filter((manager) => manager._id !== managerId));
   };
 
   const handleConfirmDelete = () => {
@@ -184,6 +184,11 @@ const Managers = () => {
   };
 
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
+
     <>
       <Sidebar />
       <div className="pl-[300px] bg-gray-100 h-screen w-screen">
@@ -270,7 +275,7 @@ const Managers = () => {
               {!isTableLoading && allManagers.length === 0 && (
                 <tr>
                   <td colSpan={7} className="text-center py-[20px] bg-gray-200">
-                    No Data...
+                    No Data Available...
                   </td>
                 </tr>
               )}
@@ -332,6 +337,8 @@ const Managers = () => {
         </div>
       </div>
     </>
+    )}
+    </div>
   );
 };
 

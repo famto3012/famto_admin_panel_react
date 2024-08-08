@@ -7,15 +7,12 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
+import GIFLoader from "../../../components/GIFLoader";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const AddManager = () => {
-  const { token, role } = useContext(UserContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [geofence, setGeofence] = useState([]);
-  const navigate = useNavigate();
-  const toast = useToast();
+ 
   const [managerData, setManagerData] = useState({
     name: "",
     email: "",
@@ -36,6 +33,14 @@ const AddManager = () => {
     geofenceId: "",
     viewCustomers: null,
   });
+  const [geofence, setGeofence] = useState([]);
+  const [merchants, setMerchants] = useState([]);
+  const [isLoading, setIsLoading] =useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const toast = useToast();
+
   useEffect(() => {
     if (!token || role !== "Admin") {
       navigate("/auth/login");
@@ -44,10 +49,13 @@ const AddManager = () => {
 
     const fetchManager = async () => {
       try {
-        setIsLoading(true);
-
-        const [geofenceResponse] = await Promise.all([
+       setIsLoading(true)
+        const [geofenceResponse, merchantResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -56,22 +64,31 @@ const AddManager = () => {
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
         }
+        if (merchantResponse.status === 200) {
+          setMerchants(merchantResponse.data.data);
+        }
       } catch (err) {
         console.log(`Error in fetching data:${err.message}`);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     };
 
     fetchManager();
   }, [token, role, navigate]);
+  
   const inputChange = (e) => {
     setManagerData({ ...managerData, [e.target.name]: e.target.value });
+  };
+
+  const onChange = (name, checked) => {
+    setManagerData({ ...managerData, [name]: checked });
   };
 
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true)
       console.log("managerData", managerData);
       const response = await axios.post(
         `${BASE_URL}/admin/managers/add-manager`,
@@ -89,7 +106,7 @@ const AddManager = () => {
           title: "Manager Created",
           description: "Manager created successfully.",
           status: "success",
-          duration: 9000,
+          duration: 900,
           isClosable: true,
         });
         navigate("/all-managers");
@@ -112,15 +129,17 @@ const AddManager = () => {
 
         console.log(errors);
       }
+    } finally{
+      setConfirmLoading(false)
     }
     console.log(managerData);
   };
 
-  const onChange = (name, checked) => {
-    setManagerData({ ...managerData, [name]: checked });
-  };
-
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
     <>
       <Sidebar />
 
@@ -258,8 +277,11 @@ const AddManager = () => {
                     <option hidden selected>
                       Select
                     </option>
-                    <option value="Merchant1">Merchant1</option>
-                    <option value="Merchant2">Merchant2</option>
+                    {merchants.map((merchants) => (
+                      <option value={merchants._id} key={merchants._id}>
+                        {merchants._id}
+                      </option>
+                    ))}
                   </select>
                   {errors.merchants && (
                     <small className="text-red-500 text-start">
@@ -327,7 +349,7 @@ const AddManager = () => {
                   className="bg-teal-700 text-white py-2 px-10 rounded-md"
                   type="submit"
                 >
-                  Add
+                  {confirmLoading ? "Adding..." : "Add" }
                 </button>
               </div>
             </div>
@@ -335,6 +357,8 @@ const AddManager = () => {
         </div>
       </div>
     </>
+    )}
+    </div>
   );
 };
 

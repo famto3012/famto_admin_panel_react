@@ -10,17 +10,19 @@ import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import EditAgentModal from "../../../components/model/AgentModels/EditAgentModal";
+import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const AgentDetails = () => {
+
+  const { agentId } = useParams();
   const [reason, setReason] = useState("");
   const [averageRating, setRatings] = useState("");
-  const { agentId } = useParams();
   const [agent, setAgent] = useState({});
   const { token, role } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [geofence, setGeofence] = useState([]);
-  const [salary, setSalary] = useState([]);
-  const [manager, setManager] = useState([]);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,36 +36,12 @@ const AgentDetails = () => {
       try {
         const [
           agentResponse,
-          geofenceResponse,
-          managerResponse,
-          salaryResponse,
         ] = await Promise.all([
           axios.get(`${BASE_URL}/admin/agents/${agentId}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/managers`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
         ]);
-        if (salaryResponse.status === 200) {
-          setSalary(salaryResponse.data.data);
-        }
-        if (managerResponse.status === 200) {
-          setManager(managerResponse.data.data);
-        }
-        if (geofenceResponse.status === 200) {
-          setGeofence(geofenceResponse.data.geofences);
-        }
         if (agentResponse.status === 200) {
           // const { data } = agentResponse.data;
           console.log("data in response is", agentResponse.data.data);
@@ -81,18 +59,16 @@ const AgentDetails = () => {
     console.log("data in state", agent);
   }, [token, role, navigate, agentId]);
 
-  const [editModalVisible, setEditModalVisible] = useState(false);
+  
   const showEditModal = () => {
     setEditModalVisible(true);
   };
 
-  const handleCancel = () => {
+
+  const handleCancelEdit = () => {
     setEditModalVisible(false);
   };
-
-
-
-  const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false);
+  
   const showModalRatings = async () => {
     setIsModalVisibleRatings(true);
     try {
@@ -118,7 +94,6 @@ const AgentDetails = () => {
     }
   };
 
-
   const handleCancelRatings = () => {
     setIsModalVisibleRatings(false);
   };
@@ -127,10 +102,6 @@ const AgentDetails = () => {
 
   const ShowModalBlock = () => {
     setIsModalVisibleBlock(true);
-  };
-
-  const handleOkBlock = () => {
-    setIsModalVisibleBlock(false);
   };
 
   const handleCancelBlock = () => {
@@ -143,6 +114,11 @@ const AgentDetails = () => {
   };
 
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader />
+    ) : (
+
     <>
       <Sidebar />
       <div className="pl-[300px] bg-gray-100">
@@ -166,7 +142,6 @@ const AgentDetails = () => {
               centered
               width="500px"
               open={isModalVisibleBlock}
-              onOk={handleOkBlock}
               onCancel={handleCancelBlock}
               footer={null}
             >
@@ -187,7 +162,6 @@ const AgentDetails = () => {
                 <button
                   className="bg-cyan-50 py-2 px-4 rounded-md"
                   type="button"
-                  onClick={handleCancel}
                 >
                   Cancel
                 </button>
@@ -245,11 +219,11 @@ const AgentDetails = () => {
               </button>
               <EditAgentModal
                 isVisible={editModalVisible}
-                handleCancel={handleCancel1}
+                handleCancel={handleCancelEdit}
               />
-
             </div>
           </div>
+
           <div className="mb-[20px] w-[600px] flex items-center justify-between mt-9 gap-[30px]">
             <label className="text-gray-700 ml-10 font-semibold text-[18px]">
               Ratings
@@ -261,8 +235,6 @@ const AgentDetails = () => {
             >
               Show ratings and reviews
             </button>
-            
-
             <Modal
               title="Ratings"
               centered
@@ -292,7 +264,7 @@ const AgentDetails = () => {
                     {averageRating.length === 0 ? (
                       <tr>
                         <td colSpan={3}>
-                          <p className="mb-0 text-center">No data</p>
+                          <p className="mb-0 text-center">No data Available</p>
                         </td>
                       </tr>
                     ) : (
@@ -526,6 +498,8 @@ const AgentDetails = () => {
         </div>
       </div>
     </>
+    )}
+    </div>
   );
 };
 
