@@ -187,7 +187,7 @@ const Adbanner = () => {
           description: "The Banner Deleted Successfully.",
           status: "success",
           duration: 900,
-          isClosable: "true",
+          isClosable: true,
         });
       } else {
         console.error(`Unexpected status code: ${deleteResponse.status}`);
@@ -214,7 +214,8 @@ const Adbanner = () => {
 
   //api calling to delete individual app banner..
 
-  const handleIndBannerDelete = async (currentIndBanner) => {
+  const handleIndBannerDelete = async (e, currentIndBanner) => {
+    e.preventDefault();
     try {
       setConfirmLoading(true);
 
@@ -233,7 +234,7 @@ const Adbanner = () => {
           description: "The Banner Deleted Successfully.",
           status: "success",
           duration: 900,
-          isClosable: "true",
+          isClosable: true,
         });
       } else {
         console.error(`Unexpected status code: ${indDeleteResponse.status}`);
@@ -626,8 +627,8 @@ const Adbanner = () => {
                               </button>
                               <button
                                 className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                                onClick={() =>
-                                  handleIndBannerDelete(currentIndBanner)
+                                onClick={(e) =>
+                                  handleIndBannerDelete(e,currentIndBanner)
                                 }
                               >
                                 {" "}

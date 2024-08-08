@@ -25,7 +25,6 @@ const AgentDetails = () => {
   const [isModalVisibleRatings, setIsModalVisibleRatings] = useState(false);
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -65,10 +64,10 @@ const AgentDetails = () => {
     setEditModalVisible(true);
   };
 
+
   const handleCancelEdit = () => {
     setEditModalVisible(false);
   };
-
   
   const showModalRatings = async () => {
     setIsModalVisibleRatings(true);
@@ -108,7 +107,6 @@ const AgentDetails = () => {
   const handleCancelBlock = () => {
     setIsModalVisibleBlock(false);
   };
-
 
   const submitBlock = (event) => {
     event.preventDefault();
@@ -225,6 +223,7 @@ const AgentDetails = () => {
               />
             </div>
           </div>
+
           <div className="mb-[20px] w-[600px] flex items-center justify-between mt-9 gap-[30px]">
             <label className="text-gray-700 ml-10 font-semibold text-[18px]">
               Ratings
@@ -236,8 +235,6 @@ const AgentDetails = () => {
             >
               Show ratings and reviews
             </button>
-           
-
             <Modal
               title="Ratings"
               centered

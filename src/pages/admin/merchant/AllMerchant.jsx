@@ -233,15 +233,16 @@ const Merchant = () => {
           setIsTableLoading(true);
 
           const response = await axios.get(
-            `${BASE_URL}/merchants/admin/search?query=${search}`,
+            `${BASE_URL}/merchants/admin/search`,
             {
+              params:{query : search},
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }
           );
 
           if (response.status === 200) {
-            setOrders(response.data.data);
+            setAllMerchants(response.data.data);
           }
         }
       } catch (err) {
@@ -268,7 +269,7 @@ const Merchant = () => {
     return () => {
       clearTimeout(timeOut);
     };
-  });
+  },[search]);
 
   const csvData = [
     { label: "Merchant ID", key: "_id" },

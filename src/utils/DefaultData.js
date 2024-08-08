@@ -49,9 +49,25 @@ const orderBillCSVDatHeading = [
   { label: "Grand Total", key: "grandTotal" },
 ];
 
+const agentPayoutCSVDataHeading = [
+  { label: "Agent ID", key: "_id" },
+  { label: "Name", key: "fullName" },
+  { label: "Phone", key: "phoneNumber" },
+  { label: "Worked Date", key: "workedDate" },
+  { label: "Orders", key: "orders" },
+  { label: "Cancelled orders", key: "cancelledOrders" },
+  { label: "Total distance", key: "totalDistance" },
+  { label: "Login Hours", key: "loginHours" },
+  { label: "CIH", key: "cashInHand" },
+  { label: "Total Earnings", key: "totalEarnings" },
+  { label: "Status Approval", key: "paymentSettled" },
+];
+
+
 export {
   itemTypes,
   allCustomerCSVDataHeading,
   allOrdersCSVDataHeading,
   orderBillCSVDatHeading,
+  agentPayoutCSVDataHeading
 };
