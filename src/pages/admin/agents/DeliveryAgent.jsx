@@ -18,6 +18,7 @@ import { useToast } from "@chakra-ui/react";
 import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 import GIFLoader from "../../../components/GIFLoader";
+import { FaIndianRupeeSign } from "react-icons/fa6";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
