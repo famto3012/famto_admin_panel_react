@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Modal, Switch } from "antd";
+import { Modal, Switch, Spin } from "antd";
 import axios from "axios";
+import Select from "react-select";
 import { useToast } from "@chakra-ui/react";
+import debounce from "lodash.debounce"; // Import lodash debounce
 
 const AddProductModal = ({
   isVisible,
@@ -13,7 +15,6 @@ const AddProductModal = ({
   onAddProduct,
 }) => {
   const [productResults, setProductResults] = useState([]);
-  const [selectedProductName, setSelectedProductName] = useState(""); // State for selected product name
   const [productDiscount, setProductDiscount] = useState({
     discountName: "",
     maxAmount: "",
@@ -27,6 +28,9 @@ const AddProductModal = ({
     productId: "",
     onAddOn: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingProducts, setIsFetchingProducts] = useState(false); // Loading state for fetching products
+  const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,9 +58,9 @@ const AddProductModal = ({
         });
       }
     } catch (err) {
-      console.error(`Error in add data ${err.message}`);
+      console.error(`Error in adding data ${err.message}`);
       toast({
-        title: "Product Discount Creating Failed",
+        title: "Product Discount Creation Failed",
         description: "Error in Creating Product",
         duration: 9000,
         isClosable: true,
@@ -67,18 +71,17 @@ const AddProductModal = ({
     }
   };
 
-  const handleSearchProduct = async (e) => {
-    const query = e.target.value;
-
-    if (query.length < 2) {
-      // Only search when query length is 2 or more characters
+  const handleSearchProduct = async (inputValue) => {
+    if (inputValue.length < 2) {
+      // Only search when input value length is 2 or more characters
       setProductResults([]);
       return;
     }
 
+    setIsFetchingProducts(true); // Start fetching products
     try {
       const response = await axios.get(`${BASE_URL}/products/search`, {
-        params: { query },
+        params: { query: inputValue },
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -86,29 +89,38 @@ const AddProductModal = ({
         setProductResults(response.data.data || []); // Handle case where data might be empty
       }
     } catch (err) {
-      console.error(`Error in fetch product ${err.message}`);
+      console.error(`Error in fetching product ${err.message}`);
+    } finally {
+      setIsFetchingProducts(false); // Stop fetching products
     }
   };
 
-  const handleProductSelect = (productId, productName) => {
-    setProductDiscount({ ...productDiscount, productId });
-    setSelectedProductName(productName); // Store the selected product name
+  // Debounced search handler
+  const debouncedSearchProduct = debounce(handleSearchProduct, 300);
+
+  const handleInputChange = (inputValue) => {
+    debouncedSearchProduct(inputValue);
   };
 
   const handleToggle = (checked) => {
     setProductDiscount({ ...productDiscount, onAddOn: checked });
   };
 
-  const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const productOptions = productResults.map((product) => ({
+    label: product.productName,
+    value: product._id,
+  }));
 
-  const handleInputChange = (e) => {
-    setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
+  const handleSelectChange = (selectedOption) => {
+    setProductDiscount({
+      ...productDiscount,
+      productId: selectedOption ? selectedOption.value : "",
+    });
   };
 
-  // Debugging logs
-  console.log("Product Discount:", productDiscount);
-  console.log("Selected Product Name:", selectedProductName);
+  const handleInputChangeBasic = (e) => {
+    setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
+  };
 
   return (
     <Modal
@@ -117,9 +129,9 @@ const AddProductModal = ({
       open={isVisible}
       centered
       onCancel={handleCancel}
-      footer={null} // Custom footer to include form buttons
+      footer={null}
     >
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="flex flex-col mt-5 max-h-[30rem] overflow-auto gap-4 justify-between">
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">Assign Merchant</label>
@@ -127,9 +139,9 @@ const AddProductModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="merchantId"
               value={productDiscount.merchantId}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             >
-              <option defaultValue={"Select Merchant"} hidden>
+              <option value="" hidden>
                 Select Merchant
               </option>
               {merchant.map((data) => (
@@ -146,7 +158,7 @@ const AddProductModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="discountName"
               value={productDiscount.discountName}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             />
           </div>
 
@@ -159,7 +171,7 @@ const AddProductModal = ({
                 name="discountType"
                 value="Flat-discount"
                 checked={productDiscount.discountType === "Flat-discount"}
-                onChange={handleInputChange}
+                onChange={handleInputChangeBasic}
               />
               Fixed discount
               <input
@@ -168,7 +180,7 @@ const AddProductModal = ({
                 name="discountType"
                 value="Percentage-discount"
                 checked={productDiscount.discountType === "Percentage-discount"}
-                onChange={handleInputChange}
+                onChange={handleInputChangeBasic}
               />
               Percentage-discount
             </div>
@@ -179,7 +191,7 @@ const AddProductModal = ({
               className="border-2 border-gray-300 rounded ml-[280px] p-2 w-[357px] focus:outline-none"
               name="discountValue"
               value={productDiscount.discountValue}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             />
           </div>
           <div className="flex mt-5 gap-4">
@@ -193,38 +205,27 @@ const AddProductModal = ({
               name="description"
               maxLength={150}
               value={productDiscount.description}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             />
           </div>
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">Select Product</label>
 
-            <input
-              type="search"
-              className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
-              name="productId"
-              // value={selectedProductName} // Bind input value to selected product name
-              onChange={handleSearchProduct}
+            <Select
+              className="border-2 border-gray-300 rounded w-2/3 focus:outline-none"
+              value={
+                productOptions.find(
+                  (option) => option.value === productDiscount.productId
+                )
+              }
+              isSearchable={true}
+              onInputChange={handleInputChange}
+              onChange={handleSelectChange}
+              options={productOptions}
+              placeholder={isFetchingProducts ? "Loading products..." : "Search Product"}
+              isClearable={true}
+              isLoading={isFetchingProducts} // Loading indicator
             />
-          </div>
-          <div className="mt-2">
-            <ul className="border-gray-300 rounded-md max-h-40 overflow-y-auto">
-              {productResults.map((product) => (
-                <li
-                  key={product._id}
-                  className={`p-2 cursor-pointer text-black hover:bg-gray-100 ${
-                    productDiscount.productId === product._id
-                      ? "bg-teal-200"
-                      : ""
-                  }`}
-                  onClick={
-                    () => handleProductSelect(product._id, product.productName) // Pass product name to the handler
-                  }
-                >
-                  {product.productName}
-                </li>
-              ))}
-            </ul>
           </div>
           <div className="flex mt-2 gap-4">
             <label className="w-1/2 text-gray-500">Max Amount</label>
@@ -234,7 +235,7 @@ const AddProductModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="maxAmount"
               value={productDiscount.maxAmount}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             />
           </div>
           <div className="flex gap-4 mt-5">
@@ -244,7 +245,7 @@ const AddProductModal = ({
               name="validFrom"
               value={productDiscount.validFrom}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             />
           </div>
           <div className="flex gap-4 mt-5">
@@ -254,7 +255,7 @@ const AddProductModal = ({
               name="validTo"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               value={productDiscount.validTo}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             />
           </div>
           <div className="flex mt-5 gap-4">
@@ -263,9 +264,9 @@ const AddProductModal = ({
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               name="geofenceId"
               value={productDiscount.geofenceId}
-              onChange={handleInputChange}
+              onChange={handleInputChangeBasic}
             >
-              <option value="Select Geofence" hidden>
+              <option value="" hidden>
                 Select Geofence
               </option>
               {geofence.map((data) => (
@@ -288,7 +289,7 @@ const AddProductModal = ({
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
               onClick={handleCancel}
-              type="button" // Changed to "button" to prevent accidental form submission
+              type="button"
             >
               Cancel
             </button>

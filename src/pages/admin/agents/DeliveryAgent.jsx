@@ -323,6 +323,11 @@ const DeliveryAgent = () => {
                     <ArrowDownOutlined /> <span>CSV</span>
                   </CSVLink>
                 </button>
+              <Link to="/agent-payout">
+                <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
+                <FaIndianRupeeSign /> Agent Payout
+                </button>
+              </Link>
                 <div>
                   <button
                     className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
