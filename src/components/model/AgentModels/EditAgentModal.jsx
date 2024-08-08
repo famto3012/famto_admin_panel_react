@@ -102,7 +102,7 @@ const EditAgentModal = ({ isVisible, handleCancel }) => {
     aadharBackImage: null,
     drivingLicenseFrontImage: null,
     drivingLicenseBackImage: null,
-    agentImage: null,
+    agentImageURL: null,
   });
 
   console.log("da", addData);
@@ -148,39 +148,42 @@ const EditAgentModal = ({ isVisible, handleCancel }) => {
       console.log("addData", addData);
 
       setIsLoading(true);
-      const addagentToSend = new FormData();
-      addagentToSend.append("fullName", addData.fullName);
-      addagentToSend.append("phoneNumber", addData.phoneNumber);
-      addagentToSend.append("email", addData.email);
-      addagentToSend.append("managerId", addData.managerId);
-      addagentToSend.append("geofenceId", addData.geofenceId);
-      addagentToSend.append("salaryStructureId", addData.salaryStructureId);
-      addagentToSend.append("tag", addData.tag);
-      addagentToSend.append("accountHolderName", addData.accountHolderName);
-      addagentToSend.append("accountNumber", addData.accountNumber);
-      addagentToSend.append("IFSCCode", addData.IFSCCode);
-      addagentToSend.append("UPIId", addData.UPIId);
-      addagentToSend.append("aadharNumber", addData.aadharNumber);
-      addagentToSend.append("model", addData.model);
-      addagentToSend.append("type", addData.type);
-      addagentToSend.append("licensePlate", addData.licensePlate);
-      addagentToSend.append(
-        "drivingLicenseNumber",
-        addData.drivingLicenseNumber
-      );
-      addagentToSend.append("agentImage", agentFile);
-      addagentToSend.append("rcFrontImage", rcFrontFile);
-      addagentToSend.append("rcBackImage", rcBackFile);
-      addagentToSend.append("aadharFrontImage", aadharFrontFile);
-      addagentToSend.append("aadharBackImage", aadharBackFile);
-      addagentToSend.append("drivingLicenseFrontImage", driFrontFile);
-      addagentToSend.append("drivingLicenseBackImage", driBackFile);
-      console.log("here");
-      console.log("data for test", addagentToSend);
+      const dataToSend = new FormData();
+      Object.keys(addData).forEach((key) => {
+        if (Array.isArray(addData[key])) {
+          addData[key].forEach((item) => {
+            dataToSend.append(key, item);
+          });
+        } else {
+          dataToSend.append(key, addData[key]);
+        }
+      });
+
+      if (agentFile) {
+        dataToSend.append("agentImageURL", agentFile);
+      }
+      if (rcFrontFile) {
+        dataToSend.append("rcFrontImage", rcFrontFile);
+      }
+      if (rcBackFile) {
+        dataToSend.append("rcBackImage", rcBackFile);
+      }
+      if (aadharFrontFile) {
+        dataToSend.append("aadharFrontImage", aadharFrontFile);
+      }
+      if (aadharBackFile) {
+        dataToSend.append("aadharBackImage", aadharBackFile);
+      }
+      if (driFrontFile) {
+        dataToSend.append("drivingLicenseFrontImage", driFrontFile);
+      }
+      if (driBackFile) {
+        dataToSend.append("drivingLicenseBackImage", driBackFile);
+      }
 
       const addAgentResponse = await axios.put(
         `${BASE_URL}/admin/agents/edit-agent/${agentId}`,
-        addagentToSend,
+        dataToSend,
         {
           withCredentials: true,
           headers: {
@@ -678,9 +681,7 @@ const EditAgentModal = ({ isVisible, handleCancel }) => {
           </div>
           <h1 className="font-semibold text-[18px]">Add Profile</h1>
           <div className=" flex items-center gap-[30px]">
-            {!agentPreviewURL && (
-              <div className="bg-cyan-100 ml-5 mt-5 h-16 w-16 rounded-md" />
-            )}
+          {addData?.agentImageURL && !agentPreviewURL && (
             <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
               <img
                 src={addData?.agentImageURL}
@@ -688,6 +689,7 @@ const EditAgentModal = ({ isVisible, handleCancel }) => {
                 className="w-full rounded h-full object-cover "
               />
             </figure>
+          )}
             {agentPreviewURL && (
               <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
                 <img
@@ -702,9 +704,7 @@ const EditAgentModal = ({ isVisible, handleCancel }) => {
               name="agentImage"
               id="agentImage"
               className="hidden"
-              onChange={(e) =>
-                handleImageChange(e, setAgentFile, setAgentPreviewURL)
-              }
+              onChange={(e) => handleImageChange(e, setAgentFile, setAgentPreviewURL)}
             />
             <label htmlFor="agentImage" className="cursor-pointer ">
               <MdCameraAlt
