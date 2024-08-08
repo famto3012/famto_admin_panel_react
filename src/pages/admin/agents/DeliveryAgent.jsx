@@ -27,14 +27,15 @@ const DeliveryAgent = () => {
   const [geofence, setGeofence] = useState([]);
   const [salary, setSalary] = useState([]);
   const [manager, setManager] = useState([]);
-  const { token, role } = useContext(UserContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTableLoading, setIsTableLoading] = useState(false);
   const [status, setStatus] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [vehicleTypeFilter, setFilterVehicleType] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const { token, role } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -108,6 +109,7 @@ const DeliveryAgent = () => {
   const handleGeofenceFilter = async (selectedService) => {
     try {
       console.log(token);
+      setIsTableLoading(true);
       const serviceResponse = await axios.get(
         `${BASE_URL}/admin/agents/filter`,
         {
@@ -121,6 +123,8 @@ const DeliveryAgent = () => {
       }
     } catch (err) {
       console.log(`Error in fetching agent`, err);
+    } finally {
+      setIsTableLoading(false);
     }
   };
 
@@ -139,6 +143,7 @@ const DeliveryAgent = () => {
   const handleStatusFilter = async (selectedService) => {
     try {
       console.log(token);
+      setIsTableLoading(true);
       const serviceResponse = await axios.get(
         `${BASE_URL}/admin/agents/filter`,
         {
@@ -152,6 +157,8 @@ const DeliveryAgent = () => {
       }
     } catch (err) {
       console.log(`Error in fetching agent`, err);
+    } finally {
+      setIsTableLoading(false);
     }
   };
 
@@ -169,6 +176,7 @@ const DeliveryAgent = () => {
   const handleVehicleTypeFilter = async (selectedService) => {
     try {
       console.log(token);
+      setIsTableLoading(true);
       const serviceResponse = await axios.get(
         `${BASE_URL}/admin/agents/filter`,
         {
@@ -182,16 +190,48 @@ const DeliveryAgent = () => {
       }
     } catch (err) {
       console.log(`Error in fetching agent`, err);
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
+  // API function for search
+
+  const onSearchChange = (e) => {
+    const searchService = e.target.value;
+    setSearchFilter(searchService);
+    if (searchService !== "") {
+      handleSearchChangeFilter(searchService);
+    } else {
+      setAgent([]);
+    }
+  };
+
+  const handleSearchChangeFilter = async (searchService) => {
+    try {
+      setIsTableLoading(true);
+      console.log(token);
+      const searchResponse = await axios.get(
+        `${BASE_URL}/admin/agents/search`,
+        {
+          params: { query: searchService },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (searchResponse.status === 200) {
+        setAgent(searchResponse.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in fetching data`, err);
+    } finally {
+      setIsTableLoading(false);
     }
   };
 
   // Function for Approved Agent
 
   const handleApprove = async (id) => {
-    console.log("Agent to approve", id);
-    console.log("Token", token);
-    console.log("Base URL", BASE_URL);
-
     try {
       const response = await axios.patch(
         `${BASE_URL}/admin/agents/approve-registration/${id}`,
@@ -205,8 +245,11 @@ const DeliveryAgent = () => {
       );
 
       if (response.status === 200) {
-        console.log(response.data.message); // Log the success message from the server
-        navigate(0); // Reload the page or component
+        setAgent((prevAgents) =>
+          prevAgents.map((agent) =>
+            agent._id === id ? { ...agent, isApproved: "Approved" } : agent
+          )
+        );
         toast({
           title: "Agent Approved",
           description: "Agent approved successfully.",
@@ -229,15 +272,12 @@ const DeliveryAgent = () => {
     }
   };
 
-  // Function for Rejected Agent
+  // Function for Reject Agent
 
   const handleReject = async (id) => {
-    console.log("rejectID", id);
-    console.log("url", BASE_URL);
     try {
       const response = await axios.delete(
         `${BASE_URL}/admin/agents/reject-registration/${id}`,
-
         {
           withCredentials: true,
           headers: {
@@ -247,7 +287,9 @@ const DeliveryAgent = () => {
       );
 
       if (response.status === 200) {
-        console.log(response.data.message);
+        setAgent((prevAgents) =>
+          prevAgents.filter((agent) => agent._id !== id)
+        );
         toast({
           title: "Agent Rejected",
           description: "Agent Rejected successfully.",
@@ -265,16 +307,52 @@ const DeliveryAgent = () => {
         duration: 9000,
         isClosable: true,
       });
-    } finally {
     }
   };
 
-  const handleToggle = (id) => {
-    setAgent((prevAgent) =>
-      prevAgent.map((agent) =>
-        agent._id === id ? { ...agent, status: !agent.status } : agent
-      )
-    );
+  // Function for Status Change
+
+  const handleToggle = async (agentId) => {
+    try {
+      const agentResponse = agent.find(
+        (agentResponse) => agentResponse._id === agentId
+      );
+      if (agentResponse) {
+        const updatedStatus = !agentResponse.status;
+        await axios.patch(
+          `${BASE_URL}/admin/agents/change-status/${agentId}`,
+          {
+            ...agentResponse,
+            status: updatedStatus,
+          },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setAgent(
+          agent.map((a) =>
+            a._id === agentId ? { ...a, status: updatedStatus } : a
+          )
+        );
+        toast({
+          title: "Status",
+          description: "Staus Updated successfully.",
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in toggling status: ${err}`);
+      toast({
+        title: "Error",
+        description: "There was an error occured.",
+        status: "error",
+        duration: 900,
+        isClosable: true,
+      });
+    }
   };
 
   // Function for Modal
@@ -285,6 +363,10 @@ const DeliveryAgent = () => {
 
   const handleCancel = () => {
     setAddModalVisible(false);
+  };
+
+  const handleAddAgent = (newAgent) => {
+    setAgent((prevAgents) => [...prevAgents, newAgent]);
   };
 
   // CSV
@@ -324,14 +406,14 @@ const DeliveryAgent = () => {
                     <ArrowDownOutlined /> <span>CSV</span>
                   </CSVLink>
                 </button>
-              <Link to="/agent-payout">
-                <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
-                <FaIndianRupeeSign /> Agent Payout
-                </button>
-              </Link>
+                <Link to="/agent-payout">
+                  <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
+                    <FaIndianRupeeSign /> Agent Payout
+                  </button>
+                </Link>
                 <div>
                   <button
-                    className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
+                    className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
                     onClick={showAddModal}
                   >
                     <PlusOutlined /> <span>Add Agent</span>
@@ -344,6 +426,7 @@ const DeliveryAgent = () => {
                     geofence={geofence}
                     salary={salary}
                     manager={manager}
+                    onAddAgent={handleAddAgent}
                   />
                 </div>
               </div>
@@ -353,22 +436,26 @@ const DeliveryAgent = () => {
               <div className="flex items-center justify-evenly gap-3 bg-white  rounded-lg p-6">
                 <select
                   id="status"
-                  className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-4"
+                  className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:outline-none outline-none block w-full p-2.5 px-4"
                   value={statusFilter}
                   onChange={onStatusChange}
                 >
-                  <option>Status</option>
-                  <option value="open">true</option>
-                  <option value="closed">false</option>
+                  <option hidden value="">
+                    Status
+                  </option>
+                  <option value="open">True</option>
+                  <option value="closed">False</option>
                 </select>
 
                 <select
                   id="vehicleType"
-                  className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                  className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:outline-none outline-none block p-2.5"
                   value={vehicleTypeFilter}
                   onChange={onVehicleTypeChange}
                 >
-                  <option>Vehicle Type</option>
+                  <option hidden value="">
+                    Vehicle Type
+                  </option>
                   <option value="Scooter">Scooter</option>
                   <option value="Bike">Bike</option>
                 </select>
@@ -397,17 +484,19 @@ const DeliveryAgent = () => {
                 <input
                   type="search"
                   name="search"
-                  placeholder="Search Agent ID"
+                  placeholder="Search Agent Name"
                   className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
+                  value={searchFilter}
+                  onChange={onSearchChange}
                 />
-                <button type="submit" className="absolute right-16 mt-2">
+                <button type="submit" className="absolute right-8 mt-1">
                   <SearchOutlined className="text-xl text-gray-600" />
                 </button>
               </div>
             </div>
 
             <div className="overflow-auto mt-[20px] w-full">
-            <table className="text-start w-full mb-24">
+              <table className="text-start w-full mb-24">
                 <thead>
                   <tr className="">
                     {[
@@ -422,7 +511,7 @@ const DeliveryAgent = () => {
                     ].map((header) => (
                       <th
                         key={header}
-                        className="bg-teal-700 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
+                        className="bg-teal-800 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
                       >
                         {header}
                       </th>
