@@ -12,6 +12,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 
 import { itemTypes } from "../../utils/DefaultData";
 import ShowBill from "./ShowBill";
+import NewAddressTwo from "./NewAddressTwo";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -584,7 +585,7 @@ const PickAndDrop = ({ data }) => {
               </button>
             </div>
             {isNewDeliveryAddressVisible && (
-              <NewAddress onAddCustomerAddress={handleDeliveryAddress} />
+              <NewAddressTwo onAddCustomerAddress={handleDeliveryAddress} />
             )}
           </div>
 

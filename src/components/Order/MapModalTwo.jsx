@@ -588,7 +588,7 @@ const PlaceSearchPlugin = ({ map }) => {
   return null;
 };
 
-const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
+const MapModalTwo = ({ isVisible, onClose, setCoordinates, authToken }) => {
   const { map, setMap } = useMap(); // Use the context
   const markerRef = useRef(null);
   const mapContainerRef = useRef(null);
@@ -718,10 +718,10 @@ const initializeMap = () => {
       width="50%"
       centered
     >
-      <div id="map" className="h-[500px] relative" ref={mapContainerRef}>
+      <div id="map1" className="h-[500px] relative" ref={mapContainerRef}>
         <input
           type="text"
-          id="auto"
+          id="auto1"
           name="auto"
           className="mt-2 ms-2 w-[300px] absolute top-0 left-0 text-[15px] p-[10px] outline-none focus:outline-none"
           placeholder="Search places"
@@ -738,4 +738,4 @@ const initializeMap = () => {
   );
 };
 
-export default MapModal;
+export default MapModalTwo;

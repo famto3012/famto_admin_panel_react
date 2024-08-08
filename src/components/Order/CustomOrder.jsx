@@ -14,6 +14,8 @@ import {
   uploadFileToFirebase,
 } from "../../utils/fileOperation";
 import ShowBill from "./ShowBill";
+import MapModalTwo from "./MapModalTwo";
+import NewAddressTwo from "./NewAddressTwo";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -504,7 +506,7 @@ const CustomOrder = ({ data }) => {
               </button>
             </div>
 
-            {isFormVisible && <NewAddress />}
+            {isFormVisible && <NewAddressTwo />}
           </div>
 
           <div className="flex items-center">
