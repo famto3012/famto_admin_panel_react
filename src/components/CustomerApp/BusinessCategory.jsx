@@ -96,10 +96,7 @@ const BusinessCategory = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  // API to Add Business Category...
-  const handleBusinessEdit = async (e) => {
-    e.preventDefault();
-    try {
+
       toast({
         title: "Status updated",
         description: "Business status updated successfully.",
