@@ -5,10 +5,11 @@ import { useToast } from "@chakra-ui/react";
 
 const EditMerchant = ({
   isVisible,
-  toggleModal,
-  merchantId,
+  onCancel,
   BASE_URL,
   token,
+  data,
+  merchantId,
 }) => {
   const [merchantData, setMerchantData] = useState({
     fullName: "",
@@ -35,42 +36,16 @@ const EditMerchant = ({
   };
 
   useEffect(() => {
-    const getMerchantData = async () => {
-      try {
-        if (!merchantId) {
-          return;
-        }
+    setMerchantData(data);
+  }, [data, merchantId]);
 
-        const response = await axios.get(
-          `${BASE_URL}/merchants/admin${merchantId}`
-        );
-
-        if (response.status === 200) {
-          setMerchantData(response.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in getting merchant data: ${err}`);
-        toast({
-          title: "Error",
-          description: `Error in getting merchant data`,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      } finally {
-      }
-    };
-
-    getMerchantData();
-  }, [merchantId]);
-
-  const editHandler = async (e) => {
+  const handleEditMerchant = async (e) => {
     e.preventDefault();
     try {
       setIsEditLoading(true);
 
       const response = await axios.put(
-        `${BASE_URL}/admin/edit-merchant/${merchantId}`,
+        `${BASE_URL}/merchants/admin/edit-merchant/${merchantId}`,
         merchantData,
         {
           withCredentials: true,
@@ -79,6 +54,7 @@ const EditMerchant = ({
       );
 
       if (response.status === 200) {
+        onCancel();
         toast({
           title: "Success",
           description: `Merchant saved successfully`,
@@ -89,13 +65,18 @@ const EditMerchant = ({
       }
     } catch (err) {
       console.log(`Error in saving merchant: ${err}`);
-      toast({
-        title: "Error",
-        description: `Error in saving merchant data`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+
+      if (err.response && err.response.data && err.response.data.errors) {
+        const { errors } = err.response.data;
+
+        setErrors({
+          fullName: errors.fullName || "",
+          email: errors.email || "",
+          phoneNumber: errors.phoneNumber || "",
+          password: errors.password || "",
+          confirmPassword: errors.confirmPassword || "",
+        });
+      }
     } finally {
       setIsEditLoading(false);
     }
@@ -106,10 +87,11 @@ const EditMerchant = ({
       <Modal
         title="Edit Merchant"
         open={isVisible}
-        onCancel={toggleModal}
+        onCancel={onCancel}
         footer={null}
+        centered
       >
-        <form onSubmit={editHandler}>
+        <form onSubmit={handleEditMerchant}>
           <div className="flex flex-col gap-4 mt-6">
             {[
               { label: "Full Name", name: "fullName", type: "text" },
@@ -144,14 +126,13 @@ const EditMerchant = ({
               <button
                 className="bg-cyan-50 py-2 px-4 rounded-md"
                 type="button"
-                onClick={toggleModal}
+                onClick={onCancel}
               >
                 Cancel
               </button>
               <button
                 className="bg-teal-800 text-white py-2 px-4 rounded-md"
                 type="submit"
-                disabled={isEditLoading}
               >
                 {isEditLoading ? "Saving..." : "Save"}
               </button>
