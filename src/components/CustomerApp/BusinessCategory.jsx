@@ -119,6 +119,7 @@ const BusinessCategory = () => {
 
   const handleBusinessEdit = async (e) => {
     e.preventDefault();
+    try {
       toast({
         title: "Status updated",
         description: "Business status updated successfully.",

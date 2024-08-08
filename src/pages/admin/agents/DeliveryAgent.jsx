@@ -17,6 +17,8 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
+import { FaIndianRupeeSign } from "react-icons/fa6";
+import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const DeliveryAgent = () => {
   const [agent, setAgent] = useState([]);
@@ -33,6 +35,61 @@ const DeliveryAgent = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [addModalVisible, setAddModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (!token || role !== "Admin") {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchAgent = async () => {
+      try {
+        setIsLoading(true);
+
+        const [
+          agentResponse,
+          geofenceResponse,
+          salaryResponse,
+          managerResponse,
+        ] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/agents/all-agents`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BASE_URL}/admin/managers`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        if (salaryResponse.status === 200) {
+          setSalary(salaryResponse.data.data);
+        }
+        if (managerResponse.status === 200) {
+          setManager(managerResponse.data.data);
+        }
+        if (agentResponse.status === 200) {
+          setAgent(agentResponse.data.data);
+        }
+        if (geofenceResponse.status === 200) {
+          setGeofence(geofenceResponse.data.geofences);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAgent();
+  }, [token, role, navigate]);
 
   const handleToggle = (id) => {
     setAgent((prevAgent) =>
@@ -124,61 +181,6 @@ const DeliveryAgent = () => {
     } finally {
     }
   };
-
-  useEffect(() => {
-    if (!token || role !== "Admin") {
-      navigate("/auth/login");
-      return;
-    }
-
-    const fetchAgent = async () => {
-      try {
-        setIsLoading(true);
-
-        const [
-          agentResponse,
-          geofenceResponse,
-          salaryResponse,
-          managerResponse,
-        ] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/agents/all-agents`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/managers`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        if (salaryResponse.status === 200) {
-          setSalary(salaryResponse.data.data);
-        }
-        if (managerResponse.status === 200) {
-          setManager(managerResponse.data.data);
-        }
-        if (agentResponse.status === 200) {
-          setAgent(agentResponse.data.data);
-        }
-        if (geofenceResponse.status === 200) {
-          setGeofence(geofenceResponse.data.geofences);
-        }
-      } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAgent();
-  }, [token, role, navigate]);
 
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
@@ -281,6 +283,10 @@ const DeliveryAgent = () => {
   ];
 
   return (
+    <div>
+      {isLoading ? (
+        <GIFLoader />
+      ) : (
     <>
       <Sidebar />
       <main className="pl-[300px] bg-gray-100 ">
@@ -300,9 +306,14 @@ const DeliveryAgent = () => {
                 <ArrowDownOutlined /> <span>CSV</span>
               </CSVLink>
             </button>
+            <Link to="/agent-payout">
+            <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
+            <FaIndianRupeeSign /> Agent Payout
+            </button>
+            </Link>
             <div>
               <button
-                className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
+                className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
                 onClick={showAddModal}
               >
                 <PlusOutlined /> <span>Add Agent</span>
@@ -450,6 +461,8 @@ const DeliveryAgent = () => {
         </div>
       </main>
     </>
+    )}
+    </div>
   );
 };
 
