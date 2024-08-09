@@ -35,9 +35,6 @@ const HomeDelivery = ({ data }) => {
   const [isMerchantLoading, setIsMerchantLoading] = useState(false);
   const [isProductLoading, setIsProductLoading] = useState(false);
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
-  const [isOrderLoading, setIsOrderLoading] = useState(false);
-
-  const [paymentMode, setPaymentMode] = useState("");
 
   const { token } = useContext(UserContext);
   const toast = useToast();

@@ -128,7 +128,7 @@ const SponsorshipDetail = ({
         contact: phoneNumber,
       },
       theme: {
-        color: "#008080",
+        color: "#00CED1",
       },
     };
 
