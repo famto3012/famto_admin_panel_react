@@ -16,7 +16,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isTableLoading,setIsTableLoading] = useState(false)
+  const [isTableLoading, setIsTableLoading] = useState(false);
   const [allGeofence, setAllGeofence] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
@@ -32,13 +32,8 @@ const Customers = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const customerEndPoint =
-          role === "Admin"
-            ? `${BASE_URL}/admin/customers/get-all`
-            : `${BASE_URL}/admin/customers/customer-of-merchant`;
-
         const [customersResponse, geofenceResponse] = await Promise.all([
-          axios.get(customerEndPoint, {
+          axios.get(`${BASE_URL}/admin/customers/get-all`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -171,47 +166,46 @@ const Customers = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {isTableLoading && (
-                  <tr>
-                    <td colSpan={7} className="text-center h-20">
-                      Loading Data...
-                    </td>
-                  </tr>
-                )}
-                 {!isTableLoading && customers?.length === 0 && (
-                <tr>
-                  <td colSpan={7}>
-                    <p className="flex items-center justify-center h-20">No data available</p>
-                  </td>
-                </tr>
-              )}
-                  {!isTableLoading && customers.map((customer) => (
-                    <tr
-                      key={customer._id}
-                      className="align-middle border-b border-gray-300 text-center"
-                    >
-                      <td className="p-4">
-                        <Link
-                          to={`/customer-detail/${customer._id}`}
-                          className={`${
-                            role === "Admin"
-                              ? "underline underline-offset-4 cursor-pointer"
-                              : "cursor-auto"
-                          }`}
-                        >
-                          {customer._id}
-                        </Link>
-                      </td>
-                      <td>{customer.fullName}</td>
-                      <td>{customer.email}</td>
-                      <td>{customer.phoneNumber}</td>
-                      <td>{customer.lastPlatformUsed}</td>
-                      <td>{customer.registrationDate}</td>
-                      <td>
-                        <StarRating rating={customer.rating} />
+                  {isTableLoading && (
+                    <tr>
+                      <td colSpan={7} className="text-center h-20">
+                        Loading Data...
                       </td>
                     </tr>
-                  ))}
+                  )}
+                  {!isTableLoading && customers?.length === 0 && (
+                    <tr>
+                      <td colSpan={7}>
+                        <p className="flex items-center justify-center h-20">
+                          No data available
+                        </p>
+                      </td>
+                    </tr>
+                  )}
+                  {!isTableLoading &&
+                    customers.map((customer) => (
+                      <tr
+                        key={customer._id}
+                        className="align-middle border-b border-gray-300 text-center"
+                      >
+                        <td className="p-4">
+                          <Link
+                            to={`/customer-detail/${customer._id}`}
+                            className="underline underline-offset-4"
+                          >
+                            {customer._id}
+                          </Link>
+                        </td>
+                        <td>{customer.fullName}</td>
+                        <td>{customer.email}</td>
+                        <td>{customer.phoneNumber}</td>
+                        <td>{customer.lastPlatformUsed}</td>
+                        <td>{customer.registrationDate}</td>
+                        <td>
+                          <StarRating rating={customer.rating} />
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

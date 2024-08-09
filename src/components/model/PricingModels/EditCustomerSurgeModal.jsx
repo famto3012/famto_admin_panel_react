@@ -14,7 +14,7 @@ const EditCustomerSurgeModal = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading,setConfirmLoading] = useState(false)
   const [customerSurge, setCustomerSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -30,7 +30,7 @@ const EditCustomerSurgeModal = ({
     }
 
     const fetchData = async () => {
-      setIsLoading(true);
+  
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/customer-surge/${currentEditCs}`, {
@@ -40,14 +40,18 @@ const EditCustomerSurgeModal = ({
         ]);
         if (addResponse.status === 200) {
           console.log("data in response is", addResponse.data.data);
-          setCustomerSurge(addResponse.data.data);
+          const customGeofenceId = addResponse.data.data.geofenceId._id;
+          const updatedData = {
+            ...addResponse.data.data,
+            geofenceId: customGeofenceId,
+          };
+
+          setCustomerSurge(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
+      } 
     };
 
     if (currentEditCs) {
@@ -61,6 +65,7 @@ const EditCustomerSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
+    setConfirmLoading(true);
       console.log("customerSurge", customerSurge);
       const editResponse = await axios.put(
         `${BASE_URL}/admin/customer-surge/edit-customer-surge/${currentEditCs}`,
@@ -93,6 +98,8 @@ const EditCustomerSurgeModal = ({
         isClosable: true,
       });
       console.log(`Error in fetching data:${err}`);
+    } finally {
+    setConfirmLoading(false);
     }
     console.log(customerSurge);
   };
@@ -182,7 +189,7 @@ const EditCustomerSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              value={customerSurge.geofenceId._id}
+              value={customerSurge.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >
@@ -209,7 +216,7 @@ const EditCustomerSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+            {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

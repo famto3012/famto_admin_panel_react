@@ -11,6 +11,7 @@ const AddMerchantSurgeModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
+  const [confirmLoading,setConfirmLoading]= useState(false)
   const [merchantsurge, setMerchantSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -27,6 +28,7 @@ const AddMerchantSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true)
       console.log("merchantsurge", merchantsurge);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/merchant-surge/add-merchant-surge`,
@@ -59,6 +61,8 @@ const AddMerchantSurgeModal = ({
         duration: 1000,
         isClosable: true,
       });
+    } finally {
+      setConfirmLoading(false)
     }
     console.log(merchantsurge);
   };
@@ -175,7 +179,7 @@ const AddMerchantSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+           {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

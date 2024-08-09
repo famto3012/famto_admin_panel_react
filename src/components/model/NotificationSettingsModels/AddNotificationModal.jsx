@@ -36,7 +36,7 @@ const AddNotificationModal = ({ isVisible, handleCancel, token, BASE_URL, onAddN
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
-      );
+      )
       if (addResponse === 201) {
         handleCancel();
         onAddNotification(addResponse.data.data);

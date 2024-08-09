@@ -144,7 +144,7 @@ const SubscriptionComponent = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (addResponse.status === 201) {
+      if (addResponse.status === 200) {
         console.log(addResponse.data.message);
       }
     } catch (err) {

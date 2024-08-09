@@ -7,19 +7,89 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const Settings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { token, role } = useContext(UserContext);
-  const navigate = useNavigate();
-  const toast = useToast();
-
+  const [settingsData, setSettingsData] = useState({
+    id: "",
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+  });
   const [addData, setAddData] = useState({
     currentPassword: "",
     newPassword: "",
   });
+  const { token, role } = useContext(UserContext);
+  const navigate = useNavigate();
+  const toast = useToast();
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const settingResponse = await axios.get(`${BASE_URL}/settings`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (settingResponse.status === 200) {
+          setSettingsData(settingResponse.data.data);
+          console.log(settingResponse.data.data);
+        }
+      } catch (err) {
+        console.error(`Error in fetching data: ${err}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [token, role, navigate]);
+
+  //  function for settings data
+  const inputChange = (e) => {
+    setSettingsData({ ...settingsData, [e.target.name]: e.target.value });
+  };
+  const formSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("settingsData", settingsData);
+      const updateResponse = await axios.put(
+        `${BASE_URL}/settings/update-settings`,
+        settingsData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (updateResponse.status === 200) {
+        console.log("update data", updateResponse.data.message);
+        toast({
+          title: "Updated",
+          description: "Updated successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.error(`Error in fetching data: ${err}`);
+    }
+    console.log(settingsData);
+  };
+
+  // Modal Function
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -62,73 +132,6 @@ const Settings = () => {
 
     console.log(addData);
     handleModalClose(); // Close the modal after submitting the form
-  };
-
-  const [settingsData, setSettingsData] = useState({
-    id: "",
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-  });
-  useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-      return;
-    }
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const settingResponse = await axios.get(`${BASE_URL}/settings`, {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (settingResponse.status === 200) {
-          setSettingsData(settingResponse.data.data);
-          console.log(settingResponse.data.data);
-        }
-      } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [token, role, navigate]);
-
-  const inputChange = (e) => {
-    setSettingsData({ ...settingsData, [e.target.name]: e.target.value });
-  };
-  const formSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      console.log("settingsData", settingsData);
-      const updateResponse = await axios.put(
-        `${BASE_URL}/settings/update-settings`,
-        settingsData,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (updateResponse.status === 200) {
-        console.log("update data", updateResponse.data.message);
-        toast({
-          title: "Updated",
-          description: "Updated successfully.",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
-    }
-    console.log(settingsData);
   };
 
   return (
