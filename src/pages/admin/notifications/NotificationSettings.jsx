@@ -12,6 +12,7 @@ import axios from "axios";
 import EditNotificatioModal from "../../../components/model/NotificationSettingsModels/EditNotificatioModal";
 import DeleteNotificationModal from "../../../components/model/NotificationSettingsModels/DeleteNotificationModal";
 import GIFLoader from "../../../components/GIFLoader";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -24,6 +25,7 @@ const NotificationSettings = () => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentDelete, setCurrentDelete] = useState(null);
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
 
   const navigate = useNavigate();
 
@@ -57,21 +59,21 @@ const NotificationSettings = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  const onAddNotification = (newNotification) =>{
-    setNotification((prevNotification)=>{
+  const onAddNotification = (newNotification) => {
+    setNotification((prevNotification) => {
       if (Array.isArray(prevNotification)) {
-        return[...prevNotification, newNotification]
-      }else{
-        return[newNotification]
+        return [...prevNotification, newNotification];
+      } else {
+        return [newNotification];
       }
-    })
-  }
+    });
+  };
   // Modal Function for Add Notification
 
   const showModal = () => {
     setIsModalVisible(true);
   };
- 
+
   // Modal Function for Edit Notification
 
   const showModalEdit = (notificationId) => {
@@ -121,10 +123,25 @@ const NotificationSettings = () => {
             n._id === notificationId ? { ...n, status: updatedStatus } : n
           )
         );
+        toast({
+          title: "Success",
+          description: `Notification status has been ${
+            updatedStatus ? "enabled" : "disabled"
+          }.`,
+          status: "success",
+          duration: 900,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.log(`Error in toggling status: ${err}`);
     }
+  };
+
+  const onEditNewData = (newData) => {
+    setNotification((prevData) =>
+      prevData.map((data) => (data._id === newData._id ? newData : data))
+    );
   };
 
   const handleCancel = () => {
@@ -232,6 +249,7 @@ const NotificationSettings = () => {
                             isVisible={isModalVisibleEdit}
                             handleCancel={handleCancel}
                             token={token}
+                            onEditNewData={onEditNewData}
                             currentEdit={currentEdit}
                             BASE_URL={BASE_URL}
                           />

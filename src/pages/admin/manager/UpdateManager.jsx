@@ -34,6 +34,7 @@ const UpdateManager = () => {
 
   const [geofence, setGeofence] = useState([]);
   const [merchants, setMerchants] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();

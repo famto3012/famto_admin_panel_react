@@ -88,44 +88,7 @@ const Adbanner = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  //view Modals
-
-  const showModal = () => {
-    setAddModalVisible(true);
-  };
-
-  const showModalEdit = (bannerId) => {
-    setCurrentEditBanner(bannerId);
-    setEditModalVisible(true);
-  };
-
-  const showModalIndividual = () => {
-    setIsModalVisibleIndividual(true);
-  };
-
-  const showModalIndividualEdit = (bannerEditId) => {
-    setCurrentIndBanner(bannerEditId);
-    setIsModalVisibleIndividualEdit(true);
-  };
-
-  const showModalDelete = (bannerId) => {
-    setCurrentBanner(bannerId);
-    setIsShowModalDelete(true);
-  };
-
-  const showModalDeleteIndividual = (currentIndBannerId) => {
-    setCurrentIndBanner(currentIndBannerId);
-    setShowModalDeleteIndividual(true);
-  };
-
-  const handleCancel = () => {
-    setAddModalVisible(false);
-    setEditModalVisible(false);
-    setIsModalVisibleIndividual(false);
-    setIsModalVisibleIndividualEdit(false);
-    setShowModalDeleteIndividual(false);
-  };
-
+ 
   // To display recently added Banner
   const handleAddBanner = (newBanner) => {
     setBanner((prevBanners) => {
@@ -137,14 +100,14 @@ const Adbanner = () => {
     });
   };
 
-  const handleEditNewBanner = (newBanner) => {
-    setBanner((prevBanner) => 
-      prevBanner.map((banner) => 
-        banner?._id === newBanner?._id ? newBanner : banner
+  const handleEditNewBanner = (updatedBanner) => {
+    setBanner((prevBanners) => 
+      prevBanners.map((banner) => 
+        banner?._id === updatedBanner?._id ? updatedBanner : banner
       )
     );
-  }
-
+  };
+  
   const handleAddIndBanner = (newBanner) => {
     setIndividualBanner((indBanner) => {
       // Ensure Individual Banner is an array before adding the new promo code
@@ -155,6 +118,14 @@ const Adbanner = () => {
       }
     });
   };
+
+  const onEditIndBanner = (updatedIndBanner) => {
+    setIndividualBanner((prevIndBanners) => 
+      prevIndBanners.map((indBanner) => 
+        indBanner?._id === updatedIndBanner?._id ? updatedIndBanner : indBanner
+      )
+    );
+  }
 
   // New function to remove a Banner from the banner state
   const removeBanner = (bannerId) => {
@@ -293,16 +264,7 @@ const Adbanner = () => {
     }
   };
 
-  const onEditIndBanner = (newBanner) => {
-    setIndividualBanner((indBanner) => {
-      // Ensure Individual Banner is an array before adding the new promo code
-      if (Array.isArray(indBanner)) {
-        return [...indBanner, newBanner];
-      } else {
-        return [newBanner];
-      }
-    });
-  };
+
 
   const handleIndToggle = async (IndBannerId) => {
     try {
@@ -351,6 +313,44 @@ const Adbanner = () => {
         isClosable: true,
       });
     }
+  };
+
+   //view Modals
+
+   const showModal = () => {
+    setAddModalVisible(true);
+  };
+
+  const showModalEdit = (bannerId) => {
+    setCurrentEditBanner(bannerId);
+    setEditModalVisible(true);
+  };
+
+  const showModalIndividual = () => {
+    setIsModalVisibleIndividual(true);
+  };
+
+  const showModalIndividualEdit = (bannerEditId) => {
+    setCurrentIndBanner(bannerEditId);
+    setIsModalVisibleIndividualEdit(true);
+  };
+
+  const showModalDelete = (bannerId) => {
+    setCurrentBanner(bannerId);
+    setIsShowModalDelete(true);
+  };
+
+  const showModalDeleteIndividual = (currentIndBannerId) => {
+    setCurrentIndBanner(currentIndBannerId);
+    setShowModalDeleteIndividual(true);
+  };
+
+  const handleCancel = () => {
+    setAddModalVisible(false);
+    setEditModalVisible(false);
+    setIsModalVisibleIndividual(false);
+    setIsModalVisibleIndividualEdit(false);
+    setShowModalDeleteIndividual(false);
   };
 
   // console.log("banenr details",individualBanner);

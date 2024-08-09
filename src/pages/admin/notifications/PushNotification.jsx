@@ -11,7 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import GIFLoader from "../../../components/GIFLoader";
+import { useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const PushNotification = () => {
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
@@ -20,11 +22,13 @@ const PushNotification = () => {
   const [type, setType] = useState("");
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [data, setData] = useState([]);
   const [geofence, setGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -96,8 +100,7 @@ const PushNotification = () => {
     e.preventDefault();
     try {
       console.log("formData", formData);
-
-      setIsLoading(true);
+      setIsDataLoading(true);
       const addpushToSend = new FormData();
       addpushToSend.append("title", formData.title);
       addpushToSend.append("description", formData.description);
@@ -122,12 +125,20 @@ const PushNotification = () => {
       );
 
       if (addPushResponse.status === 201) {
+        onAddNotification(addPushResponse.data.data);
+        toast({
+          title:"Notification Added",
+          description:"Notification Added Successfully.",
+          duration:900,
+          isClosable:true,
+          status:"success"
+        })
         console.log("MESSAGE:", addPushResponse.data);
       }
     } catch (err) {
       console.error(`Error in fetch datas : ${err.message}`);
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
 
     console.log(formData);
@@ -169,6 +180,13 @@ const PushNotification = () => {
       if (deleteResponse.status === 200) {
         removeBanner(currentData);
         handleConfirmDelete();
+        toast({
+          title:"Notification Deleted",
+          description:"Notification Deleted Successfully.",
+          status:"success",
+          duration:900,
+          isClosable:true
+        })
       }
     } catch (err) {
       console.error("Error in deleting banner:", err);
@@ -190,6 +208,13 @@ const PushNotification = () => {
         }
       );
       if (sendResponse.status === 200) {
+        toast({
+          title:"Notification Send",
+          description:"Push notification send successfully.",
+          duration:900,
+          isClosable:true,
+          status:"success"
+        })
         console.log("notification send", sendResponse.data.data);
       }
     } catch (err) {
@@ -258,6 +283,17 @@ const PushNotification = () => {
       console.log(`Error in fetching notification`, err);
     }
   };
+ 
+  const onAddNotification = (newNotification) => {
+    setData((prevNotification) => {
+      if (Array.isArray(prevNotification)) {
+        return [...prevNotification, newNotification];
+      } else {
+        return [newNotification];
+      }
+    })
+  }
+
   return (
     <div>
       {isLoading ? (
@@ -416,21 +452,138 @@ const PushNotification = () => {
                 </button>
               </div>
             </div>
-            <table className="w-full mt-10 mb-24">
-              <thead>
-                <tr>
-                  {[
-                    "Type of User",
-                    "Description",
-                    "Image",
-                    "Customer App",
-                    "Driver App",
-                    "Merchant App",
-                    "Action",
-                  ].map((header) => (
-                    <th
-                      key={header}
-                      className="bg-teal-800 text-white h-[70px] text-center w-screen"
+            <div className="flex">
+              <label className="mt-10 ml-10">Customer App</label>
+              <Switch
+                className="mt-11 ml-44"
+                onChange={(checked) => onChange("customer", checked)}
+                name="agent"
+              />
+            </div>
+            <div className="flex">
+              <label className="mt-10 ml-10">Merchant App</label>
+              <Switch
+                className="mt-11 ml-[175px]"
+                onChange={(checked) => onChange("merchant", checked)}
+                name="merchant"
+              />
+            </div>
+            <div className="flex">
+              <label className="mt-10 ml-10">Driver App</label>
+              <Switch
+                className="mt-11 ml-[200px]"
+                onChange={(checked) => onChange("driver", checked)}
+                name="driver"
+              />
+            </div>
+            <div className="flex justify-end  mb-10 gap-4">
+              <button
+                className="bg-gray-200 rounded-lg px-8 py-2 right-10 mb-5 mr-5 font-semibold justify-end"
+                type="submit"
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 mr-10 text-white font-semibold justify-end"
+                type="submit"
+              >
+                {isDataLoading ? "Adding..." : "Save"}
+              </button>
+            </div>
+          </form>
+        </div>
+        <p className="font-bold ml-5">Push Notification log</p>
+        <div className="bg-white mx-5 rounded-lg mt-5 flex p-8 justify-between">
+          <select
+            name="type"
+            value={type}
+            onChange={onTypeChange}
+            className="bg-blue-50 rounded-lg p-3 outline-none focus:outline-none"
+          >
+            <option hidden value="">
+              Type of user
+            </option>
+            <option value="customer">Customer</option>
+            <option value="merchant">Merchant</option>
+            <option value="driver">Driver</option>
+          </select>
+          <div>
+            <FilterAltOutlined className="text-gray-500" />
+            <input
+              type="search"
+              name="search"
+              placeholder="search push notification name"
+              className="bg-gray-100 h-10 px-5 pr-10 rounded-full ml-5 w-72 text-sm focus:outline-none"
+              value={searchFilter}
+              onChange={onSearchChange}
+            />
+            <button type="submit" className="absolute right-16 mt-2">
+              <SearchOutlined className="text-xl text-gray-600" />
+            </button>
+          </div>
+        </div>
+        <table className="w-full mt-10 mb-24">
+          <thead>
+            <tr>
+              {[
+                "Type of User",
+                "Description",
+                "Image",
+                "Customer App",
+                "Driver App",
+                "Merchant App",
+                "Action",
+              ].map((header) => (
+                <th
+                  key={header}
+                  className="bg-teal-800 text-white h-[70px] text-center w-screen"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((data) => (
+              <tr key={data._id} className="text-center bg-white h-20">
+                <td>
+                  {data.customer && data.driver && data.merchant ? "All" : type}
+                </td>
+                <td>{data.description}</td>
+                <td className=" flex items-center justify-center p-3">
+                  <figure className="h-[70px] w-[100px]">
+                    <img
+                      src={data.imageUrl}
+                      className="w-full h-full object-contain"
+                    />
+                  </figure>
+                </td>
+                <td>
+                  <Switch checked={data.customer} />
+                </td>
+                <td>
+                  <Switch checked={data.driver} />
+                </td>
+                <td>
+                  <Switch checked={data.merchant} />
+                </td>
+
+                <td>
+                  <div className="flex items-center justify-center gap-3">
+                    <button onClick={() => sendNotification(data._id)}>
+                      <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
+                    </button>
+                    <button
+                      className="outline-none focus:outline-none"
+                      onClick={() => showModalDelete(data._id)}
+                    >
+                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                    </button>
+                    <Modal
+                      onCancel={handleCancel}
+                      footer={null}
+                      open={isShowModalDelete}
+                      centered
                     >
                       {header}
                     </th>
