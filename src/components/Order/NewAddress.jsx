@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import MapModal from "./MapModal";
 import axios from "axios";
 
-
-const NewAddress = ({ onAddCustomerAddress, token }) => {
+const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const [addressData, setAddressData] = useState({
     type: "",
     latitude: null,
@@ -18,11 +17,12 @@ const NewAddress = ({ onAddCustomerAddress, token }) => {
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [authToken, setAuthToken] = useState("");
-  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
   useEffect(() => {
     const getAuthToken = async () => {
       try {
+        console.log(BASE_URL);
+        console.log(token);
         const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
           withCredentials: true,
           headers: {
@@ -32,6 +32,7 @@ const NewAddress = ({ onAddCustomerAddress, token }) => {
 
         if (response.status === 200) {
           setAuthToken(response.data.data);
+          console.log(`AUTH TOKEN: ${response.data.data}`);
         }
       } catch (err) {
         console.log(`Error in getting auth token`);

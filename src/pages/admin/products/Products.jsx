@@ -231,13 +231,11 @@ const Products = () => {
     setChangeCategoryModal(false);
   };
 
-  const handleAddCategory = (category) => {
-    console.log("Adding category:", category); // Debugging
-    setAllCategories((prevCategories) => [...prevCategories, category]);
-};
+  const handleAddCategory = (category) =>
+    setAllCategories([...allCategories, category]);
 
-  const handleAddProduct = (newProduct) =>
-    setAllProducts((prevProducts) => [...allProducts, newProduct]);
+  const handleAddProduct = (product) =>
+    setAllProducts([...allProducts, product]);
 
   const filterDeletedCategory = (categoryId) => {
     setAllCategories(
@@ -491,7 +489,7 @@ const Products = () => {
             <SearchOutlined className="absolute -ml-7 mt-3" />
           </div>
         </div>
-        {/* <div className="flex">
+        <div className="flex">
           <div className="w-1/5 bg-white rounded-md m-5 mr-0">
             <div className="border-b-2 ">
               <h1 className="font-[600] pb-5 p-8 text-[18px]">Categories</h1>
@@ -550,69 +548,8 @@ const Products = () => {
                 onAddCategory={handleAddCategory}
               />
             </div>
-          </div> */}
-<div className="flex">
-    <div className="w-1/5 bg-white rounded-md m-5 mr-0">
-        <div className="border-b-2 ">
-            <h1 className="font-[600] pb-5 p-8 text-[18px]">Categories</h1>
-        </div>
+          </div>
 
-        <div>
-            {isCategoryListLoading && (
-                <div className="flex justify-center my-3 ">
-                    <Spinner />
-                </div>
-            )}
-
-            {!isCategoryListLoading &&
-                allCategories?.map((category, index) => (
-                    <h6
-                        key={category._id}
-                        draggable
-                        onDragStart={() => (dragCategory.current = index)}
-                        onDragEnter={() => (dragOverCategory.current = index)}
-                        onDragEnd={handleReorderCategory}
-                        onDragOver={(e) => e.preventDefault()}
-                        onClick={() =>
-                            selectCategory(category._id, category.categoryName)
-                        }
-                        className={` ${
-                            selectedCategory.categoryName ===
-                            category.categoryName
-                                ? "bg-gray-200"
-                                : ""
-                        } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400] capitalize`}
-                    >
-                        {category.categoryName}
-                    </h6>
-                ))}
-        </div>
-
-        <div className="flex flex-col items-center justify-center gap-2 mt-3">
-            {!isCategoryListLoading && (
-                <>
-                    <PlusOutlined
-                        className="rounded-full bg-teal-800 text-[12px] text-white p-2.5 w-fit"
-                        onClick={showAddCategoryModal}
-                    />
-                    <button className="text-gray-500 text-[14px]">
-                        Add Categories
-                    </button>
-                </>
-            )}
-
-            <AddCategoriesModal
-                isVisible={addCategoryModal}
-                handleCancel={handleCancel}
-                token={token}
-                BASE_URL={BASE_URL}
-                role={role}
-                merchantId={selectedMerchant}
-                onAddCategory={handleAddCategory}
-            />
-        </div>
-    </div>
-</div>
           <div className="w-4/5 bg-white rounded-md m-5 ml-2">
             <div className="border-b-2 flex justify-between p-5">
               <h1 className="font-semibold flex ml-3 items-center text-[18px] capitalize">
@@ -825,7 +762,7 @@ const Products = () => {
             </div>
           </div>
         </div>
-      {/* </div> */}
+      </div>
     </>
   );
 };
