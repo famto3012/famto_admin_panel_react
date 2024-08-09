@@ -1,17 +1,20 @@
-// ImageModal.js
 import React from "react";
 import { Modal } from "antd";
 
 const ImageModal = ({ isVisible, handleClose, imageUrl }) => {
   return (
     <Modal
-      visible={isVisible}
+      isOpen={isVisible}
       onCancel={handleClose}
       footer={null}
       centered
-      width="50%" 
+      width="50%"
     >
-      <img src={imageUrl} alt="Enlarged" className="w-full h-full object-contain" />
+      <img
+        src={imageUrl}
+        alt="Enlarged"
+        className="w-full h-full object-contain"
+      />
     </Modal>
   );
 };

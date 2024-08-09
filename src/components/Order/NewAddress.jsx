@@ -18,29 +18,29 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [authToken, setAuthToken] = useState("");
 
-  useEffect(() => {
-    const getAuthToken = async () => {
-      try {
-        console.log(BASE_URL);
-        console.log(token);
-        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  // useEffect(() => {
+  //   const getAuthToken = async () => {
+  //     try {
+  //       console.log(BASE_URL);
+  //       console.log(token);
+  //       const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        if (response.status === 200) {
-          setAuthToken(response.data.data);
-          console.log(`AUTH TOKEN: ${response.data.data}`);
-        }
-      } catch (err) {
-        console.log(`Error in getting auth token`);
-      }
-    };
+  //       if (response.status === 200) {
+  //         setAuthToken(response.data.data);
+  //         console.log(`AUTH TOKEN: ${response.data.data}`);
+  //       }
+  //     } catch (err) {
+  //       console.log(`Error in getting auth token`);
+  //     }
+  //   };
 
-    getAuthToken();
-  }, []);
+  //   getAuthToken();
+  // }, []);
 
   const handleChangeAddress = (e) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
@@ -190,7 +190,9 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
                   isVisible={modalVisible}
                   onClose={() => setModalVisible(false)}
                   setCoordinates={setCoordinates}
-                  authToken={authToken}
+                  // authToken={authToken}
+                  BASE_URL={BASE_URL}
+                  token={token}
                 />
               </div>
 

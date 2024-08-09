@@ -2,6 +2,8 @@ import { useState } from "react";
 import RatingModal from "../model/Merchant/RatingModal";
 import EditMerchant from "../model/Merchant/EditMerchant";
 import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
+import MapModal from "../Order/MapModal";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 
 const MerchantData = ({
   detail,
@@ -13,11 +15,13 @@ const MerchantData = ({
 }) => {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
 
   const [previewURL, setPreviewURL] = useState("");
 
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
   const toggleEditModal = () => setShowEditModal(!showEditModal);
+  const toggleMapModal = () => setShowMapModal(!showMapModal);
 
   const handleSelectImage = (e) => {
     e.preventDefault();
@@ -211,7 +215,7 @@ const MerchantData = ({
 
       <div className=" max-w-[700px] mt-14 mb-[50px]">
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
-          <label className=" text-gray-700 text-[16px]">
+          <label className="text-gray-700 text-[16px] w-1/3">
             Short Description <br /> (Max 10 characters)
           </label>
           <input
@@ -219,18 +223,18 @@ const MerchantData = ({
             name="description"
             placeholder="Description"
             value={detail?.merchantDetail?.description}
-            className="w-[20rem] border rounded-md p-2 outline-none focus:outline-none"
+            className=" border rounded-md p-2 outline-none focus:outline-none w-2/3"
             onChange={handleInputChange}
           />
         </div>
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
-          <label className="text-gray-700 text-[16px]">Geofence</label>
+          <label className="text-gray-700 text-[16px] w-1/3">Geofence</label>
           <select
             name="geofenceId"
             value={detail?.merchantDetail?.geofenceId}
             onChange={handleInputChange}
-            className="mt-2 p-2  w-[20rem] border rounded-md outline-none focus:outline-none"
+            className="mt-2 p-2 w-2/3 border rounded-md outline-none focus:outline-none "
           >
             <option defaultValue={"Select geofence"} hidden>
               Select geofence
@@ -242,34 +246,45 @@ const MerchantData = ({
         </div>
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
-          <label className=" text-gray-700 text-[16px]">Pricing</label>
+          <label className=" text-gray-700 text-[16px] w-1/3">Pricing</label>
           <input
             disabled
             type="text"
             name="pricing"
             placeholder="Pricing"
             value={detail?.merchantDetail?.pricing}
-            className="w-[20rem] bg-transparent rounded-md p-2"
+            className="w-2/3 bg-transparent rounded-md p-2 "
           />
         </div>
 
-        <div className="mb-[20px] flex items-center justify-between gap-[30px]">
-          <label className="text-gray-700 ">Location</label>
-          <input
-            type="text"
-            name="location"
-            value={detail?.merchantDetail?.location}
-            onChange={handleInputChange}
-            className=" p-2  w-[20rem] border rounded-md outline-none focus:outline-none"
+        <div className="mb-[20px] flex items-center justify-start gap-[30px]">
+          <label className="text-gray-700 w-1/3">Location</label>
+
+          <button
+            type="button"
+            onClick={toggleMapModal}
+            className="font-medium bg-teal-700 text-white text-start rounded-md  py-2 flex items-center w-1/3 justify-center"
+          >
+            Mark location
+            <LocationOnOutlinedIcon className="text-[18px] ms-2" />
+          </button>
+
+          <MapModal
+            isVisible={showMapModal}
+            onClose={toggleMapModal}
+            setCoordinates={handleInputChange}
+            location={MerchantData?.merchantDetail?.location}
+            BASE_URL={BASE_URL}
+            token={token}
           />
         </div>
 
-        <div className="mb-[20px] w-[600px] flex items-center justify-between gap-[30px]">
-          <label className="text-gray-700 ">Ratings</label>
+        <div className="mb-[20px] flex items-center justify-start gap-[30px]">
+          <label className="text-gray-700 w-1/3">Ratings</label>
           <button
             type="button"
             onClick={toggleRatingModal}
-            className="bg-teal-700 text-white p-2 rounded-md w-[20rem]"
+            className="bg-teal-700 text-white p-2 rounded-md w-2/3 ms-3"
           >
             Show ratings and reviews
           </button>
