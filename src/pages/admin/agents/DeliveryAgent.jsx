@@ -27,7 +27,6 @@ const DeliveryAgent = () => {
   const [geofence, setGeofence] = useState([]);
   const [salary, setSalary] = useState([]);
   const [manager, setManager] = useState([]);
-  const [status, setStatus] = useState([]);
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [vehicleTypeFilter, setFilterVehicleType] = useState("");
@@ -479,7 +478,7 @@ const DeliveryAgent = () => {
 
               <div className="flex items-center gap-[30px]">
                 <div>
-                  <FilterAltOutlinedIcon className="mt-2 text-gray-400   " />
+                  <FilterAltOutlinedIcon className="mt-2 text-gray-400" />
                 </div>
                 <input
                   type="search"

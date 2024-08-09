@@ -71,24 +71,22 @@ const DeliveryManagement = () => {
 
   const [authToken, setAuthToken] = useState("");
 
+  const getAuthToken = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const getAuthToken = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 200) {
-          setAuthToken(response.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in getting auth token`);
+      if (response.status === 200) {
+        setAuthToken(response.data.data);
       }
-    };
-
+    } catch (err) {
+      console.log(`Error in getting auth token`);
+    }
+  };
 
   const { activeStep } = useSteps({
     index: 2,
@@ -368,7 +366,7 @@ const DeliveryManagement = () => {
     handleStatusFilter("Free");
     handleGetAllAgent();
     getAutoAllocation();
-  //  console.log("Token", authToken)
+    //  console.log("Token", authToken)
     const mapProps = {
       center: [8.528818999999999, 76.94310683333333],
       traffic: true,
@@ -379,32 +377,29 @@ const DeliveryManagement = () => {
 
     const mapplsClassObject = new mappls();
     if (allAgentData && authToken) {
-      mapplsClassObject.initialize(
-        `${authToken}`,
-        async () => {
-          if (mapContainerRef.current) {
-            console.log("Initializing map...");
-            const map = await mapplsClassObject.Map({
-              id: "map",
-              properties: mapProps,
-            });
+      mapplsClassObject.initialize(`${authToken}`, async () => {
+        if (mapContainerRef.current) {
+          console.log("Initializing map...");
+          const map = await mapplsClassObject.Map({
+            id: "map",
+            properties: mapProps,
+          });
 
-            if (map && typeof map.on === "function") {
-              console.log("Map initialized successfully.");
-              map.on("load", () => {
-                console.log("Map loaded.");
-                setMapObject(map); // Save the map object to state
-              });
-            } else {
-              console.error(
-                "mapObject.on is not a function or mapObject is not defined"
-              );
-            }
+          if (map && typeof map.on === "function") {
+            console.log("Map initialized successfully.");
+            map.on("load", () => {
+              console.log("Map loaded.");
+              setMapObject(map); // Save the map object to state
+            });
           } else {
-            console.error("Map container not found");
+            console.error(
+              "mapObject.on is not a function or mapObject is not defined"
+            );
           }
+        } else {
+          console.error("Map container not found");
         }
-      );
+      });
     }
   }, [authToken]);
 

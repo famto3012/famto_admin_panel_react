@@ -11,6 +11,7 @@ const AddCustomerSurgeModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
+  const [confirmLoading,setConfirmLoading]= useState(false)
   const [customerSurge, setCustomerSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -27,6 +28,7 @@ const AddCustomerSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true)
       console.log("customerSurge", customerSurge);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/customer-surge/add-customer-surge`,
@@ -59,7 +61,9 @@ const AddCustomerSurgeModal = ({
         duration: 1000,
         isClosable: true,
       });
-      v;
+      
+    } finally{
+      setConfirmLoading(false)
     }
   };
   return (
@@ -148,11 +152,11 @@ const AddCustomerSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              // value={customerSurge.geofenceId}
+              value={customerSurge.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >
-              <option hidden value={"Geofence"}>
+              <option hidden value="">
                 Geofence
               </option>
               {geofence.map((geoFence) => (
@@ -175,7 +179,7 @@ const AddCustomerSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+          {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

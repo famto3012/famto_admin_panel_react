@@ -11,6 +11,7 @@ const AddAgentSurgeModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
+  const [confirmLoading,setConfirmLoading]= useState(false)
   const [agentsurge, setAgentSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -27,6 +28,7 @@ const AddAgentSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true)
       console.log("agentsurge", agentsurge);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/agent-surge/add-agent-surge`,
@@ -59,6 +61,8 @@ const AddAgentSurgeModal = ({
         duration: 1000,
         isClosable: true,
       });
+    } finally {
+      setConfirmLoading(false)
     }
   };
   return (
@@ -174,7 +178,7 @@ const AddAgentSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+           {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

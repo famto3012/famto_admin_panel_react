@@ -11,6 +11,7 @@ const AddAgentPricingModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
+  const [confirmLoading,setConfirmLoading]= useState(false)
   const [apricing, setApricing] = useState({
     ruleName: "",
     baseFare: "",
@@ -29,6 +30,7 @@ const AddAgentPricingModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true)
       console.log("agentpricing", apricing);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/agent-pricing/add-agent-pricing`,
@@ -61,9 +63,12 @@ const AddAgentPricingModal = ({
         duration: 1000,
         isClosable: true,
       });
+    }finally{
+      setConfirmLoading(false)
     }
     console.log(apricing);
   };
+
   return (
     <Modal
       title="Agent Pricing"
@@ -192,21 +197,6 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
-          {/* <div className="flex items-center">
-          <label className="w-1/3 text-gray-500" htmlFor="addedTip">
-            Added Tip
-          </label>
-          <input
-            className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-            type="text"
-            placeholder="Added Tip"
-            value={apricing.addedTip}
-            id="addedTip"
-            name="addedTip"
-            onChange={handleInputChange}
-          />
-        </div> */}
-
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofence">
               Geofence
@@ -236,7 +226,7 @@ const AddAgentPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+           {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

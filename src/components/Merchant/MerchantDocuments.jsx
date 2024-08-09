@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
+import ImageModal from "../model/AgentModels/ImageModal";
 
 const MerchantDocuments = ({ detail, onDataChange }) => {
   const [previewURL, setPreviewURL] = useState({
@@ -263,6 +264,8 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
           </label>
         </div>
       </div>
+
+      <ImageModal />
     </div>
   );
 };

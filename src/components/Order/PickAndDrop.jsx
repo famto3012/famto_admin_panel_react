@@ -131,6 +131,8 @@ const PickAndDrop = ({ data }) => {
 
       console.log(invoiceData);
 
+      return;
+
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
         invoiceData,
@@ -330,7 +332,11 @@ const PickAndDrop = ({ data }) => {
               </button>
             </div>
             {isNewPickupAddressVisible && (
-              <NewAddress onAddCustomerAddress={handlePickUpAddress} />
+              <NewAddress
+                onAddCustomerAddress={handlePickUpAddress}
+                BASE_URL={BASE_URL}
+                token={token}
+              />
             )}
           </div>
 
@@ -585,7 +591,11 @@ const PickAndDrop = ({ data }) => {
               </button>
             </div>
             {isNewDeliveryAddressVisible && (
-              <NewAddressTwo onAddCustomerAddress={handleDeliveryAddress} />
+              <NewAddressTwo
+                onAddCustomerAddress={handleDeliveryAddress}
+                BASE_URL={BASE_URL}
+                token={token}
+              />
             )}
           </div>
 

@@ -14,9 +14,7 @@ const AddAgentModal = ({
   onAddAgent,
   BASE_URL,
 }) => {
-  const toast = useToast();
-  const [confirmLoading,setConfirmLoading] = useState(false)
-  const [addData, setAddData] = useState({
+    const [addData, setAddData] = useState({
     fullName: "",
     phoneNumber: "",
     email: "",
@@ -63,6 +61,9 @@ const AddAgentModal = ({
   const [rcBackFile, setRcBackFile] = useState(null);
   const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
 
+  const [confirmLoading,setConfirmLoading] = useState(false)
+  const toast = useToast();
+
   // Function for Add Agent data
 
   const handleInputChange = (e) => {
@@ -85,39 +86,8 @@ const AddAgentModal = ({
     try {
       setConfirmLoading(true)
       console.log("addData", addData);
-      // const addagentToSend = new FormData();
-      // addagentToSend.append("fullName", addData.fullName);
-      // addagentToSend.append("phoneNumber", addData.phoneNumber);
-      // addagentToSend.append("email", addData.email);
-      // addagentToSend.append("managerId", addData.managerId);
-      // addagentToSend.append("geofenceId", addData.geofenceId);
-      // addagentToSend.append("salaryStructureId", addData.salaryStructureId);
-      // addagentToSend.append("tag", addData.tag);
-      // addagentToSend.append("accountHolderName", addData.accountHolderName);
-      // addagentToSend.append("accountNumber", addData.accountNumber);
-      // addagentToSend.append("IFSCCode", addData.IFSCCode);
-      // addagentToSend.append("UPIId", addData.UPIId);
-      // addagentToSend.append("aadharNumber", addData.aadharNumber);
-      // addagentToSend.append("model", addData.model);
-      // addagentToSend.append("type", addData.type);
-      // addagentToSend.append("licensePlate", addData.licensePlate);
-      // addagentToSend.append(
-      //   "drivingLicenseNumber",
-      //   addData.drivingLicenseNumber
-      // );
-      // addagentToSend.append("agentImage", agentFile);
-      // addagentToSend.append("rcFrontImage", rcFrontFile);
-      // addagentToSend.append("rcBackImage", rcBackFile);
-      // addagentToSend.append("aadharFrontImage", aadharFrontFile);
-      // addagentToSend.append("aadharBackImage", aadharBackFile);
-      // addagentToSend.append("drivingLicenseFrontImage", driFrontFile);
-      // addagentToSend.append("drivingLicenseBackImage", driBackFile);
-      // console.log("here");
-      // console.log("data for test", addagentToSend);
-
-
+      
       const dataToSend = new FormData();
-
       Object.keys(addData).forEach((key) => {
         if (Array.isArray(addData[key])) {
           addData[key].forEach((item) => {
@@ -281,11 +251,11 @@ const AddAgentModal = ({
                 />
               </div>
               <div className="flex mt-5 gap-4">
-                <label className="w-1/2 text-gray-500 " htmlFor="type">
+                <label className="w-1/3 text-gray-500 " htmlFor="type">
                   Vehicle Type
                 </label>
                 <select
-                  className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5 "
+                  className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-10 focus:outline-none"
                   name="type"
                   id="type"
                   value={addData.type}

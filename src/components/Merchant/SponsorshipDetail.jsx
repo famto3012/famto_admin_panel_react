@@ -78,7 +78,7 @@ const SponsorshipDetail = ({
       key: import.meta.env.VITE_APP_RAZORPAY_KEY,
       amount: amount * 100,
       currency: "INR",
-      name: "My Famto",
+      name: "Famto",
       description: "Sponsorship Payment",
       order_id: orderId,
       handler: async function (response) {
@@ -128,7 +128,7 @@ const SponsorshipDetail = ({
         contact: phoneNumber,
       },
       theme: {
-        color: "#008080",
+        color: "#00CED1",
       },
     };
 
@@ -141,7 +141,12 @@ const SponsorshipDetail = ({
       <div className="mb-6 flex">
         <div className="flex justify-between rounded">
           <h3 className="text-gray-700 mb-2 mt-3 ">Sponsorship Status</h3>
-          <div className="mb-4 max-w-[30rem] p-5 justify-center text-center mx-[12rem] shadow-lg">
+
+          <div
+            className={`${
+              sponsorshipData?.currentPlan ? `visible` : ` invisible`
+            } mb-4 max-w-[30rem] p-5 justify-center text-center mx-[12rem] shadow-lg `}
+          >
             <label className="block text-teal-700 font-[600] mb-[10px] text-[16px]">
               Current Chosen Plan
             </label>

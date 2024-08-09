@@ -27,26 +27,22 @@ const AddGeofence = ({ heading }) => {
 
   const [authToken, setAuthToken] = useState("");
 
- 
-    const getAuthToken = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const getAuthToken = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (response.status === 200) {
-          setAuthToken(response.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in getting auth token`);
+      if (response.status === 200) {
+        setAuthToken(response.data.data);
       }
-    };
-
-   
-
+    } catch (err) {
+      console.log(`Error in getting auth token`);
+    }
+  };
 
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -74,7 +70,7 @@ const AddGeofence = ({ heading }) => {
 
   useEffect(() => {
     getAuthToken();
-    console.log("Token",authToken)
+    console.log("Token", authToken);
     const script = document.createElement("script");
     script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
     script.async = true;
@@ -109,9 +105,11 @@ const AddGeofence = ({ heading }) => {
               polyArray = drawData.data?.geometry.coordinates[0];
               console.log("Draw Data:", data);
 
-              const formattedCoordinates = drawData?.data?.geometry?.coordinates[0].map(
-                ([lng, lat]) => [lat, lng]
-              );
+              const formattedCoordinates =
+                drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
+                  lat,
+                  lng,
+                ]);
               console.log("Formatted Coordinates:", formattedCoordinates);
 
               setNewGeofence((prevState) => ({
@@ -135,10 +133,13 @@ const AddGeofence = ({ heading }) => {
 
   const getSingleGeofence = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/admin/geofence/get-geofence/${id}`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${BASE_URL}/admin/geofence/get-geofence/${id}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         setColor(response.data.geofence.color);
         setGeofences(response.data.geofence);
@@ -150,21 +151,28 @@ const AddGeofence = ({ heading }) => {
 
   const GeoJsonComponent = ({ map, geofences, color }) => {
     const geoJsonRef = useRef(null);
-  
+
     useEffect(() => {
-      if (!map || !geofences.coordinates || !Array.isArray(geofences.coordinates)) return;
-  
+      if (
+        !map ||
+        !geofences.coordinates ||
+        !Array.isArray(geofences.coordinates)
+      )
+        return;
+
       // Convert the coordinates to Mappls format
-      const pts = geofences.coordinates.map((coord) => {
-        if (!Array.isArray(coord) || coord.length !== 2) {
-          console.error("Invalid coordinate format:", coord);
-          return null;
-        }
-        const [lat, lng] = coord;
-        return { lat, lng };
-      }).filter((coord) => coord !== null);
+      const pts = geofences.coordinates
+        .map((coord) => {
+          if (!Array.isArray(coord) || coord.length !== 2) {
+            console.error("Invalid coordinate format:", coord);
+            return null;
+          }
+          const [lat, lng] = coord;
+          return { lat, lng };
+        })
+        .filter((coord) => coord !== null);
       console.log("path", pts);
-  
+
       // Create the polygon
       const poly = window.mappls.Polygon({
         map: map,
@@ -173,33 +181,31 @@ const AddGeofence = ({ heading }) => {
         fillOpacity: 0.3,
         fitbounds: true,
       });
-  
+
       // Enable editing of the polygon
       poly.setEditable(true);
-  
+
       // Function to update coordinates
       const updateCoordinates = () => {
-        const newCoordinates = poly.getPath()[0].map((point) => [point.lat, point.lng]);
-       // console.log("poly", poly.getPath()[0].map((point) => [point.lat, point.lng]))
+        const newCoordinates = poly
+          .getPath()[0]
+          .map((point) => [point.lat, point.lng]);
+        // console.log("poly", poly.getPath()[0].map((point) => [point.lat, point.lng]))
         console.log("newCoordinates", newCoordinates);
-  
+
         setGeofences((prevState) => ({
           ...prevState,
           coordinates: newCoordinates,
         }));
       };
-  
+
       // Add event listeners to capture changes
       poly.addListener("dblclick", updateCoordinates);
-  
     }, [map, geofences, color]);
-  
+
     return null;
   };
-  
-  
- 
-  
+
   const addGeofence = async () => {
     try {
       const addGeofenceResponse = await axios.post(
@@ -229,9 +235,9 @@ const AddGeofence = ({ heading }) => {
     }
   };
 
-  const editGeofence = async()=>{
+  const editGeofence = async () => {
     try {
-      console.log("geofence", geofences)
+      console.log("geofence", geofences);
       const editGeofenceResponse = await axios.put(
         `${BASE_URL}/admin/geofence/edit-geofence/${id}`,
         geofences,
@@ -257,7 +263,7 @@ const AddGeofence = ({ heading }) => {
         isClosable: true,
       });
     }
-  }
+  };
 
   return (
     <>
@@ -272,7 +278,10 @@ const AddGeofence = ({ heading }) => {
             <form>
               <div className="flex flex-col gap-3 ">
                 <div>
-                  <label className="w-1/3 text-md font-medium" htmlFor="regionName">
+                  <label
+                    className="w-1/3 text-md font-medium"
+                    htmlFor="regionName"
+                  >
                     Colour
                   </label>
                   <div className="relative rounded-full">
@@ -289,7 +298,10 @@ const AddGeofence = ({ heading }) => {
                   </div>
                 </div>
                 <div>
-                  <label className="w-1/3 text-md font-medium" htmlFor="regionName">
+                  <label
+                    className="w-1/3 text-md font-medium"
+                    htmlFor="regionName"
+                  >
                     Name
                   </label>
                   <div className="relative mt-2">
@@ -304,7 +316,10 @@ const AddGeofence = ({ heading }) => {
                   </div>
                 </div>
                 <div>
-                  <label className="w-1/3 text-md font-medium" htmlFor="regionDescription">
+                  <label
+                    className="w-1/3 text-md font-medium"
+                    htmlFor="regionDescription"
+                  >
                     Description
                   </label>
                   <div className="relative mt-2">
@@ -328,7 +343,9 @@ const AddGeofence = ({ heading }) => {
               </button>
               <button
                 type="submit"
-                onClick={heading === "Edit Geofence" ? editGeofence : addGeofence }
+                onClick={
+                  heading === "Edit Geofence" ? editGeofence : addGeofence
+                }
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 {heading === "Edit Geofence" ? "Update" : "Add"}
@@ -336,14 +353,20 @@ const AddGeofence = ({ heading }) => {
             </div>
           </div>
           <div className="mt-8 p-6 bg-white rounded-lg shadow-sm w-2/3 me-10">
-            <div ref={mapContainerRef} id="map" className="map-container w-full h-[600px]"></div>
-            {isMapLoaded && geofences.coordinates && Array.isArray(geofences.coordinates) && (
-              <GeoJsonComponent
-                map={mapObject}
-                geofences={geofences}
-                color={color}
-              />
-            )}
+            <div
+              ref={mapContainerRef}
+              id="map"
+              className="map-container w-full h-[600px]"
+            ></div>
+            {isMapLoaded &&
+              geofences.coordinates &&
+              Array.isArray(geofences.coordinates) && (
+                <GeoJsonComponent
+                  map={mapObject}
+                  geofences={geofences}
+                  color={color}
+                />
+              )}
           </div>
         </div>
       </div>

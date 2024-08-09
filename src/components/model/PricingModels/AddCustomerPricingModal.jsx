@@ -12,6 +12,7 @@ const AddCustomerPricingModal = ({
   business,
 }) => {
   const toast = useToast();
+  const [confirmLoading,setConfirmLoading]= useState(false)
   const [cpricing, setCpricing] = useState({
     vehicleType: "",
     ruleName: "",
@@ -41,7 +42,7 @@ const AddCustomerPricingModal = ({
     e.preventDefault();
     try {
       console.log(cpricing);
-
+      setConfirmLoading(true)
       const addResponse = await axios.post(
         `${BASE_URL}/admin/customer-pricing/add-customer-pricing`,
         cpricing,
@@ -69,6 +70,8 @@ const AddCustomerPricingModal = ({
         duration: 1000,
         isClosable: true,
       });
+    } finally {
+      setConfirmLoading(false)
     }
   };
 
@@ -337,7 +340,7 @@ const AddCustomerPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+           {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

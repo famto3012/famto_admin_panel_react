@@ -14,7 +14,7 @@ const EditAgentSurgeModal = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading,setConfirmLoading] = useState(false)
   const [agentsurge, setAgentSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -30,7 +30,6 @@ const EditAgentSurgeModal = ({
     }
 
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/agent-surge/${currentEditAs}`, {
@@ -40,13 +39,17 @@ const EditAgentSurgeModal = ({
         ]);
         if (addResponse.status === 200) {
           console.log("data in response is", addResponse.data.data);
-          setAgentSurge(addResponse.data.data);
+          const customGeofenceId = addResponse.data.data.geofenceId._id;
+          const updatedData = {
+            ...addResponse.data.data,
+            geofenceId: customGeofenceId,
+          };
+
+          setAgentSurge(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -61,6 +64,7 @@ const EditAgentSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
+     setConfirmLoading(true);
       console.log("agentsurge", agentsurge);
       const editResponse = await axios.put(
         `${BASE_URL}/admin/agent-surge/edit-agent-surge/${currentEditAs}`,
@@ -93,6 +97,8 @@ const EditAgentSurgeModal = ({
         isClosable: true,
       });
       console.log(`Error in fetching data:${err}`);
+    } finally {
+      setConfirmLoading(false);
     }
     console.log(agentsurge);
   };
@@ -182,7 +188,7 @@ const EditAgentSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              value={agentsurge.geofenceId._id}
+              value={agentsurge.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >
@@ -209,7 +215,7 @@ const EditAgentSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+          {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>
