@@ -234,7 +234,7 @@ const Products = () => {
   const handleAddCategory = (category) => {
     console.log("Adding category:", category); // Debugging
     setAllCategories((prevCategories) => [...prevCategories, category]);
-};
+  };
 
   const handleAddProduct = (newProduct) =>
     setAllProducts((prevProducts) => [...allProducts, newProduct]);
@@ -551,57 +551,56 @@ const Products = () => {
               />
             </div>
           </div> */}
-<div className="flex">
-    <div className="w-1/5 bg-white rounded-md m-5 mr-0">
-        <div className="border-b-2 ">
-            <h1 className="font-[600] pb-5 p-8 text-[18px]">Categories</h1>
-        </div>
+        <div className="flex">
+          <div className="w-1/5 bg-white rounded-md m-5 mr-0">
+            <div className="border-b-2 ">
+              <h1 className="font-[600] pb-5 p-8 text-[18px]">Categories</h1>
+            </div>
 
-        <div>
-            {isCategoryListLoading && (
+            <div>
+              {isCategoryListLoading && (
                 <div className="flex justify-center my-3 ">
-                    <Spinner />
+                  <Spinner />
                 </div>
-            )}
+              )}
 
-            {!isCategoryListLoading &&
+              {!isCategoryListLoading &&
                 allCategories?.map((category, index) => (
-                    <h6
-                        key={category._id}
-                        draggable
-                        onDragStart={() => (dragCategory.current = index)}
-                        onDragEnter={() => (dragOverCategory.current = index)}
-                        onDragEnd={handleReorderCategory}
-                        onDragOver={(e) => e.preventDefault()}
-                        onClick={() =>
-                            selectCategory(category._id, category.categoryName)
-                        }
-                        className={` ${
-                            selectedCategory.categoryName ===
-                            category.categoryName
-                                ? "bg-gray-200"
-                                : ""
-                        } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400] capitalize`}
-                    >
-                        {category.categoryName}
-                    </h6>
+                  <h6
+                    key={category._id}
+                    draggable
+                    onDragStart={() => (dragCategory.current = index)}
+                    onDragEnter={() => (dragOverCategory.current = index)}
+                    onDragEnd={handleReorderCategory}
+                    onDragOver={(e) => e.preventDefault()}
+                    onClick={() =>
+                      selectCategory(category._id, category.categoryName)
+                    }
+                    className={` ${
+                      selectedCategory.categoryName === category.categoryName
+                        ? "bg-gray-200"
+                        : ""
+                    } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400] capitalize`}
+                  >
+                    {category.categoryName}
+                  </h6>
                 ))}
-        </div>
+            </div>
 
-        <div className="flex flex-col items-center justify-center gap-2 mt-3">
-            {!isCategoryListLoading && (
+            <div className="flex flex-col items-center justify-center gap-2 mt-3">
+              {!isCategoryListLoading && (
                 <>
-                    <PlusOutlined
-                        className="rounded-full bg-teal-800 text-[12px] text-white p-2.5 w-fit"
-                        onClick={showAddCategoryModal}
-                    />
-                    <button className="text-gray-500 text-[14px]">
-                        Add Categories
-                    </button>
+                  <PlusOutlined
+                    className="rounded-full bg-teal-800 text-[12px] text-white p-2.5 w-fit"
+                    onClick={showAddCategoryModal}
+                  />
+                  <button className="text-gray-500 text-[14px]">
+                    Add Categories
+                  </button>
                 </>
-            )}
+              )}
 
-            <AddCategoriesModal
+              <AddCategoriesModal
                 isVisible={addCategoryModal}
                 handleCancel={handleCancel}
                 token={token}
@@ -609,222 +608,222 @@ const Products = () => {
                 role={role}
                 merchantId={selectedMerchant}
                 onAddCategory={handleAddCategory}
-            />
-        </div>
-    </div>
-</div>
-          <div className="w-4/5 bg-white rounded-md m-5 ml-2">
-            <div className="border-b-2 flex justify-between p-5">
-              <h1 className="font-semibold flex ml-3 items-center text-[18px] capitalize">
-                {selectedCategory.categoryName}
-              </h1>
-              <div className="flex gap-5 items-center">
-                Disabled{" "}
-                <Switch
-                  value={selectedCategory.categoryStatus}
-                  onClick={handleChangeCategoryStatus}
-                />{" "}
-                Enable
-                <button
-                  className="bg-blue-50 p-2 flex items-center px-5 rounded-lg"
-                  onClick={showEditCategoryModal}
-                >
-                  <MdOutlineModeEdit className="text-xl mr-1" /> Edit
-                </button>
-                <EditCategoriesModal
-                  isVisible={editCategoryModal}
-                  handleCancel={handleCancel}
-                  token={token}
-                  role={role}
-                  BASE_URL={BASE_URL}
-                  categoryId={selectedCategory.categoryId}
-                  merchantId={selectedMerchant}
-                />
-                <button
-                  className="bg-red-100 p-2 flex items-center rounded-lg px-3"
-                  onClick={showDeleteCategoryModal}
-                >
-                  <RiDeleteBin6Line className="text-xl mr-1 text-red-700" />{" "}
-                  Delete
-                </button>
-                <DeleteCategoryModal
-                  isOpen={deleteCategoryModal}
-                  onCancel={handleCancel}
-                  BASE_URL={BASE_URL}
-                  token={token}
-                  role={role}
-                  merchantId={selectedMerchant}
-                  categoryName={selectedCategory.categoryName}
-                  categoryId={selectedCategory.categoryId}
-                  onDeleteCategory={filterDeletedCategory}
-                />
-              </div>
+              />
             </div>
+          </div>
+        </div>
+        <div className="w-4/5 bg-white rounded-md m-5 ml-2">
+          <div className="border-b-2 flex justify-between p-5">
+            <h1 className="font-semibold flex ml-3 items-center text-[18px] capitalize">
+              {selectedCategory.categoryName}
+            </h1>
+            <div className="flex gap-5 items-center">
+              Disabled{" "}
+              <Switch
+                value={selectedCategory.categoryStatus}
+                onClick={handleChangeCategoryStatus}
+              />{" "}
+              Enable
+              <button
+                className="bg-blue-50 p-2 flex items-center px-5 rounded-lg"
+                onClick={showEditCategoryModal}
+              >
+                <MdOutlineModeEdit className="text-xl mr-1" /> Edit
+              </button>
+              <EditCategoriesModal
+                isVisible={editCategoryModal}
+                handleCancel={handleCancel}
+                token={token}
+                role={role}
+                BASE_URL={BASE_URL}
+                categoryId={selectedCategory.categoryId}
+                merchantId={selectedMerchant}
+              />
+              <button
+                className="bg-red-100 p-2 flex items-center rounded-lg px-3"
+                onClick={showDeleteCategoryModal}
+              >
+                <RiDeleteBin6Line className="text-xl mr-1 text-red-700" />{" "}
+                Delete
+              </button>
+              <DeleteCategoryModal
+                isOpen={deleteCategoryModal}
+                onCancel={handleCancel}
+                BASE_URL={BASE_URL}
+                token={token}
+                role={role}
+                merchantId={selectedMerchant}
+                categoryName={selectedCategory.categoryName}
+                categoryId={selectedCategory.categoryId}
+                onDeleteCategory={filterDeletedCategory}
+              />
+            </div>
+          </div>
 
-            <div className="flex">
-              <div className=" border border-gray-200 w-1/3">
-                <div>
-                  {isProductListLoading && (
-                    <div className="flex justify-center my-3 ">
-                      <Spinner />
-                    </div>
-                  )}
-
-                  {!isProductListLoading &&
-                    allProducts?.map((product, index) => (
-                      <h6
-                        key={product._id}
-                        draggable
-                        onDragStart={() => (dragProduct.current = index)}
-                        onDragEnter={() => (dragOverProduct.current = index)}
-                        onDragEnd={handleReorderProduct}
-                        onDragOver={(e) => e.preventDefault()}
-                        onClick={() =>
-                          selectProduct(product._id, product.productName)
-                        }
-                        className={`${
-                          selectedProduct.productName === product.productName
-                            ? "bg-gray-200"
-                            : ""
-                        } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400]`}
-                      >
-                        {product.productName}
-                      </h6>
-                    ))}
-                </div>
-
-                <div className="flex flex-col items-center justify-center gap-2 mt-3">
-                  {!isProductListLoading && (
-                    <>
-                      <PlusOutlined
-                        className="rounded-full bg-teal-800 text-[12px] text-white p-2.5 w-fit"
-                        onClick={showAddProductModal}
-                      />
-                      <p className="text-gray-500">Add Items</p>
-                    </>
-                  )}
-
-                  <AddProductItemModal
-                    isVisible={addProductModal}
-                    handleCancel={handleCancel}
-                    BASE_URL={BASE_URL}
-                    token={token}
-                    role={role}
-                    categoryId={selectedCategory.categoryId}
-                    merchantId={selectedMerchant}
-                    onAddProduct={handleAddProduct}
-                  />
-                </div>
-              </div>
-              <div className="w-full">
-                {isProductDetailLoading && (
-                  <div className="flex justify-center items-center h-[55dvh]">
+          <div className="flex">
+            <div className=" border border-gray-200 w-1/3">
+              <div>
+                {isProductListLoading && (
+                  <div className="flex justify-center my-3 ">
                     <Spinner />
                   </div>
                 )}
 
-                {!isProductDetailLoading &&
-                  Object.keys(productDetail).length === 0 && (
-                    <div className="flex justify-center items-center h-[50%]">
-                      <p>No Data available</p>
-                    </div>
-                  )}
+                {!isProductListLoading &&
+                  allProducts?.map((product, index) => (
+                    <h6
+                      key={product._id}
+                      draggable
+                      onDragStart={() => (dragProduct.current = index)}
+                      onDragEnter={() => (dragOverProduct.current = index)}
+                      onDragEnd={handleReorderProduct}
+                      onDragOver={(e) => e.preventDefault()}
+                      onClick={() =>
+                        selectProduct(product._id, product.productName)
+                      }
+                      className={`${
+                        selectedProduct.productName === product.productName
+                          ? "bg-gray-200"
+                          : ""
+                      } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400]`}
+                    >
+                      {product.productName}
+                    </h6>
+                  ))}
+              </div>
 
-                {!isProductDetailLoading &&
-                  Object.keys(productDetail).length > 0 && (
-                    <>
-                      <div className="p-5 flex justify-between">
-                        <div className="flex w-2/3 gap-3">
-                          <figure className="h-[90px] w-[90px] ">
-                            <img
-                              src={productDetail.productImageURL}
-                              alt=""
-                              className="w-full h-full object-cover rounded-md"
-                            />
-                          </figure>
-                          <div>
-                            <p className="font-semibold">
-                              {productDetail.productName}
-                            </p>
-                            <p className="text-teal-800 font-bold">
-                              ₹ {productDetail.price}
-                            </p>
-                          </div>
-                        </div>
+              <div className="flex flex-col items-center justify-center gap-2 mt-3">
+                {!isProductListLoading && (
+                  <>
+                    <PlusOutlined
+                      className="rounded-full bg-teal-800 text-[12px] text-white p-2.5 w-fit"
+                      onClick={showAddProductModal}
+                    />
+                    <p className="text-gray-500">Add Items</p>
+                  </>
+                )}
+
+                <AddProductItemModal
+                  isVisible={addProductModal}
+                  handleCancel={handleCancel}
+                  BASE_URL={BASE_URL}
+                  token={token}
+                  role={role}
+                  categoryId={selectedCategory.categoryId}
+                  merchantId={selectedMerchant}
+                  onAddProduct={handleAddProduct}
+                />
+              </div>
+            </div>
+            <div className="w-full">
+              {isProductDetailLoading && (
+                <div className="flex justify-center items-center h-[55dvh]">
+                  <Spinner />
+                </div>
+              )}
+
+              {!isProductDetailLoading &&
+                Object.keys(productDetail).length === 0 && (
+                  <div className="flex justify-center items-center h-[50%]">
+                    <p>No Data available</p>
+                  </div>
+                )}
+
+              {!isProductDetailLoading &&
+                Object.keys(productDetail).length > 0 && (
+                  <div>
+                    <div className="p-5 flex justify-between">
+                      <div className="flex w-2/3 gap-3">
+                        <figure className="h-[90px] w-[90px] ">
+                          <img
+                            src={productDetail.productImageURL}
+                            alt=""
+                            className="w-full h-full object-cover rounded-md"
+                          />
+                        </figure>
                         <div>
-                          <button
-                            className="bg-yellow-200/50 p-3 font-medium rounded-lg"
-                            onClick={showChangeCategoryModal}
-                          >
-                            Change Category
-                          </button>
-                          <ChangeCategoryModal
-                            isOpen={changeCategoryModal}
-                            onCancel={handleCancel}
-                            allCategories={allCategories}
-                            BASE_URL={BASE_URL}
-                            token={token}
-                            categoryId={selectedCategory.categoryId}
-                            productId={selectedProduct.productId}
-                            onChangeCategory={filterChangedProduct}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-between p-5 items-center">
-                        <p className="font-semibold">Product Details</p>
-                        <div className="flex gap-5 items-center">
-                          Inventory
-                          <Switch
-                            value={productDetail.inventory}
-                            onClick={handleChangeProductStatus}
-                          />
-                          <button
-                            className="bg-blue-50 p-2 flex items-center outline-none focus:outline-none px-5 rounded-lg"
-                            onClick={showEditProductModal}
-                          >
-                            <MdOutlineModeEdit className="text-xl mr-1" /> Edit
-                          </button>
-                          <EditProductItemModal
-                            isVisible={editProductModal}
-                            handleCancel={handleCancel}
-                            BASE_URL={BASE_URL}
-                            token={token}
-                            role={role}
-                            merchantId={selectedMerchant}
-                            productId={selectedProduct.productId}
-                            categoryId={selectedCategory.categoryId}
-                          />
-                          <button
-                            className="bg-red-100 p-2 flex items-center rounded-lg px-3"
-                            onClick={showDeleteProductModal}
-                          >
-                            <RiDeleteBin6Line className="text-xl mr-1 text-red-700" />{" "}
-                            Delete
-                          </button>
-                          <DeleteProductModal
-                            isOpen={deleteProductModal}
-                            onCancel={handleCancel}
-                            token={token}
-                            BASE_URL={BASE_URL}
-                            productName={selectedProduct.productName}
-                            productId={selectedProduct.productId}
-                            onDeleteProduct={filterDeletedProduct}
-                          />
+                          <p className="font-semibold">
+                            {productDetail.productName}
+                          </p>
+                          <p className="text-teal-800 font-bold">
+                            ₹ {productDetail.price}
+                          </p>
                         </div>
                       </div>
                       <div>
-                        <ProductDetail
-                          detail={productDetail}
+                        <button
+                          className="bg-yellow-200/50 p-3 font-medium rounded-lg"
+                          onClick={showChangeCategoryModal}
+                        >
+                          Change Category
+                        </button>
+                        <ChangeCategoryModal
+                          isOpen={changeCategoryModal}
+                          onCancel={handleCancel}
+                          allCategories={allCategories}
                           BASE_URL={BASE_URL}
                           token={token}
+                          categoryId={selectedCategory.categoryId}
+                          productId={selectedProduct.productId}
+                          onChangeCategory={filterChangedProduct}
                         />
                       </div>
-                    </>
-                  )}
-              </div>
+                    </div>
+                    <div className="flex justify-between p-5 items-center">
+                      <p className="font-semibold">Product Details</p>
+                      <div className="flex gap-5 items-center">
+                        Inventory
+                        <Switch
+                          value={productDetail.inventory}
+                          onClick={handleChangeProductStatus}
+                        />
+                        <button
+                          className="bg-blue-50 p-2 flex items-center outline-none focus:outline-none px-5 rounded-lg"
+                          onClick={showEditProductModal}
+                        >
+                          <MdOutlineModeEdit className="text-xl mr-1" /> Edit
+                        </button>
+                        <EditProductItemModal
+                          isVisible={editProductModal}
+                          handleCancel={handleCancel}
+                          BASE_URL={BASE_URL}
+                          token={token}
+                          role={role}
+                          merchantId={selectedMerchant}
+                          productId={selectedProduct.productId}
+                          categoryId={selectedCategory.categoryId}
+                        />
+                        <button
+                          className="bg-red-100 p-2 flex items-center rounded-lg px-3"
+                          onClick={showDeleteProductModal}
+                        >
+                          <RiDeleteBin6Line className="text-xl mr-1 text-red-700" />{" "}
+                          Delete
+                        </button>
+                        <DeleteProductModal
+                          isOpen={deleteProductModal}
+                          onCancel={handleCancel}
+                          token={token}
+                          BASE_URL={BASE_URL}
+                          productName={selectedProduct.productName}
+                          productId={selectedProduct.productId}
+                          onDeleteProduct={filterDeletedProduct}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <ProductDetail
+                        detail={productDetail}
+                        BASE_URL={BASE_URL}
+                        token={token}
+                      />
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </div>
+      </div>
       {/* </div> */}
     </>
   );
