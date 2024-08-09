@@ -91,18 +91,26 @@ const AddProductItemModal = ({
     if (e.key === "Enter") {
       e.preventDefault();
       const trimmedValue = tagValue.trim();
-      if (trimmedValue && !productData.searchTags.includes(trimmedValue)) {
+      const currentTags = Array.isArray(productData.searchTags)
+        ? productData.searchTags
+        : [];
+
+      if (trimmedValue && !currentTags.includes(trimmedValue)) {
         setProductData({
           ...productData,
-          searchTags: [...productData.searchTags, trimmedValue],
+          searchTags: [...currentTags, trimmedValue],
         });
         setTagValue("");
         inputRef.current.focus();
       }
     } else if (e.key === "Backspace" && !tagValue) {
+      const currentTags = Array.isArray(productData.searchTags)
+        ? productData.searchTags
+        : [];
+
       setProductData({
         ...productData,
-        searchTags: productData.searchTags.slice(0, -1),
+        searchTags: currentTags.slice(0, -1),
       });
     }
   };
@@ -137,33 +145,117 @@ const AddProductItemModal = ({
     });
   };
 
+  // const handleAddProduct = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     setIsLoading(true);
+
+  //     const dataToSend = new FormData();
+
+  //     Object.keys(productData).forEach((key) => {
+  //       if (Array.isArray(productData[key])) {
+  //         productData[key].forEach((item) => {
+  //           dataToSend.append(key, item);
+  //         });
+  //       } else {
+  //         dataToSend.append(key, productData[key]);
+  //       }
+  //     });
+  //     dataToSend.append("categoryId", categoryId);
+
+  //     if (selectedFile) {
+  //       dataToSend.append("productImage", selectedFile);
+  //     }
+
+  //     // Log FormData entries
+  //     for (let pair of dataToSend.entries()) {
+  //       console.log(pair[0] + ": " + pair[1]);
+  //     }
+
+  //     const response = await axios.post(
+  //       `${BASE_URL}/products/add-product`,
+  //       dataToSend,
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     console.log("response", response);
+
+  //     if (response.status === 201) {
+  //       onAddProduct(response.data.data);
+  //       setProductData({
+  //         categoryId,
+  //         productName: "",
+  //         price: "",
+  //         minQuantityToOrder: "",
+  //         maxQuantityPerOrder: "",
+  //         costPrice: "",
+  //         sku: "",
+  //         discountId: "",
+  //         oftenBoughtTogetherId: [],
+  //         preparationTime: "",
+  //         searchTags: [],
+  //         description: "",
+  //         longDescription: "",
+  //         type: "",
+  //         availableQuantity: "",
+  //         alert: "",
+  //       });
+  //       setSelectedFile(null);
+  //       setPreviewURL(null);
+  //       handleCancel();
+  //       toast({
+  //         title: "Product Added",
+  //         description: response.data.message,
+  //         status: "success",
+  //         duration: 5000,
+  //         isClosable: true,
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.log(
+  //       `Error in creating new product: ${err.response?.data || err.message}`
+  //     );
+  //     toast({
+  //       title: "Error",
+  //       description: `Error in adding new product`,
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-
+  
       const dataToSend = new FormData();
-
+  
       Object.keys(productData).forEach((key) => {
         if (Array.isArray(productData[key])) {
+          // Append each item in the array with the same key name
           productData[key].forEach((item) => {
-            dataToSend.append(key, item);
+            dataToSend.append(`${key}[]`, item);
           });
         } else {
           dataToSend.append(key, productData[key]);
         }
       });
+  
       dataToSend.append("categoryId", categoryId);
-
+  
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
       }
-
-      // Log FormData entries
-      for (let pair of dataToSend.entries()) {
-        console.log(pair[0] + ": " + pair[1]);
-      }
-
+  
       const response = await axios.post(
         `${BASE_URL}/products/add-product`,
         dataToSend,
@@ -175,13 +267,10 @@ const AddProductItemModal = ({
           },
         }
       );
-
-      console.log("response", response);
-
+  
       if (response.status === 201) {
         onAddProduct(response.data.data);
         setProductData({
-          categoryId,
           productName: "",
           price: "",
           minQuantityToOrder: "",
@@ -210,9 +299,7 @@ const AddProductItemModal = ({
         });
       }
     } catch (err) {
-      console.log(
-        `Error in creating new product: ${err.response?.data || err.message}`
-      );
+      console.log(`Error in creating new product: ${err.response?.data || err.message}`);
       toast({
         title: "Error",
         description: `Error in adding new product`,
@@ -224,7 +311,7 @@ const AddProductItemModal = ({
       setIsLoading(false);
     }
   };
-
+  
   return (
     <Modal
       title="Add Product"
