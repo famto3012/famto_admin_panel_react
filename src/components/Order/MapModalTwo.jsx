@@ -176,8 +176,26 @@ const MapModalTwo = ({ isVisible, onClose, setCoordinates, authToken }) => {
 
   useEffect(() => {
     if (isVisible) {
+      const getAuthToken = async () => {
+        try {
+          const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            setToken(response.data.data);
+            console.log(`AUTH TOKEN: ${response.data.data}`);
+          }
+        } catch (err) {
+          console.log(`Error in getting auth token`);
+        }
+      };
+
+      getAuthToken();
       initializeMap(); // Initialize map when modal is visible
-      setToken(authToken);
     }
 
     return () => {

@@ -270,6 +270,8 @@ const CustomOrder = ({ data }) => {
                 isVisible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 setCoordinates={setCoordinates}
+                BASE_URL={BASE_URL}
+                token={token}
               />
             </div>
           </div>
@@ -506,7 +508,7 @@ const CustomOrder = ({ data }) => {
               </button>
             </div>
 
-            {isFormVisible && <NewAddressTwo />} 
+            {isFormVisible && <NewAddressTwo />}
           </div>
 
           <div className="flex items-center">

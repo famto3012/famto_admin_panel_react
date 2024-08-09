@@ -2,6 +2,7 @@ import { Modal, Button } from "antd";
 import { mappls, mappls_plugin } from "mappls-web-maps";
 import { useEffect, useRef, useState } from "react";
 import { useMap } from "../../context/MapContext";
+import axios from "axios";
 
 const mapplsClassObject = new mappls();
 const mapplsPluginObject = new mappls_plugin();
@@ -64,12 +65,19 @@ const PlaceSearchPlugin = ({ map }) => {
   return null;
 };
 
-const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
+const MapModal = ({
+  isVisible,
+  onClose,
+  setCoordinates,
+  BASE_URL,
+  token,
+  location,
+}) => {
   const { map, setMap } = useMap(); // Use the context
   const markerRef = useRef(null);
   const mapContainerRef = useRef(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [token, setToken] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
 
   // Assuming the map object stores the container reference under a property like `_container`
   function getContainer(map) {
@@ -111,10 +119,24 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
       }
 
       setIsMapLoaded(true);
+
+      // Place initial marker if location prop is provided
+      let newMarker;
+
+      if (location) {
+        console.log("true");
+        const { lat, lng } = location;
+        console.log(lat, lng);
+        newMarker = mapplsClassObject.Marker({
+          map: newMap,
+          position: { lat, lng },
+          draggable: false,
+        });
+      }
     } else {
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
-        token,
+        authToken,
         { map: true, plugins: ["search"] },
         () => {
           console.log("Initializing new map instance.");
@@ -156,7 +178,19 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
                 markerRef.current.remove();
               }
 
-              const newMarker = mapplsClassObject.Marker({
+              let newMarker;
+
+              if (location) {
+                const { lat, lng } = location;
+                console.log(lat, lng);
+                newMarker = mapplsClassObject.Marker({
+                  map: newMap,
+                  position: { lat, lng },
+                  draggable: false,
+                });
+              }
+
+              newMarker = mapplsClassObject.Marker({
                 map: newMap,
                 position: { lat, lng },
                 draggable: false,
@@ -176,8 +210,27 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
 
   useEffect(() => {
     if (isVisible) {
+      console.log("Here");
+      const getAuthToken = async () => {
+        try {
+          const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            setAuthToken(response.data.data);
+            console.log(`AUTH TOKEN: ${response.data.data}`);
+          }
+        } catch (err) {
+          console.log(`Error in getting auth token`);
+        }
+      };
+
+      getAuthToken();
       initializeMap(); // Initialize map when modal is visible
-      setToken(authToken);
     }
 
     return () => {
@@ -185,7 +238,7 @@ const MapModal = ({ isVisible, onClose, setCoordinates, authToken }) => {
         setIsMapLoaded(false);
       }
     };
-  }, [isVisible, authToken, map]);
+  }, [isVisible, map]);
 
   return (
     <Modal
