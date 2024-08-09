@@ -87,6 +87,45 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
           </div>
         </div>
 
+        <div className="mb-4 flex ">
+          <label className="block text-gray-700">Delivery option</label>
+          <div className="flex items-center gap-[4rem]">
+            <label className="mr-4 ml-[12.5rem] cursor-pointer">
+              <input
+                type="radio"
+                name="deliveryOption"
+                value="On-demand"
+                checked={detail?.merchantDetail?.deliveryOption === "On-demand"}
+                onChange={handleInputChange}
+                className="mr-2  text-teal-600 focus:ring-teal-500"
+              />{" "}
+              On-demand
+            </label>
+            <label className="mr-4 cursor-pointer">
+              <input
+                type="radio"
+                name="deliveryOption"
+                value="Scheduled"
+                checked={detail?.merchantDetail?.deliveryOption === "Scheduled"}
+                onChange={handleInputChange}
+                className="mr-2  text-teal-600 focus:ring-teal-500"
+              />{" "}
+              Scheduled
+            </label>
+            <label className="mr-4 cursor-pointer">
+              <input
+                type="radio"
+                name="deliveryOption"
+                value="Both"
+                checked={detail?.merchantDetail?.deliveryOption === "Both"}
+                onChange={handleInputChange}
+                className="mr-2 text-teal-600 focus:ring-teal-500"
+              />{" "}
+              Both
+            </label>
+          </div>
+        </div>
+
         <div className="mb-4 flex">
           <label className="block mt-3 text-gray-700">
             Select Delivery time
