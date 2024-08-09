@@ -104,10 +104,10 @@ const EditIndividualModal = ({
       );
 
       if (IndBannerResponse.status === 200) {
-        onEditIndBanner(IndBannerResponse.data.data);
         setAdFile(null);
         setAdPreviewURL(null);
         handleCancel();
+        onEditIndBanner(IndBannerResponse.data.banner);
         toast({
           title: "Banner Updated.",
           description: "The banner was updated successfully.",

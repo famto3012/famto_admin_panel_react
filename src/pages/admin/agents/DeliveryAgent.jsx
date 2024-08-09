@@ -389,7 +389,7 @@ const DeliveryAgent = () => {
       ) : (
         <>
           <Sidebar />
-          <main className="pl-[300px] bg-gray-100 ">
+          <main className="pl-[300px] bg-gray-100 h-screen">
             <nav className="p-5">
               <GlobalSearch />
             </nav>
@@ -401,7 +401,7 @@ const DeliveryAgent = () => {
                   <CSVLink
                     data={agent}
                     headers={csvData}
-                    filename={"agentData.csv"}
+                    filename={"All_Agents_Data.csv"}
                   >
                     <ArrowDownOutlined /> <span>CSV</span>
                   </CSVLink>

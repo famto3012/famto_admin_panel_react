@@ -158,9 +158,7 @@ const Agentapp = () => {
               </p>
 
               <div className="flex items-center ml-14 gap-[30px] mx-10">
-                {/* {!notificationPreviewURL && (
-              <div className="bg-cyan-50 shadow-md h-16 w-16 rounded-md " />
-            )} */}
+             
                 {formData?.splashScreenUrl && !notificationPreviewURL && (
                   <figure className="h-16 w-16 rounded-md  relative">
                     <img

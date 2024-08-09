@@ -9,11 +9,13 @@ const EditNotificatioModal = ({
   handleCancel,
   token,
   BASE_URL,
+  onEditNewData,
   currentEdit,
 }) => {
   const navigate = useNavigate();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataLoading, setDataLoading] = useState(false);
   const [formData, setFormData] = useState({
     event: "",
     description: "",
@@ -68,6 +70,7 @@ const EditNotificatioModal = ({
   const signupAction = async (e) => {
     e.preventDefault();
     try {
+      setDataLoading(true);
       const editResponse = await axios.put(
         `${BASE_URL}/admin/notification/notification-setting/${currentEdit}`,
         formData,
@@ -76,7 +79,9 @@ const EditNotificatioModal = ({
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (editResponse === 201) {
+      if (editResponse.status === 200) {
+        handleCancel();
+        onEditNewData(editResponse.data.data);
         toast({
           title: "Notification Updated",
           description: "Notification Updated Successfully.",
@@ -94,9 +99,12 @@ const EditNotificatioModal = ({
         duration: 9000,
         isClosable: true,
       });
+    } finally {
+      setDataLoading(false);
     }
     console.log(formData);
   };
+
   return (
     <Modal
       title="Edit Notification"
@@ -115,6 +123,7 @@ const EditNotificatioModal = ({
               type="text"
               id="event"
               name="event"
+              placeholder={isLoading? "Loading data..." : ""}
               value={formData.event}
               onChange={handleInputChange}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -215,7 +224,7 @@ const EditNotificatioModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Save
+            {isDataLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

@@ -12,7 +12,7 @@ import EditTaxModal from "../../../components/model/Tax/EditTaxModal";
 import DeleteTaxModal from "../../../components/model/Tax/DeleteTaxModal";
 import { useNavigate } from "react-router-dom";
 import GIFLoader from "../../../components/GIFLoader";
-import { Spinner } from "@chakra-ui/react";
+import { Spinner, Toast, useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -21,6 +21,7 @@ const Tax = () => {
   const [allGeofence, setAllGeofence] = useState([]);
   const [allBusinessCategory, setBusinessCategory] = useState([]);
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
   const navigate = useNavigate();
 
   // Loading state
@@ -127,6 +128,13 @@ const Tax = () => {
             t._id === taxId ? { ...t, status: updatedStatus } : t
           )
         );
+        toast({
+          title:"Status Updated",
+          description:"Tax status Updated successfully.",
+          duration:900,
+          isClosable:true,
+          status:"success"
+        })
       }
     } catch (err) {
       console.log(`Error in toggling tax status: ${err}`);

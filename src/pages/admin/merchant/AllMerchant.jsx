@@ -86,14 +86,44 @@ const Merchant = () => {
     fetchInitialData();
   }, [token, role, navigate]);
 
-  const handleToggle = (id) => {
-    setAllMerchants((prevMerchant) =>
-      prevMerchant.map((merchant) =>
-        merchant.id === id
-          ? { ...merchant, status: !merchant.status }
-          : merchant
-      )
-    );
+  const handleToggle = async (id) => {
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/admin/change-status/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setAllMerchants((prevMerchants) =>
+          prevMerchants.map((merchant) =>
+            merchant._id === id
+              ? { ...merchant, isServiceableToday: merchant.isServiceableToday === "open" ? "closed" : "open" }
+              : merchant
+          )
+        );
+
+        toast({
+          title: "Status Change",
+          description: response.data.message,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in changing merchant status: ${err}`);
+      toast({
+        title: "Status Change Error",
+        description: `Error in changing merchant status`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleApprove = async (merchantId) => {
@@ -454,11 +484,9 @@ const Merchant = () => {
 
                         <td className="p-4">
                           <Switch
-                            checked={
-                              data.isServiceableToday === "open" ? true : false
-                            }
-                            onChange={() => handleToggle(data._id)}
-                          />
+                          checked={data.isServiceableToday === "open"}
+                          onChange={() => handleToggle(data._id)}
+                        />
                         </td>
                         <td className="p-4">
                           <div className="flex space-x-2 justify-center">

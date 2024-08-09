@@ -33,8 +33,8 @@ const EditPromoCodeModal = ({
 
   const [geofence, setGeofence] = useState([]);
   const [merchant, setMerchant] = useState([]);
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
+  const [promoImageFile, setPromoImageFile] = useState(null);
+  const [promoPreviewURL, setPromoPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
   const toast = useToast();
@@ -109,8 +109,8 @@ const EditPromoCodeModal = ({
       addPromoToSend.append("merchantId", formData.merchantId);
       addPromoToSend.append("geofenceId", formData.geofenceId);
 
-      if (notificationFile) {
-        addPromoToSend.append("promoImage", notificationFile);
+      if (promoImageFile) {
+        addPromoToSend.append("promoImage", promoImageFile);
       }
       const response = await axios.put(
         `${BASE_URL}/admin/promocode/edit-promocode/${currentPromoEdit}`,
@@ -142,11 +142,11 @@ const EditPromoCodeModal = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleNotificationImageChange = (e) => {
+  const promoCodeImageChange = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
+    setPromoImageFile(file);
+    setPromoPreviewURL(URL.createObjectURL(file));
   };
 
      // Helper function to format date to "yyyy-MM-dd"
@@ -357,7 +357,7 @@ const EditPromoCodeModal = ({
           <div className="flex">
             <label className="mt-16">Image (342px x 160px)</label>
             <div className=" flex items-center gap-[30px]">
-            {formData?.imageUrl && !notificationPreviewURL && (
+            {formData?.imageUrl && !promoPreviewURL && (
                   <figure className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md">
                     <img
                       src={formData?.imageUrl}
@@ -366,10 +366,10 @@ const EditPromoCodeModal = ({
                     />
                   </figure>
                 )}
-                {notificationPreviewURL && (
+                {promoPreviewURL && (
                   <figure className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md" >
                     <img
-                      src={notificationPreviewURL}
+                      src={promoPreviewURL}
                       alt="profile"
                       className="w-full rounded h-full object-cover"
                     />
@@ -380,7 +380,7 @@ const EditPromoCodeModal = ({
                 name="imageUrl"
                 id="imageUrl"
                 className="hidden"
-                onChange={handleNotificationImageChange}
+                onChange={promoCodeImageChange}
               />
               <label htmlFor="imageUrl" className="cursor-pointer ">
                 <MdCameraAlt

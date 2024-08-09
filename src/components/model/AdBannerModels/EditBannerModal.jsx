@@ -17,7 +17,7 @@ const EditBannerModal = ({
     name: "",
     merchantId: "",
     geofenceId: "",
-    appBannerImage: "",
+    bannerImage: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -43,7 +43,7 @@ const EditBannerModal = ({
             name: data.name,
             merchantId: data.merchantId,
             geofenceId: data.geofenceId,
-            appBannerImage: data.imageUrl,
+            bannerImage: data.imageUrl,
           });
         }
       } catch (err) {
@@ -66,11 +66,14 @@ const EditBannerModal = ({
     }));
   };
 
-  const handleAppBannerImageChange = async (e) => {
+  const handlebannerImageChange = async (e) => {
     e.preventDefault();
     const file = e.target.files[0];
+    console.log("Selected file:", file); // Log the file
+    if (file) {
       setSelectedFile(file);
       setPreviewURL(URL.createObjectURL(file));
+    }
   };
 
   const saveAction = async (e) => {
@@ -83,7 +86,7 @@ const EditBannerModal = ({
       appBannerDataToSend.append("name", appBanner.name);
       appBannerDataToSend.append("merchantId", appBanner.merchantId);
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
-      appBannerDataToSend.append("appBannerImage", selectedFile);
+      appBannerDataToSend.append("bannerImage", selectedFile);
 
       const addBannerResponse = await axios.put(
         `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
@@ -98,7 +101,7 @@ const EditBannerModal = ({
       );
 
       if (addBannerResponse.status === 200) {
-        onAddAppData(addBannerResponse.data.data);
+        onAddAppData(addBannerResponse.data.banner);
         handleCancel();
       } else {
         console.error("Failed to update banner:", addBannerResponse.data);
@@ -170,35 +173,36 @@ const EditBannerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
-            <div className=" flex items-center gap-[30px]">
-              {appBanner?.appBannerImage && !previewURL && (
-                <figure className="bg-gray-400  mt-10 h-16 w-16 rounded-md">
-                  <img
-                    src={appBanner?.appBannerImage}
-                    alt="profile"
-                    className="w-full rounded h-full object-cover"
-                  />
-                </figure>
-              )}
-              {previewURL && (
+            <div className="flex items-center gap-[30px]">
+              {previewURL ? (
                 <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
                   <img
                     src={previewURL}
-                    alt="profile"
+                    alt="Preview"
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
+              ) : (
+                appBanner?.bannerImage && (
+                  <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
+                    <img
+                      src={appBanner?.bannerImage}
+                      alt="Current"
+                      className="w-full rounded h-full object-cover"
+                    />
+                  </figure>
+                )
               )}
               <input
                 type="file"
-                name="appBannerImage"
-                id="appBannerImage"
+                name="bannerImage"
+                id="bannerImage"
                 className="hidden"
-                onChange={handleAppBannerImageChange}
+                onChange={handlebannerImageChange}
               />
-              <label htmlFor="appBannerImage" className="cursor-pointer ">
+              <label htmlFor="bannerImage" className="cursor-pointer">
                 <MdCameraAlt
-                  className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-10 rounded"
+                  className="bg-teal-800 text-[40px] text-white p-6 h-16 w-16 mt-10 rounded"
                   size={30}
                 />
               </label>

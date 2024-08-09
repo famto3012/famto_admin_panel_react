@@ -11,7 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import GIFLoader from "../../../components/GIFLoader";
+import { useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const PushNotification = () => {
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
@@ -20,11 +22,13 @@ const PushNotification = () => {
   const [type, setType] = useState("");
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [data, setData] = useState([]);
   const [geofence, setGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -96,8 +100,7 @@ const PushNotification = () => {
     e.preventDefault();
     try {
       console.log("formData", formData);
-
-      setIsLoading(true);
+      setIsDataLoading(true);
       const addpushToSend = new FormData();
       addpushToSend.append("title", formData.title);
       addpushToSend.append("description", formData.description);
@@ -122,12 +125,20 @@ const PushNotification = () => {
       );
 
       if (addPushResponse.status === 201) {
+        onAddNotification(addPushResponse.data.data);
+        toast({
+          title:"Notification Added",
+          description:"Notification Added Successfully.",
+          duration:900,
+          isClosable:true,
+          status:"success"
+        })
         console.log("MESSAGE:", addPushResponse.data);
       }
     } catch (err) {
       console.error(`Error in fetch datas : ${err.message}`);
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
 
     console.log(formData);
@@ -169,6 +180,13 @@ const PushNotification = () => {
       if (deleteResponse.status === 200) {
         removeBanner(currentData);
         handleConfirmDelete();
+        toast({
+          title:"Notification Deleted",
+          description:"Notification Deleted Successfully.",
+          status:"success",
+          duration:900,
+          isClosable:true
+        })
       }
     } catch (err) {
       console.error("Error in deleting banner:", err);
@@ -190,6 +208,13 @@ const PushNotification = () => {
         }
       );
       if (sendResponse.status === 200) {
+        toast({
+          title:"Notification Send",
+          description:"Push notification send successfully.",
+          duration:900,
+          isClosable:true,
+          status:"success"
+        })
         console.log("notification send", sendResponse.data.data);
       }
     } catch (err) {
@@ -258,6 +283,17 @@ const PushNotification = () => {
       console.log(`Error in fetching notification`, err);
     }
   };
+ 
+  const onAddNotification = (newNotification) => {
+    setData((prevNotification) => {
+      if (Array.isArray(prevNotification)) {
+        return [...prevNotification, newNotification];
+      } else {
+        return [newNotification];
+      }
+    })
+  }
+
   return (
     <div>
     {isLoading ? (
@@ -381,7 +417,7 @@ const PushNotification = () => {
                 className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 mr-10 text-white font-semibold justify-end"
                 type="submit"
               >
-                Confirm
+                {isDataLoading ? "Adding..." : "Save"}
               </button>
             </div>
           </form>

@@ -265,7 +265,7 @@ const Referral = () => {
           <div className="flex justify-end mt-10 mb-10 gap-4">
             <button
               className="bg-cyan-50 rounded-lg px-8 py-2 right-10 mb-5 mr-5 font-semibold justify-end"
-              type="submit"
+              type="button"
             >
               Cancel
             </button>

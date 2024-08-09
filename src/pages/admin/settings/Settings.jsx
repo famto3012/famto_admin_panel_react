@@ -52,7 +52,7 @@ const Settings = () => {
           title: "Change Password",
           description: "Admin Password Changed Successfully",
           status: "success",
-          duration: 9000,
+          duration: 900,
           isClosable: true,
         });
       }

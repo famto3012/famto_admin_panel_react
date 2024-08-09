@@ -17,6 +17,8 @@ const AlertNotification = () => {
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [searchType, setSearchType] = useState("");
   const [isShowModalDelete1, setIsShowModalDelete1] = useState(false);
   const [state, setState] = useState({
@@ -99,6 +101,7 @@ const AlertNotification = () => {
     formData.append("id", state.id);
     formData.append("userType", state.userType);
     try {
+      setConfirmLoading(true)
       const alertNotificationResponse = await axios.post(
         `${BASE_URL}/admin/notification/alert-notification`,
         formData,
@@ -112,9 +115,10 @@ const AlertNotification = () => {
       );
       if (alertNotificationResponse.status === 201) {
         toast({
-          title: "Alert notification send successfully",
+          title: "Notification Send",
+          description:"Alert notification send successfully",
           status: "success",
-          duration: 3000,
+          duration: 900,
           isClosable: true,
         });
         console.log("alertNotification", alertNotificationResponse.data);
@@ -122,7 +126,7 @@ const AlertNotification = () => {
     } catch (err) {
       console.error(`Error in fetching data: ${err}`);
     } finally {
-      setIsLoading(false);
+      setConfirmLoading(false);
     }
   };
 
@@ -149,6 +153,8 @@ const AlertNotification = () => {
 
   const handleDelete = async (id) => {
     try {
+      setIsDeleteLoading(true);
+
       const deleteResponse = await axios.delete(
         `${BASE_URL}/admin/notification/alert-notification/${id}`,
         {
@@ -158,19 +164,19 @@ const AlertNotification = () => {
       );
       if (deleteResponse.status === 200) {
         toast({
-          title: "Alert notification deleted successfully",
+          title: "Notification Deleted",
+          description:"Alert notification deleted successfully",
           status: "success",
-          duration: 3000,
+          duration: 900,
           isClosable: true,
         });
         console.log("delete", deleteResponse.data);
-        const updatedAlert = alert.filter((alert) => alert.id !== id);
-        setAlert(updatedAlert);
+        setAlert((prevAlert) => prevAlert.filter((alert) => alert._id !== id));
       }
     } catch (err) {
       console.error(`Error in deleting data: ${err}`);
     } finally {
-      setIsLoading(false);
+      setIsDeleteLoading(false);
     }
   };
 
@@ -327,10 +333,10 @@ const AlertNotification = () => {
                   Cancel
                 </button>
                 <button
-                  className="bg-teal-700 text-white py-2 px-10 rounded-md"
+                  className="bg-teal-800 text-white py-2 px-10 rounded-md"
                   type="submit"
                 >
-                  Confirm
+                  {confirmLoading ? "Sending..." : "Send"}
                 </button>
               </div>
             </div>
@@ -429,7 +435,7 @@ const AlertNotification = () => {
                               showModalCancelTask(alertItem._id);
                             }}
                           >
-                            Delete
+                            {isDeleteLoading ? "Deleting..." : "Delete"}
                           </button>
                         </div>
                       </Modal>
