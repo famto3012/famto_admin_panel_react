@@ -14,7 +14,7 @@ const EditAgentPricingModal = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [apricing, setApricing] = useState({
     ruleName: "",
     baseFare: "",
@@ -34,7 +34,6 @@ const EditAgentPricingModal = ({
     }
 
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/agent-pricing/${currentEditAr}`, {
@@ -44,14 +43,19 @@ const EditAgentPricingModal = ({
         ]);
         if (addResponse.status === 200) {
           console.log("data in response is", addResponse.data.data);
-          setApricing(addResponse.data.data);
+          const customGeofenceId = addResponse.data.data.geofenceId._id;
+          const updatedData = {
+            ...addResponse.data.data,
+            geofenceId: customGeofenceId,
+          };
+
+          setApricing(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
+      } 
+      
     };
 
     if (currentEditAr) {
@@ -66,6 +70,7 @@ const EditAgentPricingModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true);
       console.log("apricing", apricing);
       const editResponse = await axios.put(
         `${BASE_URL}/admin/agent-pricing/edit-agent-pricing/${currentEditAr}`,
@@ -98,9 +103,13 @@ const EditAgentPricingModal = ({
         isClosable: true,
       });
       console.log(`Error in fetching data:${err}`);
+    } finally {
+      
+      setConfirmLoading(false);
     }
     console.log(apricing);
   };
+  
   return (
     <Modal
       title="Agent Pricing"
@@ -229,28 +238,13 @@ const EditAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
-          {/* <div className="flex items-center">
-          <label className="w-1/3 text-gray-500" htmlFor="addedTip">
-            Added Tip
-          </label>
-          <input
-            className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-            type="text"
-            placeholder="Added Tip"
-            value={apricing.addedTip}
-            id="addedTip"
-            name="addedTip"
-            onChange={handleInputChange}
-          />
-        </div> */}
-
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
               Geofence
             </label>
             <select
               name="geofenceId"
-              value={apricing.geofenceId._id}
+              value={apricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >
@@ -273,7 +267,7 @@ const EditAgentPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+            {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

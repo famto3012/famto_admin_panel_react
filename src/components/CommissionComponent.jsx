@@ -39,7 +39,7 @@ const CommissionComponent = () => {
             headers:{Authorization:`Bearer ${token}`}
           }
         )
-        if(addResponse.status===201){
+        if(addResponse.status===200){
           console.log(isForm);
           toast({
             title:"Created",

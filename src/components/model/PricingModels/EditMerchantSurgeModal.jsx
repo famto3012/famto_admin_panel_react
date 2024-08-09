@@ -15,6 +15,7 @@ const EditMerchantSurgeModal = ({
   const toast = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading,setConfirmLoading] = useState(false)
   const [merchantSurge, setMerchantSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -30,7 +31,7 @@ const EditMerchantSurgeModal = ({
     }
 
     const fetchData = async () => {
-      setIsLoading(true);
+      
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/merchant-surge/${currentEditMs}`, {
@@ -40,14 +41,18 @@ const EditMerchantSurgeModal = ({
         ]);
         if (addResponse.status === 200) {
           console.log("data in response is", addResponse.data.data);
-          setMerchantSurge(addResponse.data.data);
+          const customGeofenceId = addResponse.data.data.geofenceId._id;
+          const updatedData = {
+            ...addResponse.data.data,
+            geofenceId: customGeofenceId,
+          };
+
+          setMerchantSurge(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
+      } 
     };
 
     if (currentEditMs) {
@@ -93,6 +98,8 @@ const EditMerchantSurgeModal = ({
         isClosable: true,
       });
       console.log(`Error in fetching data:${err}`);
+    } finally {
+    setConfirmLoading(false);
     }
     console.log(merchantSurge);
   };
@@ -182,7 +189,7 @@ const EditMerchantSurgeModal = ({
             </label>
             <select
               name="geofenceId"
-              value={merchantSurge.geofenceId._id}
+              value={merchantSurge.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={inputChange}
             >
@@ -209,7 +216,7 @@ const EditMerchantSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+            {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

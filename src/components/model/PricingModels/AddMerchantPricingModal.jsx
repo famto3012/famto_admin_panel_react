@@ -11,6 +11,7 @@ const AddMerchantPricingModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
+  const [confirmLoading,setConfirmLoading]= useState(false)
   const [mpricing, setMpricing] = useState({
     ruleName: "",
     baseFare: "",
@@ -30,6 +31,7 @@ const AddMerchantPricingModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
+      setConfirmLoading(true)
       console.log("merchantpricing", mpricing);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/merchant-pricing/add-merchant-pricing`,
@@ -62,6 +64,8 @@ const AddMerchantPricingModal = ({
         duration: 1000,
         isClosable: true,
       });
+    } finally {
+      setConfirmLoading(false)
     }
 
     console.log(mpricing);
@@ -245,7 +249,7 @@ const AddMerchantPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-            Add
+           {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>
