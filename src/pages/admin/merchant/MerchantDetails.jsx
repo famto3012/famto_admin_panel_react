@@ -26,6 +26,8 @@ const MerchantDetails = () => {
   const [allGeofence, setAllGeofence] = useState([]);
   const [allBusinessCategory, setBusinessCategory] = useState([]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   const { token, role } = useContext(UserContext);
   const { merchantId } = useParams();
@@ -93,65 +95,70 @@ const MerchantDetails = () => {
 
   const handleSaveMerchant = async (e) => {
     e.preventDefault();
-    // Form data preparation for image file and other data
-    const formData = new FormData();
 
-    for (const key in merchantData) {
-      if (Array.isArray(merchantData[key])) {
-        // If the key is an array, handle multiple files
-        merchantData[key].forEach((file, index) => {
-          if (file instanceof File) {
-            // Append each file with a unique key (e.g., 'merchantImage[0]', 'productImages[1]')
-            formData.append(`${key}[${index}]`, file);
-          } else {
-            // Handle other array data if necessary
-            formData.append(`${key}[${index}]`, JSON.stringify(file));
+    try {
+      setIsLoading(true);
+
+      console.log(merchantData);
+
+      const formData = new FormData();
+
+      function appendFormData(data, rootKey = "") {
+        if (data instanceof File) {
+          formData.append(rootKey, data);
+        } else if (
+          typeof data === "object" &&
+          !Array.isArray(data) &&
+          data !== null
+        ) {
+          for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+              appendFormData(data[key], rootKey ? `${rootKey}[${key}]` : key);
+            }
           }
-        });
-      } else if (merchantData[key] instanceof File) {
-        // Handle a single file
-        formData.append(key, merchantData[key]);
-      } else {
-        // Handle other data
-        formData.append(key, JSON.stringify(merchantData[key]));
+        } else if (Array.isArray(data)) {
+          data.forEach((item, index) => {
+            appendFormData(item, `${rootKey}[${index}]`);
+          });
+        } else {
+          formData.append(rootKey, data);
+        }
       }
-    }
 
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
+      // Assuming merchantData is your data object that you want to send
+      appendFormData(merchantData);
 
-    // console.log(merchantData);
-    // try {
-    //   const response = await axios.put(
-    //     `${BASE_URL}/merchants/admin/${merchantId}`,
-    //     formData,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-    //   if (response.status === 200) {
-    //     toast({
-    //       title: "Success",
-    //       description: "Merchant details updated successfully!",
-    //       status: "success",
-    //       duration: 5000,
-    //       isClosable: true,
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Error updating merchant details:", error);
-    //   toast({
-    //     title: "Error",
-    //     description: "Failed to update merchant details.",
-    //     status: "error",
-    //     duration: 5000,
-    //     isClosable: true,
-    //   });
-    // }
+      const response = await axios.put(
+        `${BASE_URL}/merchants/admin/update-merchant-details/${merchantId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast({
+          title: "Success",
+          description: "Merchant details updated successfully!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating merchant details:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update merchant details.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -233,7 +240,7 @@ const MerchantDetails = () => {
               type="submit"
               className="bg-teal-700 text-white px-10 py-3 rounded-md font-[500] hover:bg-teal-600"
             >
-              Save
+              {isLoading ? `Saving...` : `Save`}
             </button>
           </div>
         </form>

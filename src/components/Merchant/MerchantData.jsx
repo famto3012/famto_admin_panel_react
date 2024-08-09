@@ -42,6 +42,16 @@ const MerchantData = ({
     });
   };
 
+  const handlePrintLocation = (coordinates) => {
+    console.log(coordinates);
+    onDataChange({
+      merchantDetail: {
+        ...detail.merchantDetail,
+        location: [coordinates.latitude, coordinates.longitude],
+      },
+    });
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 xl:grid-cols-6 gap-2">
@@ -272,7 +282,7 @@ const MerchantData = ({
           <MapModal
             isVisible={showMapModal}
             onClose={toggleMapModal}
-            setCoordinates={handleInputChange}
+            setCoordinates={handlePrintLocation}
             location={MerchantData?.merchantDetail?.location}
             BASE_URL={BASE_URL}
             token={token}

@@ -1,4 +1,14 @@
 const MerchantAvailability = ({ detail, onDataChange }) => {
+  const daysOfWeek = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
+
   const handleAvailabilityTypeChange = (e) => {
     const { value } = e.target;
     onDataChange({
@@ -14,7 +24,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
   };
 
   const handleSpecificDayChange = (day, field, value) => {
-    // Only one of openAllDay, closedAllDay, or specificTime should be true
+    // Ensure that only one of openAllDay, closedAllDay, or specificTime is true
     const newSpecificDays = {
       ...detail.merchantDetail.availability.specificDays,
       [day]: {
@@ -64,6 +74,8 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
     });
   };
 
+  const availability = detail?.merchantDetail?.availability || {};
+
   return (
     <>
       <div className="mb-6 flex mt-10">
@@ -75,9 +87,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                 type="radio"
                 name="type"
                 value="Full-time"
-                checked={
-                  detail?.merchantDetail?.availability?.type === "Full-time"
-                }
+                checked={availability?.type === "Full-time"}
                 onChange={handleAvailabilityTypeChange}
                 className="me-2"
               />
@@ -88,9 +98,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                 type="radio"
                 name="type"
                 value="Specific-time"
-                checked={
-                  detail?.merchantDetail?.availability?.type === "Specific-time"
-                }
+                checked={availability?.type === "Specific-time"}
                 onChange={handleAvailabilityTypeChange}
                 className="me-2"
               />
@@ -99,7 +107,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
           </div>
         </div>
       </div>
-      {detail?.merchantDetail?.availability?.type === "Specific-time" && (
+      {availability?.type === "Specific-time" && (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
             <thead>
@@ -111,9 +119,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
               </tr>
             </thead>
             <tbody>
-              {Object.keys(
-                detail?.merchantDetail?.availability?.specificDays || {}
-              ).map((day, index) => (
+              {daysOfWeek.map((day, index) => (
                 <tr key={index}>
                   <td className="py-2 px-4 capitalize">{day}</td>
                   <td className="py-2 px-4 text-center">
@@ -121,9 +127,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                       type="radio"
                       name={`${day}.availability`}
                       checked={
-                        detail?.merchantDetail?.availability?.specificDays?.[
-                          day
-                        ]?.openAllDay || false
+                        availability?.specificDays?.[day]?.openAllDay || false
                       }
                       onChange={() =>
                         handleSpecificDayChange(day, "openAllDay", true)
@@ -136,9 +140,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                       type="radio"
                       name={`${day}.availability`}
                       checked={
-                        detail?.merchantDetail?.availability?.specificDays?.[
-                          day
-                        ]?.closedAllDay || false
+                        availability?.specificDays?.[day]?.closedAllDay || false
                       }
                       onChange={() =>
                         handleSpecificDayChange(day, "closedAllDay", true)
@@ -151,9 +153,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                       type="radio"
                       name={`${day}.availability`}
                       checked={
-                        detail?.merchantDetail?.availability?.specificDays?.[
-                          day
-                        ]?.specificTime || false
+                        availability?.specificDays?.[day]?.specificTime || false
                       }
                       onChange={() =>
                         handleSpecificDayChange(day, "specificTime", true)
@@ -161,17 +161,14 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                       className="mr-2"
                     />
                   </td>
-
-                  {detail?.merchantDetail?.availability?.specificDays?.[day]
-                    ?.specificTime && (
+                  {availability?.specificDays?.[day]?.specificTime && (
                     <>
                       <td>
                         <input
                           type="time"
                           name={`startTime`}
                           value={
-                            detail?.merchantDetail?.availability
-                              ?.specificDays?.[day]?.startTime || ""
+                            availability?.specificDays?.[day]?.startTime || ""
                           }
                           onChange={(e) =>
                             handleTimeChange(day, "startTime", e.target.value)
@@ -184,8 +181,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                           type="time"
                           name={`endTime`}
                           value={
-                            detail?.merchantDetail?.availability
-                              ?.specificDays?.[day]?.endTime || ""
+                            availability?.specificDays?.[day]?.endTime || ""
                           }
                           onChange={(e) =>
                             handleTimeChange(day, "endTime", e.target.value)
