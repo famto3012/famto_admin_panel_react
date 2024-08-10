@@ -215,7 +215,7 @@ const TakeAway = ({ data }) => {
           title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -225,7 +225,7 @@ const TakeAway = ({ data }) => {
         title: "Error",
         description: "Error in creating invoice",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
@@ -292,10 +292,10 @@ const TakeAway = ({ data }) => {
         console.log(data);
         setCartData(data);
         toast({
-          title: "Invoice",
+          title: "Success",
           description: "Invoice created successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -305,7 +305,7 @@ const TakeAway = ({ data }) => {
         title: "Error",
         description: "Error in creating invoice",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

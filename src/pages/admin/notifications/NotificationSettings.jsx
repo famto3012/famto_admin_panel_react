@@ -129,7 +129,7 @@ const NotificationSettings = () => {
             updatedStatus ? "enabled" : "disabled"
           }.`,
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }

@@ -32,7 +32,7 @@ const DeleteTaxModal = ({
         toast({
           title: "Success",
           description: response.data.message,
-          duration: 5000,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -42,7 +42,7 @@ const DeleteTaxModal = ({
       toast({
         title: "Error",
         description: `Error in deleting tax`,
-        duration: 5000,
+        duration: 3000,
         status: "error",
         isClosable: true,
       });

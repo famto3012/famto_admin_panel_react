@@ -45,10 +45,10 @@ const AddAgentSurgeModal = ({
         handleCancel();
         console.log("agentsurge", addResponse.data.message);
         toast({
-          title: "Creted",
+          title: "Success",
           description: "Agent Surge Created successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -58,7 +58,7 @@ const AddAgentSurgeModal = ({
         title: "Error",
         description: "There eas an error occured.",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

@@ -110,10 +110,10 @@ const Agentapp = () => {
         setNotificationPreviewURL(null);
         setNotificationFile(null);
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Agent App Updated Successfully",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -123,7 +123,7 @@ const Agentapp = () => {
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

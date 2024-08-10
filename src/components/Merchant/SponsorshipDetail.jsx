@@ -41,7 +41,7 @@ const SponsorshipDetail = ({
         toast({
           title: "Error",
           description: "Please select a plan",
-          duration: 5000,
+          duration: 3000,
           status: "error",
           isClosable: true,
         });
@@ -105,7 +105,7 @@ const SponsorshipDetail = ({
             toast({
               title: "Success",
               description: "Payment verified successfully",
-              duration: 5000,
+              duration: 3000,
               status: "success",
               isClosable: true,
             });
@@ -115,7 +115,7 @@ const SponsorshipDetail = ({
           toast({
             title: "Error",
             description: "Error in verifying payment",
-            duration: 5000,
+            duration: 3000,
             status: "error",
             isClosable: true,
           });

@@ -38,7 +38,7 @@ const DeleteVariantTypeModal = ({
           title: "Success",
           description: `Variant type deleted successfully`,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }

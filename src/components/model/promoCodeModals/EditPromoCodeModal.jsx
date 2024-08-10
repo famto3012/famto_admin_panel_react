@@ -124,9 +124,9 @@ const EditPromoCodeModal = ({
         handleCancel();
         onAddPromocode(response.data.data);
         toast({
-          title: "PromoCode Updated.",
+          title: "Success",
           description: "Promocode updated Successfully",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
           status: "success",
         });

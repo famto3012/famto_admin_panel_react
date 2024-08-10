@@ -84,10 +84,10 @@ const AddBannerModal = ({
         setNotificationPreviewURL(null);
         handleCancel();
         toast({
-          title: "Banner Created.",
+          title: "Success",
           description: "The banner was created successfully.",
           status: "success",
-          duration: 9000,
+          duration: 5000,
           isClosable: true,
         });
         // navigate(0)
@@ -109,7 +109,7 @@ const AddBannerModal = ({
         title: "Error",
         description: "There was an error creating the banner.",
         status: "error",
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     } finally {

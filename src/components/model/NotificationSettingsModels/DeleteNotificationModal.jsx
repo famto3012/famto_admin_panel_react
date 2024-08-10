@@ -28,10 +28,10 @@ const DeleteNotificationModal = ({
         remove(currentDelete);
         handleConfirmDelete();
         toast({
-          title: "Deleted",
+          title: "Success",
           description: "Notification Deleted Successfully",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -42,7 +42,7 @@ const DeleteNotificationModal = ({
         title: "Error",
         description: "There was an error creating the banner.",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

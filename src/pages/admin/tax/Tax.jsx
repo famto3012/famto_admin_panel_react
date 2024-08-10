@@ -129,9 +129,9 @@ const Tax = () => {
           )
         );
         toast({
-          title:"Status Updated",
+          title:"Success",
           description:"Tax status Updated successfully.",
-          duration:900,
+          duration: 3000,
           isClosable:true,
           status:"success"
         })

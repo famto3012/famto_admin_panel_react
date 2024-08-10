@@ -162,7 +162,7 @@ const Geofence = () => {
       );
       if (deleteResponse.status === 200) {
         toast({
-          title: "Geofence deleted successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,

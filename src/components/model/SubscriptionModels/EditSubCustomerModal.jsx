@@ -78,10 +78,10 @@ const EditSubCustomerModal =  ({
         if (updateResponse.status === 200) {
           handleCancel();
           toast({
-            title: "Updated",
+            title: "Success",
             description: "Customer Subscription Updated successfully.",
             status: "success",
-            duration: 1000,
+            duration: 3000,
             isClosable: true,
           });
           console.log("edited data", customerData);
@@ -91,7 +91,7 @@ const EditSubCustomerModal =  ({
           title: "Error",
           description: "There was an error occured.",
           status: "error",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
         console.log(`Error in fetching data:${err}`);

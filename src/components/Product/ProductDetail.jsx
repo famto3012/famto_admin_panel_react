@@ -161,7 +161,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           title: "Success",
           description: "Variant added successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -183,7 +183,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
         title: "Error",
         description: "Error in adding new variants",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
@@ -211,7 +211,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           title: "Success",
           description: "Variant updated successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -221,7 +221,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
         title: "Error",
         description: "Error in updating variant",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

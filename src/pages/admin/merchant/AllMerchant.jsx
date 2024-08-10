@@ -232,20 +232,20 @@ const Merchant = () => {
         );
 
         toast({
-          title: "Status Change",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.log(`Error in changing merchant status: ${err}`);
       toast({
-        title: "Status Change Error",
+        title: "Error",
         description: `Error in changing merchant status`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -272,20 +272,20 @@ const Merchant = () => {
         );
 
         toast({
-          title: "Approval",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.log(`Error in approving merchant: ${err}`);
       toast({
-        title: "Approval",
+        title: "Error",
         description: `Error in approving merchant`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -308,20 +308,20 @@ const Merchant = () => {
         );
 
         toast({
-          title: "Reject",
-          description: response.data.message,
+          title: "Success",
+          description: "Rejected Merchant Successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.log(`Error in rejecting merchant: ${err}`);
       toast({
-        title: "Reject",
+        title: "Error",
         description: `Error in rejecting merchant`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -331,12 +331,108 @@ const Merchant = () => {
     setIsModalVisible(!isModalVisible);
   };
 
+  useEffect(() => {
+    const filterHandler = async () => {
+      try {
+        if (!serviceable && !geofence && !businessCategory) return;
+        setIsTableLoading(true);
+
+        let endpoint = `${BASE_URL}/merchants/admin/filter`;
+
+        const params = [];
+        if (serviceable) params.push(`serviceable=${serviceable}`);
+        if (geofence) params.push(`geofence=${geofence}`);
+        if (businessCategory)
+          params.push(`businessCategory=${businessCategory}`);
+
+        if (params.length > 0) {
+          endpoint += `?${params.join("&")}`;
+        }
+
+        const response = await axios.get(endpoint, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          setAllMerchants(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in filtering merchant: ${err}`);
+
+        toast({
+          title: "Error",
+          description: `Error in filtering merchant`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
+    filterHandler();
+  }, [serviceable, geofence, businessCategory, token, role]);
   const onSearch = (e) => {
     let text = e.target.value;
     setSearch(text);
     console.log(search);
   };
+  useEffect(() => {
+    const handleSearchMerchant = async () => {
+      try {
+        if (search.trim() !== "") {
+          setIsTableLoading(true);
 
+          const response = await axios.get(
+            `${BASE_URL}/merchants/admin/search`,
+            {
+              params:{query : search},
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (response.status === 200) {
+            setAllMerchants(response.data.data);
+          }
+        }
+      } catch (err) {
+        console.log(
+          `Error in searching orders: ${err.response?.data || err.message}`
+        );
+
+        toast({
+          title: "Error",
+          description: `Error in searching merchant`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
+    const timeOut = setTimeout(() => {
+      handleSearchMerchant();
+    }, 500);
+
+    return () => {
+      clearTimeout(timeOut);
+    };
+  },[search]);
+
+  const csvData = [
+    { label: "Merchant ID", key: "_id" },
+    { label: "Merchant Name", key: "merchantName" },
+    { label: "Phone Number", key: "phoneNumber" },
+    { label: "Average Rating", key: "averageRating" },
+    { label: "Approved", key: "isApproved" },
+    { label: "Serviceable Today", key: "isServiceableToday" },
+    { label: "Geofence", key: "geofence" },
+  ];
   return (
     <div>
       {isLoading ? (

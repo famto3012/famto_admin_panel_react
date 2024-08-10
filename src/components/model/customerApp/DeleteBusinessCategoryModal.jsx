@@ -32,10 +32,10 @@ const DeleteBusinessCategoryModal = ({
         onDeleteCategory(categoryId);
         onCancel();
         toast({
-          title: "Banner Deleted",
+          title: "Success",
           description: "The banner was deleted successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -44,7 +44,7 @@ const DeleteBusinessCategoryModal = ({
           title: "Error",
           description: "Failed to delete the banner. Unexpected status code.",
           status: "error",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -54,7 +54,7 @@ const DeleteBusinessCategoryModal = ({
         title: "Error",
         description: "Failed to delete the banner.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

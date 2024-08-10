@@ -104,6 +104,14 @@ const PushNotification = () => {
       );
 
       if (addPushResponse.status === 201) {
+        onAddNotification(addPushResponse.data.data);
+        toast({
+          title:"Success",
+          description:"Notification Added Successfully.",
+          duration:3000,
+          isClosable:true,
+          status:"success"
+        })
         console.log("MESSAGE:", addPushResponse.data);
       }
     } catch (err) {
@@ -165,6 +173,13 @@ const PushNotification = () => {
       if (deleteResponse.status === 200) {
         removeBanner(currentData);
         handleConfirmDelete();
+        toast({
+          title:"Success",
+          description:"Notification Deleted Successfully.",
+          status:"success",
+          duration:3000,
+          isClosable:true
+        })
       }
     } catch (err) {
       console.error("Error in deleting banner:", err);
@@ -183,6 +198,13 @@ const PushNotification = () => {
         }
       );
       if (sendResponse.status === 200) {
+        toast({
+          title:"Success",
+          description:"Push notification send successfully.",
+          duration:3000,
+          isClosable:true,
+          status:"success"
+        })
         console.log("notification send", sendResponse.data.data);
       }
     } catch (err) {

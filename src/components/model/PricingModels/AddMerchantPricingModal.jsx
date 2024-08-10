@@ -48,10 +48,10 @@ const AddMerchantPricingModal = ({
         handleCancel();
         console.log("adddata", addResponse.data.message);
         toast({
-          title: "Created",
+          title: "Success",
           description: "Merchant Pricing Created Successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -61,7 +61,7 @@ const AddMerchantPricingModal = ({
         title: "Error",
         description: "There was an error occured.",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

@@ -28,10 +28,10 @@ const DeleteMerchantSurgeModal = ({
         removeMs(currentDeleteMs);
         handleConfirmDeleteMs();
         toast({
-          title: "Deleted",
+          title: "Success",
           description: "Merchant Surge Deleted successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -41,7 +41,7 @@ const DeleteMerchantSurgeModal = ({
         title: "Error",
         description: "There was an error occured.",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

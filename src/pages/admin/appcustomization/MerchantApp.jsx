@@ -114,10 +114,10 @@ const MerchantApp = () => {
         setNotificationFile(null);
         
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Merchant App Updated Successfully",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -127,7 +127,7 @@ const MerchantApp = () => {
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

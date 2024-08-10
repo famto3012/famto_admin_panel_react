@@ -4,16 +4,16 @@ import { Modal } from "antd";
 const ImageModal = ({ isVisible, handleClose, imageUrl }) => {
   return (
     <Modal
-      isOpen={isVisible}
+      open={isVisible}
       onCancel={handleClose}
       footer={null}
       centered
-      width="50%"
+      width="40rem"
     >
       <img
         src={imageUrl}
         alt="Enlarged"
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain pt-5"
       />
     </Modal>
   );

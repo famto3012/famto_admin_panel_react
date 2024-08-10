@@ -45,10 +45,10 @@ const AddMerchantSurgeModal = ({
         handleCancel();
         console.log("merchantSurge", addResponse.data.message);
         toast({
-          title: "Created",
+          title: "Success",
           description: "Merchant Surge Created successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -58,7 +58,7 @@ const AddMerchantSurgeModal = ({
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
