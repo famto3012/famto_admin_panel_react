@@ -10,25 +10,19 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
-import GIFLoader from "../../../components/GIFLoader";
-import { useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-
 const PushNotification = () => {
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentData, setCurrentData] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
   const [type, setType] = useState("");
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState(false);
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
-  const toast = useToast();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -38,7 +32,6 @@ const PushNotification = () => {
     driver: false,
     pushNotificationImage: "",
   });
-
   useEffect(() => {
     if (!token || role !== "Admin") {
       navigate("auth/login");
@@ -77,30 +70,16 @@ const PushNotification = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  // function for post Add Data in Notification
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleNotificationImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
-  };
-
-  const onChange = (name, checked) => {
-    setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
-    console.log(formData.customer);
-    console.log(formData.merchant);
-    console.log(formData.driver);
   };
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
       console.log("formData", formData);
-      setIsDataLoading(true);
+
+      setIsLoading(true);
       const addpushToSend = new FormData();
       addpushToSend.append("title", formData.title);
       addpushToSend.append("description", formData.description);
@@ -138,13 +117,27 @@ const PushNotification = () => {
     } catch (err) {
       console.error(`Error in fetch datas : ${err.message}`);
     } finally {
-      setIsDataLoading(false);
+      setIsLoading(false);
     }
 
     console.log(formData);
   };
 
-  // Modal for Delete
+  const handleNotificationImageChange = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setNotificationFile(file);
+    setNotificationPreviewURL(URL.createObjectURL(file));
+  };
+
+  const onChange = (name, checked) => {
+    setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
+    console.log(formData.customer);
+    console.log(formData.merchant);
+    console.log(formData.driver);
+  };
+
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
   const showModalDelete = (dataId) => {
     setCurrentData(dataId);
@@ -156,6 +149,7 @@ const PushNotification = () => {
     setData(data.filter((data) => data._id !== dataId));
   };
 
+  // New function to handle confirm delete
   const handleConfirmDelete = () => {
     setIsShowModalDelete(false);
     setCurrentManager(null);
@@ -164,7 +158,6 @@ const PushNotification = () => {
   const handleCancel = () => {
     setIsShowModalDelete(false);
   };
-
   const handleDelete = async (currentData) => {
     try {
       setConfirmLoading(true);
@@ -194,9 +187,6 @@ const PushNotification = () => {
       setConfirmLoading(false);
     }
   };
-
-  //Function for send Notification
-
   const sendNotification = async (id) => {
     try {
       const sendResponse = await axios.post(
@@ -221,8 +211,6 @@ const PushNotification = () => {
       console.error("Error in send notification:", err);
     }
   };
-
-  //Function for type user filter
 
   const onTypeChange = (e) => {
     const selectedType = e.target.value;
@@ -252,9 +240,6 @@ const PushNotification = () => {
       console.log(`Error in fetching notification`, err);
     }
   };
-
-  // Function for search
-
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -283,173 +268,88 @@ const PushNotification = () => {
       console.log(`Error in fetching notification`, err);
     }
   };
- 
-  const onAddNotification = (newNotification) => {
-    setData((prevNotification) => {
-      if (Array.isArray(prevNotification)) {
-        return [...prevNotification, newNotification];
-      } else {
-        return [newNotification];
-      }
-    })
-  }
-
   return (
-    <div>
-      {isLoading ? (
-        <GIFLoader />
-      ) : (
-        <>
-          <Sidebar />
-          <div className="pl-[300px] bg-gray-100">
-            <div className="p-5">
-              <GlobalSearch />
+    <>
+      <Sidebar />
+      <div className="pl-[300px] bg-gray-100">
+        <div className="p-5">
+          <GlobalSearch />
+        </div>
+        <header className="font-bold ml-5">Push Notifications</header>
+        <div className="bg-white text-[16px] mx-5 rounded-lg mt-5 text-gray-700">
+          <form onSubmit={submitAction}>
+            <div className="flex">
+              <label className="mt-10 ml-10">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                className="border-2 border-gray-300 rounded ml-60 mt-10  w-96 p-2 outline-none focus:outline-none"
+                onChange={handleInputChange}
+              />
             </div>
-            <header className="font-bold ml-5">Push Notifications</header>
-            <div className="bg-white text-[16px] mx-5 rounded-lg mt-5 text-gray-700">
-              <form onSubmit={submitAction}>
-                <div className="flex">
-                  <label className="mt-10 ml-10">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    className="border-2 border-gray-300 rounded ml-60 mt-10  w-96 p-2 outline-none focus:outline-none"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="flex">
-                  <label className="mt-10 ml-10 w-48">
-                    Description (This note will be shown in notification.)
-                  </label>
-                  <input
-                    type="text"
-                    name="description"
-                    value={formData.description}
-                    className="border-2 border-gray-300 rounded  mt-10 ml-20  w-96 outline-none focus:outline-none p-2"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="flex">
-                  <label className="mt-10 ml-10">Geofence</label>
-                  <select
-                    name="geofenceId"
-                    value={formData.geofenceId}
-                    className="border-2 border-gray-300 rounded ml-52 mt-10  w-96 p-2 focus:outline-none"
-                    onChange={handleInputChange}
-                  >
-                    <option hidden value="">
-                      {" "}
-                      Geofence
-                    </option>
-                    {geofence.map((geoFence) => (
-                      <option value={geoFence._id} key={geoFence._id}>
-                        {geoFence.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex">
-                  <label className="mt-16 ml-10">Image (342px x 160px)</label>
-                  <div className=" flex items-center gap-[30px]">
-                    {!notificationPreviewURL && (
-                      <div className="bg-gray-400 ml-[115px] mt-10 h-20 w-20 rounded-md" />
-                    )}
-                    {notificationPreviewURL && (
-                      <figure className="ml-[115px] mt-10 h-20 w-20 rounded-mdrelative">
-                        <img
-                          src={notificationPreviewURL}
-                          alt="profile"
-                          className="w-full rounded h-full object-cover "
-                        />
-                      </figure>
-                    )}
-                    <input
-                      type="file"
-                      name="pushNotificationImage"
-                      id="pushNotificationImage"
-                      className="hidden"
-                      onChange={handleNotificationImageChange}
-                    />
-                    <label
-                      htmlFor="pushNotificationImage"
-                      className="cursor-pointer "
-                    >
-                      <MdCameraAlt
-                        className=" bg-teal-800  text-[40px] text-white p-6 h-20 w-20 mt-10 rounded"
-                        size={30}
-                      />
-                    </label>
-                  </div>
-                </div>
-                <div className="flex">
-                  <label className="mt-10 ml-10">Customer App</label>
-                  <Switch
-                    className="mt-11 ml-44"
-                    onChange={(checked) => onChange("customer", checked)}
-                    name="agent"
-                  />
-                </div>
-                <div className="flex">
-                  <label className="mt-10 ml-10">Merchant App</label>
-                  <Switch
-                    className="mt-11 ml-[175px]"
-                    onChange={(checked) => onChange("merchant", checked)}
-                    name="merchant"
-                  />
-                </div>
-                <div className="flex">
-                  <label className="mt-10 ml-10">Driver App</label>
-                  <Switch
-                    className="mt-11 ml-[200px]"
-                    onChange={(checked) => onChange("driver", checked)}
-                    name="driver"
-                  />
-                </div>
-                <div className="flex justify-end  mb-10 gap-4">
-                  <button
-                    className="bg-gray-200 rounded-lg px-8 py-2 right-10 mb-5 mr-5 font-semibold justify-end"
-                    type="submit"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 mr-10 text-white font-semibold justify-end"
-                    type="submit"
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </form>
+            <div className="flex">
+              <label className="mt-10 ml-10 w-48">
+                Description (This note will be shown in notification.)
+              </label>
+              <input
+                type="text"
+                name="description"
+                value={formData.description}
+                className="border-2 border-gray-300 rounded  mt-10 ml-20  w-96 outline-none focus:outline-none p-2"
+                onChange={handleInputChange}
+              />
             </div>
-            <p className="font-bold ml-5">Push Notification log</p>
-            <div className="bg-white mx-5 rounded-lg mt-5 flex p-8 justify-between">
+            <div className="flex">
+              <label className="mt-10 ml-10">Geofence</label>
               <select
-                name="type"
-                value={type}
-                onChange={onTypeChange}
-                className="bg-blue-50 rounded-lg p-3 outline-none focus:outline-none"
+                name="geofenceId"
+                value={formData.geofenceId}
+                className="border-2 border-gray-300 rounded ml-52 mt-10  w-96 p-2 focus:outline-none"
+                onChange={handleInputChange}
               >
                 <option hidden value="">
-                  Type of user
+                  {" "}
+                  Geofence
                 </option>
-                <option value="customer">Customer</option>
-                <option value="merchant">Merchant</option>
-                <option value="driver">Driver</option>
+                {geofence.map((geoFence) => (
+                  <option value={geoFence._id} key={geoFence._id}>
+                    {geoFence.name}
+                  </option>
+                ))}
               </select>
-              <div>
-                <FilterAltOutlined className="text-gray-500" />
+            </div>
+            <div className="flex">
+              <label className="mt-16 ml-10">Image (342px x 160px)</label>
+              <div className=" flex items-center gap-[30px]">
+                {!notificationPreviewURL && (
+                  <div className="bg-gray-400 ml-[115px] mt-10 h-20 w-20 rounded-md" />
+                )}
+                {notificationPreviewURL && (
+                  <figure className="ml-[115px] mt-10 h-20 w-20 rounded-mdrelative">
+                    <img
+                      src={notificationPreviewURL}
+                      alt="profile"
+                      className="w-full rounded h-full object-cover "
+                    />
+                  </figure>
+                )}
                 <input
-                  type="search"
-                  name="search"
-                  placeholder="search push notification name"
-                  className="bg-gray-100 h-10 px-5 pr-10 rounded-full ml-5 w-72 text-sm focus:outline-none"
-                  value={searchFilter}
-                  onChange={onSearchChange}
+                  type="file"
+                  name="pushNotificationImage"
+                  id="pushNotificationImage"
+                  className="hidden"
+                  onChange={handleNotificationImageChange}
                 />
-                <button type="submit" className="absolute right-16 mt-2">
-                  <SearchOutlined className="text-xl text-gray-600" />
-                </button>
+                <label
+                  htmlFor="pushNotificationImage"
+                  className="cursor-pointer "
+                >
+                  <MdCameraAlt
+                    className=" bg-teal-800  text-[40px] text-white p-6 h-20 w-20 mt-10 rounded"
+                    size={30}
+                  />
+                </label>
               </div>
             </div>
             <div className="flex">
@@ -463,7 +363,7 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10">Merchant App</label>
               <Switch
-                className="mt-11 ml-[175px]"
+                className="mt-11 ml-[200px]"
                 onChange={(checked) => onChange("merchant", checked)}
                 name="merchant"
               />
@@ -487,7 +387,7 @@ const PushNotification = () => {
                 className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 mr-10 text-white font-semibold justify-end"
                 type="submit"
               >
-                {isDataLoading ? "Adding..." : "Save"}
+                Confirm
               </button>
             </div>
           </form>
@@ -585,85 +485,34 @@ const PushNotification = () => {
                       open={isShowModalDelete}
                       centered
                     >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((data) => (
-                  <tr key={data._id} className="text-center bg-white h-20">
-                    <td>
-                      {data.customer && data.driver && data.merchant
-                        ? "All"
-                        : type}
-                    </td>
-                    <td>{data.description}</td>
-                    <td className=" flex items-center justify-center p-3">
-                      <figure className="h-[70px] w-[100px]">
-                        <img
-                          src={data.imageUrl}
-                          className="w-full h-full object-contain"
-                        />
-                      </figure>
-                    </td>
-                    <td>
-                      <Switch checked={data.customer} />
-                    </td>
-                    <td>
-                      <Switch checked={data.driver} />
-                    </td>
-                    <td>
-                      <Switch checked={data.merchant} />
-                    </td>
-
-                    <td>
-                      <div className="flex items-center justify-center gap-3">
-                        <button onClick={() => sendNotification(data._id)}>
-                          <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
+                      <p className="font-semibold text-[18px] mb-5">
+                        <Spin spinning={confirmLoading}>
+                          Are you sure want to delete?
+                        </Spin>
+                      </p>
+                      <div className="flex justify-end">
+                        <button
+                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                          onClick={handleCancel}
+                        >
+                          Cancel
                         </button>
                         <button
-                          className="outline-none focus:outline-none"
-                          onClick={() => showModalDelete(data._id)}
+                          className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                          onClick={() => handleDelete(currentData)}
                         >
-                          <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                          Delete
                         </button>
-                        <Modal
-                          onCancel={handleCancel}
-                          footer={null}
-                          open={isShowModalDelete}
-                          centered
-                        >
-                          <p className="font-semibold text-[18px] mb-5">
-                            <Spin spinning={confirmLoading}>
-                              Are you sure want to delete?
-                            </Spin>
-                          </p>
-                          <div className="flex justify-end">
-                            <button
-                              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                              onClick={handleCancel}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                              onClick={() => handleDelete(currentData)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </Modal>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-    </div>
+                    </Modal>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 

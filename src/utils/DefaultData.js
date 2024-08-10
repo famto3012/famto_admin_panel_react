@@ -63,11 +63,21 @@ const agentPayoutCSVDataHeading = [
   { label: "Status Approval", key: "paymentSettled" },
 ];
 
+const allMerchantCSVDataHeading = [
+  { label: "Merchant ID", key: "_id" },
+  { label: "Merchant Name", key: "merchantName" },
+  { label: "Phone Number", key: "phoneNumber" },
+  { label: "Average Rating", key: "averageRating" },
+  { label: "Approved", key: "isApproved" },
+  { label: "Serviceable Today", key: "isServiceableToday" },
+  { label: "Geofence", key: "geofence" },
+];
 
 export {
   itemTypes,
   allCustomerCSVDataHeading,
   allOrdersCSVDataHeading,
   orderBillCSVDatHeading,
-  agentPayoutCSVDataHeading
+  agentPayoutCSVDataHeading,
+  allMerchantCSVDataHeading,
 };
