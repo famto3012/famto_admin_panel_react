@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import {
-  SearchOutlined,
   PlusOutlined,
   ArrowDownOutlined,
   CheckCircleOutlined,
@@ -8,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal, Switch } from "antd";
+import { Switch } from "antd";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
@@ -17,6 +16,8 @@ import axios from "axios";
 import { CSVLink } from "react-csv";
 import AddMerchant from "../../../components/model/Merchant/AddMerchant";
 import { useToast } from "@chakra-ui/react";
+import { allMerchantCSVDataHeading } from "../../../utils/DefaultData";
+import { Pagination } from "@mui/material";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -34,6 +35,10 @@ const Merchant = () => {
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [pagination, setPagination] = useState({});
+
   const { token, role } = useContext(UserContext);
 
   const toast = useToast();
@@ -49,30 +54,25 @@ const Merchant = () => {
       try {
         setIsLoading(true);
 
-        const [merchantResponse, geofenceResponse, businessCategoryResponse] =
-          await Promise.all([
-            axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
+        const [geofenceResponse, businessCategoryResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+
+          axios.get(
+            `${BASE_URL}/admin/business-categories/get-all-business-category`,
+            {
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
-            }),
-            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            axios.get(
-              `${BASE_URL}/admin/business-categories/get-all-business-category`,
-              {
-                withCredentials: true,
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            ),
-          ]);
-        if (merchantResponse.status === 200) {
-          setAllMerchants(merchantResponse.data.data);
-        }
+            }
+          ),
+        ]);
+
         if (geofenceResponse.status === 200) {
           setAllGeofences(geofenceResponse.data.geofences);
         }
+
         if (businessCategoryResponse.status === 200) {
           setAllBusinessCategories(businessCategoryResponse.data.data);
         }
@@ -84,7 +84,128 @@ const Merchant = () => {
     };
 
     fetchInitialData();
-  }, [token, role, navigate]);
+    fetchAllMerchants();
+  }, [token, role, page, limit]);
+
+  useEffect(() => {
+    if (!serviceable && !geofence && !businessCategory) return;
+
+    const filterHandler = async () => {
+      try {
+        setIsTableLoading(true);
+
+        let endpoint = `${BASE_URL}/merchants/admin/filter`;
+
+        const params = [];
+        if (serviceable) params.push(`serviceable=${serviceable}`);
+        if (geofence) params.push(`geofence=${geofence}`);
+        if (businessCategory)
+          params.push(`businessCategory=${businessCategory}`);
+
+        if (params.length > 0) {
+          endpoint += `?${params.join("&")}`;
+        }
+
+        const response = await axios.get(endpoint, {
+          params: { page, limit },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          setAllMerchants(response.data.data);
+          setPagination(response.data.pagination);
+        }
+      } catch (err) {
+        console.log(`Error in filtering merchant: ${err}`);
+
+        toast({
+          title: "Error",
+          description: `Error in filtering merchant`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
+    filterHandler();
+  }, [serviceable, geofence, businessCategory, token, role]);
+
+  useEffect(() => {
+    const handleSearchMerchant = async () => {
+      try {
+        setIsTableLoading(true);
+        if (search.trim() !== "") {
+          setIsTableLoading(true);
+
+          const response = await axios.get(
+            `${BASE_URL}/merchants/admin/search`,
+            {
+              params: { query: search, page, limit },
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (response.status === 200) {
+            setAllMerchants(response.data.data);
+            setPagination(response.data.pagination);
+          }
+        } else {
+          fetchAllMerchants();
+        }
+      } catch (err) {
+        console.log(
+          `Error in searching orders: ${err.response?.data || err.message}`
+        );
+
+        toast({
+          title: "Error",
+          description: `Error in searching merchant`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
+    const timeOut = setTimeout(() => {
+      handleSearchMerchant();
+    }, 500);
+
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, [search, token, role, page, limit]);
+
+  const fetchAllMerchants = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/merchants/admin/all-merchants`,
+        {
+          params: { page, limit },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setAllMerchants(response.data.data);
+        setPagination(response.data.pagination);
+      }
+    } catch (err) {
+      console.log(`Error in getting all merchants`);
+    }
+  };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const handleToggle = async (id) => {
     try {
@@ -101,7 +222,11 @@ const Merchant = () => {
         setAllMerchants((prevMerchants) =>
           prevMerchants.map((merchant) =>
             merchant._id === id
-              ? { ...merchant, isServiceableToday: merchant.isServiceableToday === "open" ? "closed" : "open" }
+              ? {
+                  ...merchant,
+                  isServiceableToday:
+                    merchant.isServiceableToday === "open" ? "closed" : "open",
+                }
               : merchant
           )
         );
@@ -206,110 +331,11 @@ const Merchant = () => {
     setIsModalVisible(!isModalVisible);
   };
 
-  useEffect(() => {
-    const filterHandler = async () => {
-      try {
-        if (!serviceable && !geofence && !businessCategory) return;
-        setIsTableLoading(true);
-
-        let endpoint = `${BASE_URL}/merchants/admin/filter`;
-
-        const params = [];
-        if (serviceable) params.push(`serviceable=${serviceable}`);
-        if (geofence) params.push(`geofence=${geofence}`);
-        if (businessCategory)
-          params.push(`businessCategory=${businessCategory}`);
-
-        if (params.length > 0) {
-          endpoint += `?${params.join("&")}`;
-        }
-
-        const response = await axios.get(endpoint, {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.status === 200) {
-          setAllMerchants(response.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in filtering merchant: ${err}`);
-
-        toast({
-          title: "Error",
-          description: `Error in filtering merchant`,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      } finally {
-        setIsTableLoading(false);
-      }
-    };
-
-    filterHandler();
-  }, [serviceable, geofence, businessCategory, token, role]);
-
   const onSearch = (e) => {
     let text = e.target.value;
     setSearch(text);
     console.log(search);
   };
-
-  useEffect(() => {
-    const handleSearchMerchant = async () => {
-      try {
-        if (search.trim() !== "") {
-          setIsTableLoading(true);
-
-          const response = await axios.get(
-            `${BASE_URL}/merchants/admin/search`,
-            {
-              params:{query : search},
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          if (response.status === 200) {
-            setAllMerchants(response.data.data);
-          }
-        }
-      } catch (err) {
-        console.log(
-          `Error in searching orders: ${err.response?.data || err.message}`
-        );
-
-        toast({
-          title: "Error",
-          description: `Error in searching merchant`,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      } finally {
-        setIsTableLoading(false);
-      }
-    };
-
-    const timeOut = setTimeout(() => {
-      handleSearchMerchant();
-    }, 500);
-
-    return () => {
-      clearTimeout(timeOut);
-    };
-  },[search]);
-
-  const csvData = [
-    { label: "Merchant ID", key: "_id" },
-    { label: "Merchant Name", key: "merchantName" },
-    { label: "Phone Number", key: "phoneNumber" },
-    { label: "Average Rating", key: "averageRating" },
-    { label: "Approved", key: "isApproved" },
-    { label: "Serviceable Today", key: "isServiceableToday" },
-    { label: "Geofence", key: "geofence" },
-  ];
 
   return (
     <div>
@@ -329,8 +355,8 @@ const Merchant = () => {
                 <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
                   <CSVLink
                     data={allMerchants}
-                    headers={csvData}
-                    filename={"merchantData.csv"}
+                    headers={allMerchantCSVDataHeading}
+                    filename={"All_Merchants.csv"}
                   >
                     <ArrowDownOutlined /> <span>CSV</span>
                   </CSVLink>
@@ -363,6 +389,7 @@ const Merchant = () => {
                   <option defaultValue={"Serviceable"} hidden>
                     Serviceable
                   </option>
+                  <option value="All">All</option>
                   <option value="open">Open</option>
                   <option value="closed">Closed</option>
                 </select>
@@ -376,6 +403,7 @@ const Merchant = () => {
                   <option defaultValue={"Geofence"} hidden>
                     Geofence
                   </option>
+                  <option value="All">All</option>
                   {allGeofences.map((geofence) => (
                     <option value={geofence._id} key={geofence._id}>
                       {geofence.name}
@@ -392,6 +420,7 @@ const Merchant = () => {
                   <option defaultValue={"Business category"} hidden>
                     Business category
                   </option>
+                  <option value="All">All</option>
                   {allBusinessCategories.map((category) => (
                     <option key={category._id} value={category._id}>
                       {category.title}
@@ -410,7 +439,7 @@ const Merchant = () => {
                       type="search"
                       onChange={onSearch}
                       className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none cursor-pointer"
-                      placeholder="Search merchant name"
+                      placeholder="Search merchant"
                     />
                   </div>
                 </div>
@@ -479,14 +508,18 @@ const Merchant = () => {
                         <td className="p-4">{data.phoneNumber}</td>
                         <td className="p-4">{data.averageRating}</td>
                         <td className="p-4">{data.isApproved}</td>
-                        <td className="p-4">{data.isServiceableToday}</td>
+                        <td className="p-4 capitalize">
+                          {data.isServiceableToday}
+                        </td>
                         <td className="p-4">{data.geofence}</td>
 
                         <td className="p-4">
                           <Switch
-                          checked={data.isServiceableToday === "open"}
-                          onChange={() => handleToggle(data._id)}
-                        />
+                            value={
+                              data?.isServiceableToday === "open" ? true : false
+                            }
+                            onChange={() => handleToggle(data._id)}
+                          />
                         </td>
                         <td className="p-4">
                           <div className="flex space-x-2 justify-center">
@@ -514,6 +547,18 @@ const Merchant = () => {
                     ))}
                 </tbody>
               </table>
+            </div>
+
+            <div className="my-[30px] flex justify-center">
+              <Pagination
+                count={pagination.totalPages || 0}
+                page={pagination.currentPage}
+                onChange={handlePageChange}
+                shape="rounded"
+                siblingCount={0}
+                hidePrevButton={!pagination.hasPrevPage}
+                hideNextButton={!pagination.hasNextPage}
+              />
             </div>
           </main>
         </>

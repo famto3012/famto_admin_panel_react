@@ -93,6 +93,43 @@ const MerchantDetails = () => {
     }));
   };
 
+  const toggleMerchantStatus = async () => {
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/admin/change-status/${merchantData._id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setMerchantData({
+          ...merchantData,
+          status: !merchantData?.status,
+        });
+        toast({
+          title: "Success",
+          description: "Merchant status updated successfully!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Error in changing merchant status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   const handleSaveMerchant = async (e) => {
     e.preventDefault();
 
@@ -177,12 +214,7 @@ const MerchantDetails = () => {
             <Switch
               value={merchantData?.status}
               className="text-teal-700 ml-2"
-              onChange={(e) => {
-                setMerchantData({
-                  ...merchantData,
-                  status: !merchantData?.status,
-                });
-              }}
+              onChange={toggleMerchantStatus}
             />
           </div>
         </div>
