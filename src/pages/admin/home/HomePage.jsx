@@ -22,13 +22,13 @@ const HomePage = () => {
 
   const socket = io("http://localhost:5000", {
     query: {
-      userId: userId,
-      fcmToken: fcmToken,
+      userId: userId && userId,
+      fcmToken: fcmToken && fcmToken,
     },
     autoConnect: true,
     transports: ["websocket"],
     reconnection: true,
-    reconnectionAttempts: Infinity,
+    // reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
   });
