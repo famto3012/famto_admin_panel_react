@@ -115,10 +115,10 @@ const AlertNotification = () => {
       );
       if (alertNotificationResponse.status === 201) {
         toast({
-          title: "Notification Send",
+          title: "Success",
           description:"Alert notification send successfully",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
         console.log("alertNotification", alertNotificationResponse.data);
@@ -164,10 +164,10 @@ const AlertNotification = () => {
       );
       if (deleteResponse.status === 200) {
         toast({
-          title: "Notification Deleted",
+          title: "Success",
           description:"Alert notification deleted successfully",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
         console.log("delete", deleteResponse.data);

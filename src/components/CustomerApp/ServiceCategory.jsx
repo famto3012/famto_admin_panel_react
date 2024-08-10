@@ -77,9 +77,9 @@ const ServiceCategory = () => {
         handleAddBanner(response.data.data);
         handleCancel();
         toast({
-          title: "Created",
+          title: "Success",
           description: "Custom Order Created Successfully.",
-          duration: 900,
+          duration: 5000,
           status: "success",
           isClosable: true,
         });

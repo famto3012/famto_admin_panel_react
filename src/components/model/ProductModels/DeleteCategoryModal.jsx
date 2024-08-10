@@ -41,7 +41,7 @@ const DeleteCategoryModal = ({
           title: "Success",
           description: `Category deleted successfully`,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -51,7 +51,7 @@ const DeleteCategoryModal = ({
         title: "Error",
         description: `Error in deleting category`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

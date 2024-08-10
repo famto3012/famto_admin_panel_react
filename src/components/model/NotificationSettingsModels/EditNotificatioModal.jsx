@@ -83,10 +83,10 @@ const EditNotificatioModal = ({
         handleCancel();
         onEditNewData(editResponse.data.data);
         toast({
-          title: "Notification Updated",
+          title: "Success",
           description: "Notification Updated Successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -96,7 +96,7 @@ const EditNotificatioModal = ({
         title: "Error",
         description: "There was an error creating the banner.",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

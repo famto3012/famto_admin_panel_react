@@ -37,7 +37,7 @@ const DeleteProductModal = ({
           title: "Success",
           description: `Product deleted successfully`,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -47,7 +47,7 @@ const DeleteProductModal = ({
         title: "Error",
         description: `Error in deleting product`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

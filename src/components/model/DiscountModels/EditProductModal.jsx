@@ -134,9 +134,9 @@ const EditProductModal = ({
         onEditProduct(response.data.data);
         handleCancel();
         toast({
-          title: "Product Discount Updated",
+          title: "Success",
           description: "Successfully Updated Product Discount",
-          duration: 9000,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -144,9 +144,9 @@ const EditProductModal = ({
     } catch (err) {
       console.error(`Error in updating data ${err.message}`);
       toast({
-        title: "Error in updating",
+        title: "Error",
         description: "Error in Updating Product Discount",
-        duration: 9000,
+        duration: 3000,
         status: "error",
         isClosable: true,
       });

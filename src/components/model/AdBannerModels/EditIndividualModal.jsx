@@ -109,10 +109,10 @@ const EditIndividualModal = ({
         handleCancel();
         onEditIndBanner(IndBannerResponse.data.banner);
         toast({
-          title: "Banner Updated.",
+          title: "Success",
           description: "The banner was updated successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -133,7 +133,7 @@ const EditIndividualModal = ({
         title: "Error",
         description: "There was an error updating the banner.",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

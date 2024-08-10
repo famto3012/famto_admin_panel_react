@@ -127,9 +127,9 @@ const PushNotification = () => {
       if (addPushResponse.status === 201) {
         onAddNotification(addPushResponse.data.data);
         toast({
-          title:"Notification Added",
+          title:"Success",
           description:"Notification Added Successfully.",
-          duration:900,
+          duration:3000,
           isClosable:true,
           status:"success"
         })
@@ -181,10 +181,10 @@ const PushNotification = () => {
         removeBanner(currentData);
         handleConfirmDelete();
         toast({
-          title:"Notification Deleted",
+          title:"Success",
           description:"Notification Deleted Successfully.",
           status:"success",
-          duration:900,
+          duration:3000,
           isClosable:true
         })
       }
@@ -209,9 +209,9 @@ const PushNotification = () => {
       );
       if (sendResponse.status === 200) {
         toast({
-          title:"Notification Send",
+          title:"Success",
           description:"Push notification send successfully.",
-          duration:900,
+          duration:3000,
           isClosable:true,
           status:"success"
         })

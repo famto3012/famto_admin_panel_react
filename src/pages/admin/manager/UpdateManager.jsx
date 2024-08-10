@@ -122,10 +122,10 @@ const UpdateManager = () => {
       if (editResponse.status === 200) {
         console.log("edit data", editResponse.data.message);
         toast({
-          title: "Manager Updated",
+          title: "Success",
           description: "Manager updated successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
 

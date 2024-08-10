@@ -87,9 +87,9 @@ const PromoCode = () => {
         removePromo(currentPromo);
         handleConfirmDelete();
         toast({
-          title: "PromoCode Deleted.",
+          title: "Success",
           description: "Promocode Deleted Successfully.",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
           status: "success",
         });
@@ -100,7 +100,7 @@ const PromoCode = () => {
         title: "Error",
         description: "Failed to delete promo code.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
@@ -128,10 +128,10 @@ const PromoCode = () => {
           }
         );
         toast({
-          title: "Status updated",
+          title: "Success",
           description: "Promo code Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -151,7 +151,7 @@ const PromoCode = () => {
         title: "Error",
         description: "Failed to update Promo code status.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }

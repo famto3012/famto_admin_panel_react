@@ -107,20 +107,20 @@ const Merchant = () => {
         );
 
         toast({
-          title: "Status Change",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.log(`Error in changing merchant status: ${err}`);
       toast({
-        title: "Status Change Error",
+        title: "Error",
         description: `Error in changing merchant status`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -147,20 +147,20 @@ const Merchant = () => {
         );
 
         toast({
-          title: "Approval",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.log(`Error in approving merchant: ${err}`);
       toast({
-        title: "Approval",
+        title: "Error",
         description: `Error in approving merchant`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -183,20 +183,20 @@ const Merchant = () => {
         );
 
         toast({
-          title: "Reject",
-          description: response.data.message,
+          title: "Success",
+          description: "Rejected Merchant Successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.log(`Error in rejecting merchant: ${err}`);
       toast({
-        title: "Reject",
+        title: "Error",
         description: `Error in rejecting merchant`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -239,7 +239,7 @@ const Merchant = () => {
           title: "Error",
           description: `Error in filtering merchant`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -284,7 +284,7 @@ const Merchant = () => {
           title: "Error",
           description: `Error in searching merchant`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {

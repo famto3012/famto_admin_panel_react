@@ -93,7 +93,7 @@ const EditTaxModal = ({
         toast({
           title: "Success",
           description: response.data.message,
-          duration: 5000,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -103,7 +103,7 @@ const EditTaxModal = ({
       toast({
         title: "Error",
         description: `Error in updating tax`,
-        duration: 5000,
+        duration: 3000,
         status: "error",
         isClosable: true,
       });

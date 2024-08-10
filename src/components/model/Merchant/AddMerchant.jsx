@@ -47,10 +47,10 @@ const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
       if (response.status === 201) {
         closeModal();
         toast({
-          title: "New Merchant Added",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }

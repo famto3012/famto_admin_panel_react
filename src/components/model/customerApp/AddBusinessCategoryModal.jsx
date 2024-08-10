@@ -60,9 +60,9 @@ const AddBusinessCategoryModal = ({
         onAddCategory(response.data.data);
         onCancel();
         toast({
-          title: "Created",
+          title: "Success",
           description: "Business Category Created Successfully.",
-          duration: 900,
+          duration: 5000,
           status: "success",
           isClosable: true,
         });

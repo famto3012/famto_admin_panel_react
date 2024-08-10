@@ -50,22 +50,22 @@ const AddDiscountModal = ({
         handleCancel();
         onDiscountAdd(response.data.data);
         toast({
-          title: "Merchant Discount Added..",
+          title: "Success",
           description: "Successfully added Merchant Discount",
           status: "success",
           isClosable: true,
-          duration: 9000,   
+          duration: 3000,   
         });
       }
     } catch (err) {
       console.error(`Error in adding discount ${err.message}`);
       handleCancel();
       toast({
-        title: "Merchant Discount Failed",
+        title: "Error",
         description: "Error in adding Merchant Discount",
         status: "error",
         isClosable: true,
-        duration: 9000,
+        duration: 3000,
       });
     } finally {
       setIsLoading(false);

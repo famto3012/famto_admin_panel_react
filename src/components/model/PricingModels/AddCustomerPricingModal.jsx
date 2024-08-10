@@ -54,10 +54,10 @@ const AddCustomerPricingModal = ({
       if (addResponse.status === 201) {
         handleCancel();
         toast({
-          title: "Created",
+          title: "Success",
           description: "Customer Pricng Created successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -67,7 +67,7 @@ const AddCustomerPricingModal = ({
         title: "Error",
         description: "There was an error occured.",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

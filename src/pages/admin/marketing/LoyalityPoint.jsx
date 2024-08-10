@@ -80,10 +80,10 @@ const LoyalityPoint = () => {
       if (updateResponse.status === 201) {
         console.log("update data", updateResponse.data.message);
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Updated successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }

@@ -30,10 +30,10 @@ const DeleteSubMerchantModal = ({
         removeMerchant(currentDeleteMerchant);
         handleConfirmDeleteMerchant();
         toast({
-          title: "Deleted",
+          title: "Success",
           description: "Merchant Deleted successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
       });
       }
@@ -43,7 +43,7 @@ const DeleteSubMerchantModal = ({
         title: "Error",
         description: "There was an error occured.",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
     });
     } finally {

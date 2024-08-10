@@ -183,10 +183,10 @@ const CustomOrder = ({ data }) => {
       if (response.status === 200) {
         setCartData(response.data.data);
         toast({
-          title: "Invoice",
+          title: "Success",
           description: "Invoice created successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -196,7 +196,7 @@ const CustomOrder = ({ data }) => {
         title: "Error",
         description: "Error in creating invoice",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
@@ -229,7 +229,7 @@ const CustomOrder = ({ data }) => {
           title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -239,7 +239,7 @@ const CustomOrder = ({ data }) => {
         title: "Error",
         description: "Error in creating order",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

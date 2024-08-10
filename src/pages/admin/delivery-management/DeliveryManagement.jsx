@@ -139,7 +139,7 @@ const DeliveryManagement = () => {
       if (response.status === 201) {
         // const {data} = response.data;
         toast({
-          title: "Auto allocation status updated successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -148,7 +148,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       console.log("Error in fetching agent: ", err);
       toast({
-        title: "Error updating auto allocation status",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -232,7 +232,7 @@ const DeliveryManagement = () => {
       if (response.status === 201) {
         // const {data} = response.data;
         toast({
-          title: "Auto allocation added successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -241,7 +241,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       console.log("Error in fetching agent: ", err);
       toast({
-        title: "Error adding auto allocation",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -303,7 +303,7 @@ const DeliveryManagement = () => {
         console.log(response.data.data);
         setTaskData(response.data.data);
         toast({
-          title: "Order id fetched successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -312,7 +312,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       console.log(err);
       toast({
-        title: "Error fetching order id",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -339,7 +339,7 @@ const DeliveryManagement = () => {
         console.log(response.data);
         setAgentData(response.data);
         toast({
-          title: "Agent fetched successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -348,7 +348,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       console.log(err);
       toast({
-        title: "Error fetching agent",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -610,7 +610,7 @@ const DeliveryManagement = () => {
       if (response.status === 200) {
         setGeofenceAgentData(response.data.data);
         toast({
-          title: "Agent fetched successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -620,7 +620,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       console.log("Error in fetching agent: ", err);
       toast({
-        title: "Error fetching  agent",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -667,7 +667,7 @@ const DeliveryManagement = () => {
       );
       if (response.status === 200) {
         toast({
-          title: "Notification send successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -676,7 +676,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       console.log("Error in sending notification: ", err);
       toast({
-        title: "Error sending notification",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,

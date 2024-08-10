@@ -45,10 +45,10 @@ const AddCustomerSurgeModal = ({
         handleCancel();
         console.log("customerSurge", addResponse.data.message);
         toast({
-          title: "Created",
+          title: "Success",
           description: "Customer Surge successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -58,7 +58,7 @@ const AddCustomerSurgeModal = ({
         title: "Error",
         description: "There was an error occured.",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
       

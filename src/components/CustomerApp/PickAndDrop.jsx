@@ -80,7 +80,7 @@ const PickAndDrop = () => {
         handleAddBanner(response.data.data);
         handleCancel();
         toast({
-          title: "Created",
+          title: "Success",
           description: "Custom Order Created Successfully.",
           duration: 900,
           status: "success",
@@ -166,7 +166,7 @@ const PickAndDrop = () => {
       );
       if (response.status === 200) {
         toast({
-          title: "Created",
+          title: "Success",
           description: "Business Category Created Successfully.",
           duration: 900,
           status: "success",
@@ -211,7 +211,7 @@ const PickAndDrop = () => {
         removeBanner(currentBannerDelete);
         handleConfirmDelete();
         toast({
-          title: "Banner Deleted",
+          title: "Success",
           description: "The banner was deleted successfully.",
           status: "success",
           duration: 900,
@@ -258,7 +258,7 @@ const PickAndDrop = () => {
       if (response.status === 200) {
         setStatus(response.data.data);
         toast({
-          title: "Status Updated",
+          title: "Success",
           description: "Pick and Drop Status updated successfully.",
           duration: 900,
           status: "success",

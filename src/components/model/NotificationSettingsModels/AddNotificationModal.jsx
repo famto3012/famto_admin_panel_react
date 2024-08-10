@@ -47,10 +47,10 @@ const AddNotificationModal = ({
         handleCancel();
         onAddNotification(addResponse.data.data);
         toast({
-          title: "Created Notification",
+          title: "Success",
           description: "Notification Created Successfully",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
         navigate("/notification-settings");

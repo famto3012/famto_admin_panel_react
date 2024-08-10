@@ -109,10 +109,10 @@ const AddCategoriesModal = ({
         setPreviewURL(null);
         handleCancel();
         toast({
-          title: "Category Added",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -122,7 +122,7 @@ const AddCategoriesModal = ({
         title: "Error",
         description: `Error in adding new category`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

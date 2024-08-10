@@ -86,10 +86,10 @@ const EditAgentPricingModal = ({
       if (editResponse.status === 200) {
         handleCancel();
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Agent Pricing Updated successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
         console.log(editResponse.data.message);
@@ -99,7 +99,7 @@ const EditAgentPricingModal = ({
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
       console.log(`Error in fetching data:${err}`);

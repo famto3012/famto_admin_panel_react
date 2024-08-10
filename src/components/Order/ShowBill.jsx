@@ -46,7 +46,7 @@ const ShowBill = ({ data }) => {
           title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -56,7 +56,7 @@ const ShowBill = ({ data }) => {
         title: "Error",
         description: "Error in creating invoice",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

@@ -48,7 +48,7 @@ const ChangeCategoryModal = ({
             title: "Success",
             description: `Changed product category successfully`,
             status: "success",
-            duration: 5000,
+            duration: 3000,
             isClosable: true,
           });
         }
@@ -59,7 +59,7 @@ const ChangeCategoryModal = ({
         title: "Error",
         description: `Error in changing product category`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

@@ -146,10 +146,10 @@ const AddAgentModal = ({
         onAddAgent(newAgent); 
         handleCancel();
         toast({
-          title: "Agent Creaated",
+          title: "Success",
           description: "Agent Created Successfully",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -159,7 +159,7 @@ const AddAgentModal = ({
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     } finally{

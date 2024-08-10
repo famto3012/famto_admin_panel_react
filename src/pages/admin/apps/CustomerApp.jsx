@@ -114,9 +114,9 @@ const CustomerApp = () => {
       if (response.status === 200) {
         console.log(customerData);
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Customer App updated successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -125,9 +125,9 @@ const CustomerApp = () => {
     } catch (err) {
       console.error(`Error in saving data ${err.message}`);
       toast({
-        title: "Failed",
+        title: "Error",
         description: "Error in creating Customer App ",
-        duration: 900,
+        duration: 3000,
         status: "error",
         isClosable: true,
       });
