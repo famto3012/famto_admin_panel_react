@@ -168,10 +168,10 @@ const Managers = () => {
         removeBanner(currentManager);
 
         toast({
-          title: "Manager Deleted",
+          title: "Success",
           description: "Manager deleted successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
         handleConfirmDelete();

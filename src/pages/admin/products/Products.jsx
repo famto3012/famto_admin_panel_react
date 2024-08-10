@@ -304,7 +304,7 @@ const Products = () => {
           title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -314,7 +314,7 @@ const Products = () => {
         title: "Error",
         description: `Error in changing category status`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -343,7 +343,7 @@ const Products = () => {
           title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -353,7 +353,7 @@ const Products = () => {
         title: "Error",
         description: `Error in changing product status`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -388,7 +388,7 @@ const Products = () => {
           title: "Success",
           description: "Category reordered",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -398,7 +398,7 @@ const Products = () => {
         title: "Error",
         description: `Error in reodering categories`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -434,7 +434,7 @@ const Products = () => {
           title: "Success",
           description: "Product re-ordered",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -444,7 +444,7 @@ const Products = () => {
         title: "Error",
         description: `Error in re-odering products`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }

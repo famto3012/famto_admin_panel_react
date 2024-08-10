@@ -148,10 +148,10 @@ const PickAndDrop = ({ data }) => {
         const { data } = response.data;
         setCartData(data);
         toast({
-          title: "Invoice",
+          title: "Success",
           description: "Invoice created successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -161,7 +161,7 @@ const PickAndDrop = ({ data }) => {
         title: "Error",
         description: "Error in creating invoice",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

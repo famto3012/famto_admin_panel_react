@@ -40,10 +40,10 @@ const AddSubCustomerModal =  ({
               handleCancel();
               console.log("adddata", addResponse.data.message);
                    toast({
-                     title: "Created",
+                     title: "Success",
                      description: "Customer Subscription Created successfully.",
                      status: "success",
-                     duration: 1000,
+                     duration: 3000,
                      isClosable: true,
                  });
             }
@@ -53,7 +53,7 @@ const AddSubCustomerModal =  ({
               title: "Error",
               description: "There was an error occured",
               status: "error",
-              duration: 1000,
+              duration: 3000,
               isClosable: true,
           });
           }

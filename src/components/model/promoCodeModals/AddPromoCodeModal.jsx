@@ -109,21 +109,21 @@ const AddPromoCodeModal = ({
         onPromocodeAdd(response.data.data);
         handleCancel();
         toast({
-          title: "Promo Code Created",
+          title: "Success",
           description: "Successfully created Promo code..",
           status: "success",
           isClosable: true,
-          duration: 9000,
+          duration: 3000,
         });
       }
     } catch (err) {
       console.log(`Error in adding data: ${err.message}`);
       toast({
-        title: "Error while Creating..",
+        title: "Error",
         description: "Error in creating Promo Code.",
         status: "error",
         isClosable: true,
-        duration: 9000,
+        duration: 3000,
       });
     } finally {
       setIsLoading(false);

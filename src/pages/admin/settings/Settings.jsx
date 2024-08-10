@@ -76,10 +76,10 @@ const Settings = () => {
       if (updateResponse.status === 200) {
         console.log("update data", updateResponse.data.message);
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Updated successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -119,10 +119,10 @@ const Settings = () => {
       if (passwordResponse.status === 200) {
         console.log("PASSWORD", passwordResponse.data.message);
         toast({
-          title: "Change Password",
+          title: "Success",
           description: "Admin Password Changed Successfully",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }

@@ -250,10 +250,10 @@ const DeliveryAgent = () => {
           )
         );
         toast({
-          title: "Agent Approved",
+          title: "Success",
           description: "Agent approved successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -262,10 +262,10 @@ const DeliveryAgent = () => {
     } catch (err) {
       console.error(`Error in handleApprove: ${err.message}`);
       toast({
-        title: "Error Approving Agent",
+        title: "Error",
         description: err.response?.data?.message || err.message,
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -290,20 +290,20 @@ const DeliveryAgent = () => {
           prevAgents.filter((agent) => agent._id !== id)
         );
         toast({
-          title: "Agent Rejected",
+          title: "Success",
           description: "Agent Rejected successfully.",
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.error(err.message);
       toast({
-        title: "Error Rejecting Agent",
+        title: "Error",
         description: err.response?.data?.message || err.message,
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -335,10 +335,10 @@ const DeliveryAgent = () => {
           )
         );
         toast({
-          title: "Status",
+          title: "Success",
           description: "Staus Updated successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -348,7 +348,7 @@ const DeliveryAgent = () => {
         title: "Error",
         description: "There was an error occured.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }

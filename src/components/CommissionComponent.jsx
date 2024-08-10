@@ -43,10 +43,10 @@ const CommissionComponent = () => {
         if(addResponse.status===200){
           console.log(isForm);
           toast({
-            title:"Created",
+            title:"Success",
             description:"Commission Created Successfully",
             status:"success",
-            duration:900,
+            duration:3000,
             isClosable:true,
           })
         }
@@ -56,7 +56,7 @@ const CommissionComponent = () => {
       title:"Error",
       description:"There was an error occured",
       status:"error",
-      duration:900,
+      duration:3000,
       isClosable:true,
     })
     }finally{

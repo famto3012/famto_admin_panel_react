@@ -86,10 +86,10 @@ const Referral = () => {
       if (addResponse.status === 200) {
         console.log(addResponse.data.message);
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Referal Updated Successfully",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -99,7 +99,7 @@ const Referral = () => {
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
     }

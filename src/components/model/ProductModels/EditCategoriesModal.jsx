@@ -112,7 +112,7 @@ const EditCategoriesModal = ({
       });
 
       toast({
-        title: "Category updated successfully.",
+        title: "Success",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -121,7 +121,7 @@ const EditCategoriesModal = ({
       handleCancel();
     } catch (error) {
       toast({
-        title: "Error updating category.",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,

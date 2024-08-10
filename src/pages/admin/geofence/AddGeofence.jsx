@@ -218,7 +218,7 @@ const AddGeofence = ({ heading }) => {
       );
       if (addGeofenceResponse.status === 201) {
         toast({
-          title: "Geofence added successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -227,7 +227,7 @@ const AddGeofence = ({ heading }) => {
     } catch (err) {
       console.log("Error in adding geofence: ", err);
       toast({
-        title: "Error adding geofence",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -248,7 +248,7 @@ const AddGeofence = ({ heading }) => {
       );
       if (editGeofenceResponse.status === 200) {
         toast({
-          title: "Geofence updated successfully",
+          title: "Success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -257,7 +257,7 @@ const AddGeofence = ({ heading }) => {
     } catch (err) {
       console.log("Error in updating geofence: ", err);
       toast({
-        title: "Error updating geofence",
+        title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,

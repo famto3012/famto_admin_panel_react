@@ -21,7 +21,7 @@ const EditBannerModal = ({
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [previewURL, setPreviewURL] = useState(null);
+  const [previewURL, setPreviewURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -66,14 +66,12 @@ const EditBannerModal = ({
     }));
   };
 
-  const handlebannerImageChange = async (e) => {
+  const handlebannerImageChange = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
     console.log("Selected file:", file); // Log the file
-    if (file) {
-      setSelectedFile(file);
-      setPreviewURL(URL.createObjectURL(file));
-    }
+    setSelectedFile(file);
+    setPreviewURL(URL.createObjectURL(file));
   };
 
   const saveAction = async (e) => {
@@ -174,7 +172,15 @@ const EditBannerModal = ({
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              {previewURL ? (
+              {appBanner?.bannerImage ? (
+                <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
+                  <img
+                    src={appBanner?.bannerImage}
+                    alt="Current"
+                    className="w-full rounded h-full object-cover"
+                  />
+                </figure>
+              ) : (
                 <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
                   <img
                     src={previewURL}
@@ -182,16 +188,6 @@ const EditBannerModal = ({
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
-              ) : (
-                appBanner?.bannerImage && (
-                  <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
-                    <img
-                      src={appBanner?.bannerImage}
-                      alt="Current"
-                      className="w-full rounded h-full object-cover"
-                    />
-                  </figure>
-                )
               )}
               <input
                 type="file"

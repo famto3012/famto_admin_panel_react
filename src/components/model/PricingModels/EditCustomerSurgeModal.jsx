@@ -81,10 +81,10 @@ const EditCustomerSurgeModal = ({
       if (editResponse.status === 200) {
         handleCancel();
         toast({
-          title: "Updated",
+          title: "Success",
           description: "Customer Surge Updated Successfully.",
           status: "success",
-          duration: 1000,
+          duration: 3000,
           isClosable: true,
         });
         console.log(editResponse.data.message);
@@ -94,7 +94,7 @@ const EditCustomerSurgeModal = ({
         title: "Error",
         description: "There was an error occured",
         status: "error",
-        duration: 1000,
+        duration: 3000,
         isClosable: true,
       });
       console.log(`Error in fetching data:${err}`);

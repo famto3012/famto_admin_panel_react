@@ -288,10 +288,10 @@ const HomeDelivery = ({ data }) => {
         console.log(data.billDetail);
         setCartData(data);
         toast({
-          title: "Invoice",
+          title: "Success",
           description: "Invoice created successfully",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -301,7 +301,7 @@ const HomeDelivery = ({ data }) => {
         title: "Error",
         description: "Error in creating invoice",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

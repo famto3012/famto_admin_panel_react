@@ -154,10 +154,10 @@ const Adbanner = () => {
         removeBanner(currentBanner);
         handleConfirmDelete();
         toast({
-          title: "Banner Deleted",
+          title: "Success",
           description: "The Banner Deleted Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -201,10 +201,10 @@ const Adbanner = () => {
         removeIndBanner(currentIndBanner);
         handleConfirmIndBannerDelete();
         toast({
-          title: "Banner Deleted",
+          title: "Success",
           description: "The Banner Deleted Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -235,10 +235,10 @@ const Adbanner = () => {
           }
         );
         toast({
-          title: "Status updated",
+          title: "Success",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -258,7 +258,7 @@ const Adbanner = () => {
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -286,10 +286,10 @@ const Adbanner = () => {
           }
         );
         toast({
-          title: "Status updated",
+          title: "Success",
           description: "Banner Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -309,7 +309,7 @@ const Adbanner = () => {
         title: "Error",
         description: "Failed to update Banner status.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }

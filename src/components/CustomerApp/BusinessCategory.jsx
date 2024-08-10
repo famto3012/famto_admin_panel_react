@@ -98,10 +98,10 @@ const BusinessCategory = () => {
       );
 
       toast({
-        title: "Status updated",
+        title: "Success",
         description: "Business status updated successfully.",
         status: "success",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
 
@@ -122,7 +122,7 @@ const BusinessCategory = () => {
         title: "Error",
         description: "Failed to update business status.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -158,7 +158,7 @@ const BusinessCategory = () => {
           title: "Success",
           description: "Category reordered",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -168,7 +168,7 @@ const BusinessCategory = () => {
         title: "Error",
         description: `Error in reodering categories`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }

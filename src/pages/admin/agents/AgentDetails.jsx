@@ -113,6 +113,7 @@ const AgentDetails = () => {
 
   // Function to show image in modal
   const handleImageClick = (imageUrl) => {
+    console.log("clicked")
     setImageModalUrl(imageUrl);
     setIsImageModalVisible(true);
   };
@@ -391,11 +392,11 @@ const AgentDetails = () => {
                   <tr>
                     {[
                       "Aadhar Number",
-                      "front side",
-                      "back side",
+                      "Aadhar Front Side",
+                      "Aadhar Back Side",
                       "Driving License Number",
-                      "front side",
-                      "back side",
+                      "License Front Side",
+                      "License Back Side",
                     ].map((header) => (
                       <th
                         key={header}
@@ -406,31 +407,21 @@ const AgentDetails = () => {
                     ))}
                   </tr>
                 </thead>
+
                 <tbody>
                   <tr className="align-middle border-b-2 border-gray-300 text-center">
                     <td className="p-3">
                       {agent?.governmentCertificateDetail?.aadharNumber}
                     </td>
                     <td className="p-3">
-                      <figure className="h-24 w-24"
+                      <figure
+                        className="h-24 w-24"
                         onClick={() =>
-                          handleImageClick(agent?.governmentCertificateDetail
-                            ?.aadharFrontImageURL)
-                        }>
-                        <img
-                          className="w-full h-full object-contain"
-                          src={
+                          handleImageClick(
                             agent?.governmentCertificateDetail
                               ?.aadharFrontImageURL
-                          }
-                        />
-                      </figure>
-                    </td>
-                    <td className="p-3">
-                      <figure className="h-24 w-24"
-                       onClick={() =>
-                        handleImageClick(agent?.governmentCertificateDetail
-                          ?.aadharFrontImageURL)}
+                          )
+                        }
                       >
                         <img
                           className="w-full h-full object-contain"
@@ -442,13 +433,37 @@ const AgentDetails = () => {
                       </figure>
                     </td>
                     <td className="p-3">
+                      <figure
+                        className="h-24 w-24"
+                        onClick={() =>
+                          handleImageClick(
+                            agent?.governmentCertificateDetail
+                              ?.aadharBackImageURL
+                          )
+                        }
+                      >
+                        <img
+                          className="w-full h-full object-contain"
+                          src={
+                            agent?.governmentCertificateDetail
+                              ?.aadharBackImageURL
+                          }
+                        />
+                      </figure>
+                    </td>
+                    <td className="p-3">
                       {agent?.governmentCertificateDetail?.drivingLicenseNumber}
                     </td>
                     <td className="p-3">
-                      <figure className="h-24 w-24"
-                      onClick={() =>
-                        handleImageClick(agent?.governmentCertificateDetail
-                          ?.drivingLicenseFrontImageURL)}>
+                      <figure
+                        className="h-24 w-24"
+                        onClick={() =>
+                          handleImageClick(
+                            agent?.governmentCertificateDetail
+                              ?.drivingLicenseFrontImageURL
+                          )
+                        }
+                      >
                         <img
                           className="w-full h-full object-contain"
                           src={
@@ -459,15 +474,20 @@ const AgentDetails = () => {
                       </figure>
                     </td>
                     <td className="p-3">
-                      <figure className="h-24 w-24"
-                      onClick={() =>
-                        handleImageClick( agent?.governmentCertificateDetail
-                          ?.drivingLicenseFrontImageURL)}>
+                      <figure
+                        className="h-24 w-24"
+                        onClick={() =>
+                          handleImageClick(
+                            agent?.governmentCertificateDetail
+                              ?.drivingLicenseBackImageURL
+                          )
+                        }
+                      >
                         <img
                           className="w-full h-full object-contain"
                           src={
                             agent?.governmentCertificateDetail
-                              ?.drivingLicenseFrontImageURL
+                              ?.drivingLicenseBackImageURL
                           }
                         />
                       </figure>

@@ -11,12 +11,14 @@ import { UserContext } from "../../../context/UserContext";
 import { formatDate, formatTime } from "../../../utils/formatter";
 import GIFLoader from "../../../components/GIFLoader";
 import { CSVLink } from "react-csv";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const AccountLogs = () => {
   const [type, setType] = useState([]);
   const [roleFilter, setRoleFilter] = useState("Merchant");
+  const toast = useToast();
   const [dateFilter, setDateFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const { role, token } = useContext(UserContext);
@@ -121,7 +123,12 @@ const AccountLogs = () => {
           )
         );
         toast({
-          tit,
+          title:"Success",
+          description:"Status updated Succesfully.",
+          isClosable:true,
+          duration:3000,
+          status: "success"
+
         });
       }
     } catch (err) {

@@ -150,21 +150,21 @@ const Discount = () => {
         removeDiscount(currentDiscountDelete);
         handleConfirmDelete();
         toast({
-          title: "Discount Deleted",
+          title: "Success",
           description: "Discount Deleted Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.error(`Error in deleting discount ${err.message}`);
       toast({
-        title: "Error Occured",
+        title: "Error",
         description: "Error in deleting Discount.",
         status: "error",
         isClosable: true,
-        duration: 900,
+        duration: 3000,
       });
     } finally {
       setConfirmLoading(false);
@@ -200,21 +200,21 @@ const Discount = () => {
         removeProduct(currentProductDelete);
         handleConfirmDeleteProduct();
         toast({
-          title: "Discount Deleted",
+          title: "Success",
           description: "Discount Deleted Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.error(`Error in deleting discount ${err.message}`);
       toast({
-        title: "Error Occured",
+        title: "Error",
         description: "Error in deleting Discount.",
         status: "error",
         isClosable: true,
-        duration: 900,
+        duration: 3000,
       });
     } finally {
       setConfirmLoading(false);
@@ -243,10 +243,10 @@ const Discount = () => {
           }
         );
         toast({
-          title: "Status updated",
+          title: "Success",
           description: "Discount Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -264,7 +264,7 @@ const Discount = () => {
         title: "Error",
         description: "Failed to update discount status.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -290,10 +290,10 @@ const Discount = () => {
           }
         );
         toast({
-          title: "Status updated",
+          title: "Success",
           description: "Discount Status Updated Successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -311,7 +311,7 @@ const Discount = () => {
         title: "Error",
         description: "Failed to update discount status.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     }

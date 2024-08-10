@@ -64,10 +64,10 @@ const AddIndividualModal = ({
         setAdPreviewURL(null);
         handleCancel();
         toast({
-          title: "Banner Created.",
+          title: "Success",
           description: "The banner was created successfully.",
           status: "success",
-          duration: 100,
+          duration: 5000,
           isClosable: true,
         });
       }
@@ -88,7 +88,7 @@ const AddIndividualModal = ({
         title: "Error",
         description: "There was an error creating the banner.",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

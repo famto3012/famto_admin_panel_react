@@ -220,10 +220,10 @@ const EditProductItemModal = ({
         setPreviewURL(null);
         handleCancel();
         toast({
-          title: "Product updated",
+          title: "Success",
           description: response.data.message,
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -233,7 +233,7 @@ const EditProductItemModal = ({
         title: "Error",
         description: "Error in updating product",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

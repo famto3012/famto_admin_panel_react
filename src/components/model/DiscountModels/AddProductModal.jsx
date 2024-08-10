@@ -50,9 +50,9 @@ const AddProductModal = ({
         handleCancel();
         onAddProduct(response.data.data);
         toast({
-          title: "Product Discount Created",
+          title: "Success",
           description: "Product Discount Added Successfully",
-          duration: 9000,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -60,9 +60,9 @@ const AddProductModal = ({
     } catch (err) {
       console.error(`Error in adding data ${err.message}`);
       toast({
-        title: "Product Discount Creation Failed",
+        title: "Error",
         description: "Error in Creating Product",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
         status: "error",
       });

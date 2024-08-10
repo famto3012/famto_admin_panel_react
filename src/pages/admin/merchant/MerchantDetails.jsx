@@ -76,7 +76,7 @@ const MerchantDetails = () => {
           title: "Error",
           description: `Error in getting merchant data`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -143,7 +143,7 @@ const MerchantDetails = () => {
           title: "Success",
           description: "Merchant details updated successfully!",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -153,7 +153,7 @@ const MerchantDetails = () => {
         title: "Error",
         description: "Failed to update merchant details.",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
