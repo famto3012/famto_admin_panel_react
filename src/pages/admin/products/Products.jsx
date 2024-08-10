@@ -25,7 +25,7 @@ const Products = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [selectedMerchant, setSelectedMerchant] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState({
+  const [selectedCategory, setSelectedCategory] = useState({ 
     categoryId: "",
     categoryName: "",
     categoryStatus: null,
