@@ -63,3 +63,7 @@
   height: 45px;
   margin-bottom: 10px;
 }
+.form-control{
+  border: none !important;
+}
+
