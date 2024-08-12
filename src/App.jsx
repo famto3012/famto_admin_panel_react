@@ -61,6 +61,7 @@ const Orders = lazy(() => import("./pages/admin/order/Orders"));
 const Products = lazy(() => import("./pages/admin/products/Products"));
 const Geofence = lazy(() => import("./pages/admin/geofence/Geofence"));
 const AddGeofence = lazy(() => import("./pages/admin/geofence/AddGeofence"));
+const EditGeofence = lazy(() => import("./pages/admin/geofence/EditGeofence"));
 const DeliveryManagement = lazy(() =>
   import("./pages/admin/delivery-management/DeliveryManagement")
 );
@@ -138,11 +139,11 @@ function App() {
             <Route path="/geofence" element={<Geofence />} />
             <Route
               path="/add-geofence"
-              element={<AddGeofence heading="Add Geofence" />}
+              element={<AddGeofence />}
             />
             <Route
               path="/edit-geofence"
-              element={<AddGeofence heading="Edit Geofence" />}
+              element={<EditGeofence />}
             />
             <Route
               path="/delivery-management"

@@ -1,6 +1,41 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CheckCircleOutlined } from "@ant-design/icons";
+import { UserContext } from "../../context/UserContext";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const Success = () => {
+  const navigate = useNavigate();
+  const {signUp } = useContext(UserContext)
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    handleSubmit();
+  }, []);
+
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${BASE_URL}/auth/sign-in`, signUp);
+
+      if (response.status === 201) {
+        console.log(response.data);
+        console.log("Finished setting");
+        navigate("/auth/sign-in");
+      }
+    } catch (err) {
+      console.log("Error in login: ", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        const { errors } = err.response.data
+        console.log(errors);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section className=" flex justify-center w-full h-screen font-poppins">
       <div className="w-1/2">
@@ -21,12 +56,13 @@ const Success = () => {
             Your account has been created successfully.
           </h1>
 
-          <button
+          <Link
             className="bg-teal-700 p-2 rounded-xl text-white mt-7 mb-16 w-full"
             type="submit"
+            to={"/auth/sign-in"}
           >
-            Sign in
-          </button>
+           {isLoading ? "Loading..." : "Sign in"}
+          </Link>
         </div>
       </div>
     </section>
