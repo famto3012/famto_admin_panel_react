@@ -8,11 +8,12 @@ const AddAgentPricingModal = ({
   handleCancel,
   token,
   geofence,
+  onAddRule,
   BASE_URL,
 }) => {
   const toast = useToast();
   const [confirmLoading,setConfirmLoading]= useState(false)
-  const [apricing, setApricing] = useState({
+  const [agentPricing, setAgentPricing] = useState({
     ruleName: "",
     baseFare: "",
     baseDistanceFare: "",
@@ -24,17 +25,17 @@ const AddAgentPricingModal = ({
     geofenceId: "",
   });
   const handleInputChange = (e) => {
-    setApricing({ ...apricing, [e.target.name]: e.target.value });
+    setAgentPricing({ ...agentPricing, [e.target.name]: e.target.value });
   };
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true)
-      console.log("agentpricing", apricing);
+      console.log("agentpricing", agentPricing);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/agent-pricing/add-agent-pricing`,
-        apricing,
+        agentPricing,
         {
           withCredentials: true,
           headers: {
@@ -45,6 +46,7 @@ const AddAgentPricingModal = ({
 
       if (addResponse.status === 201) {
         handleCancel();
+        onAddRule(addResponse.data.data);
         console.log("adddata", addResponse.data.message);
         toast({
           title: "Success",
@@ -66,12 +68,12 @@ const AddAgentPricingModal = ({
     }finally{
       setConfirmLoading(false)
     }
-    console.log(apricing);
+    console.log(agentPricing);
   };
 
   return (
     <Modal
-      title="Agent Pricing"
+      title="Add Agent Pricing"
       open={isVisible}
       centered
       onCancel={handleCancel}
@@ -87,7 +89,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Rule Name"
-              value={apricing.ruleName}
+              value={agentPricing.ruleName}
               id="ruleName"
               name="ruleName"
               onChange={handleInputChange}
@@ -101,7 +103,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Fare"
-              value={apricing.baseFare}
+              value={agentPricing.baseFare}
               id="baseFare"
               name="baseFare"
               onChange={handleInputChange}
@@ -115,7 +117,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Distance"
-              value={apricing.baseDistanceFare}
+              value={agentPricing.baseDistanceFare}
               id="baseDistanceFare"
               name="baseDistanceFare"
               onChange={handleInputChange}
@@ -129,7 +131,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Extra Fare Day"
-              value={apricing.extraFarePerDay}
+              value={agentPricing.extraFarePerDay}
               id="extraFarePerDay"
               name="extraFarePerDay"
               onChange={handleInputChange}
@@ -146,7 +148,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Distance"
-              value={apricing.baseDistanceFarePerKM}
+              value={agentPricing.baseDistanceFarePerKM}
               id="baseDistanceFarePerKM"
               name="baseDistanceFarePerKM"
               onChange={handleInputChange}
@@ -160,7 +162,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Time"
-              value={apricing.waitingTime}
+              value={agentPricing.waitingTime}
               id="waitingTime"
               name="waitingTime"
               onChange={handleInputChange}
@@ -174,7 +176,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Fare"
-              value={apricing.waitingFare}
+              value={agentPricing.waitingFare}
               id="waitingFare"
               name="waitingFare"
               onChange={handleInputChange}
@@ -191,7 +193,7 @@ const AddAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Purchase Fare Hour"
-              value={apricing.purchaseFarePerHour}
+              value={agentPricing.purchaseFarePerHour}
               id="purchaseFarePerHour"
               name="purchaseFarePerHour"
               onChange={handleInputChange}
@@ -203,7 +205,7 @@ const AddAgentPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={apricing.geofenceId}
+              value={agentPricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >

@@ -10,12 +10,13 @@ const EditAgentPricingModal = ({
   token,
   geofence,
   BASE_URL,
-  currentEditAr,
+  onEditRule,
+  currentEdit,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [apricing, setApricing] = useState({
+  const [agentPricing, setAgentPricing] = useState({
     ruleName: "",
     baseFare: "",
     baseDistanceFare: "",
@@ -27,7 +28,7 @@ const EditAgentPricingModal = ({
     geofenceId: "",
   });
   useEffect(() => {
-    // console.log(currentEditAr)
+    // console.log(currentEdit)
     if (!token) {
       navigate("/auth/login");
       return;
@@ -36,7 +37,7 @@ const EditAgentPricingModal = ({
     const fetchData = async () => {
       try {
         const [addResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/agent-pricing/${currentEditAr}`, {
+          axios.get(`${BASE_URL}/admin/agent-pricing/${currentEdit}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -49,7 +50,7 @@ const EditAgentPricingModal = ({
             geofenceId: customGeofenceId,
           };
 
-          setApricing(updatedData);
+          setAgentPricing(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
@@ -58,23 +59,23 @@ const EditAgentPricingModal = ({
       
     };
 
-    if (currentEditAr) {
+    if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEditAr, BASE_URL]);
+  }, [token, navigate, currentEdit, BASE_URL]);
 
   const handleInputChange = (e) => {
-    setApricing({ ...apricing, [e.target.name]: e.target.value });
+    setAgentPricing({ ...agentPricing, [e.target.name]: e.target.value });
   };
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
-      console.log("apricing", apricing);
+      console.log("agentPricing", agentPricing);
       const editResponse = await axios.put(
-        `${BASE_URL}/admin/agent-pricing/edit-agent-pricing/${currentEditAr}`,
-        apricing,
+        `${BASE_URL}/admin/agent-pricing/edit-agent-pricing/${currentEdit}`,
+        agentPricing,
         {
           withCredentials: true,
           headers: {
@@ -85,6 +86,7 @@ const EditAgentPricingModal = ({
 
       if (editResponse.status === 200) {
         handleCancel();
+        onEditRule(editResponse.data.data);
         toast({
           title: "Success",
           description: "Agent Pricing Updated successfully.",
@@ -107,12 +109,12 @@ const EditAgentPricingModal = ({
       
       setConfirmLoading(false);
     }
-    console.log(apricing);
+    console.log(agentPricing);
   };
   
   return (
     <Modal
-      title="Agent Pricing"
+      title="Edit Agent Pricing"
       open={isVisible}
       centered
       onCancel={handleCancel}
@@ -128,7 +130,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Rule Name"
-              value={apricing.ruleName}
+              value={agentPricing.ruleName}
               id="ruleName"
               name="ruleName"
               onChange={handleInputChange}
@@ -142,7 +144,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Fare"
-              value={apricing.baseFare}
+              value={agentPricing.baseFare}
               id="baseFare"
               name="baseFare"
               onChange={handleInputChange}
@@ -156,7 +158,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Distance"
-              value={apricing.baseDistanceFare}
+              value={agentPricing.baseDistanceFare}
               id="baseDistanceFare"
               name="baseDistanceFare"
               onChange={handleInputChange}
@@ -170,7 +172,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Extra Fare Day"
-              value={apricing.extraFarePerDay}
+              value={agentPricing.extraFarePerDay}
               id="extraFarePerDay"
               name="extraFarePerDay"
               onChange={handleInputChange}
@@ -187,7 +189,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Distance"
-              value={apricing.baseDistanceFarePerKM}
+              value={agentPricing.baseDistanceFarePerKM}
               id="baseDistanceFarePerKM"
               name="baseDistanceFarePerKM"
               onChange={handleInputChange}
@@ -201,7 +203,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Time"
-              value={apricing.waitingTime}
+              value={agentPricing.waitingTime}
               id="waitingTime"
               name="waitingTime"
               onChange={handleInputChange}
@@ -215,7 +217,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Fare"
-              value={apricing.waitingFare}
+              value={agentPricing.waitingFare}
               id="waitingFare"
               name="waitingFare"
               onChange={handleInputChange}
@@ -232,7 +234,7 @@ const EditAgentPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Purchase Fare Hour"
-              value={apricing.purchaseFarePerHour}
+              value={agentPricing.purchaseFarePerHour}
               id="purchaseFarePerHour"
               name="purchaseFarePerHour"
               onChange={handleInputChange}
@@ -244,7 +246,7 @@ const EditAgentPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={apricing.geofenceId}
+              value={agentPricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >

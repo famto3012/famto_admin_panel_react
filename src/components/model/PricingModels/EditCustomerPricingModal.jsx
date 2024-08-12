@@ -11,12 +11,13 @@ const EditCustomerPricingModal = ({
   geofence,
   BASE_URL,
   business,
-  currentEditCr,
+  onEditRule,
+  currentEdit,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
   const [confirmLoading, setConfirmLoading] = useState(false)
-  const [cpricing, setCpricing] = useState({
+  const [customerPricing, setCustomerPricing] = useState({
     vehicleType: "",
     ruleName: "",
     baseFare: "",
@@ -43,7 +44,7 @@ const EditCustomerPricingModal = ({
       
       try {
         const [addResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/customer-pricing/${currentEditCr}`, {
+          axios.get(`${BASE_URL}/admin/customer-pricing/${currentEdit}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -56,7 +57,7 @@ const EditCustomerPricingModal = ({
             geofenceId: customGeofenceId,
           };
 
-          setCpricing(updatedData);
+          setCustomerPricing(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
@@ -64,28 +65,28 @@ const EditCustomerPricingModal = ({
       } 
         };
 
-    if (currentEditCr) {
+    if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEditCr, BASE_URL]);
+  }, [token, navigate, currentEdit, BASE_URL]);
 
   const handleRadioChange = (e) => {
     const { value } = e.target;
-    setCpricing({ ...cpricing, deliveryMode: value });
+    setCustomerPricing({ ...customerPricing, deliveryMode: value });
     console.log(value);
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCpricing({ ...cpricing, [name]: value });
+    setCustomerPricing({ ...customerPricing, [name]: value });
   };
   const submitAction = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
-      console.log("customerpricing", cpricing);
+      console.log("customerpricing", customerPricing);
       const editResponse = await axios.put(
-        `${BASE_URL}/admin/customer-pricing/edit-customer-pricing/${currentEditCr}`,
-        cpricing,
+        `${BASE_URL}/admin/customer-pricing/edit-customer-pricing/${currentEdit}`,
+        customerPricing,
         {
           withCredentials: true,
           headers: {
@@ -96,6 +97,7 @@ const EditCustomerPricingModal = ({
 
       if (editResponse.status === 200) {
         handleCancel();
+        onEditRule(editResponse.data.data);
         toast({
           title: "Success",
           description: "Customer Pricing Updated Successfully.",
@@ -117,12 +119,12 @@ const EditCustomerPricingModal = ({
     } finally {
       setConfirmLoading(false);
     }
-    console.log(cpricing);
+    console.log(customerPricing);
   };
 
   return (
     <Modal
-      title="Customer Pricing"
+      title="Edit Customer Pricing"
       open={isVisible}
       centered
       width="700px"
@@ -139,7 +141,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Rule Name"
-              value={cpricing.ruleName}
+              value={customerPricing.ruleName}
               id="ruleName"
               name="ruleName"
               onChange={handleInputChange}
@@ -153,7 +155,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Fare"
-              value={cpricing.baseFare}
+              value={customerPricing.baseFare}
               id="baseFare"
               name="baseFare"
               onChange={handleInputChange}
@@ -167,7 +169,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Distance"
-              value={cpricing.baseDistance}
+              value={customerPricing.baseDistance}
               id="baseDistance"
               name="baseDistance"
               onChange={handleInputChange}
@@ -184,7 +186,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Distance"
-              value={cpricing.fareAfterBaseDistance}
+              value={customerPricing.fareAfterBaseDistance}
               id="fareAfterBaseDistance"
               name="fareAfterBaseDistance"
               onChange={handleInputChange}
@@ -198,7 +200,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Weight"
-              value={cpricing.baseWeightUpto}
+              value={customerPricing.baseWeightUpto}
               id="baseWeightUpto"
               name="baseWeightUpto"
               onChange={handleInputChange}
@@ -215,7 +217,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Weight"
-              value={cpricing.fareAfterBaseWeight}
+              value={customerPricing.fareAfterBaseWeight}
               id="fareAfterBaseWeight"
               name="fareAfterBaseWeight"
               onChange={handleInputChange}
@@ -232,7 +234,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Purchase Fare Hour"
-              value={cpricing.purchaseFarePerHour}
+              value={customerPricing.purchaseFarePerHour}
               id="purchaseFarePerHour"
               name="purchaseFarePerHour"
               onChange={handleInputChange}
@@ -246,7 +248,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Fare"
-              value={cpricing.waitingFare}
+              value={customerPricing.waitingFare}
               id="waitingFare"
               name="waitingFare"
               onChange={handleInputChange}
@@ -260,7 +262,7 @@ const EditCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Time"
-              value={cpricing.waitingTime}
+              value={customerPricing.waitingTime}
               id="waitingTime"
               name="waitingTime"
               onChange={handleInputChange}
@@ -275,7 +277,7 @@ const EditCustomerPricingModal = ({
                 id="Home Delivery"
                 value="Home Delivery"
                 name="deliveryMode"
-                checked={cpricing.deliveryMode === "Home Delivery"}
+                checked={customerPricing.deliveryMode === "Home Delivery"}
                 onChange={handleRadioChange}
                 className="form-radio"
               />
@@ -287,7 +289,7 @@ const EditCustomerPricingModal = ({
                 id="Custom Order"
                 name="deliveryMode"
                 value="Custom Order"
-                checked={cpricing.deliveryMode === "Custom Order"}
+                checked={customerPricing.deliveryMode === "Custom Order"}
                 onChange={handleRadioChange}
                 className="form-radio"
               />
@@ -299,7 +301,7 @@ const EditCustomerPricingModal = ({
                 id="Pick and Drop"
                 name="deliveryMode"
                 value="Pick and Drop"
-                checked={cpricing.deliveryMode === "Pick and Drop"}
+                checked={customerPricing.deliveryMode === "Pick and Drop"}
                 onChange={handleRadioChange}
                 className="form-radio"
               />
@@ -308,12 +310,12 @@ const EditCustomerPricingModal = ({
               </label>
             </div>
           </div>
-          {cpricing.deliveryMode === "Home Delivery" && (
+          {customerPricing.deliveryMode === "Home Delivery" && (
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="business"></label>
+              <label className="w-1/3 text-gray-500" htmlFor="businessCategoryId"></label>
               <select
                 name="businessCategoryId"
-                value={cpricing.businessCategoryId}
+                value={customerPricing.businessCategoryId}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -331,7 +333,7 @@ const EditCustomerPricingModal = ({
               </select>
             </div>
           )}
-          {cpricing.deliveryMode === "Pick and Drop" && (
+          {customerPricing.deliveryMode === "Pick and Drop" && (
             <div className="flex items-center">
               <label
                 className="w-1/3 text-gray-500"
@@ -340,7 +342,7 @@ const EditCustomerPricingModal = ({
               <select
                 id="vehicleType"
                 name="vehicleType"
-                value={cpricing.vehicleType}
+                value={customerPricing.vehicleType}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -358,7 +360,7 @@ const EditCustomerPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={cpricing.geofenceId}
+              value={customerPricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >

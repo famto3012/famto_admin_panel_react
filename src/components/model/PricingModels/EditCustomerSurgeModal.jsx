@@ -10,7 +10,8 @@ const EditCustomerSurgeModal = ({
   token,
   geofence,
   BASE_URL,
-  currentEditCs,
+  onEditSurge,
+  currentEdit,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const EditCustomerSurgeModal = ({
   
       try {
         const [addResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/customer-surge/${currentEditCs}`, {
+          axios.get(`${BASE_URL}/admin/customer-surge/${currentEdit}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -54,10 +55,10 @@ const EditCustomerSurgeModal = ({
       } 
     };
 
-    if (currentEditCs) {
+    if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEditCs, BASE_URL]);
+  }, [token, navigate, currentEdit, BASE_URL]);
 
   const inputChange = (e) => {
     setCustomerSurge({ ...customerSurge, [e.target.name]: e.target.value });
@@ -68,7 +69,7 @@ const EditCustomerSurgeModal = ({
     setConfirmLoading(true);
       console.log("customerSurge", customerSurge);
       const editResponse = await axios.put(
-        `${BASE_URL}/admin/customer-surge/edit-customer-surge/${currentEditCs}`,
+        `${BASE_URL}/admin/customer-surge/edit-customer-surge/${currentEdit}`,
         customerSurge,
         {
           withCredentials: true,
@@ -80,6 +81,7 @@ const EditCustomerSurgeModal = ({
 
       if (editResponse.status === 200) {
         handleCancel();
+        onEditSurge(editResponse.data.data);
         toast({
           title: "Success",
           description: "Customer Surge Updated Successfully.",
@@ -105,7 +107,7 @@ const EditCustomerSurgeModal = ({
   };
   return (
     <Modal
-      title="Surge"
+      title="Edit Customer Surge"
       open={isVisible}
       centered
       onCancel={handleCancel}

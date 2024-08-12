@@ -6,11 +6,11 @@ import { useToast } from "@chakra-ui/react";
 const DeleteAgentPricingModal = ({
   isVisible,
   handleCancel,
-  handleConfirmDeleteAr,
-  currentDeleteAr,
+  handleConfirmDelete,
+  currentDelete,
   token,
   BASE_URL,
-  removeAr,
+  remove,
 }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const toast = useToast();
@@ -18,15 +18,15 @@ const DeleteAgentPricingModal = ({
     setConfirmLoading(true);
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/agent-pricing/delete-agent-pricing/${currentDeleteAr}`,
+        `${BASE_URL}/admin/agent-pricing/delete-agent-pricing/${currentDelete}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (response.status === 200) {
-        removeAr(currentDeleteAr);
-        handleConfirmDeleteAr();
+        remove(currentDelete);
+        handleConfirmDelete();
         toast({
           title: "Success",
           description: "Agent Pricng Deleted successfully.",
@@ -51,7 +51,7 @@ const DeleteAgentPricingModal = ({
 
   return (
     <Modal
-      title="Delete Tax"
+      title="Delete Agent Pricing"
       open={isVisible}
       onOk={handleOk}
       onCancel={handleCancel}

@@ -9,12 +9,13 @@ const AddCustomerPricingModal = ({
   token,
   geofence,
   BASE_URL,
+  onAddRule,
   business,
 }) => {
   const toast = useToast();
   const [confirmLoading,setConfirmLoading]= useState(false)
-  const [cpricing, setCpricing] = useState({
-    vehicleType: "",
+  const [customerPricing, setCustomerPricing] = useState({
+    vehicleType:null,
     ruleName: "",
     baseFare: "",
     baseDistance: "",
@@ -30,22 +31,22 @@ const AddCustomerPricingModal = ({
   });
   const handleRadioChange = (e) => {
     const { value } = e.target;
-    setCpricing({ ...cpricing, deliveryMode: value });
+    setCustomerPricing({ ...customerPricing, deliveryMode: value });
     console.log(value);
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCpricing({ ...cpricing, [name]: value });
+    setCustomerPricing({ ...customerPricing, [name]: value });
   };
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      console.log(cpricing);
+      console.log(customerPricing);
       setConfirmLoading(true)
       const addResponse = await axios.post(
         `${BASE_URL}/admin/customer-pricing/add-customer-pricing`,
-        cpricing,
+        customerPricing,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -53,6 +54,7 @@ const AddCustomerPricingModal = ({
       );
       if (addResponse.status === 201) {
         handleCancel();
+        onAddRule(addResponse.data.data);
         toast({
           title: "Success",
           description: "Customer Pricng Created successfully.",
@@ -77,7 +79,7 @@ const AddCustomerPricingModal = ({
 
   return (
     <Modal
-      title="Customer Pricing"
+      title="Add Customer Pricing"
       open={isVisible}
       centered
       width="700px"
@@ -94,7 +96,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Rule Name"
-              value={cpricing.ruleName}
+              value={customerPricing.ruleName}
               id="ruleName"
               name="ruleName"
               onChange={handleInputChange}
@@ -108,7 +110,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Fare"
-              value={cpricing.baseFare}
+              value={customerPricing.baseFare}
               id="baseFare"
               name="baseFare"
               onChange={handleInputChange}
@@ -122,7 +124,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Distance"
-              value={cpricing.baseDistance}
+              value={customerPricing.baseDistance}
               id="baseDistance"
               name="baseDistance"
               onChange={handleInputChange}
@@ -139,7 +141,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Distance"
-              value={cpricing.fareAfterBaseDistance}
+              value={customerPricing.fareAfterBaseDistance}
               id="fareAfterBaseDistance"
               name="fareAfterBaseDistance"
               onChange={handleInputChange}
@@ -153,7 +155,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Weight"
-              value={cpricing.baseWeightUpto}
+              value={customerPricing.baseWeightUpto}
               id="baseWeightUpto"
               name="baseWeightUpto"
               onChange={handleInputChange}
@@ -170,7 +172,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Weight"
-              value={cpricing.fareAfterBaseWeight}
+              value={customerPricing.fareAfterBaseWeight}
               id="fareAfterBaseWeight"
               name="fareAfterBaseWeight"
               onChange={handleInputChange}
@@ -187,7 +189,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Purchase Fare Hour"
-              value={cpricing.purchaseFarePerHour}
+              value={customerPricing.purchaseFarePerHour}
               id="purchaseFarePerHour"
               name="purchaseFarePerHour"
               onChange={handleInputChange}
@@ -201,7 +203,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Fare"
-              value={cpricing.waitingFare}
+              value={customerPricing.waitingFare}
               id="waitingFare"
               name="waitingFare"
               onChange={handleInputChange}
@@ -215,7 +217,7 @@ const AddCustomerPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Time"
-              value={cpricing.waitingTime}
+              value={customerPricing.waitingTime}
               id="waitingTime"
               name="waitingTime"
               onChange={handleInputChange}
@@ -230,7 +232,7 @@ const AddCustomerPricingModal = ({
                 id="Home Delivery"
                 value="Home Delivery"
                 name="deliveryMode"
-                checked={cpricing.deliveryMode === "Home Delivery"}
+                checked={customerPricing.deliveryMode === "Home Delivery"}
                 onChange={handleRadioChange}
                 className="form-radio"
               />
@@ -242,7 +244,7 @@ const AddCustomerPricingModal = ({
                 id="Custom Order"
                 name="deliveryMode"
                 value="Custom Order"
-                checked={cpricing.deliveryMode === "Custom Order"}
+                checked={customerPricing.deliveryMode === "Custom Order"}
                 onChange={handleRadioChange}
                 className="form-radio"
               />
@@ -254,7 +256,7 @@ const AddCustomerPricingModal = ({
                 id="Pick and Drop"
                 name="deliveryMode"
                 value="Pick and Drop"
-                checked={cpricing.deliveryMode === "Pick and Drop"}
+                checked={customerPricing.deliveryMode === "Pick and Drop"}
                 onChange={handleRadioChange}
                 className="form-radio"
               />
@@ -263,12 +265,12 @@ const AddCustomerPricingModal = ({
               </label>
             </div>
           </div>
-          {cpricing.deliveryMode === "Home Delivery" && (
+          {customerPricing.deliveryMode === "Home Delivery" && (
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="business"></label>
               <select
                 name="businessCategoryId"
-                value={cpricing?.businessCategoryId}
+                value={customerPricing?.businessCategoryId}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -286,7 +288,7 @@ const AddCustomerPricingModal = ({
               </select>
             </div>
           )}
-          {cpricing.deliveryMode === "Pick and Drop" && (
+          {customerPricing.deliveryMode === "Pick and Drop" && (
             <div className="flex items-center">
               <label
                 className="w-1/3 text-gray-500"
@@ -295,7 +297,7 @@ const AddCustomerPricingModal = ({
               <select
                 id="vehicleType"
                 name="vehicleType"
-                value={cpricing?.vehicleType}
+                value={customerPricing?.vehicleType}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -313,7 +315,7 @@ const AddCustomerPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={cpricing.geofenceId}
+              value={customerPricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >
