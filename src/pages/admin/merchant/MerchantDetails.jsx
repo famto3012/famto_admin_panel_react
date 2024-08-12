@@ -34,7 +34,7 @@ const MerchantDetails = () => {
   const toast = useToast();
 
   useEffect(() => {
-    if (!token || role !== "Admin") {
+    if (!token) {
       navigate("/auth/login");
     }
 

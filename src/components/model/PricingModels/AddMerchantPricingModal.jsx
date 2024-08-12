@@ -8,11 +8,12 @@ const AddMerchantPricingModal = ({
   handleCancel,
   token,
   geofence,
+  onAddRule,
   BASE_URL,
 }) => {
   const toast = useToast();
   const [confirmLoading,setConfirmLoading]= useState(false)
-  const [mpricing, setMpricing] = useState({
+  const [merchantPricing, setMerchantPricing] = useState({
     ruleName: "",
     baseFare: "",
     baseDistance: "",
@@ -25,17 +26,17 @@ const AddMerchantPricingModal = ({
     geofenceid: "",
   });
   const handleInputChange = (e) => {
-    setMpricing({ ...mpricing, [e.target.name]: e.target.value });
+    setMerchantPricing({ ...merchantPricing, [e.target.name]: e.target.value });
   };
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true)
-      console.log("merchantpricing", mpricing);
+      console.log("merchantpricing", merchantPricing);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/merchant-pricing/add-merchant-pricing`,
-        mpricing,
+        merchantPricing,
         {
           withCredentials: true,
           headers: {
@@ -46,6 +47,7 @@ const AddMerchantPricingModal = ({
 
       if (addResponse.status === 201) {
         handleCancel();
+        onAddRule(addResponse.data.data);
         console.log("adddata", addResponse.data.message);
         toast({
           title: "Success",
@@ -68,11 +70,11 @@ const AddMerchantPricingModal = ({
       setConfirmLoading(false)
     }
 
-    console.log(mpricing);
+    console.log(merchantPricing);
   };
   return (
     <Modal
-      title="Merchant Pricing"
+      title=" Add Merchant Pricing"
       open={isVisible}
       centered
       onCancel={handleCancel}
@@ -88,7 +90,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Rule Name"
-              value={mpricing.ruleName}
+              value={merchantPricing.ruleName}
               id="ruleName"
               name="ruleName"
               onChange={handleInputChange}
@@ -102,7 +104,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Fare"
-              value={mpricing.baseFare}
+              value={merchantPricing.baseFare}
               id="baseFare"
               name="baseFare"
               onChange={handleInputChange}
@@ -116,7 +118,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Distance"
-              value={mpricing.baseDistance}
+              value={merchantPricing.baseDistance}
               id="baseDistance"
               name="baseDistance"
               onChange={handleInputChange}
@@ -133,7 +135,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Distance"
-              value={mpricing.fareAfterBaseDistance}
+              value={merchantPricing.fareAfterBaseDistance}
               id="fareAfterBaseDistance"
               name="fareAfterBaseDistance"
               onChange={handleInputChange}
@@ -147,7 +149,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Weight"
-              value={mpricing.baseWeightUpTo}
+              value={merchantPricing.baseWeightUpTo}
               id="baseWeightUpTo"
               name="baseWeightUpTo"
               onChange={handleInputChange}
@@ -164,7 +166,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Weight"
-              value={mpricing.fareAfterBaseWeight}
+              value={merchantPricing.fareAfterBaseWeight}
               id="fareAfterBaseWeight"
               name="fareAfterBaseWeight"
               onChange={handleInputChange}
@@ -181,7 +183,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Purchase Fare Hour"
-              value={mpricing.purchaseFarePerHour}
+              value={merchantPricing.purchaseFarePerHour}
               id="purchaseFarePerHour"
               name="purchaseFarePerHour"
               onChange={handleInputChange}
@@ -195,7 +197,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Fare"
-              value={mpricing.waitingFare}
+              value={merchantPricing.waitingFare}
               id="waitingFare"
               name="waitingFare"
               onChange={handleInputChange}
@@ -209,7 +211,7 @@ const AddMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Time"
-              value={mpricing.waitingTime}
+              value={merchantPricing.waitingTime}
               id="waitingTime"
               name="waitingTime"
               onChange={handleInputChange}
@@ -222,7 +224,7 @@ const AddMerchantPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={mpricing.geofenceId}
+              value={merchantPricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >

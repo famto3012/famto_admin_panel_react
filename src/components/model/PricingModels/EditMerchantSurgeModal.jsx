@@ -10,7 +10,8 @@ const EditMerchantSurgeModal = ({
   token,
   geofence,
   BASE_URL,
-  currentEditMs,
+  onEditSurge,
+  currentEdit,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const EditMerchantSurgeModal = ({
       
       try {
         const [addResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/merchant-surge/${currentEditMs}`, {
+          axios.get(`${BASE_URL}/admin/merchant-surge/${currentEdit}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -55,10 +56,10 @@ const EditMerchantSurgeModal = ({
       } 
     };
 
-    if (currentEditMs) {
+    if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEditMs, BASE_URL]);
+  }, [token, navigate, currentEdit, BASE_URL]);
 
   const inputChange = (e) => {
     setMerchantSurge({ ...merchantSurge, [e.target.name]: e.target.value });
@@ -68,7 +69,7 @@ const EditMerchantSurgeModal = ({
     try {
       console.log("merchantSurge", merchantSurge);
       const editResponse = await axios.put(
-        `${BASE_URL}/admin/merchant-surge/edit-merchant-surge/${currentEditMs}`,
+        `${BASE_URL}/admin/merchant-surge/edit-merchant-surge/${currentEdit}`,
         merchantSurge,
         {
           withCredentials: true,
@@ -80,6 +81,7 @@ const EditMerchantSurgeModal = ({
 
       if (editResponse.status === 200) {
         handleCancel();
+        onEditSurge(editResponse.data.data);
         toast({
           title: "Success",
           description: "Merchant Updated Successfully.",
@@ -105,7 +107,7 @@ const EditMerchantSurgeModal = ({
   };
   return (
     <Modal
-      title="Surge"
+      title="Edit Merchant Surge"
       open={isVisible}
       centered
       onCancel={handleCancel}
