@@ -6,11 +6,11 @@ import { useToast } from "@chakra-ui/react";
 const DeleteAgentSurgeModal = ({
   isVisible,
   handleCancel,
-  handleConfirmDeleteAs,
-  currentDeleteAs,
+  handleConfirmDelete,
+  currentDelete,
   token,
   BASE_URL,
-  removeAs,
+  remove,
 }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const toast = useToast();
@@ -18,15 +18,15 @@ const DeleteAgentSurgeModal = ({
     setConfirmLoading(true);
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/agent-surge/delete-agent-surge/${currentDeleteAs}`,
+        `${BASE_URL}/admin/agent-surge/delete-agent-surge/${currentDelete}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (response.status === 200) {
-        removeAs(currentDeleteAs);
-        handleConfirmDeleteAs();
+        remove(currentDelete);
+        handleConfirmDelete();
         toast({
           title: "Success",
           description: "Agent Surge Deleted successfully.",

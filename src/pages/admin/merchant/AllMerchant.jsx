@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import { Switch } from "antd";
+import { Modal, Switch } from "antd";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
@@ -33,7 +33,10 @@ const Merchant = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [approveLoading, setApproveLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isConfirmModal, setIsConfirmModal] = useState(false); // Modal to approve merchant
+  const [isModalReject, setIsModalReject] = useState(false); // Modal to Reject Merchant
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
@@ -251,8 +254,10 @@ const Merchant = () => {
     }
   };
 
-  const handleApprove = async (merchantId) => {
+  const handleApprove = async (e, merchantId) => {
+    e.preventDefault();
     try {
+      setApproveLoading(true);
       const response = await axios.patch(
         `${BASE_URL}/merchants/admin/approve-merchant/${merchantId}`,
         {},
@@ -288,10 +293,13 @@ const Merchant = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setApproveLoading(false);
     }
   };
 
-  const handleReject = async (merchantId) => {
+  const handleReject = async (e, merchantId) => {
+    e.preventDefault();
     try {
       const response = await axios.patch(
         `${BASE_URL}/merchants/admin/reject-merchant/${merchantId}`,
@@ -424,15 +432,19 @@ const Merchant = () => {
     };
   }, [search]);
 
-  const csvData = [
-    { label: "Merchant ID", key: "_id" },
-    { label: "Merchant Name", key: "merchantName" },
-    { label: "Phone Number", key: "phoneNumber" },
-    { label: "Average Rating", key: "averageRating" },
-    { label: "Approved", key: "isApproved" },
-    { label: "Serviceable Today", key: "isServiceableToday" },
-    { label: "Geofence", key: "geofence" },
-  ];
+  const handleApprovedModal = () => {
+    setIsConfirmModal(true);
+  };
+
+  const showModalReject = () => {
+    setIsModalReject(true);
+  };
+
+  const handleCancel = () => {
+    setIsConfirmModal(false);
+    setIsModalReject(false);
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -628,12 +640,77 @@ const Merchant = () => {
                                 <>
                                   <CheckCircleOutlined
                                     className="text-2xl cursor-pointer text-green-500"
-                                    onClick={() => handleApprove(data._id)}
+                                    onClick={handleApprovedModal}
+                                    // onClick={() => handleApprove(data._id)}
                                   />
+                                  <Modal
+                                    open={isConfirmModal}
+                                    onCancel={handleCancel}
+                                    centered
+                                    footer={null}
+                                  >
+                                    <form
+                                      onSubmit={(e) =>
+                                        handleApprove(e, data._id)
+                                      }
+                                    >
+                                      <p className="font-semibold text-[18px] p-2">
+                                        Are you sure want to Approve ?
+                                      </p>
+                                      <div className="flex justify-end mt-5 gap-6">
+                                        <button
+                                          type="button"
+                                          className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                                          onClick={handleCancel}
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          type="submit"
+                                          className="bg-teal-800 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                                        >
+                                          {approveLoading
+                                            ? "Approving..."
+                                            : "Approve"}
+                                        </button>
+                                      </div>
+                                    </form>
+                                  </Modal>
                                   <CloseCircleOutlined
                                     className="text-2xl cursor-pointer text-red-500"
-                                    onClick={() => handleReject(data._id)}
+                                    onClick={showModalReject}
                                   />
+                                  <Modal
+                                    open={isModalReject}
+                                    onCancel={handleCancel}
+                                    centered
+                                    footer={null}
+                                  >
+                                    <form
+                                      onSubmit={(e) =>
+                                        handleReject(e, data._id)
+                                      }
+                                    >
+                                      <p className="font-semibold text-[18px] p-2">
+                                        Are you sure want to Approve ?
+                                      </p>
+                                      <div className="flex justify-end mt-5 gap-6">
+                                        <button
+                                          type="button"
+                                          className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                                          onClick={handleCancel}
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          type="submit"
+                                          className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                                        >
+                                          Reject
+                                        </button>
+                                      </div>
+                                    </form>
+                                  </Modal>
                                 </>
                               )}
                             </>

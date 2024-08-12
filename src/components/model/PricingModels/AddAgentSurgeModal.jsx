@@ -8,6 +8,7 @@ const AddAgentSurgeModal = ({
   handleCancel,
   token,
   geofence,
+  onAddSurge,
   BASE_URL,
 }) => {
   const toast = useToast();
@@ -43,6 +44,7 @@ const AddAgentSurgeModal = ({
 
       if (addResponse.status === 201) {
         handleCancel();
+        onAddSurge(addResponse.data.data);
         console.log("agentsurge", addResponse.data.message);
         toast({
           title: "Success",
@@ -56,7 +58,7 @@ const AddAgentSurgeModal = ({
       console.error(`Error in fetching data: ${err}`);
       toast({
         title: "Error",
-        description: "There eas an error occured.",
+        description: "There was an error occured.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -67,7 +69,7 @@ const AddAgentSurgeModal = ({
   };
   return (
     <Modal
-      title="Surge"
+      title=" Add Agent Surge"
       open={isVisible}
       centered
       onCancel={handleCancel}

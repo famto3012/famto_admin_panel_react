@@ -8,6 +8,8 @@ const UserProvider = ({ children }) => {
   const [role, setRole] = useState(Cookies.get("role") || null);
   const [userId, setUserId] = useState(Cookies.get("userId") || null);
   const [fcmToken, setFcmToken] = useState(Cookies.get("fcmToken") || null);
+  const [signUp , setSignUp] = useState({})
+  const [verification , setVerification] = useState("")
 
   useEffect(() => {
     if (token && role) {
@@ -34,6 +36,10 @@ const UserProvider = ({ children }) => {
         setUserId,
         fcmToken,
         setFcmToken,
+        signUp,
+        setSignUp,
+        verification,
+        setVerification
       }}
     >
       {children}

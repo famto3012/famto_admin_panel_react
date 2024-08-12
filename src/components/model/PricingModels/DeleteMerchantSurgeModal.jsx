@@ -6,11 +6,11 @@ import { useToast } from "@chakra-ui/react";
 const DeleteMerchantSurgeModal = ({
   isVisible,
   handleCancel,
-  handleConfirmDeleteMs,
-  currentDeleteMs,
+  handleConfirmDelete,
+  currentDelete,
   token,
   BASE_URL,
-  removeMs,
+  remove,
 }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const toast = useToast();
@@ -18,15 +18,15 @@ const DeleteMerchantSurgeModal = ({
     setConfirmLoading(true);
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/merchant-surge/delete-merchant-surge/${currentDeleteMs}`,
+        `${BASE_URL}/admin/merchant-surge/delete-merchant-surge/${currentDelete}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (response.status === 200) {
-        removeMs(currentDeleteMs);
-        handleConfirmDeleteMs();
+        remove(currentDelete);
+        handleConfirmDelete();
         toast({
           title: "Success",
           description: "Merchant Surge Deleted successfully.",
@@ -51,7 +51,7 @@ const DeleteMerchantSurgeModal = ({
 
   return (
     <Modal
-      title="Delete"
+      title="Delete Merchant Surge"
       open={isVisible}
       onOk={handleOk}
       onCancel={handleCancel}

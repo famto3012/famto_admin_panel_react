@@ -9,7 +9,7 @@ import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-const AddGeofence = () => {
+const EditGeofence = () => {
   const { token } = useContext(UserContext);
   const [geofences, setGeofences] = useState({});
   const [newGeofence, setNewGeofence] = useState({
@@ -70,7 +70,6 @@ const AddGeofence = () => {
 
   useEffect(() => {
     getAuthToken();
-    getAllGeofence();
     console.log("Token", authToken);
     const script = document.createElement("script");
     script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
@@ -126,56 +125,97 @@ const AddGeofence = () => {
     };
   }, [authToken]);
 
-  const GeoJsonComponent = ({ map }) => {
-    const geoJsonRef = useRef(null);
-    const geoJSON = {
-      type: "FeatureCollection",
-      features: geofences.map((geofence) => ({
-        type: "Feature",
-        properties: {
-          class_id: geofence.id,
-          name: geofence.name,
-          stroke: geofence.color,
-          "stroke-opacity": 0.4,
-          "stroke-width": 3,
-          fill: geofence.color,
-          "fill-opacity": 0.4,
-        },
-        geometry: {
-          type: "Polygon",
-          coordinates: [
-            geofence.coordinates.map((coord) => [coord[0], coord[1]]),
-          ],
-        },
-      })),
-    };
-    console.log("geoJSON", geoJSON);
+  useEffect(() => {
+    getSingleGeofence();
+  }, []);
 
-    useEffect(() => {
-      if (geoJsonRef.current) {
-        window.mappls.removeLayer({ map: map, layer: geoJsonRef.current });
-      }
-      geoJsonRef.current = window.mappls.addGeoJson({
-        map: map,
-        data: geoJSON,
-        overlap: false,
-        fitbounds: true,
-        preserveViewport: false,
-      });
-    }, [map]); // Ensure this only runs when `map` or `geoJSON` change
-  };
-
-  const addGeofence = async () => {
+  const getSingleGeofence = async () => {
     try {
-      const addGeofenceResponse = await axios.post(
-        `${BASE_URL}/admin/geofence/add-geofence`,
-        newGeofence,
+      const response = await axios.get(
+        `${BASE_URL}/admin/geofence/get-geofence/${id}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (addGeofenceResponse.status === 201) {
+      if (response.status === 200) {
+        setColor(response.data.geofence.color);
+        setGeofences(response.data.geofence);
+      }
+    } catch (err) {
+      console.log("Error in fetching geofences: ", err);
+    }
+  };
+
+  const GeoJsonComponent = ({ map, geofences, color }) => {
+    const geoJsonRef = useRef(null);
+
+    useEffect(() => {
+      if (
+        !map ||
+        !geofences.coordinates ||
+        !Array.isArray(geofences.coordinates)
+      )
+        return;
+
+      // Convert the coordinates to Mappls format
+      const pts = geofences.coordinates
+        .map((coord) => {
+          if (!Array.isArray(coord) || coord.length !== 2) {
+            console.error("Invalid coordinate format:", coord);
+            return null;
+          }
+          const [lat, lng] = coord;
+          return { lat, lng };
+        })
+        .filter((coord) => coord !== null);
+      console.log("path", pts);
+
+      // Create the polygon
+      const poly = window.mappls.Polygon({
+        map: map,
+        paths: pts,
+        fillColor: color,
+        fillOpacity: 0.3,
+        fitbounds: true,
+      });
+
+      // Enable editing of the polygon
+      poly.setEditable(true);
+
+      // Function to update coordinates
+      const updateCoordinates = () => {
+        const newCoordinates = poly
+          .getPath()[0]
+          .map((point) => [point.lat, point.lng]);
+        // console.log("poly", poly.getPath()[0].map((point) => [point.lat, point.lng]))
+        console.log("newCoordinates", newCoordinates);
+
+        setGeofences((prevState) => ({
+          ...prevState,
+          coordinates: newCoordinates,
+        }));
+      };
+
+      // Add event listeners to capture changes
+      poly.addListener("dblclick", updateCoordinates);
+    }, [map, geofences, color]);
+
+    return null;
+  };
+
+  const editGeofence = async () => {
+    try {
+      console.log("geofence", geofences);
+      const editGeofenceResponse = await axios.put(
+        `${BASE_URL}/admin/geofence/edit-geofence/${id}`,
+        geofences,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (editGeofenceResponse.status === 200) {
         toast({
           title: "Success",
           status: "success",
@@ -184,31 +224,13 @@ const AddGeofence = () => {
         });
       }
     } catch (err) {
-      console.log("Error in adding geofence: ", err);
+      console.log("Error in updating geofence: ", err);
       toast({
         title: "Error",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-    }
-  };
-
-  const getAllGeofence = async () => {
-    try {
-      console.log(token);
-      const response = await axios.get(
-        `${BASE_URL}/admin/geofence/get-geofence`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.status === 200) {
-        setGeofences(response.data.geofences);
-      }
-    } catch (err) {
-      console.log("Error in fetching geofences: ", err);
     }
   };
 
@@ -219,7 +241,7 @@ const AddGeofence = () => {
         <nav className="p-5">
           <GlobalSearch />
         </nav>
-        <h1 className="font-bold text-lg mx-10">Add Geofence</h1>
+        <h1 className="font-bold text-lg mx-10">Edit Geofence</h1>
         <div className="flex justify-between gap-3">
           <div className="mt-8 p-6 bg-white  rounded-lg shadow-sm w-1/3 ms-10">
             <form>
@@ -291,11 +313,11 @@ const AddGeofence = () => {
               <button
                 type="submit"
                 onClick={
-                 addGeofence
+                  editGeofence
                 }
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
-                 Add
+                 Update
               </button>
             </div>
           </div>
@@ -305,8 +327,14 @@ const AddGeofence = () => {
               id="map"
               className="map-container w-full h-[600px]"
             ></div>
-             {isMapLoaded && geofences.length >= 0 && (
-                <GeoJsonComponent map={mapObject} />
+            {isMapLoaded &&
+              geofences.coordinates &&
+              Array.isArray(geofences.coordinates) && (
+                <GeoJsonComponent
+                  map={mapObject}
+                  geofences={geofences}
+                  color={color}
+                />
               )}
           </div>
         </div>
@@ -315,4 +343,4 @@ const AddGeofence = () => {
   );
 };
 
-export default AddGeofence;
+export default EditGeofence;

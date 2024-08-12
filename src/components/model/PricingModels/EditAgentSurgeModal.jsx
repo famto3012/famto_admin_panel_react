@@ -10,7 +10,8 @@ const EditAgentSurgeModal = ({
   token,
   geofence,
   BASE_URL,
-  currentEditAs,
+  onEditSurge,
+  currentEdit,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const EditAgentSurgeModal = ({
     const fetchData = async () => {
       try {
         const [addResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/agent-surge/${currentEditAs}`, {
+          axios.get(`${BASE_URL}/admin/agent-surge/${currentEdit}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -53,10 +54,10 @@ const EditAgentSurgeModal = ({
       }
     };
 
-    if (currentEditAs) {
+    if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEditAs, BASE_URL]);
+  }, [token, navigate, currentEdit, BASE_URL]);
 
   const inputChange = (e) => {
     setAgentSurge({ ...agentsurge, [e.target.name]: e.target.value });
@@ -67,7 +68,7 @@ const EditAgentSurgeModal = ({
      setConfirmLoading(true);
       console.log("agentsurge", agentsurge);
       const editResponse = await axios.put(
-        `${BASE_URL}/admin/agent-surge/edit-agent-surge/${currentEditAs}`,
+        `${BASE_URL}/admin/agent-surge/edit-agent-surge/${currentEdit}`,
         agentsurge,
         {
           withCredentials: true,
@@ -79,6 +80,7 @@ const EditAgentSurgeModal = ({
 
       if (editResponse.status === 200) {
         handleCancel();
+        onEditSurge(editResponse.data.data);
         toast({
           title: "Success",
           description: "Agent Surge Updated Succesfully.",
@@ -104,7 +106,7 @@ const EditAgentSurgeModal = ({
   };
   return (
     <Modal
-      title="Surge"
+      title="Edit Agent Surge"
       open={isVisible}
       centered
       onCancel={handleCancel}

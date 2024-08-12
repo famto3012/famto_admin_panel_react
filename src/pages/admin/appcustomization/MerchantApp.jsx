@@ -29,9 +29,10 @@ const MerchantApp = () => {
   });
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const MerchantApp = () => {
     try {
       console.log("formData", formData);
 
-      setIsLoading(true);
+      setConfirmLoading(true);
       const dataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
         if (Array.isArray(formData[key])) {
@@ -131,7 +132,7 @@ const MerchantApp = () => {
         isClosable: true,
       });
     } finally {
-      setIsLoading(false);
+      setConfirmLoading(false);
     }
     console.log(formData);
   };
@@ -328,7 +329,7 @@ const MerchantApp = () => {
                 type="submit"
                 onClick={submitAction}
               >
-                Save Changes
+              {confirmLoading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

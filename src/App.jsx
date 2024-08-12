@@ -1,8 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
 import CustomerSub from "./components/model/SubscriptionModels/CustomerSub";
+import { UserContext } from "./context/UserContext";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -61,13 +62,15 @@ const Orders = lazy(() => import("./pages/admin/order/Orders"));
 const Products = lazy(() => import("./pages/admin/products/Products"));
 const Geofence = lazy(() => import("./pages/admin/geofence/Geofence"));
 const AddGeofence = lazy(() => import("./pages/admin/geofence/AddGeofence"));
+const EditGeofence = lazy(() => import("./pages/admin/geofence/EditGeofence"));
 const DeliveryManagement = lazy(() =>
   import("./pages/admin/delivery-management/DeliveryManagement")
 );
-const Commission = lazy(() => import("./pages/admin/manager/Commission"));
+const Commission = lazy(() => import("./pages/admin/commission/Commission"));
 const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
 
 function App() {
+  const {role} = useContext(UserContext)
   return (
     <>
       <BrowserRouter>
@@ -97,7 +100,7 @@ function App() {
               element={<UpdateManager />}
             />
 
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={role === "Admin" ? (<Settings />) : ( <MerchantDetails /> ) } />
 
             <Route path="/all-tax" element={<Tax />} />
             <Route path="/account-logs" element={<AccountLogs />} />
@@ -138,11 +141,11 @@ function App() {
             <Route path="/geofence" element={<Geofence />} />
             <Route
               path="/add-geofence"
-              element={<AddGeofence heading="Add Geofence" />}
+              element={<AddGeofence />}
             />
             <Route
               path="/edit-geofence"
-              element={<AddGeofence heading="Edit Geofence" />}
+              element={<EditGeofence />}
             />
             <Route
               path="/delivery-management"

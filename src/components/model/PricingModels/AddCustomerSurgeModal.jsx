@@ -8,6 +8,7 @@ const AddCustomerSurgeModal = ({
   handleCancel,
   token,
   geofence,
+  onAddSurge,
   BASE_URL,
 }) => {
   const toast = useToast();
@@ -43,6 +44,7 @@ const AddCustomerSurgeModal = ({
 
       if (addResponse.status === 201) {
         handleCancel();
+        onAddSurge(addResponse.data.data);
         console.log("customerSurge", addResponse.data.message);
         toast({
           title: "Success",
@@ -68,7 +70,7 @@ const AddCustomerSurgeModal = ({
   };
   return (
     <Modal
-      title="Surge"
+      title="Add Customer Surge"
       open={isVisible}
       centered
       onCancel={handleCancel}

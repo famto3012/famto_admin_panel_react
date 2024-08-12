@@ -10,12 +10,13 @@ const EditMerchantPricingModal = ({
   token,
   geofence,
   BASE_URL,
-  currentEditMr,
+  onEditRule,
+  currentEdit,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
   const [confirmLoading, setConfirmLoading] = useState(false)
-  const [mpricing, setMpricing] = useState({
+  const [merchantPricing, setMerchantPricing] = useState({
     ruleName: "",
     baseFare: "",
     baseDistance: "",
@@ -38,7 +39,7 @@ const EditMerchantPricingModal = ({
       
       try {
         const [addResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/merchant-pricing/${currentEditMr}`, {
+          axios.get(`${BASE_URL}/admin/merchant-pricing/${currentEdit}`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -51,7 +52,7 @@ const EditMerchantPricingModal = ({
             geofenceId: customGeofenceId,
           };
 
-          setMpricing(updatedData);
+          setMerchantPricing(updatedData);
           console.log(addResponse.data.message);
         }
       } catch (err) {
@@ -59,22 +60,22 @@ const EditMerchantPricingModal = ({
       }
     };
 
-    if (currentEditMr) {
+    if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEditMr, BASE_URL]);
+  }, [token, navigate, currentEdit, BASE_URL]);
 
   const handleInputChange = (e) => {
-    setMpricing({ ...mpricing, [e.target.name]: e.target.value });
+    setMerchantPricing({ ...merchantPricing, [e.target.name]: e.target.value });
   };
   const submitAction = async (e) => {
     e.preventDefault();
     try {
     setConfirmLoading(true);
-      console.log("mpricing", mpricing);
+      console.log("merchantPricing", merchantPricing);
       const editResponse = await axios.put(
-        `${BASE_URL}/admin/merchant-pricing/edit-merchant-pricing/${currentEditMr}`,
-        mpricing,
+        `${BASE_URL}/admin/merchant-pricing/edit-merchant-pricing/${currentEdit}`,
+        merchantPricing,
         {
           withCredentials: true,
           headers: {
@@ -85,6 +86,7 @@ const EditMerchantPricingModal = ({
 
       if (editResponse.status === 200) {
         handleCancel();
+        onEditRule(editResponse.data.data);
         toast({
           title: "Success",
           description: "Merchant Pricing Updated Successfully.",
@@ -106,11 +108,11 @@ const EditMerchantPricingModal = ({
     } finally {
     setConfirmLoading(false);
     }
-    console.log(mpricing);
+    console.log(merchantPricing);
   };
   return (
     <Modal
-      title="Merchant Pricing"
+      title="Edit Merchant Pricing"
       open={isVisible}
       centered
       onCancel={handleCancel}
@@ -126,7 +128,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Rule Name"
-              value={mpricing.ruleName}
+              value={merchantPricing.ruleName}
               id="ruleName"
               name="ruleName"
               onChange={handleInputChange}
@@ -140,7 +142,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Fare"
-              value={mpricing.baseFare}
+              value={merchantPricing.baseFare}
               id="baseFare"
               name="baseFare"
               onChange={handleInputChange}
@@ -154,7 +156,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Distance"
-              value={mpricing.baseDistance}
+              value={merchantPricing.baseDistance}
               id="baseDistance"
               name="baseDistance"
               onChange={handleInputChange}
@@ -171,7 +173,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Distance"
-              value={mpricing.fareAfterBaseDistance}
+              value={merchantPricing.fareAfterBaseDistance}
               id="fareAfterBaseDistance"
               name="fareAfterBaseDistance"
               onChange={handleInputChange}
@@ -185,7 +187,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Base Weight"
-              value={mpricing.baseWeightUpTo}
+              value={merchantPricing.baseWeightUpTo}
               id="baseWeightUpTo"
               name="baseWeightUpTo"
               onChange={handleInputChange}
@@ -202,7 +204,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Fare After Weight"
-              value={mpricing.fareAfterBaseWeight}
+              value={merchantPricing.fareAfterBaseWeight}
               id="fareAfterBaseWeight"
               name="fareAfterBaseWeight"
               onChange={handleInputChange}
@@ -219,7 +221,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Purchase Fare Hour"
-              value={mpricing.purchaseFarePerHour}
+              value={merchantPricing.purchaseFarePerHour}
               id="purchaseFarePerHour"
               name="purchaseFarePerHour"
               onChange={handleInputChange}
@@ -233,7 +235,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Fare"
-              value={mpricing.waitingFare}
+              value={merchantPricing.waitingFare}
               id="waitingFare"
               name="waitingFare"
               onChange={handleInputChange}
@@ -247,7 +249,7 @@ const EditMerchantPricingModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               type="text"
               placeholder="Waiting Time"
-              value={mpricing.waitingTime}
+              value={merchantPricing.waitingTime}
               id="waitingTime"
               name="waitingTime"
               onChange={handleInputChange}
@@ -260,7 +262,7 @@ const EditMerchantPricingModal = ({
             </label>
             <select
               name="geofenceId"
-              value={mpricing.geofenceId}
+              value={merchantPricing.geofenceId}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               onChange={handleInputChange}
             >

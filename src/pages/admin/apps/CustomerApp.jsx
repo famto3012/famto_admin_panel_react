@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import GIFLoader from "../../../components/GIFLoader";
 import { useToast } from "@chakra-ui/react";
 import BusinessCategory from "../../../components/CustomerApp/BusinessCategory";
-import CustomerOrder from "../../../components/CustomerApp/CustomerOrder";
+import CustomOrder from "../../../components/CustomerApp/CustomOrder";
 import PickAndDrop from "../../../components/CustomerApp/PickAndDrop";
 import ServiceCategory from "../../../components/CustomerApp/ServiceCategory";
 
@@ -325,7 +325,7 @@ const CustomerApp = () => {
           <Switch />
         </div> */}
 
-            <CustomerOrder />
+            <CustomOrder />
 
             <PickAndDrop />
 

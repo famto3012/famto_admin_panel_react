@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getMessaging, onMessage } from "firebase/messaging";
 import { getStorage } from "firebase/storage";
 
@@ -14,6 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
 
 // Subscribe to incoming messages
 onMessage(messaging, (payload) => {
@@ -26,4 +28,4 @@ onMessage(messaging, (payload) => {
   }
 });
 
-export { messaging, storage };
+export { messaging, storage, auth };

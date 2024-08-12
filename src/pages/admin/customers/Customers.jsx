@@ -105,6 +105,10 @@ const Customers = () => {
   };
 
   return (
+    <div>
+    {isLoading ? (
+      <GIFLoader/>
+    ) : (
     <>
       <Sidebar />
       <main className="w-full h-screen pl-[290px] bg-gray-100">
@@ -241,6 +245,8 @@ const Customers = () => {
         </div>
       </main>
     </>
+    )}
+    </div>
   );
 };
 

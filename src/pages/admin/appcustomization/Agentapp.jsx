@@ -29,9 +29,10 @@ const Agentapp = () => {
   });
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-  const toast = useToast();
+  const [confirmLoading,setConfirmLoading] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const Agentapp = () => {
 
     const fetchData = async () => {
       try {
+        setIsLoading(true)
         const response = await axios.get(
           `${BASE_URL}/admin/app-customization/agent-app`,
           {
@@ -57,6 +59,7 @@ const Agentapp = () => {
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
+        setIsLoading(false)
       }
     };
 
@@ -78,7 +81,7 @@ const Agentapp = () => {
     try {
       console.log("formData", formData);
 
-      setIsLoading(true);
+      setConfirmLoading(true);
       const dataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
         if (Array.isArray(formData[key])) {
@@ -127,7 +130,7 @@ const Agentapp = () => {
         isClosable: true,
       });
     } finally {
-      setIsLoading(false);
+      setConfirmLoading(false);
     }
     console.log(formData);
   };
@@ -323,7 +326,7 @@ const Agentapp = () => {
                 type="submit"
                 onClick={submitAction}
               >
-                {isLoading ? "Saving..." : "Save Changes"}
+                {confirmLoading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
