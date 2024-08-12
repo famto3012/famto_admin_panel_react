@@ -413,7 +413,7 @@ const Merchant = () => {
 
         toast({
           title: "Error",
-          description: `Error in searching merchant`,
+          description: `Error in searching merchants`,
           status: "error",
           duration: 3000,
           isClosable: true,
