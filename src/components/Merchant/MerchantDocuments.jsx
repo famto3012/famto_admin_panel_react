@@ -10,6 +10,8 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
     fssaiPreviewURL: "",
     aadharPreviewURL: "",
   });
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+  const [imageModalUrl, setImageModalUrl] = useState("");
 
   const handleImageChange = (e, previewType, imageName) => {
     const file = e.target.files[0];
@@ -40,6 +42,16 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
     });
   };
 
+  const handleImageClick = (imageUrl) => {
+    setImageModalUrl(imageUrl);
+    setIsImageModalVisible(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setIsImageModalVisible(false);
+    setImageModalUrl("");
+  };
+
   return (
     <div className="mb-[50px] w-full">
       <h3 className="text-gray-700 font-bold mb-2">Documents provided</h3>
@@ -60,7 +72,10 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
             )}
 
           {previewURL?.pancardPreviewURL && (
-            <figure className="w-[65px] h-[65px] rounded relative">
+            <figure
+              onClick={() => handleImageClick(previewURL?.pancardPreviewURL)}
+              className="w-[65px] h-[65px] rounded relative"
+            >
               <img
                 src={previewURL?.pancardPreviewURL}
                 alt="pancard"
@@ -71,7 +86,12 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
 
           {!previewURL?.pancardPreviewURL &&
             detail?.merchantDetail?.pancardImageURL && (
-              <figure className="w-[65px] h-[65px] rounded relative">
+              <figure
+                onClick={() =>
+                  handleImageClick(detail?.merchantDetail?.pancardImageURL)
+                }
+                className="w-[65px] h-[65px] rounded relative"
+              >
                 <img
                   src={detail?.merchantDetail?.pancardImageURL}
                   alt="pancard"
@@ -115,7 +135,10 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
             )}
 
           {previewURL?.gstPreviewURL && (
-            <figure className="w-[65px] h-[65px] rounded relative">
+            <figure
+              onClick={() => handleImageClick(previewURL?.gstPreviewURL)}
+              className="w-[65px] h-[65px] rounded relative"
+            >
               <img
                 src={previewURL?.gstPreviewURL}
                 alt="gst"
@@ -126,7 +149,12 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
 
           {!previewURL?.gstPreviewURL &&
             detail?.merchantDetail?.GSTINImageURL && (
-              <figure className="w-[65px] h-[65px] rounded relative">
+              <figure
+                onClick={() =>
+                  handleImageClick(detail?.merchantDetail?.GSTINImageURL)
+                }
+                className="w-[65px] h-[65px] rounded relative"
+              >
                 <img
                   src={detail?.merchantDetail?.GSTINImageURL}
                   alt="gst"
@@ -170,7 +198,10 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
             )}
 
           {previewURL?.fssaiPreviewURL && (
-            <figure className="w-[65px] h-[65px] rounded relative">
+            <figure
+              onClick={() => handleImageClick(previewURL?.fssaiPreviewURLL)}
+              className="w-[65px] h-[65px] rounded relative"
+            >
               <img
                 src={previewURL?.fssaiPreviewURL}
                 alt="profile"
@@ -181,7 +212,12 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
 
           {!previewURL?.fssaiPreviewURL &&
             detail?.merchantDetail?.FSSAIImageURL && (
-              <figure className="w-[65px] h-[65px] rounded relative">
+              <figure
+                onClick={() =>
+                  handleImageClick(detail?.merchantDetail?.FSSAIImageURL)
+                }
+                className="w-[65px] h-[65px] rounded relative"
+              >
                 <img
                   src={detail?.merchantDetail?.FSSAIImageURL}
                   alt="profile"
@@ -226,7 +262,10 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
             )}
 
           {previewURL?.aadharPreviewURL && (
-            <figure className="w-[65px] h-[65px] rounded relative">
+            <figure
+              onClick={() => handleImageClick(previewURL?.aadharPreviewURL)}
+              className="w-[65px] h-[65px] rounded relative"
+            >
               <img
                 src={previewURL?.aadharPreviewURL}
                 alt="profile"
@@ -237,7 +276,12 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
 
           {!previewURL?.aadharPreviewURL &&
             detail?.merchantDetail?.aadharImageURL && (
-              <figure className="w-[65px] h-[65px] rounded relative">
+              <figure
+                onClick={() =>
+                  handleImageClick(detail?.merchantDetail?.aadharImageURL)
+                }
+                className="w-[65px] h-[65px] rounded relative"
+              >
                 <img
                   src={detail?.merchantDetail?.aadharImageURL}
                   alt="profile"
@@ -265,7 +309,11 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
         </div>
       </div>
 
-      <ImageModal />
+      <ImageModal
+        isVisible={isImageModalVisible}
+        handleClose={handleCloseImageModal}
+        imageUrl={imageModalUrl}
+      />
     </div>
   );
 };

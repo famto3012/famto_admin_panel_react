@@ -20,11 +20,15 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [deliveryOption, setDeliveryOption] = useState(false);
+
   const [isTableLoading, setIsTableLoading] = useState(false);
+
   const [orderStatus, setOrderStatus] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [deliveryMode, setDeliveryMode] = useState("");
   const [search, setSearch] = useState("");
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
   const [pagination, setPagination] = useState({});
@@ -46,10 +50,17 @@ const Orders = () => {
     const getAllOrders = async () => {
       try {
         setIsTableLoading(true);
-        const endpoint =
-          role === "Admin"
-            ? `${BASE_URL}/orders/admin/all-orders`
-            : `${BASE_URL}/orders/all-orders`;
+        let endpoint;
+
+        if (role === "Admin" && deliveryOption === true) {
+          endpoint = `${BASE_URL}/orders/admin/all-orders`;
+        } else if (role === "Admin" && deliveryOption === false) {
+          endpoint = `${BASE_URL}/orders/admin/all-scheduled-orders`;
+        } else if (role === "Merchant" && deliveryOption === true) {
+          endpoint = `${BASE_URL}/orders/all-orders`;
+        } else if (role === "Merchant" && deliveryOption === false) {
+          endpoint = `${BASE_URL}/orders/all-scheduled-orders`;
+        }
 
         const response = await axios.get(endpoint, {
           params: { page, limit },
@@ -69,7 +80,7 @@ const Orders = () => {
     };
 
     getAllOrders();
-  }, [token, page, limit, role]);
+  }, [token, page, limit, role, deliveryOption]);
 
   useEffect(() => {
     if (!orderStatus && !paymentMode && !deliveryMode) return;
@@ -214,6 +225,10 @@ const Orders = () => {
     setPage(value);
   };
 
+  const handleToggle = () => {
+    setDeliveryOption(!deliveryOption);
+  };
+
   return (
     <>
       <Sidebar />
@@ -223,7 +238,38 @@ const Orders = () => {
         </nav>
 
         <div className="flex justify-between items-center px-[30px]">
-          <h1 className="text-[18px] font-semibold">Orders</h1>
+          <div className="">
+            <label
+              htmlFor="Toggle3"
+              className="inline-flex items-center p-1 outline-2  outline outline-gray-500 rounded-3xl border-gray-700 bg-gray-100  cursor-pointer"
+            >
+              <input
+                id="Toggle3"
+                type="checkbox"
+                className="hidden peer rounded-3xl"
+                onChange={handleToggle}
+              />
+              <span
+                className={`px-4 py-2 rounded-3xl dark:bg-gray-100 ${
+                  deliveryOption
+                    ? "peer-checked:dark:bg-teal-800 text-white"
+                    : "peer-checked:dark:bg-gray-100"
+                }`}
+              >
+                Orders
+              </span>
+              <span
+                className={`px-4 py-2 rounded-3xl dark:bg-teal-800 ${
+                  deliveryOption
+                    ? "peer-checked:dark:bg-gray-100"
+                    : "peer-checked:dark:bg-teal-800 text-white"
+                }`}
+              >
+                Scheduled Orders
+              </span>
+            </label>
+          </div>
+
           <div className="flex space-x-2 justify-end">
             <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
               <CSVLink

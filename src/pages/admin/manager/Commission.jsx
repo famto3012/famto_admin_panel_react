@@ -52,6 +52,7 @@ const Commission = () => {
               </span>
             </label>
           </div>
+
           <div>
             {isCommission ? (
               <button className="bg-teal-800 p-3 rounded-xl text-white ">

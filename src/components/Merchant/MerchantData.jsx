@@ -4,6 +4,7 @@ import EditMerchant from "../model/Merchant/EditMerchant";
 import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
 import MapModal from "../Order/MapModal";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import ImageModal from "../model/AgentModels/ImageModal";
 
 const MerchantData = ({
   detail,
@@ -18,6 +19,9 @@ const MerchantData = ({
   const [showMapModal, setShowMapModal] = useState(false);
 
   const [previewURL, setPreviewURL] = useState("");
+
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+  const [imageModalUrl, setImageModalUrl] = useState("");
 
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
   const toggleEditModal = () => setShowEditModal(!showEditModal);
@@ -50,6 +54,16 @@ const MerchantData = ({
         location: [coordinates.latitude, coordinates.longitude],
       },
     });
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setImageModalUrl(imageUrl);
+    setIsImageModalVisible(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setIsImageModalVisible(false);
+    setImageModalUrl("");
   };
 
   return (
@@ -168,7 +182,10 @@ const MerchantData = ({
           )}
 
           {previewURL && (
-            <figure className="w-20 h-20 rounded relative">
+            <figure
+              onClick={() => handleImageClick(previewURL)}
+              className="w-20 h-20 rounded relative"
+            >
               <img
                 src={previewURL}
                 alt="profile"
@@ -187,7 +204,12 @@ const MerchantData = ({
           )}
 
           {!previewURL && detail?.merchantDetail?.merchantImageURL && (
-            <figure className="w-20 h-20 rounded relative">
+            <figure
+              onClick={() =>
+                handleImageClick(detail?.merchantDetail?.merchantImageURL)
+              }
+              className="w-20 h-20 rounded relative"
+            >
               <img
                 src={detail?.merchantDetail?.merchantImageURL}
                 alt="profile"
@@ -250,7 +272,9 @@ const MerchantData = ({
               Select geofence
             </option>
             {allGeofence?.map((geofence) => (
-              <option value={geofence._id}>{geofence.name}</option>
+              <option key={geofence._id} value={geofence._id}>
+                {geofence.name}
+              </option>
             ))}
           </select>
         </div>
@@ -314,6 +338,12 @@ const MerchantData = ({
         isVisible={showRatingModal}
         toggleModal={toggleRatingModal}
         data={detail?.merchantDetail?.ratingByCustomers}
+      />
+
+      <ImageModal
+        isVisible={isImageModalVisible}
+        handleClose={handleCloseImageModal}
+        imageUrl={imageModalUrl}
       />
     </>
   );
