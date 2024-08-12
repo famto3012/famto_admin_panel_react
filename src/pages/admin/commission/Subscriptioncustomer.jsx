@@ -481,6 +481,7 @@ const Subscriptioncustomer = () => {
                 )}
               </div>
             </div>
+
             {isSubscription ? (
               <div className="overflow-auto mt-[40px]">
                 <table className="text-start w-full ">

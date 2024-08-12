@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Spin } from "antd";
+import { Modal } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
+import { useToast } from "@chakra-ui/react";
 
 const EditBannerModal = ({
   isVisible,
@@ -17,17 +18,19 @@ const EditBannerModal = ({
     name: "",
     merchantId: "",
     geofenceId: "",
-    bannerImage: "",
+    imageUrl: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [previewURL, setPreviewURL] = useState("");
+  const [previewURL, setPreviewURL] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
+  const toast = useToast();
+
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Fetching data for currentBannerEdit:", currentBannerEdit);
       try {
         setIsLoading(true);
         const response = await axios.get(
@@ -38,13 +41,8 @@ const EditBannerModal = ({
           }
         );
         if (response.status === 200) {
-          const data = response.data.data;
-          setAppData({
-            name: data.name,
-            merchantId: data.merchantId,
-            geofenceId: data.geofenceId,
-            bannerImage: data.imageUrl,
-          });
+          const { data } = response.data;
+          setAppData(data);
         }
       } catch (err) {
         console.error(`Error in fetching data:`, err);
@@ -66,29 +64,37 @@ const EditBannerModal = ({
     }));
   };
 
-  const handlebannerImageChange = (e) => {
+  const handleSelectImage = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-    console.log("Selected file:", file); // Log the file
-    setSelectedFile(file);
-    setPreviewURL(URL.createObjectURL(file));
+    if (file) {
+      console.log("Selected file:", file);
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      console.log("Preview URL:", url);
+      setPreviewURL(url);
+    }
   };
 
   const saveAction = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
 
     try {
       setConfirmLoading(true);
 
-      const appBannerDataToSend = new FormData();
-      appBannerDataToSend.append("name", appBanner.name);
-      appBannerDataToSend.append("merchantId", appBanner.merchantId);
-      appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
-      appBannerDataToSend.append("bannerImage", selectedFile);
+      const dataToSend = new FormData();
 
-      const addBannerResponse = await axios.put(
+      dataToSend.append("name", appBanner.name);
+      dataToSend.append("merchantId", appBanner.merchantId);
+      dataToSend.append("geofenceId", appBanner.geofenceId);
+      dataToSend.append("imageUrl", appBanner.imageUrl);
+      if (selectedFile) {
+        dataToSend.append("bannerImage", selectedFile);
+      }
+
+      const response = await axios.put(
         `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
-        appBannerDataToSend, // Send FormData directly, not wrapped in an object
+        dataToSend,
         {
           withCredentials: true,
           headers: {
@@ -98,14 +104,35 @@ const EditBannerModal = ({
         }
       );
 
-      if (addBannerResponse.status === 200) {
-        onAddAppData(addBannerResponse.data.banner);
+      if (response.status === 200) {
+        onAddAppData(response.data.data);
+        console.log(response.data.data);
+        setAppData({
+          name: "",
+          merchantId: "",
+          geofenceId: "",
+          imageUrl: "",
+        });
+        setSelectedFile(null);
+        setPreviewURL(null);
         handleCancel();
-      } else {
-        console.error("Failed to update banner:", addBannerResponse.data);
+        toast({
+          title: "Success",
+          description: "Banner updated successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error(`Error in updating data: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in updating banner",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setConfirmLoading(false);
     }
@@ -118,6 +145,7 @@ const EditBannerModal = ({
       className="mt-20"
       onCancel={handleCancel}
       footer={null}
+      centered
     >
       <form onSubmit={saveAction}>
         <div className="flex flex-col gap-4">
@@ -135,6 +163,7 @@ const EditBannerModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
           </div>
+
           <div className="flex items-center">
             <label htmlFor="merchantId" className="w-1/3">
               Merchant ID
@@ -149,6 +178,7 @@ const EditBannerModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
           </div>
+
           <div className="flex items-center">
             <label htmlFor="geofenceId" className="w-1/3">
               Geofence
@@ -159,9 +189,6 @@ const EditBannerModal = ({
               value={appBanner?.geofenceId}
               onChange={handleInputChange}
             >
-              <option defaultValue="" disabled hidden>
-                Select geofence
-              </option>
               {allGeofence.map((geofence) => (
                 <option key={geofence._id} value={geofence._id}>
                   {geofence.name}
@@ -169,19 +196,12 @@ const EditBannerModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              {appBanner?.bannerImage ? (
-                <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
-                  <img
-                    src={appBanner?.bannerImage}
-                    alt="Current"
-                    className="w-full rounded h-full object-cover"
-                  />
-                </figure>
-              ) : (
-                <figure className="bg-gray-400 mt-10 h-16 w-16 rounded-md">
+              {previewURL && (
+                <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
                     src={previewURL}
                     alt="Preview"
@@ -189,16 +209,27 @@ const EditBannerModal = ({
                   />
                 </figure>
               )}
+
+              {!previewURL && appBanner?.imageUrl && (
+                <figure className="mt-3 h-16 w-16 rounded-md relative">
+                  <img
+                    src={appBanner?.imageUrl}
+                    alt="Current"
+                    className="w-full rounded h-full object-cover"
+                  />
+                </figure>
+              )}
+
               <input
                 type="file"
                 name="bannerImage"
                 id="bannerImage"
                 className="hidden"
-                onChange={handlebannerImageChange}
+                onChange={handleSelectImage}
               />
               <label htmlFor="bannerImage" className="cursor-pointer">
                 <MdCameraAlt
-                  className="bg-teal-800 text-[40px] text-white p-6 h-16 w-16 mt-10 rounded"
+                  className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
                   size={30}
                 />
               </label>

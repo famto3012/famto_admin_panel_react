@@ -88,7 +88,6 @@ const Adbanner = () => {
     fetchData();
   }, [token, role, navigate]);
 
- 
   // To display recently added Banner
   const handleAddBanner = (newBanner) => {
     setBanner((prevBanners) => {
@@ -101,13 +100,13 @@ const Adbanner = () => {
   };
 
   const handleEditNewBanner = (updatedBanner) => {
-    setBanner((prevBanners) => 
-      prevBanners.map((banner) => 
+    setBanner((prevBanners) =>
+      prevBanners.map((banner) =>
         banner?._id === updatedBanner?._id ? updatedBanner : banner
       )
     );
   };
-  
+
   const handleAddIndBanner = (newBanner) => {
     setIndividualBanner((indBanner) => {
       // Ensure Individual Banner is an array before adding the new promo code
@@ -120,12 +119,12 @@ const Adbanner = () => {
   };
 
   const onEditIndBanner = (updatedIndBanner) => {
-    setIndividualBanner((prevIndBanners) => 
-      prevIndBanners.map((indBanner) => 
+    setIndividualBanner((prevIndBanners) =>
+      prevIndBanners.map((indBanner) =>
         indBanner?._id === updatedIndBanner?._id ? updatedIndBanner : indBanner
       )
     );
-  }
+  };
 
   // New function to remove a Banner from the banner state
   const removeBanner = (bannerId) => {
@@ -264,8 +263,6 @@ const Adbanner = () => {
     }
   };
 
-
-
   const handleIndToggle = async (IndBannerId) => {
     try {
       const statusToUpdate = individualBanner.find(
@@ -315,9 +312,9 @@ const Adbanner = () => {
     }
   };
 
-   //view Modals
+  //view Modals
 
-   const showModal = () => {
+  const showModal = () => {
     setAddModalVisible(true);
   };
 
@@ -628,7 +625,7 @@ const Adbanner = () => {
                               <button
                                 className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
                                 onClick={(e) =>
-                                  handleIndBannerDelete(e,currentIndBanner)
+                                  handleIndBannerDelete(e, currentIndBanner)
                                 }
                               >
                                 {" "}

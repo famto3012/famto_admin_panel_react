@@ -79,7 +79,7 @@ const ServiceCategory = () => {
         toast({
           title: "Success",
           description: "Custom Order Created Successfully.",
-          duration: 5000,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });

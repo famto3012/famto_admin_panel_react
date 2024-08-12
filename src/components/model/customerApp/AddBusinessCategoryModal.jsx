@@ -62,7 +62,7 @@ const AddBusinessCategoryModal = ({
         toast({
           title: "Success",
           description: "Business Category Created Successfully.",
-          duration: 5000,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });

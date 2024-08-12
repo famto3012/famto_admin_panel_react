@@ -48,7 +48,7 @@ const DeleteVariantTypeModal = ({
         title: "Error",
         description: `Error in deleting variant type`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

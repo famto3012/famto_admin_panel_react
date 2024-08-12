@@ -14,11 +14,11 @@ const AddAgentModal = ({
   onAddAgent,
   BASE_URL,
 }) => {
-    const [addData, setAddData] = useState({
+  const [addData, setAddData] = useState({
     fullName: "",
     phoneNumber: "",
     email: "",
-    managerId: "",
+    managerId: null,
     geofenceId: "",
     salaryStructureId: "",
     tag: "",
@@ -31,13 +31,13 @@ const AddAgentModal = ({
     type: "",
     licensePlate: "",
     drivingLicenseNumber: "",
-    rcFrontImage: null,
-    rcBackImage: null,
-    aadharFrontImage: null,
-    aadharBackImage: null,
-    drivingLicenseFrontImage: null,
-    drivingLicenseBackImage: null,
-    agentImage: null,
+    // rcFrontImage: null,
+    // rcBackImage: null,
+    // aadharFrontImage: null,
+    // aadharBackImage: null,
+    // drivingLicenseFrontImage: null,
+    // drivingLicenseBackImage: null,
+    // agentImage: null,
   });
 
   const [agentFile, setAgentFile] = useState(null);
@@ -61,7 +61,7 @@ const AddAgentModal = ({
   const [rcBackFile, setRcBackFile] = useState(null);
   const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
 
-  const [confirmLoading,setConfirmLoading] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const toast = useToast();
 
   // Function for Add Agent data
@@ -84,9 +84,9 @@ const AddAgentModal = ({
   const signupAction = async (e) => {
     e.preventDefault();
     try {
-      setConfirmLoading(true)
+      setConfirmLoading(true);
       console.log("addData", addData);
-      
+
       const dataToSend = new FormData();
       Object.keys(addData).forEach((key) => {
         if (Array.isArray(addData[key])) {
@@ -143,7 +143,7 @@ const AddAgentModal = ({
         setRcFrontPreviewURL(null);
         console.log("MESSAGE:", addAgentResponse.data.message);
         const newAgent = addAgentResponse.data.data; // Assuming the new agent data is in response.data.data
-        onAddAgent(newAgent); 
+        onAddAgent(newAgent);
         handleCancel();
         toast({
           title: "Success",
@@ -162,8 +162,8 @@ const AddAgentModal = ({
         duration: 3000,
         isClosable: true,
       });
-    } finally{
-      setConfirmLoading(false)
+    } finally {
+      setConfirmLoading(false);
     }
   };
 
@@ -552,8 +552,8 @@ const AddAgentModal = ({
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option hidden value="">
-                Managers
+              <option hidden defaultValue="Select manager">
+                Select manager
               </option>
               {manager.map((managers) => (
                 <option value={managers._id} key={managers._id}>
@@ -573,8 +573,8 @@ const AddAgentModal = ({
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option hidden value="">
-                Salary Structure
+              <option hidden defaultValue="Select salary structure">
+                Select salary structure
               </option>
               {salary.map((salary) => (
                 <option value={salary._id} key={salary._id}>
@@ -594,8 +594,8 @@ const AddAgentModal = ({
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option hidden value="">
-                Geofence
+              <option hidden defaultValue="Select geofence">
+                Select geofence
               </option>
               {geofence.map((geoFence) => (
                 <option value={geoFence._id} key={geoFence._id}>
@@ -663,9 +663,8 @@ const AddAgentModal = ({
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
               type="submit"
-        
             >
-            {confirmLoading ? "Adding..." : "Add" }
+              {confirmLoading ? "Adding..." : "Add"}
             </button>
           </div>
         </div>

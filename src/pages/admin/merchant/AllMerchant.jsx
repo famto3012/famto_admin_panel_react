@@ -123,7 +123,7 @@ const Merchant = () => {
           title: "Error",
           description: `Error in filtering merchant`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -166,7 +166,7 @@ const Merchant = () => {
           title: "Error",
           description: `Error in searching merchant`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -388,7 +388,7 @@ const Merchant = () => {
           const response = await axios.get(
             `${BASE_URL}/merchants/admin/search`,
             {
-              params:{query : search},
+              params: { query: search },
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -422,7 +422,7 @@ const Merchant = () => {
     return () => {
       clearTimeout(timeOut);
     };
-  },[search]);
+  }, [search]);
 
   const csvData = [
     { label: "Merchant ID", key: "_id" },
