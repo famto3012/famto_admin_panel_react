@@ -202,7 +202,7 @@ const Geofence = () => {
           Different geofences can be assigned to a single city.
         </p>
         <div className="flex justify-between mt-10 gap-5 mx-10">
-          <div className="w-1/3">
+          <div className="w-1/3 max-h-[32rem] overflow-y-auto">
             {geofences.map((data) => (
               <Card
                 className="bg-zinc-100 mt-5 flex hover:bg-teal-800 hover:text-white"

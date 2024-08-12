@@ -10,7 +10,10 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
+import { Spinner, useToast } from "@chakra-ui/react";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const PushNotification = () => {
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
@@ -20,8 +23,13 @@ const PushNotification = () => {
   const [type, setType] = useState("");
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [geofence, setGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
@@ -79,7 +87,7 @@ const PushNotification = () => {
     try {
       console.log("formData", formData);
 
-      setIsLoading(true);
+      setIsDataLoading(true);
       const addpushToSend = new FormData();
       addpushToSend.append("title", formData.title);
       addpushToSend.append("description", formData.description);
@@ -106,18 +114,18 @@ const PushNotification = () => {
       if (addPushResponse.status === 201) {
         onAddNotification(addPushResponse.data.data);
         toast({
-          title:"Success",
-          description:"Notification Added Successfully.",
-          duration:3000,
-          isClosable:true,
-          status:"success"
-        })
+          title: "Success",
+          description: "Notification Added Successfully.",
+          duration: 3000,
+          isClosable: true,
+          status: "success",
+        });
         console.log("MESSAGE:", addPushResponse.data);
       }
     } catch (err) {
       console.error(`Error in fetch datas : ${err.message}`);
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
 
     console.log(formData);
@@ -137,8 +145,6 @@ const PushNotification = () => {
     console.log(formData.driver);
   };
 
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-
   const showModalDelete = (dataId) => {
     setCurrentData(dataId);
     console.log(dataId);
@@ -155,8 +161,19 @@ const PushNotification = () => {
     setCurrentManager(null);
   };
 
+  const onAddNotification = (newNotification) => {
+    setData((prevBanners) => {
+      if (Array.isArray(prevBanners)) {
+        return [...prevBanners, newNotification];
+      } else {
+        return [newNotification];
+      }
+    });
+  };
+
   const handleCancel = () => {
     setIsShowModalDelete(false);
+    setIsModalVisible(false);
   };
   const handleDelete = async (currentData) => {
     try {
@@ -174,12 +191,12 @@ const PushNotification = () => {
         removeBanner(currentData);
         handleConfirmDelete();
         toast({
-          title:"Success",
-          description:"Notification Deleted Successfully.",
-          status:"success",
-          duration:3000,
-          isClosable:true
-        })
+          title: "Success",
+          description: "Notification Deleted Successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error("Error in deleting banner:", err);
@@ -187,8 +204,10 @@ const PushNotification = () => {
       setConfirmLoading(false);
     }
   };
-  const sendNotification = async (id) => {
+  const sendNotification = async (e, id) => {
+    e.preventDefault();
     try {
+      setDataLoading(true);
       const sendResponse = await axios.post(
         `${BASE_URL}/admin/notification/send-push-notification/${id}`,
         {},
@@ -198,17 +217,20 @@ const PushNotification = () => {
         }
       );
       if (sendResponse.status === 200) {
+        handleCancel();
         toast({
-          title:"Success",
-          description:"Push notification send successfully.",
-          duration:3000,
-          isClosable:true,
-          status:"success"
-        })
+          title: "Success",
+          description: "Push notification send successfully.",
+          duration: 3000,
+          isClosable: true,
+          status: "success",
+        });
         console.log("notification send", sendResponse.data.data);
       }
     } catch (err) {
       console.error("Error in send notification:", err);
+    } finally {
+      setDataLoading(false);
     }
   };
 
@@ -268,6 +290,11 @@ const PushNotification = () => {
       console.log(`Error in fetching notification`, err);
     }
   };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
   return (
     <>
       <Sidebar />
@@ -312,7 +339,7 @@ const PushNotification = () => {
                   {" "}
                   Geofence
                 </option>
-                {geofence.map((geoFence) => (
+                {geofence?.map((geoFence) => (
                   <option value={geoFence._id} key={geoFence._id}>
                     {geoFence.name}
                   </option>
@@ -363,7 +390,7 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10">Merchant App</label>
               <Switch
-                className="mt-11 ml-[200px]"
+                className="mt-11 ml-[175px]"
                 onChange={(checked) => onChange("merchant", checked)}
                 name="merchant"
               />
@@ -387,7 +414,7 @@ const PushNotification = () => {
                 className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 mr-10 text-white font-semibold justify-end"
                 type="submit"
               >
-                Confirm
+                {isDataLoading ? "Adding..." : "Add"}
               </button>
             </div>
           </form>
@@ -444,71 +471,120 @@ const PushNotification = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((data) => (
-              <tr key={data._id} className="text-center bg-white h-20">
-                <td>
-                  {data.customer && data.driver && data.merchant ? "All" : type}
-                </td>
-                <td>{data.description}</td>
-                <td className=" flex items-center justify-center p-3">
-                  <figure className="h-[70px] w-[100px]">
-                    <img
-                      src={data.imageUrl}
-                      className="w-full h-full object-contain"
-                    />
-                  </figure>
-                </td>
-                <td>
-                  <Switch checked={data.customer} />
-                </td>
-                <td>
-                  <Switch checked={data.driver} />
-                </td>
-                <td>
-                  <Switch checked={data.merchant} />
-                </td>
-
-                <td>
-                  <div className="flex items-center justify-center gap-3">
-                    <button onClick={() => sendNotification(data._id)}>
-                      <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
-                    </button>
-                    <button
-                      className="outline-none focus:outline-none"
-                      onClick={() => showModalDelete(data._id)}
-                    >
-                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                    </button>
-                    <Modal
-                      onCancel={handleCancel}
-                      footer={null}
-                      open={isShowModalDelete}
-                      centered
-                    >
-                      <p className="font-semibold text-[18px] mb-5">
-                        <Spin spinning={confirmLoading}>
-                          Are you sure want to delete?
-                        </Spin>
-                      </p>
-                      <div className="flex justify-end">
-                        <button
-                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                          onClick={handleCancel}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                          onClick={() => handleDelete(currentData)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </Modal>
-                  </div>
+            {isLoading && (
+              <tr>
+                <td colSpan={7} className="text-center text-[16px] py-6">
+                  Loading Data... <Spinner size={"sm"} />
                 </td>
               </tr>
-            ))}
+            )}
+
+            {!isLoading && data?.length === 0 && (
+              <tr>
+                <td colSpan={7} className="text-center py-3">
+                  No Data available
+                </td>
+              </tr>
+            )}
+
+            {!isLoading &&
+              data?.map((data) => (
+                <tr key={data._id} className="text-center bg-white h-20">
+                  <td>
+                    {data.customer && data.driver && data.merchant
+                      ? "All"
+                      : type}
+                  </td>
+                  <td>{data.description}</td>
+                  <td className=" flex items-center justify-center p-3">
+                    <figure className="h-[70px] w-[100px]">
+                      <img
+                        src={data.imageUrl}
+                        className="w-full h-full object-contain"
+                      />
+                    </figure>
+                  </td>
+                  <td>
+                    <Switch checked={data.customer} />
+                  </td>
+                  <td>
+                    <Switch checked={data.driver} />
+                  </td>
+                  <td>
+                    <Switch checked={data.merchant} />
+                  </td>
+
+                  <td>
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={showModal}
+                        // onClick={() => sendNotification(data._id)}
+                      >
+                        <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
+                      </button>
+                      <Modal
+                        open={isModalVisible}
+                        onCancel={handleCancel}
+                        centered
+                        footer={null}
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure you want to Send?
+                        </p>
+                        <div className="flex justify-end">
+                          <form onSubmit={(e) => sendNotification(e, data._id)}>
+                            <button
+                              type="button"
+                              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                              onClick={handleCancel}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"
+                            >
+                              {dataLoading ? "Sending..." : "Send"}
+                            </button>
+                          </form>
+                        </div>
+                      </Modal>
+                      <button
+                        className="outline-none focus:outline-none"
+                        onClick={() => showModalDelete(data._id)}
+                      >
+                        <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                      </button>
+                      <Modal
+                        onCancel={handleCancel}
+                        footer={null}
+                        open={isShowModalDelete}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          <Spin spinning={confirmLoading}>
+                            Are you sure want to delete?
+                          </Spin>
+                        </p>
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={handleCancel}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                            onClick={() => handleDelete(currentData)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </Modal>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
