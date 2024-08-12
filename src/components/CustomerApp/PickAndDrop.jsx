@@ -82,7 +82,7 @@ const PickAndDrop = () => {
         toast({
           title: "Success",
           description: "Custom Order Created Successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -130,7 +130,7 @@ const PickAndDrop = () => {
           title: "Error",
           description: "Failed to fetch business category.",
           status: "error",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -168,7 +168,7 @@ const PickAndDrop = () => {
         toast({
           title: "Success",
           description: "Business Category Created Successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -214,7 +214,7 @@ const PickAndDrop = () => {
           title: "Success",
           description: "The banner was deleted successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -223,7 +223,7 @@ const PickAndDrop = () => {
           title: "Error",
           description: "Failed to delete the banner. Unexpected status code.",
           status: "error",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -233,7 +233,7 @@ const PickAndDrop = () => {
         title: "Error",
         description: "Failed to delete the banner.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
@@ -260,7 +260,7 @@ const PickAndDrop = () => {
         toast({
           title: "Success",
           description: "Pick and Drop Status updated successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -270,7 +270,6 @@ const PickAndDrop = () => {
     }
   };
 
-  
   const bannerStatus = getPickDrop.some((banner) => banner.status === true);
 
   const handlePickDropChange = (e) => {

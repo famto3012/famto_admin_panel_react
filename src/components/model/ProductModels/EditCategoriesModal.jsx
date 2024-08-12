@@ -227,15 +227,17 @@ const EditCategoriesModal = ({
                   />
                 </figure>
               )}
+
               {previewURL && (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
                     src={previewURL}
-                    alt="profile"
+                    alt={categoryData.categoryName}
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
               )}
+
               <input
                 type="file"
                 name="selectImage"

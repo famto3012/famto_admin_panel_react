@@ -126,7 +126,7 @@ const Merchant = () => {
           title: "Error",
           description: `Error in filtering merchant`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -169,7 +169,7 @@ const Merchant = () => {
           title: "Error",
           description: `Error in searching merchant`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -413,7 +413,7 @@ const Merchant = () => {
 
         toast({
           title: "Error",
-          description: `Error in searching merchant`,
+          description: `Error in searching merchants`,
           status: "error",
           duration: 3000,
           isClosable: true,

@@ -55,7 +55,7 @@ const ShowBill = ({ data }) => {
       );
 
       if (response.status === 201) {
-        navigate("/all-ordes");
+        navigate("/all-orders");
         toast({
           title: "Success",
           description: response.data.message,

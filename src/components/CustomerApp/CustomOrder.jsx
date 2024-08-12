@@ -84,7 +84,7 @@ const CustomerOrder = () => {
         toast({
           title: "Success",
           description: "Custom Order Created Successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -134,7 +134,7 @@ const CustomerOrder = () => {
           title: "Error",
           description: "Failed to fetch business category.",
           status: "error",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -174,7 +174,7 @@ const CustomerOrder = () => {
         toast({
           title: "Success",
           description: "Business Category Created Successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });
@@ -199,7 +199,7 @@ const CustomerOrder = () => {
 
   const bannerStatus = banner.some((banner) => banner.status === true);
 
-  console.log("Updated status",bannerStatus);
+  console.log("Updated status", bannerStatus);
 
   const handleBannerChange = (e) => {
     setAddBanner({ ...addBanner, [e.target.name]: e.target.value });
@@ -238,7 +238,7 @@ const CustomerOrder = () => {
           title: "Success",
           description: "The banner was deleted successfully.",
           status: "success",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -247,7 +247,7 @@ const CustomerOrder = () => {
           title: "Error",
           description: "Failed to delete the banner. Unexpected status code.",
           status: "error",
-          duration: 900,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -257,7 +257,7 @@ const CustomerOrder = () => {
         title: "Error",
         description: "Failed to delete the banner.",
         status: "error",
-        duration: 900,
+        duration: 3000,
         isClosable: true,
       });
     } finally {
@@ -282,7 +282,7 @@ const CustomerOrder = () => {
         toast({
           title: "Success",
           description: "Pick and Drop Status updated successfully.",
-          duration: 900,
+          duration: 3000,
           status: "success",
           isClosable: true,
         });

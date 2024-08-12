@@ -11,7 +11,7 @@ const AddIndividualModal = ({
   token,
   allGeofence,
   BASE_URL,
-  onAddIndBanner
+  onAddIndBanner,
 }) => {
   const [individualdata, SetIndividualData] = useState({
     name: "",
@@ -26,7 +26,7 @@ const AddIndividualModal = ({
     geofenceId: "",
     appBannerImage: "",
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ const AddIndividualModal = ({
           title: "Success",
           description: "The banner was created successfully.",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }

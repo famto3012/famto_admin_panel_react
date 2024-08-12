@@ -3,7 +3,6 @@ import { Modal } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
 import { useToast } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 
 const AddBannerModal = ({
   isVisible,
@@ -11,7 +10,7 @@ const AddBannerModal = ({
   token,
   allGeofence,
   BASE_URL,
-  onAddBanner
+  onAddBanner,
 }) => {
   const [appBanner, setAppData] = useState({
     name: "",
@@ -32,7 +31,6 @@ const AddBannerModal = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,7 +48,6 @@ const AddBannerModal = ({
     }
   };
 
-  console.log("image", notificationFile);
   const saveAction = async (e) => {
     e.preventDefault();
 
@@ -79,7 +76,7 @@ const AddBannerModal = ({
 
       if (addBannerResponse.status === 201) {
         onAddBanner(addBannerResponse.data.data);
-        console.log("resposne",addBannerResponse.data.data);
+        console.log("resposne", addBannerResponse.data.data);
         setNotificationFile(null);
         setNotificationPreviewURL(null);
         handleCancel();
@@ -87,10 +84,9 @@ const AddBannerModal = ({
           title: "Success",
           description: "The banner was created successfully.",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
-        // navigate(0)
       }
     } catch (err) {
       console.error(`Error in fetch data: ${err.message}`);
@@ -109,7 +105,7 @@ const AddBannerModal = ({
         title: "Error",
         description: "There was an error creating the banner.",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } finally {

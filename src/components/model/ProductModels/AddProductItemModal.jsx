@@ -213,7 +213,7 @@ const AddProductItemModal = ({
   //         title: "Product Added",
   //         description: response.data.message,
   //         status: "success",
-  //         duration: 5000,
+  //         duration: 3000,
   //         isClosable: true,
   //       });
   //     }
@@ -225,7 +225,7 @@ const AddProductItemModal = ({
   //       title: "Error",
   //       description: `Error in adding new product`,
   //       status: "error",
-  //       duration: 5000,
+  //       duration: 3000,
   //       isClosable: true,
   //     });
   //   } finally {
@@ -236,9 +236,9 @@ const AddProductItemModal = ({
     e.preventDefault();
     try {
       setIsLoading(true);
-  
+
       const dataToSend = new FormData();
-  
+
       Object.keys(productData).forEach((key) => {
         if (Array.isArray(productData[key])) {
           // Append each item in the array with the same key name
@@ -249,13 +249,13 @@ const AddProductItemModal = ({
           dataToSend.append(key, productData[key]);
         }
       });
-  
+
       dataToSend.append("categoryId", categoryId);
-  
+
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
       }
-  
+
       const response = await axios.post(
         `${BASE_URL}/products/add-product`,
         dataToSend,
@@ -267,7 +267,7 @@ const AddProductItemModal = ({
           },
         }
       );
-  
+
       if (response.status === 201) {
         onAddProduct(response.data.data);
         setProductData({
@@ -299,7 +299,9 @@ const AddProductItemModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in creating new product: ${err.response?.data || err.message}`);
+      console.log(
+        `Error in creating new product: ${err.response?.data || err.message}`
+      );
       toast({
         title: "Error",
         description: `Error in adding new product`,
@@ -311,7 +313,7 @@ const AddProductItemModal = ({
       setIsLoading(false);
     }
   };
-  
+
   return (
     <Modal
       title="Add Product"
