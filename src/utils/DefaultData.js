@@ -73,6 +73,17 @@ const allMerchantCSVDataHeading = [
   { label: "Geofence", key: "geofence" },
 ];
 
+  const allAgentsCSVDataHeading = [
+    { label: "AgentID", key: "_id" },
+    { label: "FullName", key: "fullName" },
+    { label: "Email", key: "email" },
+    { label: "Phone", key: "phoneNumber" },
+    { label: "Manager", key: "manager" },
+    { label: "Geofence", key: "geofence" },
+    { label: "Online Status", key: "status" },
+  ];
+
+
 export {
   itemTypes,
   allCustomerCSVDataHeading,
@@ -80,4 +91,5 @@ export {
   orderBillCSVDatHeading,
   agentPayoutCSVDataHeading,
   allMerchantCSVDataHeading,
+  allAgentsCSVDataHeading
 };

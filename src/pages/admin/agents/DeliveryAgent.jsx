@@ -19,6 +19,7 @@ import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaIndianRupeeSign } from "react-icons/fa6";
+import { allAgentsCSVDataHeading } from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -27,12 +28,19 @@ const DeliveryAgent = () => {
   const [geofence, setGeofence] = useState([]);
   const [salary, setSalary] = useState([]);
   const [manager, setManager] = useState([]);
+
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [vehicleTypeFilter, setFilterVehicleType] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [approveLoading, setApproveLoading] = useState(false);
+  const [isRejectLoading, SetIsRejectLoading] = useState(false);
+
+  const [isModalApproval, setIsModalApproval] = useState(false);
+  const [isModalReject, setIsModalReject] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const { token, role } = useContext(UserContext);
   const toast = useToast();
@@ -230,8 +238,10 @@ const DeliveryAgent = () => {
 
   // Function for Approved Agent
 
-  const handleApprove = async (id) => {
+  const handleApprove = async (e, id) => {
+    e.preventDefault();
     try {
+      setApproveLoading(true);
       const response = await axios.patch(
         `${BASE_URL}/admin/agents/approve-registration/${id}`,
         {},
@@ -268,13 +278,17 @@ const DeliveryAgent = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setApproveLoading(false);
     }
   };
 
   // Function for Reject Agent
 
-  const handleReject = async (id) => {
+  const handleReject = async (e, id) => {
+    e.preventDefault();
     try {
+      SetIsRejectLoading(true);
       const response = await axios.delete(
         `${BASE_URL}/admin/agents/reject-registration/${id}`,
         {
@@ -289,6 +303,7 @@ const DeliveryAgent = () => {
         setAgent((prevAgents) =>
           prevAgents.filter((agent) => agent._id !== id)
         );
+        handleCancel();
         toast({
           title: "Success",
           description: "Agent Rejected successfully.",
@@ -306,6 +321,8 @@ const DeliveryAgent = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      SetIsRejectLoading(false);
     }
   };
 
@@ -360,26 +377,24 @@ const DeliveryAgent = () => {
     setAddModalVisible(true);
   };
 
+  const handleModalApprove = () => {
+    setIsModalApproval(true);
+  };
+
+  const handleModalReject = () => {
+    setIsModalReject(true);
+  };
+
   const handleCancel = () => {
     setAddModalVisible(false);
+    setIsModalApproval(false);
+    setIsModalReject(false);
   };
 
   const handleAddAgent = (newAgent) => {
     setAgent((prevAgents) => [...prevAgents, newAgent]);
   };
 
-  // CSV
-
-  const csvData = [
-    { label: "AgentID", key: "_id" },
-    { label: "FullName", key: "fullName" },
-    { label: "Email", key: "email" },
-    { label: "Phone", key: "phoneNumber" },
-    { label: "Manager", key: "manager" },
-    { label: "Geofence", key: "geofence" },
-    { label: "Online Status", key: "status" },
-    // { label: 'Registration Approval', key: 'averageRating' },
-  ];
 
   return (
     <div>
@@ -388,7 +403,7 @@ const DeliveryAgent = () => {
       ) : (
         <>
           <Sidebar />
-          <main className="pl-[300px] bg-gray-100 h-screen">
+          <main className="pl-[300px] bg-gray-100 h-full">
             <nav className="p-5">
               <GlobalSearch />
             </nav>
@@ -399,7 +414,7 @@ const DeliveryAgent = () => {
                 <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
                   <CSVLink
                     data={agent}
-                    headers={csvData}
+                    headers={allAgentsCSVDataHeading}
                     filename={"All_Agents_Data.csv"}
                   >
                     <ArrowDownOutlined /> <span>CSV</span>
@@ -569,12 +584,76 @@ const DeliveryAgent = () => {
                               <div className="flex space-x-10 justify-center">
                                 <CheckCircleOutlined
                                   className="text-3xl cursor-pointer text-green-500"
-                                  onClick={() => handleApprove(agent._id)}
+                                  onClick={handleModalApprove}
                                 />
+                                <Modal
+                                  open={isModalApproval}
+                                  onCancel={handleCancel}
+                                  centered
+                                  footer={null}
+                                >
+                                  <form
+                                    onSubmit={(e) =>
+                                      handleApprove(e, agent._id)
+                                    }
+                                  >
+                                    <p className="font-semibold text-[18px] p-2">
+                                      Are you sure want to Approve ?
+                                    </p>
+                                    <div className="flex justify-end mt-5 gap-6">
+                                      <button
+                                        type="button"
+                                        className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                                        onClick={handleCancel}
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        type="submit"
+                                        className="bg-teal-800 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                                      >
+                                        {approveLoading
+                                          ? "Approving..."
+                                          : "Approve"}
+                                      </button>
+                                    </div>
+                                  </form>
+                                </Modal>
                                 <CloseCircleOutlined
                                   className="text-3xl  cursor-pointer text-red-500"
-                                  onClick={() => handleReject(agent._id)}
+                                  onClick={handleModalReject}
                                 />
+                                <Modal
+                                  open={isModalReject}
+                                  onCancel={handleCancel}
+                                  centered
+                                  footer={null}
+                                >
+                                  <form
+                                    onSubmit={(e) => handleReject(e, agent._id)}
+                                  >
+                                    <p className="font-semibold text-[18px] p-2">
+                                      Are you sure want to Approve ?
+                                    </p>
+                                    <div className="flex justify-end mt-5 gap-6">
+                                      <button
+                                        type="button"
+                                        className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                                        onClick={handleCancel}
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        type="submit"
+                                        className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                                      >
+                                        {isRejectLoading
+                                          ? "Rejecting..."
+                                          : "Reject"}
+                                      </button>
+                                    </div>
+                                  </form>
+                                </Modal>
                               </div>
                             )}
                           </>
