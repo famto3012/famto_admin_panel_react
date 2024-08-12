@@ -113,7 +113,7 @@ const AgentDetails = () => {
 
   // Function to show image in modal
   const handleImageClick = (imageUrl) => {
-    console.log("clicked")
+    console.log("clicked");
     setImageModalUrl(imageUrl);
     setIsImageModalVisible(true);
   };
@@ -563,6 +563,7 @@ const AgentDetails = () => {
                 </tbody>
               </table>
             </div>
+
             {/* Image Modal */}
             <ImageModal
               isVisible={isImageModalVisible}

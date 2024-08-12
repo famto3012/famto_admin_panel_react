@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../../context/UserContext";
 
@@ -15,6 +16,7 @@ const ShowBill = ({ data }) => {
   const [paymentMode, setPaymentMode] = useState("");
 
   const toast = useToast();
+  const navigate = useNavigate();
   const { token } = useContext(UserContext);
 
   useEffect(() => {
@@ -24,6 +26,17 @@ const ShowBill = ({ data }) => {
   const createOrder = async (e) => {
     e.preventDefault();
     try {
+      if (!paymentMode) {
+        toast({
+          title: "Error",
+          description: "Select a payment mode",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
       setIsOrderLoading(true);
 
       const response = await axios.post(
@@ -42,6 +55,7 @@ const ShowBill = ({ data }) => {
       );
 
       if (response.status === 201) {
+        navigate("/all-ordes");
         toast({
           title: "Success",
           description: response.data.message,

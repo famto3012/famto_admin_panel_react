@@ -13,9 +13,11 @@ import { messaging } from "../../../firebase";
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
+
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
+
   const { token, role, userId, fcmToken, setFcmToken } =
     useContext(UserContext);
   // console.log(fcmToken);
@@ -39,6 +41,8 @@ const HomePage = () => {
     if (!token) {
       navigate("/auth/login");
     }
+
+    // navigate(0);
 
     socket.on("connect", () => {
       console.log("Connected to server");

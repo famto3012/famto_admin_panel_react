@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import MapModalTwo from "./MapModalTwo";
 
 const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
@@ -16,30 +15,6 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
   });
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  // const [authToken, setAuthToken] = useState("");
-
-  // useEffect(() => {
-  //   const getAuthToken = async () => {
-  //     try {
-  //       console.log(BASE_URL);
-  //       console.log(token);
-  //       const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-  //         withCredentials: true,
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (response.status === 200) {
-  //         setAuthToken(response.data.data);
-  //       }
-  //     } catch (err) {
-  //       console.log(`Error in getting auth token`);
-  //     }
-  //   };
-
-  //   getAuthToken();
-  // }, []);
 
   const handleChangeAddress = (e) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
@@ -189,7 +164,6 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
                   isVisible={modalVisible}
                   onClose={() => setModalVisible(false)}
                   setCoordinates={setCoordinates}
-                  // authToken={authToken}
                   BASE_URL={BASE_URL}
                   token={token}
                 />
@@ -216,12 +190,13 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
             <div className="flex justify-end mt-5 gap-3">
               <button
                 type="button"
-                disabled={showButton}
-                className={`${
-                  showButton
-                    ? "bg-teal-700/50 text-white"
-                    : "bg-teal-700 text-white"
-                }  px-4 py-2 rounded w-1/2`}
+                // disabled={showButton}
+                // className={`${
+                //   showButton
+                //     ? "bg-teal-700/50 text-white"
+                //     : "bg-teal-700 text-white"
+                // }  px-4 py-2 rounded w-1/2`}
+                className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
                 onClick={handleSubmit}
               >
                 Add Address

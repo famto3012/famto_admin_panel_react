@@ -107,8 +107,23 @@ const PickAndDrop = ({ data }) => {
     setIsNewDeliveryAddressVisible(!isNewDeliveryAddressVisible);
   };
 
-  const handlePickUpAddress = () => {};
-  const handleDeliveryAddress = () => {};
+  const handlePickUpAddress = (address) => {
+    setPickAndDropData((prevState) => ({
+      ...prevState,
+      newPickupAddress: {
+        ...address,
+      },
+    }));
+  };
+
+  const handleDeliveryAddress = (address) => {
+    setPickAndDropData((prevState) => ({
+      ...prevState,
+      newDeliveryAddress: {
+        ...address,
+      },
+    }));
+  };
 
   const createInvoice = async (e) => {
     e.preventDefault();

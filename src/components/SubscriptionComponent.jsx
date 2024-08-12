@@ -20,7 +20,7 @@ const SubscriptionComponent = () => {
   const { token, role } = useContext(UserContext);
   const [subscriptionMerchant, setSubscriptionMerchant] = useState([]);
   const [subscriptionCustomer, setSubscriptionCustomer] = useState([]);
-  const [tax,setTax] = useState([])
+  const [tax, setTax] = useState([]);
   const [currentEditMerchant, setCurrentEditMerchant] = useState(null);
   const [currentEditCustomer, setCurrentEditCustomer] = useState(null);
   const [currentDeleteMerchant, setCurrentDeleteMerchant] = useState(null);
@@ -56,29 +56,27 @@ const SubscriptionComponent = () => {
       try {
         setIsLoading(true);
 
-        const [merchantResponse, customerResponse,taxResponse] = await Promise.all([
-          axios.get(
-            `${BASE_URL}/admin/subscription/get-merchant-subscription`,
-            {
+        const [merchantResponse, customerResponse, taxResponse] =
+          await Promise.all([
+            axios.get(
+              `${BASE_URL}/admin/subscription/get-merchant-subscription`,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+            axios.get(
+              `${BASE_URL}/admin/subscription/get-customer-subscription`,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+            axios.get(`${BASE_URL}/admin/taxes/all-tax`, {
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
-          axios.get(
-            `${BASE_URL}/admin/subscription/get-customer-subscription`,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
-          axios.get(
-            `${BASE_URL}/admin/taxes/all-tax`,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
-        ]);
+            }),
+          ]);
         if (merchantResponse.status === 200) {
           setSubscriptionMerchant(merchantResponse.data.data);
           console.log(subscriptionMerchant);
@@ -231,23 +229,26 @@ const SubscriptionComponent = () => {
             </p>
             <Switch />
           </div>
-          <div className="flex items-center mt-10">
-            <label className="w-1/3">Merchant Subscription Setup</label>
-            <button
-              className="bg-zinc-200 p-2 rounded-lg w-1/3"
-              onClick={showModalAddMerchant}
-            >
-              Add New Merchant Subscription Plan{" "}
-              <PlusOutlined className="ml-10" />
-            </button>
-            <AddSubMerchantModal
-              isVisible={isModalVisibleMerchant}
-              handleCancel={handleCancel}
-              token={token}
-              tax={tax}
-              BASE_URL={BASE_URL}
-            />
-          </div>
+
+          {role === "Admin" && (
+            <div className="flex items-center mt-10">
+              <label className="w-1/3">Merchant Subscription Setup</label>
+              <button
+                className="bg-zinc-200 p-2 rounded-lg w-1/3"
+                onClick={showModalAddMerchant}
+              >
+                Add New Merchant Subscription Plan{" "}
+                <PlusOutlined className="ml-10" />
+              </button>
+              <AddSubMerchantModal
+                isVisible={isModalVisibleMerchant}
+                handleCancel={handleCancel}
+                token={token}
+                tax={tax}
+                BASE_URL={BASE_URL}
+              />
+            </div>
+          )}
         </div>
 
         <div className="bg-white mx-5 p-5 pb-10 rounded-lg mt-5">

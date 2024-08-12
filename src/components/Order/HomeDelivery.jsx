@@ -246,17 +246,17 @@ const HomeDelivery = ({ data }) => {
           .flatMap((variant) => variant.variantTypes)
           .find((type) => type._id === item.selectedVariantId);
 
-        console.log("selectedVariant", selectedVariant);
+        // console.log("selectedVariant", selectedVariant);
 
         // Determine the price based on whether a variant is selected or not
         const price = selectedVariant ? selectedVariant.price : item.price;
-        console.log("price", price);
+        // console.log("price", price);
 
         return {
           productId: item.productId,
           quantity: item.quantity,
           price: price,
-          variantId: item.selectedVariantId || null, // Use selectedVariantId if available
+          variantTypeId: item.selectedVariantId || null, // Use selectedVariantId if available
         };
       });
 
@@ -271,6 +271,8 @@ const HomeDelivery = ({ data }) => {
         newCustomer: data.newCustomer,
         items: formattedItems,
       };
+
+      console.log(invoiceData.items);
 
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
@@ -425,6 +427,9 @@ const HomeDelivery = ({ data }) => {
                               )
                             }
                           >
+                            <option defaultValue={"Select variant"} hidden>
+                              Select variant
+                            </option>
                             {item.variants.flatMap((variant) =>
                               variant.variantTypes.map((type) => (
                                 <option key={type._id} value={type._id}>
