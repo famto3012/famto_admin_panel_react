@@ -51,7 +51,7 @@ const CustomOrder = ({ data }) => {
   const [isOrderLoading, setIsOrderLoading] = useState(false);
 
   const handleAddItem = () => {
-    const newItem = { itemName: "", quantity: "", numOfUnits: "" };
+    const newItem = { itemName: "", quantity: "", numOfUnits: "", unit: "" };
     setCustomOrderData({
       ...customOrderData,
       items: [...customOrderData.items, newItem],
@@ -314,8 +314,21 @@ const CustomOrder = ({ data }) => {
                     type="text"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3 outline-none focus:outline-none"
+                    className="w-[40%] p-3 outline-none focus:outline-none"
                   />
+                  <select
+                    name="unit"
+                    className="p-3 outline-none focus:outline-none"
+                  >
+                    <option defaultValue="Unit" hidden>
+                      Unit
+                    </option>
+                    <option value="gm">gm</option>
+                    <option value="kg">kg</option>
+                    <option value="ltr">ltr</option>
+                    <option value="cm">cm</option>
+                    <option value="m">m</option>
+                  </select>
                 </div>
 
                 <div className="flex items-center">
