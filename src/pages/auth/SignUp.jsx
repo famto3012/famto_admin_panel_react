@@ -25,7 +25,7 @@ const Signup = () => {
   const [recaptcha, setRecaptcha] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(true);
-  const { setSignUp, setVerfication } = useContext(UserContext);
+  const { setSignUp, setVerification } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -85,7 +85,7 @@ const Signup = () => {
       );
       console.log("confirmation", confirmation);
       setSignUp(signUpData);
-      setVerfication(confirmation)
+      setVerification(confirmation)
       toast({
         title: "OTP send successfully",
         status: "success",
@@ -150,7 +150,7 @@ const Signup = () => {
                   placeholder="Full Name of owner"
                   value={signUpData.name}
                   id="name"
-                  name="name"
+                  name="fullName"
                   onChange={handleInputChange}
                 />
               </div>
