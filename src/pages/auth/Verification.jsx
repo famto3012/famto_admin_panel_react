@@ -5,7 +5,7 @@ import LoginImage from "/LoginImage.svg";
 import { UserContext } from "../../context/UserContext";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase";
-import { useToast } from "@chakra-ui/react";
+import { Button, useToast } from "@chakra-ui/react";
 import OtpInput from "otp-input-react";
 
 const Verification = () => {
@@ -129,13 +129,13 @@ const Verification = () => {
     }
   };
 
-  const verificationOfOtp = (data) => {
-    if (data === verification) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  // const verificationOfOtp = (data) => {
+  //   if (data === verification) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
 
   const verifyOTP = async () => {
     if (isVerifyButtonDisabled) {
@@ -144,7 +144,7 @@ const Verification = () => {
 
     setIsVerifyButtonDisabled(true);
     try {
-      const data = verificationOfOtp(otp);
+      const data = verification.confirm(otp);
       if (data) {
         toast({
           title: "Otp verified successfully",
@@ -279,13 +279,13 @@ const Verification = () => {
               <div className="flex flex-col items-center justify-center">
                 <p className="text-zinc-500 text-[14px] mb-8">
                   If You didn't recieve the Code!
-                  <button
+                  <Button
                     className="text-teal-900"
                     onClick={() => resendOTP()}
                     disabled={otpTime > 0}
                   >
                     {isButtonDisabled ? "Sending..." : "Resend"}
-                  </button>
+                  </Button>
                 </p>
                 <button
                   onClick={() => verifyOTP()}

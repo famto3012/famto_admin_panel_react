@@ -18,12 +18,12 @@ const Success = () => {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`${BASE_URL}/auth/sign-in`, signUp);
+      const response = await axios.post(`${BASE_URL}/merchants/register`, signUp);
 
       if (response.status === 201) {
         console.log(response.data);
         console.log("Finished setting");
-        navigate("/auth/sign-in");
+        navigate("/auth/login");
       }
     } catch (err) {
       console.log("Error in login: ", err);
@@ -59,7 +59,7 @@ const Success = () => {
           <Link
             className="bg-teal-700 p-2 rounded-xl text-white mt-7 mb-16 w-full"
             type="submit"
-            to={"/auth/sign-in"}
+            to={"/auth/login"}
           >
            {isLoading ? "Loading..." : "Sign in"}
           </Link>
