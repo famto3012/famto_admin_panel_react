@@ -83,7 +83,7 @@ const PickAndDrop = ({ data }) => {
       ...prevData,
       items: [
         ...prevData.items,
-        { type: "", length: "", width: "", height: "", weight: "" },
+        { type: "", length: "", width: "", height: "", weight: "", unit: "cm" },
       ],
     }));
   };
@@ -146,7 +146,7 @@ const PickAndDrop = ({ data }) => {
 
       console.log(invoiceData);
 
-      return;
+      // return
 
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
