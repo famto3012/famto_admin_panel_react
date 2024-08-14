@@ -3,8 +3,8 @@ import MapModal from "./MapModal";
 import { useMap } from "../../context/MapContext";
 
 const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
-  const {coordinates} = useMap()
-  console.log(coordinates)
+  const { coordinates } = useMap();
+  console.log(coordinates);
   const [addressData, setAddressData] = useState({
     type: "",
     latitude: coordinates?.latitude,
@@ -30,9 +30,13 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("coordinates", coordinates)
-    setAddressData({ ...addressData, latitude: coordinates.latitude, longitude: coordinates.longitude})
-   // console.log(addressData);
+    console.log("coordinates", coordinates);
+    setAddressData({
+      ...addressData,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+    });
+    // console.log(addressData);
     onAddCustomerAddress(addressData);
     setAddressData({
       type: "",
