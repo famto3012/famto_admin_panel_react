@@ -8,6 +8,7 @@ const EditMerchant = ({
   onCancel,
   BASE_URL,
   token,
+  role,
   data,
   merchantId,
 }) => {
@@ -44,14 +45,15 @@ const EditMerchant = ({
     try {
       setIsEditLoading(true);
 
-      const response = await axios.put(
-        `${BASE_URL}/merchants/admin/edit-merchant/${merchantId}`,
-        merchantData,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const endpoint =
+        role === "Admin"
+          ? `${BASE_URL}/merchants/admin/edit-merchant/${merchantId}`
+          : `${BASE_URL}/merchants/edit-profile`;
+
+      const response = await axios.put(endpoint, merchantData, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.status === 200) {
         onCancel();

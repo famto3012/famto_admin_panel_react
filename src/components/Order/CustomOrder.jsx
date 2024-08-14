@@ -28,6 +28,7 @@ const CustomOrder = ({ data }) => {
     deliveryAddressType: "",
     deliveryAddressOtherAddressId: "",
     addedTip: "",
+    newDeliveryAddress: {},
   });
 
   const { token } = useContext(UserContext);
@@ -44,11 +45,9 @@ const CustomOrder = ({ data }) => {
   const [isFormVisible, setFormVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [paymentMode, setPaymentMode] = useState("");
   const [cartData, setCartData] = useState({});
 
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
-  const [isOrderLoading, setIsOrderLoading] = useState(false);
 
   const handleAddItem = () => {
     const newItem = { itemName: "", quantity: "", numOfUnits: "", unit: "" };
@@ -145,6 +144,15 @@ const CustomOrder = ({ data }) => {
     setCustomOrderData({ ...customOrderData, latitude, longitude });
   };
 
+  const handleAddNewDeliveryAddress = (address) => {
+    setCustomOrderData((prevState) => ({
+      ...prevState,
+      newDeliveryAddress: {
+        ...address,
+      },
+    }));
+  };
+
   const createInvoice = async (e) => {
     e.preventDefault();
     try {
@@ -168,6 +176,8 @@ const CustomOrder = ({ data }) => {
       };
 
       console.log("invoiceData", invoiceData);
+
+      // return;
 
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
@@ -201,49 +211,6 @@ const CustomOrder = ({ data }) => {
       });
     } finally {
       setIsInvoiceLoading(false);
-    }
-  };
-
-  const createOrder = async (e) => {
-    e.preventDefault();
-    try {
-      setIsOrderLoading(true);
-
-      const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order`,
-        {
-          paymentMode,
-          cartId: cartData.cartId,
-          deliveryMode: cartData.deliveryMode,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        toast({
-          title: "Success",
-          description: response.data.message,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      console.log(`Error in creating Custom Order: ${err}`);
-      toast({
-        title: "Error",
-        description: "Error in creating order",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsOrderLoading(false);
     }
   };
 
@@ -319,6 +286,8 @@ const CustomOrder = ({ data }) => {
                   <select
                     name="unit"
                     className="p-3 outline-none focus:outline-none"
+                    value={item.unit}
+                    onChange={(e) => handleItemChange(index, e)}
                   >
                     <option defaultValue="Unit" hidden>
                       Unit
@@ -521,7 +490,13 @@ const CustomOrder = ({ data }) => {
               </button>
             </div>
 
-            {isFormVisible && <NewAddressTwo />}
+            {isFormVisible && (
+              <NewAddressTwo
+                onAddCustomerAddress={handleAddNewDeliveryAddress}
+                BASE_URL={BASE_URL}
+                token={token}
+              />
+            )}
           </div>
 
           <div className="flex items-center">

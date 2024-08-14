@@ -14,6 +14,7 @@ import CustomerRatingModal from "../../../components/model/Customer/CustomerRati
 import AddMoneyModal from "../../../components/model/Customer/AddMoneyModal";
 import DeductMoneyModal from "../../../components/model/Customer/DeductMoneyModal";
 import { useToast } from "@chakra-ui/react";
+import AddressModal from "../../../components/model/Customer/AddressModal";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -30,6 +31,13 @@ const CustomerDetails = () => {
   const [showDeductModeyModal, setShowDeducMoneyModal] = useState(false);
   const [showAddMoneyModal, setShowAddMoneyModal] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+
+  const [addressToEdit, setAddressToEdit] = useState({});
+  const [selectedAddress, setSelectedAddress] = useState({
+    type: "",
+    addressId: "",
+  });
 
   const [editMode, setEditMode] = useState(false);
 
@@ -63,20 +71,76 @@ const CustomerDetails = () => {
     fetchData();
   }, [token, customerId, navigate]);
 
+  const handleEditClick = () => setEditMode(!editMode);
+
   const toggleBlockModal = () => setShowBlockModal(true);
   const toggleDeductMoney = () => setShowDeducMoneyModal(true);
   const toggleAddMoney = () => setShowAddMoneyModal(true);
   const toggleRatingModal = () => setShowRatingModal(true);
 
   const handleCancelModal = () => {
+    setAddressToEdit({});
     setShowBlockModal(false);
     setShowDeducMoneyModal(false);
     setShowAddMoneyModal(false);
     setShowRatingModal(false);
+    setShowAddressModal(false);
   };
 
-  // State to manage edit mode
-  const handleEditClick = () => setEditMode(!editMode);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCustomer({
+      ...customer,
+      [name]: value,
+    });
+  };
+
+  const handleUpdateAddress = (type, addressId) => {
+    setSelectedAddress({
+      type,
+      addressId,
+    });
+
+    if (type === "home") {
+      setAddressToEdit(customer.homeAddress);
+    } else if (type === "work") {
+      setAddressToEdit(customer.workAddress);
+    } else if (type === "other") {
+      const addressFound = customer.otherAddress.find(
+        (address) => address.id === addressId
+      );
+      setAddressToEdit(addressFound);
+    }
+
+    setShowAddressModal(true);
+  };
+
+  const handleChangeAddress = (updatedAddress) => {
+    if (updatedAddress.type === "home") {
+      setCustomer((prevData) => ({
+        ...prevData,
+        homeAddress: {
+          ...updatedAddress,
+        },
+      }));
+    } else if (updatedAddress.type === "work") {
+      setCustomer((prevData) => ({
+        ...prevData,
+        workAddress: {
+          ...updatedAddress,
+        },
+      }));
+    } else if (updatedAddress.type === "other") {
+      setCustomer((prevData) => ({
+        ...prevData,
+        otherAddress: prevData.otherAddress.map((address) =>
+          address.id === selectedAddress.addressId
+            ? { ...address, ...updatedAddress }
+            : address
+        ),
+      }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,14 +183,6 @@ const CustomerDetails = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCustomer({
-      ...customer,
-      [name]: value,
-    });
-  };
-
   return (
     <>
       <Sidebar />
@@ -135,6 +191,7 @@ const CustomerDetails = () => {
         <nav className="p-5">
           <GlobalSearch />
         </nav>
+
         <div className="flex items-center justify-between mx-11 mt-5">
           <h1 className="text-lg font-bold">
             Customer ID <span className="text-red-600">#{customer._id}</span>
@@ -165,7 +222,7 @@ const CustomerDetails = () => {
                         className={`${
                           editMode && `border-2`
                         } h-8 px-2 rounded-sm text-sm focus:outline-none w-2/3`}
-                        disabled={!editMode} // Disable input if not in edit mode
+                        disabled={!editMode}
                       />
                     </div>
 
@@ -181,7 +238,7 @@ const CustomerDetails = () => {
                         className={`${
                           editMode && `border-2`
                         } h-8 px-2 rounded-sm text-sm focus:outline-none w-2/3`}
-                        disabled={!editMode} // Disable input if not in edit mode
+                        disabled={!editMode}
                       />
                     </div>
 
@@ -197,7 +254,7 @@ const CustomerDetails = () => {
                         className={`${
                           editMode && `border-2`
                         } h-8 px-2 rounded-sm text-sm focus:outline-none w-2/3`}
-                        disabled={!editMode} // Disable input if not in edit mode
+                        disabled={!editMode}
                       />
                     </div>
                   </div>
@@ -281,6 +338,7 @@ const CustomerDetails = () => {
               </button>
             </div>
           </div>
+
           <div className="w-[600px] flex items-center justify-between gap-[30px] mt-10">
             <label className="text-gray-700 mx-11 font-bold">Ratings</label>
 
@@ -295,10 +353,17 @@ const CustomerDetails = () => {
 
           <div className="mt-10">
             <h4 className="text-gray-700 mx-11 font-bold">Address</h4>
-            <div className="flex gap-[50px] ms-11 mt-5 max-w-[800px] overflow-x-auto">
-              <div className="min-w-[180px] px-2">
-                <div className="flex justify-between">
-                  <h2 className="font-semibold">Home</h2>
+            <div className="flex gap-[30px] ms-11 my-5 max-w-[800px] overflow-x-auto">
+              <div className="min-w-[180px] px-2 group relative">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold bg-gray-200 py-1 px-2 rounded-md">
+                    Home
+                  </h2>
+                  <MdOutlineEdit
+                    onClick={(e) => handleUpdateAddress("home", "")}
+                    className=" absolute top-0 right-0 hidden group-hover:block cursor-pointer bg-gray-200 p-2 rounded-full"
+                    size={40}
+                  />
                 </div>
 
                 <span className="flex justify-start mt-3">
@@ -318,8 +383,17 @@ const CustomerDetails = () => {
                 </span>
               </div>
 
-              <div className=" min-w-[180px] px-2">
-                <h2 className="font-semibold">Office</h2>
+              <div className=" min-w-[180px] px-2 group relative">
+                <div className="flex justify-between">
+                  <h2 className="font-semibold bg-gray-200 py-1 px-2 rounded-md">
+                    Work
+                  </h2>
+                  <MdOutlineEdit
+                    onClick={(e) => handleUpdateAddress("work", "")}
+                    className=" absolute top-0 right-0 hidden group-hover:block cursor-pointer bg-gray-200 p-2 rounded-full"
+                    size={40}
+                  />
+                </div>
 
                 <span className="flex justify-start mt-3">
                   {customer?.workAddress?.fullName}
@@ -338,10 +412,21 @@ const CustomerDetails = () => {
                 </span>
               </div>
 
-              <div className="flex">
+              <div className="flex gap-[30px]">
                 {customer?.otherAddress?.map((address, index) => (
-                  <div className="min-w-[200px] px-2">
-                    <h2 className="font-semibold">Other {index + 1}</h2>
+                  <div className="min-w-[200px] px-2 group relative">
+                    <div className="flex justify-between">
+                      <h2 className="font-semibold bg-gray-200 py-1 px-2 rounded-md">
+                        Other {index + 1}
+                      </h2>
+                      <MdOutlineEdit
+                        onClick={(e) =>
+                          handleUpdateAddress("other", address.id)
+                        }
+                        className=" absolute top-0 right-0 hidden group-hover:block cursor-pointer bg-gray-200 p-2 rounded-full"
+                        size={40}
+                      />
+                    </div>
 
                     <span className="flex justify-start mt-3">
                       {address?.fullName}
@@ -541,6 +626,15 @@ const CustomerDetails = () => {
         BASE_URL={BASE_URL}
         token={token}
         customerId={customerId}
+      />
+
+      {/* Address Modal */}
+      <AddressModal
+        isOpen={showAddressModal}
+        onClose={handleCancelModal}
+        data={addressToEdit}
+        type={selectedAddress.type}
+        onUpdateAddress={handleChangeAddress}
       />
     </>
   );

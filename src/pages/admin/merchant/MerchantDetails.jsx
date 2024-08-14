@@ -82,7 +82,34 @@ const MerchantDetails = () => {
       }
     };
 
-    getMerchantData();
+    const getMerchantProfile = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/merchants/profile`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setMerchantData(response.data.data);
+        }
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: `Error in getting merchant profile`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
+
+    if (role === "Admin") {
+      getMerchantData();
+    } else if (role === "Merchant") {
+      getMerchantProfile();
+    }
   }, [merchantId, token, role]);
 
   // Callback function to handle changes from the child component
@@ -165,16 +192,17 @@ const MerchantDetails = () => {
       // Assuming merchantData is your data object that you want to send
       appendFormData(merchantData);
 
-      const response = await axios.put(
-        `${BASE_URL}/merchants/admin/update-merchant-details/${merchantId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const endpoint =
+        role === "Admin"
+          ? `${BASE_URL}/merchants/admin/update-merchant-details/${merchantId}`
+          : `${BASE_URL}/merchants/update-merchant-details`;
+
+      const response = await axios.put(endpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (response.status === 200) {
         toast({
           title: "Success",
@@ -207,9 +235,11 @@ const MerchantDetails = () => {
         <div className="flex justify-between my-[15px] mt-8 mb-8">
           <h3 className="font-[600] text-[18px] ms-3">Merchant name</h3>
           <div>
-            <Link className="bg-yellow-100 py-2 px-5 mr-5 rounded-xl ">
-              <BlockIcon className="h-5 w-5 text-red-600" /> Block
-            </Link>
+            {role === "Admin" && (
+              <Link className="bg-yellow-100 py-2 px-5 mr-5 rounded-xl ">
+                <BlockIcon className="h-5 w-5 text-red-600" /> Block
+              </Link>
+            )}
             Status
             <Switch
               value={merchantData?.status}
@@ -228,6 +258,7 @@ const MerchantDetails = () => {
             allGeofence={allGeofence}
             BASE_URL={BASE_URL}
             token={token}
+            role={role}
             merchantId={merchantId}
             onDataChange={handleMerchantDataChange}
           />

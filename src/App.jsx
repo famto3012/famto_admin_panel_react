@@ -70,7 +70,7 @@ const Commission = lazy(() => import("./pages/admin/commission/Commission"));
 const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
 
 function App() {
-  const {role} = useContext(UserContext)
+  const { role } = useContext(UserContext);
   return (
     <>
       <BrowserRouter>
@@ -100,7 +100,10 @@ function App() {
               element={<UpdateManager />}
             />
 
-            <Route path="/settings" element={role === "Admin" ? (<Settings />) : ( <MerchantDetails /> ) } />
+            <Route
+              path="/settings"
+              element={role === "Admin" ? <Settings /> : <MerchantDetails />}
+            />
 
             <Route path="/all-tax" element={<Tax />} />
             <Route path="/account-logs" element={<AccountLogs />} />
@@ -139,14 +142,8 @@ function App() {
 
             <Route path="/products" element={<Products />} />
             <Route path="/geofence" element={<Geofence />} />
-            <Route
-              path="/add-geofence"
-              element={<AddGeofence />}
-            />
-            <Route
-              path="/edit-geofence"
-              element={<EditGeofence />}
-            />
+            <Route path="/add-geofence" element={<AddGeofence />} />
+            <Route path="/edit-geofence" element={<EditGeofence />} />
             <Route
               path="/delivery-management"
               element={<DeliveryManagement />}

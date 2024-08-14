@@ -11,6 +11,7 @@ const MerchantData = ({
   allGeofence,
   BASE_URL,
   token,
+  role,
   merchantId,
   onDataChange,
 }) => {
@@ -24,7 +25,10 @@ const MerchantData = ({
   const [imageModalUrl, setImageModalUrl] = useState("");
 
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
-  const toggleEditModal = () => setShowEditModal(!showEditModal);
+  const toggleEditModal = (e) => {
+    e.preventDefault();
+    setShowEditModal(!showEditModal);
+  };
   const toggleMapModal = () => setShowMapModal(!showMapModal);
 
   const handleSelectImage = (e) => {
@@ -330,6 +334,7 @@ const MerchantData = ({
         onCancel={toggleEditModal}
         BASE_URL={BASE_URL}
         token={token}
+        role={role}
         data={detail}
         merchantId={merchantId}
       />
