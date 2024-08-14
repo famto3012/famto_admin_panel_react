@@ -1,11 +1,14 @@
 import { useState } from "react";
 import MapModal from "./MapModal";
+import { useMap } from "../../context/MapContext";
 
 const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
+  const {coordinates} = useMap()
+  console.log(coordinates)
   const [addressData, setAddressData] = useState({
     type: "",
-    latitude: null,
-    longitude: null,
+    latitude: coordinates?.latitude,
+    longitude: coordinates?.longitude,
     fullName: "",
     phoneNumber: "",
     flat: "",
@@ -20,10 +23,6 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
   };
 
-  const setCoordinates = ({ latitude, longitude }) => {
-    setAddressData({ ...addressData, latitude, longitude });
-  };
-
   const handleButtonClick = (type) => {
     setSelectedType(type);
     setAddressData({ ...addressData, type });
@@ -31,7 +30,9 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(addressData);
+    console.log("coordinates", coordinates)
+    setAddressData({ ...addressData, latitude: coordinates.latitude, longitude: coordinates.longitude})
+   // console.log(addressData);
     onAddCustomerAddress(addressData);
     setAddressData({
       type: "",
@@ -163,7 +164,6 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
                 <MapModal
                   isVisible={modalVisible}
                   onClose={() => setModalVisible(false)}
-                  setCoordinates={setCoordinates}
                   BASE_URL={BASE_URL}
                   token={token}
                 />

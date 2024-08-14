@@ -21,10 +21,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider theme={theme}>
     <StyledEngineProvider injectFirst>
       <ChakraProvider>
-      <MapProvider >
-        <UserProvider>
-          <App />
-        </UserProvider>
+        <MapProvider>
+          <UserProvider>
+            <App />
+          </UserProvider>
         </MapProvider>
       </ChakraProvider>
     </StyledEngineProvider>
