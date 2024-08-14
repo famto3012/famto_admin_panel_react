@@ -15,7 +15,6 @@ import {
   useSteps,
   Box,
 } from "@chakra-ui/react";
-import map from "/map.svg";
 import avatar from "/avatar.svg";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
@@ -519,7 +518,7 @@ const OrderDetails = () => {
             </Stepper>
           </div>
           <div className="w-1/2">
-            <img src={map} alt="map" />
+            {/* <img src={map} alt="map" /> */}
           </div>
         </div>
       </div>

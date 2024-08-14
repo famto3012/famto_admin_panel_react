@@ -68,13 +68,13 @@ const PlaceSearchPlugin = ({ map }) => {
 const MapModal = ({
   isVisible,
   onClose,
-  setCoordinates,
   BASE_URL,
   token,
   location,
 }) => {
-  const { map, setMap } = useMap(); // Use the context
-  const markerRef = useRef(null);
+  const { map, setMap, setMapTwo, setCoordinatesTwo, setCoordinates } = useMap(); // Use the context
+  const markerRefOne = useRef(null);
+  const markerRefTwo = useRef(null);
   const mapContainerRef = useRef(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [authToken, setAuthToken] = useState(null);
@@ -121,18 +121,18 @@ const MapModal = ({
       setIsMapLoaded(true);
 
       // Place initial marker if location prop is provided
-      let newMarker;
+      // let newMarker;
 
-      if (location) {
-        console.log("true");
-        const { lat, lng } = location;
-        console.log(lat, lng);
-        newMarker = mapplsClassObject.Marker({
-          map: newMap,
-          position: { lat, lng },
-          draggable: false,
-        });
-      }
+      // if (location) {
+      //   console.log("true");
+      //   const { lat, lng } = location;
+      //   console.log(lat, lng);
+      //   newMarker = mapplsClassObject.Marker({
+      //     map: newMap,
+      //     position: { lat, lng },
+      //     draggable: false,
+      //   });
+      // }
     } else {
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
@@ -164,42 +164,75 @@ const MapModal = ({
               tilt: 30,
             },
           });
+          const newMapTwo = mapplsClassObject.Map({
+            id: "map1", // Use the ref's id for initialization
+            properties: {
+              center: [8.5892862, 76.8773566],
+              draggable: true,
+              zoom: 12,
+              backgroundColor: "#fff",
+              heading: 100,
+              traffic: true,
+              geolocation: false,
+              disableDoubleClickZoom: true,
+              fullscreenControl: true,
+              scrollWheel: true,
+              scrollZoom: true,
+              rotateControl: true,
+              scaleControl: true,
+              zoomControl: true,
+              clickableIcons: true,
+              indoor: true,
+              indoor_position: "bottom-left",
+              tilt: 30,
+            },
+          });
 
           console.log("Map initialized", newMap);
+          console.log("Map two initialized", newMapTwo);
 
           if (newMap && typeof newMap.on === "function") {
+            setMapTwo(newMapTwo)
             setMap(newMap); // Save the map instance in context
             setIsMapLoaded(true);
+
+            newMapTwo.on("click", (event) => {
+              const { lat, lng } = event.lngLat;
+
+              if (markerRefTwo.current) {
+                markerRefTwo.current.remove();
+              }
+
+              const newMarker = mapplsClassObject.Marker({
+                map: newMapTwo,
+                position: { lat, lng },
+                draggable: false,
+              });
+
+              markerRefTwo.current = newMarker;
+              setCoordinatesTwo({ latitude: lat, longitude: lng });
+              console.log(
+                `Marker added on MapTwo at latitude: ${lat}, longitude: ${lng}`
+              );
+            });
 
             newMap.on("click", (event) => {
               const { lat, lng } = event.lngLat;
 
-              if (markerRef.current) {
-                markerRef.current.remove();
+              if (markerRefOne.current) {
+                markerRefOne.current.remove();
               }
 
-              let newMarker;
-
-              if (location) {
-                const { lat, lng } = location;
-                console.log(lat, lng);
-                newMarker = mapplsClassObject.Marker({
-                  map: newMap,
-                  position: { lat, lng },
-                  draggable: false,
-                });
-              }
-
-              newMarker = mapplsClassObject.Marker({
+              const newMarker = mapplsClassObject.Marker({
                 map: newMap,
                 position: { lat, lng },
                 draggable: false,
               });
 
-              markerRef.current = newMarker;
+              markerRefOne.current = newMarker;
               setCoordinates({ latitude: lat, longitude: lng });
               console.log(
-                `Marker added at latitude: ${lat}, longitude: ${lng}`
+                `Marker added on MapOne at latitude: ${lat}, longitude: ${lng}`
               );
             });
           }
@@ -261,9 +294,12 @@ const MapModal = ({
         {isMapLoaded && <PlaceSearchPlugin map={map} />}
       </div>
       {!isMapLoaded && (
+        <>
         <Button onClick={initializeMap} className="mt-2">
           Initialize Map
         </Button>
+        <div id="map1" className="h-[500px] relative"></div>
+        </>
       )}
     </Modal>
   );
