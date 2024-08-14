@@ -154,7 +154,7 @@ const AgentDetails = () => {
                   </button>
                   <EditAgentModal
                     isVisible={showEditModal}
-                    handleCancel={handleCancel}
+                    onCancel={handleCancel}
                     data={agent}
                   />
                 </div>
