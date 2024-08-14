@@ -648,9 +648,9 @@ const Discount = () => {
                         {formatTime(table.validFrom)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {formatDate(table.validFrom)}
+                        {formatDate(table.validTo)}
                         <br />
-                        {formatTime(table.validFrom)}
+                        {formatTime(table.validTo)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
                         {table.geofence}
