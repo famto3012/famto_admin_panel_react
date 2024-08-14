@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { ConsoleSqlOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react'
 import AddCustomerPricingModal from '../model/PricingModels/AddCustomerPricingModal';
@@ -91,6 +91,7 @@ const CustomerPricing = () => {
         }
         if (businessCategoryResponse.status === 200) {
           setBusiness(businessCategoryResponse.data.data);
+          console.log(businessCategoryResponse.data.data)
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -119,7 +120,7 @@ const CustomerPricing = () => {
   // Function to update the customer rule in the list
 
  const handleEditRule = (updatedRule) => {
-  setAgentPricing((prevRules) =>
+  setCustomerPricing((prevRules) =>
     prevRules.map((agentrule) =>
       agentrule._id === updatedRule._id ? updatedRule : agentrule
     )
@@ -128,7 +129,7 @@ const CustomerPricing = () => {
  // Function to update the customer surge in the list
 
  const handleEditSurge = (updatedSurge) => {
-  setAgentSurge((prevSurge) =>
+  setCustomerSurge((prevSurge) =>
     prevSurge.map((agentsurge) =>
       agentsurge._id === updatedSurge._id ? updatedSurge : agentsurge
     )
@@ -384,7 +385,7 @@ const handleConfirmDeleteSurge = () => {
                   <td className="p-4">{customerpricing.purchaseFarePerHour}</td>
                   <td className="p-4">{customerpricing.waitingFare}</td>
                   <td className="p-4 px-2">{customerpricing.waitingTime}</td>
-                  <td className="p-4">{customerpricing.geofenceId.name}</td>
+                  <td className="p-4">{customerpricing.geofenceId?.name}</td>
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-3">
                       <div>
