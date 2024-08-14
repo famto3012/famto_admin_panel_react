@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../App.css";
 
-import whitelogo from "/whitelogo.svg";
 import {
   HomeOutlined as HomeOutlinedIcon,
   BookOutlined as BookOutlinedIcon,
@@ -89,7 +88,10 @@ const Sidebar = () => {
   return (
     <div className="fixed w-[300px] h-full bg-gradient-to-t from-teal-700 to-cyan-500 font-poppins overflow-y-auto pb-[50px]">
       <div className="flex gap-3 ml-[10px] mt-[30px]">
-        <img src={whitelogo} alt="Logo" />
+        <img
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fwhitelogo.svg?alt=media&token=a7436647-2de7-4fee-8e3a-5c637bd0bc61"
+          alt="Logo"
+        />
         <h1 className="text-white font-poppins font-medium text-2xl">Famto</h1>
       </div>
       <div className="dropside ">General</div>

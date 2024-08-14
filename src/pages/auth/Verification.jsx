@@ -1,7 +1,5 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import famtoBlackLogo from "/famto-black-logo.svg";
-import LoginImage from "/LoginImage.svg";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase";
@@ -10,37 +8,6 @@ import OtpInput from "otp-input-react";
 
 const Verification = () => {
   const [otp, setOtp] = useState("");
-
-  // const otp1Ref = useRef(null);
-  // const otp2Ref = useRef(null);
-  // const otp3Ref = useRef(null);
-  // const otp4Ref = useRef(null);
-
-  // const handleInputChange = async (e) => {
-  //   const { name, value } = e.target;
-  //   setOtp({ ...otp, [name]: value });
-
-  //   switch (name) {
-  //     case "otp1":
-  //       if (value) otp2Ref.current.focus();
-  //       break;
-  //     case "otp2":
-  //       if (value) otp3Ref.current.focus();
-  //       break;
-  //     case "otp3":
-  //       if (value) otp4Ref.current.focus();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
-  // const handleClick = (e) => {
-  //   e.preventDefault();
-  //   const OTP = otp.otp1 + otp.otp2 + otp.otp3 + otp.otp4;
-  //   console.log(OTP);
-  // };
-
   const { signUp, verification, setVerification } = useContext(UserContext);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isVerifyButtonDisabled, setIsVerifyButtonDisabled] = useState(false);
@@ -154,7 +121,7 @@ const Verification = () => {
         });
         // Navigate to dashboard page
         navigate("/auth/success");
-      }else{
+      } else {
         toast({
           title: "Invalid Otp",
           status: "error",
@@ -198,13 +165,16 @@ const Verification = () => {
   return (
     <section className="flex w-screen font-poppins h-screen ">
       <figure className="h-full w-full md:w-1/2">
-        <img className="h-full w-full object-cover" src={LoginImage} />
+        <img
+          className="h-full w-full object-cover"
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FLoginImage.svg?alt=media&token=c7452bf9-0b3a-4358-bef0-cd1bfa57e80f"
+        />
       </figure>
       <div className=" flex justify-center h-full w-1/2 items-center ">
         <div className="min-w-screen bg-gray-100 h-auto w-[400px] rounded-2xl border-2 border-teal-700 p-10">
           <div className="text-center mt-5 ">
             <img
-              src={famtoBlackLogo}
+              src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Ffamto-black-logo.svg?alt=media&token=75721109-473f-4428-8a39-3a1181454297"
               alt="Logo"
               className="mx-auto flex h-20 w-20"
             />
@@ -212,61 +182,13 @@ const Verification = () => {
               Verify Account
             </h2>
             <p className="text-zinc-500 mt-5 font-poppins">
-              An OTP has been send to the number xxxxxxx{signUp.phoneNumber} Enter the OTP to
-              verify your mobile number.
+              An OTP has been send to the number xxxxxxx{signUp.phoneNumber}{" "}
+              Enter the OTP to verify your mobile number.
             </p>
           </div>
           <div className="max-w-md mx-auto  rounded">
             <form className="p-4 py-6">
               <div className="flex justify-center gap-4 mb-3 w-full">
-                {/* <input
-                  className="w-12 h-12 text-center border-b-2 border-teal-700 focus:border-teal-900 focus:ring-teal-500"
-                  type="text"
-                  maxLength="1"
-                  pattern="[0-9]"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  ref={otp1Ref}
-                  name="otp1"
-                  value={otp.otp1}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-12 h-12 text-center border-b-2 border-teal-700 focus:border-teal-900 focus:ring-teal-500"
-                  type="text"
-                  maxLength="1"
-                  pattern="[0-9]"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  ref={otp2Ref}
-                  name="otp2"
-                  value={otp.otp2}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-12 h-12 text-center border-b-2 border-teal-700 focus:border-teal-900 focus:ring-teal-500"
-                  type="text"
-                  maxLength="1"
-                  pattern="[0-9]"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  ref={otp3Ref}
-                  name="otp3"
-                  value={otp.otp3}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-12 h-12 text-center border-b-2 border-teal-700 focus:border-teal-900 focus:ring-teal-500"
-                  type="text"
-                  maxLength="1"
-                  pattern="[0-9]"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  ref={otp4Ref}
-                  name="otp4"
-                  value={otp.otp4}
-                  onChange={handleInputChange}
-                /> */}
                 <OtpInput
                   value={otp}
                   onChange={setOtp}

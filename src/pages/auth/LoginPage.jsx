@@ -2,12 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import LoginImage from "/LoginImage.svg";
-import famtoWhiteLogo from "/famto-white-logo.svg";
-import famtoBlackLogo from "/famto-black-logo.svg";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
-import Loader from "../../components/Loader";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -80,22 +76,16 @@ const LoginPage = () => {
       <figure className="h-full  w-full lg:w-1/2 md:w-1/2 lg:opacity-100  relative ">
         <img
           className="w-full min-w-full h-full object-cover fill-black"
-          src={LoginImage}
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FLoginImage.svg?alt=media&token=c7452bf9-0b3a-4358-bef0-cd1bfa57e80f"
         />
         <div className="inset-0 bg-black opacity-50 absolute md:relative"></div>
       </figure>
-
-      <img
-        className="flex justify-center mt-32 absolute md:hidden "
-        src={famtoWhiteLogo}
-        alt="White logo"
-      />
 
       <div className="mim-w-screen flex justify-center h-full md:h-auto  lg:w-1/2 md:w-1/2 w-full  absolute lg:relative md:relative md:items-center    lg:items-center items-end ">
         <div className="min-w-screen bg-white w-full md:w-[450px]  lg:h-auto rounded-tl-[100px]  shadow-lg md:rounded-2xl lg:rounded-2xl md:border-2 md:border-teal-700 p-5 lg:p-14">
           <div className="text-center ">
             <img
-              src={famtoBlackLogo}
+              src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Ffamto-black-logo.svg?alt=media&token=75721109-473f-4428-8a39-3a1181454297"
               alt="Logo"
               className="mx-auto hidden lg:flex h-20 w-20"
             />
@@ -190,7 +180,7 @@ const LoginPage = () => {
           </form>
           <div className="mt-3 text-center">
             <p>
-              Don't have an account?
+              {"Don't have an account?"}
               <Link className="text-teal-700" to="/auth/sign-up">
                 {" "}
                 Sign up

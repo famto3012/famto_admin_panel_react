@@ -1,11 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeOutlined } from "@ant-design/icons";
 import { EyeInvisibleOutlined } from "@ant-design/icons";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import LoginImage from "/LoginImage.svg";
-import famtoWhiteLogo from "/famto-white-logo.svg";
-import famtoBlackLogo from "/famto-black-logo.svg";
 import { auth } from "../../firebase";
 import { useToast } from "@chakra-ui/react";
 import PhoneInput from "react-phone-input-2";
@@ -85,7 +82,7 @@ const Signup = () => {
       );
       console.log("confirmation", confirmation);
       setSignUp(signUpData);
-      setVerification(confirmation)
+      setVerification(confirmation);
       toast({
         title: "OTP send successfully",
         status: "success",
@@ -130,13 +127,18 @@ const Signup = () => {
   return (
     <section className=" flex justify-center w-full h-screen font-poppins">
       <div className="relative h-full w-full md:w-1/2">
-        <img className="h-full w-full object-cover" src={LoginImage} />
+        <img
+          className="h-full w-full object-cover"
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FLoginImage.svg?alt=media&token=c7452bf9-0b3a-4358-bef0-cd1bfa57e80f"
+        />
         <div className="absolute inset-0 bg-black opacity-40 md:relative"></div>
       </div>
-      <img className=" mt-[100px] absolute md:hidden" src={famtoWhiteLogo} />
       <div className="absolute h-full w-full md:w-1/2 flex items-end md:justify-center md:items-center md:relative">
         <div className="min-w-sm md:border-2  border-teal-700 p-2 md:p-10 md:rounded-xl rounded-tl-[100px] bg-white w-full md:max-w-md">
-          <img className="hidden md:flex mx-auto mb-4" src={famtoBlackLogo} />
+          <img
+            className="hidden md:flex mx-auto mb-4"
+            src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Ffamto-black-logo.svg?alt=media&token=75721109-473f-4428-8a39-3a1181454297"
+          />
           <h1 className="text-teal-700 md:text-[20px] mb-6 text-center md:text-black ">
             Sign Up
           </h1>
