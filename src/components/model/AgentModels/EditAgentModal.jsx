@@ -1,13 +1,14 @@
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-const EditAgentModal = ({ isVisible, handleCancel, data }) => {
+const EditAgentModal = ({ isVisible, onCancel, data }) => {
   const [agentData, setAgentData] = useState({});
 
   const [allGeofence, setAllGeofence] = useState([]);
@@ -18,13 +19,9 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
 
   const navigate = useNavigate();
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
 
   useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-      return;
-    }
-
     const fetchData = async () => {
       try {
         const [geofenceResponse, managerResponse, salaryResponse] =
@@ -67,32 +64,41 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
     setAgentData({ ...agentData, [e.target.name]: e.target.value });
   };
 
-  const [agentFile, setAgentFile] = useState(null);
-  const [agentPreviewURL, setAgentPreviewURL] = useState(null);
+  const [previewURL, setPreviewURL] = useState({
+    agentPreviewURL: "",
+    rcFrontPreviewURL: "",
+    rcBackPreviewURL: "",
+    drivingFrontPreviewURL: "",
+    drivingBackPreviewURL: "",
+    aadharFrontPreviewURL: "",
+    aadharBackPreviewURL: "",
+  });
 
-  const [driFrontFile, setDriFrontFile] = useState(null);
-  const [driFrontPreviewURL, setDriFrontPreviewURL] = useState(null);
+  const [selectedFile, setSelectedFile] = useState({
+    agentImage: null,
+    rcFrontImage: null,
+    rcBackImage: null,
+    drivingLicenseFrontImage: null,
+    drivingLicenseBackImage: null,
+    aadharFrontImage: null,
+    aadharBackImage: null,
+  });
 
-  const [driBackFile, setDriBackFile] = useState(null);
-  const [driBackPreviewURL, setDriBackPreviewURL] = useState(null);
-
-  const [aadharFrontFile, setAadharFrontFile] = useState(null);
-  const [aadharFrontPreviewURL, setAadharFrontPreviewURL] = useState(null);
-
-  const [aadharBackFile, setAadharBackFile] = useState(null);
-  const [aadharBackPreviewURL, setAadharBackPreviewURL] = useState(null);
-
-  const [rcFrontFile, setRcFrontFile] = useState(null);
-  const [rcFrontPreviewURL, setRcFrontPreviewURL] = useState(null);
-  const [rcBackFile, setRcBackFile] = useState(null);
-  const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
-
-  const handleImageChange = (e, setFile, setPreviewURL) => {
+  const handleImageChange = (e, fileKey, previewKey) => {
     e.preventDefault();
     const file = e.target.files[0];
     if (file) {
-      setFile(file);
-      setPreviewURL(URL.createObjectURL(file));
+      const imagePreview = URL.createObjectURL(file);
+
+      setSelectedFile((prevState) => ({
+        ...prevState,
+        [fileKey]: file,
+      }));
+
+      setPreviewURL((prevState) => ({
+        ...prevState,
+        [previewKey]: imagePreview,
+      }));
     }
   };
 
@@ -101,39 +107,23 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
     try {
       setIsLoading(true);
 
+      console.log(agentData);
+
       const dataToSend = new FormData();
 
       Object.keys(agentData).forEach((key) => {
         dataToSend.append(key, agentData[key]);
       });
 
-      if (agentFile) {
-        dataToSend.append("agentImageURL", agentFile);
-      }
+      Object.keys(selectedFile).forEach((key) => {
+        if (selectedFile[key]) {
+          dataToSend.append(key, selectedFile[key]);
+        }
+      });
 
-      if (rcFrontFile) {
-        dataToSend.append("rcFrontImage", rcFrontFile);
-      }
-
-      if (rcBackFile) {
-        dataToSend.append("rcBackImage", rcBackFile);
-      }
-
-      if (aadharFrontFile) {
-        dataToSend.append("aadharFrontImage", aadharFrontFile);
-      }
-
-      if (aadharBackFile) {
-        dataToSend.append("aadharBackImage", aadharBackFile);
-      }
-
-      if (driFrontFile) {
-        dataToSend.append("drivingLicenseFrontImage", driFrontFile);
-      }
-
-      if (driBackFile) {
-        dataToSend.append("drivingLicenseBackImage", driBackFile);
-      }
+      dataToSend.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
 
       const addAgentResponse = await axios.put(
         `${BASE_URL}/admin/agents/edit-agent/${data._id}`,
@@ -148,19 +138,43 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
       );
 
       if (addAgentResponse.status === 200) {
-        setAgentData(addAgentResponse.data.data);
-        setAadharBackPreviewURL(null);
-        setAadharFrontPreviewURL(null);
-        setAgentFile(null);
-        setAgentPreviewURL(null);
-        setDriBackPreviewURL(null);
-        setDriFrontPreviewURL(null);
-        setRcBackPreviewURL(null);
-        setRcFrontPreviewURL(null);
-        handleCancel();
+        // setAgentData(addAgentResponse.data.data);
+        setPreviewURL({
+          agentPreviewURL: "",
+          rcFrontPreviewURL: "",
+          rcBackPreviewURL: "",
+          drivingFrontPreviewURL: "",
+          drivingBackPreviewURL: "",
+          aadharFrontPreviewURL: "",
+          aadharBackPreviewURL: "",
+        });
+        setSelectedFile({
+          agentImage: null,
+          rcFrontImage: null,
+          rcBackImage: null,
+          drivingLicenseFrontImage: null,
+          drivingLicenseBackImage: null,
+          aadharFrontImage: null,
+          aadharBackImage: null,
+        });
+        onCancel();
+        toast({
+          title: "Success",
+          description: "Agent updated successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error(`Error in fetch data : ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in updating agent",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -172,7 +186,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
       open={isVisible}
       width="700px"
       centered
-      onCancel={handleCancel}
+      onCancel={onCancel}
       footer={null}
     >
       {" "}
@@ -217,111 +231,124 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               onChange={handleInputChange}
             />
           </div>
+
           <h1 className="font-semibold text-[18px]">Vehicle Details</h1>
-          <div className="flex">
-            <div className="w-3/4">
-              <div className="flex items-center ">
-                <label className="w-1/3 text-gray-500" htmlFor="licensePlate">
-                  License Plate
-                </label>
-                <input
-                  className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
-                  type="text"
-                  value={agentData.vehicleDetail[0]?.licensePlate}
-                  id="licensePlate"
-                  name="licensePlate"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="flex mt-5 items-center">
-                <label className="w-1/3 text-gray-500" htmlFor="model">
-                  Vehicle Model
-                </label>
-                <input
-                  className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
-                  type="text"
-                  value={agentData?.vehicleDetail[0]?.model}
-                  id="model"
-                  name="model"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="flex mt-5 gap-4">
-                <label className="w-1/2 text-gray-500 " htmlFor="type">
-                  Vehicle Type
-                </label>
-                <select
-                  className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5 "
-                  name="type"
-                  id="type"
-                  value={agentData?.vehicleDetail[0]?.type}
-                  onChange={handleInputChange}
-                >
-                  <option value="" hidden>
+          {agentData?.vehicleDetail?.map((vehicle) => (
+            <div className="flex">
+              <div className="w-3/4">
+                <div className="flex items-center ">
+                  <label className="w-1/3 text-gray-500" htmlFor="licensePlate">
+                    License Plate
+                  </label>
+                  <input
+                    className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
+                    type="text"
+                    value={vehicle?.licensePlate}
+                    id="licensePlate"
+                    name="licensePlate"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="flex mt-5 items-center">
+                  <label className="w-1/3 text-gray-500" htmlFor="model">
+                    Vehicle Model
+                  </label>
+                  <input
+                    className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
+                    type="text"
+                    value={vehicle?.model}
+                    id="model"
+                    name="model"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="flex mt-5 gap-4">
+                  <label className="w-1/2 text-gray-500 " htmlFor="type">
                     Vehicle Type
-                  </option>
-                  <option value="Bike">Bike</option>
-                  <option value="Scooter">Scooter</option>
-                </select>
+                  </label>
+                  <select
+                    className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5 "
+                    name="type"
+                    id="type"
+                    value={vehicle?.type}
+                    onChange={handleInputChange}
+                  >
+                    <option value="" hidden>
+                      Vehicle Type
+                    </option>
+                    <option value="Bike">Bike</option>
+                    <option value="Scooter">Scooter</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="flex items-center gap-[30px]">
+                  <input
+                    type="file"
+                    name="rcFrontImage"
+                    id="rcFrontImage"
+                    className="hidden"
+                    onChange={(e) =>
+                      handleImageChange(e, "rcFrontImage", "rcFrontPreviewURL")
+                    }
+                  />
+                  <label htmlFor="rcFrontImage" className="cursor-pointer">
+                    <figure className="h-16 w-16 rounded relative">
+                      {previewURL.rcFrontPreviewURL ||
+                      vehicle?.rcFrontImageURL ? (
+                        <img
+                          src={
+                            previewURL.rcFrontPreviewURL ||
+                            vehicle?.rcFrontImageURL
+                          }
+                          alt="profile"
+                          className="w-full rounded absolute h-full object-cover"
+                        />
+                      ) : (
+                        <MdCameraAlt
+                          className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
+                          size={30}
+                        />
+                      )}
+                    </figure>
+                  </label>
+                </div>
+                <div className="flex items-center gap-[30px]">
+                  <input
+                    type="file"
+                    name="rcBackImage"
+                    id="rcBackImage"
+                    className="hidden"
+                    onChange={(e) =>
+                      handleImageChange(e, "rcBackImage", "rcBackPreviewURL")
+                    }
+                  />
+                  <label htmlFor="rcBackImage" className="cursor-pointer">
+                    <figure className="h-16 w-16 rounded relative">
+                      {previewURL.rcBackPreviewURL ||
+                      vehicle?.rcBackImageURL ? (
+                        <img
+                          src={
+                            previewURL.rcBackPreviewURL ||
+                            vehicle?.rcBackImageURL
+                          }
+                          alt="profile"
+                          className="w-full rounded absolute h-full object-cover"
+                        />
+                      ) : (
+                        <MdCameraAlt
+                          className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
+                          size={30}
+                        />
+                      )}
+                    </figure>
+                  </label>
+                </div>
               </div>
             </div>
-            <div className="flex gap-6">
-              <div className="flex items-center gap-[30px]">
-                <input
-                  type="file"
-                  name="rcFrontImage"
-                  id="rcFrontImage"
-                  className="hidden"
-                  onChange={(e) =>
-                    handleImageChange(e, setRcFrontFile, setRcFrontPreviewURL)
-                  }
-                />
-                <label htmlFor="rcFrontImage" className="cursor-pointer">
-                  {rcFrontPreviewURL ? (
-                    <figure className=" h-16 w-16 rounded relative">
-                      <img
-                        src={rcFrontPreviewURL}
-                        alt="profile"
-                        className="w-full rounded absolute h-full object-cover"
-                      />
-                    </figure>
-                  ) : (
-                    <MdCameraAlt
-                      className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
-                      size={30}
-                    />
-                  )}
-                </label>
-              </div>
-              <div className="flex items-center gap-[30px]">
-                <input
-                  type="file"
-                  name="rcBackImage"
-                  id="rcBackImage"
-                  className="hidden"
-                  onChange={(e) =>
-                    handleImageChange(e, setRcBackFile, setRcBackPreviewURL)
-                  }
-                />
-                <label htmlFor="rcBackImage" className="cursor-pointer">
-                  {rcBackPreviewURL ? (
-                    <figure className=" h-16 w-16 rounded relative">
-                      <img
-                        src={rcBackPreviewURL}
-                        alt="profile"
-                        className="w-full rounded absolute h-full object-cover"
-                      />
-                    </figure>
-                  ) : (
-                    <MdCameraAlt
-                      className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
-                      size={30}
-                    />
-                  )}
-                </label>
-              </div>
-            </div>
-          </div>
+          ))}
+
           <h1 className="font-semibold text-[18px]">Bank Details</h1>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="accountHolderName">
@@ -336,6 +363,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="accountNumber">
               Account Number
@@ -363,6 +391,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="UPIId">
               UPI ID
@@ -376,6 +405,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               onChange={handleInputChange}
             />
           </div>
+
           <h1 className="font-semibold text-[18px]">GOVERNMENT ID'S</h1>
           <div className="flex">
             <div className="flex items-center w-3/4">
@@ -401,32 +431,36 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
                   onChange={(e) =>
                     handleImageChange(
                       e,
-                      setAadharFrontFile,
-                      setAadharFrontPreviewURL
+                      "aadharFrontImage",
+                      "aadharFrontPreviewURL"
                     )
                   }
                 />
+
                 <label htmlFor="aadharFrontImage" className="cursor-pointer">
-                  {agentData?.governmentCertificateDetail
-                    ?.aadharFrontImageURL ? (
-                    <figure className=" h-16 w-16 rounded relative">
+                  <figure className="h-16 w-16 rounded relative">
+                    {previewURL.aadharFrontPreviewURL ||
+                    agentData?.governmentCertificateDetail
+                      ?.aadharFrontImageURL ? (
                       <img
                         src={
+                          previewURL.aadharFrontPreviewURL ||
                           agentData?.governmentCertificateDetail
                             ?.aadharFrontImageURL
                         }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
-                    </figure>
-                  ) : (
-                    <MdCameraAlt
-                      className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
-                      size={30}
-                    />
-                  )}
+                    ) : (
+                      <MdCameraAlt
+                        className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
+                        size={30}
+                      />
+                    )}
+                  </figure>
                 </label>
               </div>
+
               <div className="flex items-center gap-[30px]">
                 <input
                   type="file"
@@ -436,34 +470,37 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
                   onChange={(e) =>
                     handleImageChange(
                       e,
-                      setAadharBackFile,
-                      setAadharBackPreviewURL
+                      "aadharBackImage",
+                      "aadharBackPreviewURL"
                     )
                   }
                 />
                 <label htmlFor="aadharBackImage" className="cursor-pointer">
-                  {agentData?.governmentCertificateDetail
-                    ?.aadharBackImageURL ? (
-                    <figure className=" h-16 w-16 rounded relative">
+                  <figure className="h-16 w-16 rounded relative">
+                    {previewURL.aadharBackPreviewURL ||
+                    agentData?.governmentCertificateDetail
+                      ?.aadharBackImageURL ? (
                       <img
                         src={
+                          previewURL.aadharBackPreviewURL ||
                           agentData?.governmentCertificateDetail
                             ?.aadharBackImageURL
                         }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
-                    </figure>
-                  ) : (
-                    <MdCameraAlt
-                      className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
-                      size={30}
-                    />
-                  )}
+                    ) : (
+                      <MdCameraAlt
+                        className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
+                        size={30}
+                      />
+                    )}
+                  </figure>
                 </label>
               </div>
             </div>
           </div>
+
           <div className="flex">
             <div className="flex items-center w-3/4">
               <label
@@ -483,6 +520,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
                 onChange={handleInputChange}
               />
             </div>
+
             <div className="flex gap-6">
               <div className="flex items-center gap-[30px]">
                 <input
@@ -491,33 +529,40 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
                   id="drivingLicenseFrontImage"
                   className="hidden"
                   onChange={(e) =>
-                    handleImageChange(e, setDriFrontFile, setDriFrontPreviewURL)
+                    handleImageChange(
+                      e,
+                      "drivingLicenseFrontImage",
+                      "drivingFrontPreviewURL"
+                    )
                   }
                 />
                 <label
                   htmlFor="drivingLicenseFrontImage"
                   className="cursor-pointer"
                 >
-                  {agentData?.governmentCertificateDetail
-                    ?.drivingLicenseFrontImageURL ? (
-                    <figure className=" h-16 w-16 rounded relative">
+                  <figure className="h-16 w-16 rounded relative">
+                    {previewURL.drivingFrontPreviewURL ||
+                    agentData?.governmentCertificateDetail
+                      ?.drivingLicenseFrontImageURL ? (
                       <img
                         src={
+                          previewURL.drivingFrontPreviewURL ||
                           agentData?.governmentCertificateDetail
                             ?.drivingLicenseFrontImageURL
                         }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
-                    </figure>
-                  ) : (
-                    <MdCameraAlt
-                      className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
-                      size={30}
-                    />
-                  )}
+                    ) : (
+                      <MdCameraAlt
+                        className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
+                        size={30}
+                      />
+                    )}
+                  </figure>
                 </label>
               </div>
+
               <div className="flex items-center gap-[30px]">
                 <input
                   type="file"
@@ -525,36 +570,44 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
                   id="drivingLicenseBackImage"
                   className="hidden"
                   onChange={(e) =>
-                    handleImageChange(e, setDriBackFile, setDriBackPreviewURL)
+                    handleImageChange(
+                      e,
+                      "drivingLicenseBackImage",
+                      "drivingBackPreviewURL"
+                    )
                   }
                 />
                 <label
                   htmlFor="drivingLicenseBackImage"
                   className="cursor-pointer"
                 >
-                  {agentData?.governmentCertificateDetail
-                    ?.drivingLicenseBackImageURL ? (
-                    <figure className=" h-16 w-16 rounded relative">
+                  <figure className="h-16 w-16 rounded relative">
+                    {previewURL.drivingBackPreviewURL ||
+                    agentData?.governmentCertificateDetail
+                      ?.drivingLicenseBackImageURL ? (
                       <img
                         src={
+                          previewURL.drivingBackPreviewURL ||
                           agentData?.governmentCertificateDetail
                             ?.drivingLicenseBackImageURL
                         }
                         alt="profile"
                         className="w-full rounded absolute h-full object-cover"
                       />
-                    </figure>
-                  ) : (
-                    <MdCameraAlt
-                      className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
-                      size={30}
-                    />
-                  )}
+                    ) : (
+                      <MdCameraAlt
+                        className="bg-teal-800 text-[40px] text-white p-4 h-16 w-16 rounded"
+                        size={30}
+                      />
+                    )}
+                  </figure>
                 </label>
               </div>
             </div>
           </div>
+
           <h1 className="font-semibold text-[18px]">Work Structure</h1>
+
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="managerId">
               Manager
@@ -575,6 +628,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               ))}
             </select>
           </div>
+
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="salaryStructureId">
               Salary Structure
@@ -585,8 +639,8 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option hidden defaultValue="Select salary stricture">
-                {agentData?.workStructure?.salaryStructureId?.ruleName}
+              <option hidden defaultValue="Select salary structure">
+                Select salary structure
               </option>
               {salary.map((salary) => (
                 <option value={salary._id} key={salary._id}>
@@ -595,6 +649,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               ))}
             </select>
           </div>
+
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="geofencename">
               Geofence
@@ -606,7 +661,7 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
               <option hidden defaultValue="Select geofence">
-                {agentData?.geofenceId?.name}
+                Select geofence
               </option>
               {allGeofence.map((geofence) => (
                 <option value={geofence._id} key={geofence._id}>
@@ -615,47 +670,58 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
               ))}
             </select>
           </div>
+
           <div className="flex items-center mt-5">
-            <label className="w-1/3 text-gray-500" htmlFor="tag">
+            <label className=" text-gray-500 w-1/2" htmlFor="tag">
               Tags
             </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              value={agentData?.workStructure?.tag}
+            <select
               name="tag"
+              value={agentData?.workStructure?.tag}
               onChange={handleInputChange}
-            />
+              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
+            >
+              <option hidden defaultValue="Select Tag">
+                Select Tag
+              </option>
+              <option value="Normal">Normal</option>
+              <option value="Fish & Meat">Fish & Meat</option>
+            </select>
           </div>
+
           <h1 className="font-semibold text-[18px]">Add Profile</h1>
+
           <div className=" flex items-center gap-[30px]">
-            {agentData?.agentImageURL && !agentPreviewURL && (
+            {!previewURL.agentPreviewURL && agentData?.agentImageURL && (
               <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
                 <img
                   src={agentData?.agentImageURL}
-                  alt="profile"
+                  alt={agentData.fullName}
                   className="w-full rounded h-full object-cover "
                 />
               </figure>
             )}
-            {agentPreviewURL && (
+
+            {previewURL.agentPreviewURL && (
               <figure className="ml-5 mt-5 h-16 w-16 rounded-md relative">
                 <img
-                  src={agentPreviewURL}
-                  alt="profile"
+                  src={previewURL.agentPreviewURL}
+                  alt={data.fullName}
                   className="w-full rounded h-full object-cover "
                 />
               </figure>
             )}
+
             <input
               type="file"
               name="agentImage"
               id="agentImage"
               className="hidden"
               onChange={(e) =>
-                handleImageChange(e, setAgentFile, setAgentPreviewURL)
+                handleImageChange(e, "agentImage", "agentPreviewURL")
               }
             />
+
             <label htmlFor="agentImage" className="cursor-pointer ">
               <MdCameraAlt
                 className=" bg-teal-800  text-[40px] text-white p-4 h-16 w-16 mt-5 rounded"
@@ -672,16 +738,15 @@ const EditAgentModal = ({ isVisible, handleCancel, data }) => {
             <button
               className="bg-cyan-50 py-2 px-4 rounded-md"
               type="button"
-              // onClick={handleCancel}
+              onClick={onCancel}
             >
               Cancel
             </button>
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
               type="submit"
-              // onClick={handleOk}
             >
-              Add Agent
+              {isLoading ? `Saving...` : `Save`}
             </button>
           </div>
         </div>
