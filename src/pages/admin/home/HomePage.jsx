@@ -2,7 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import HomeComponents from "../../../components/HomeComponents";
-import { Card, CardBody, CardHeader, Heading } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  useToast,
+} from "@chakra-ui/react";
 import { LineChart } from "@saas-ui/charts";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +16,10 @@ import { io } from "socket.io-client";
 
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../../../firebase";
+import { Switch } from "antd";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
@@ -20,7 +30,7 @@ const HomePage = () => {
 
   const { token, role, userId, fcmToken, setFcmToken } =
     useContext(UserContext);
-  // console.log(fcmToken);
+  const toast = useToast();
 
   const socket = io("http://localhost:5000", {
     query: {
@@ -93,8 +103,6 @@ const HomePage = () => {
   useEffect(() => {
     requestPermission();
   }, []);
-
-  // console.log(selectedOption);
 
   const data = [
     {
@@ -210,6 +218,40 @@ const HomePage = () => {
     }).format(value);
   };
 
+  const handleChangeMerchantStatus = async () => {
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/change-status/${userId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast({
+          title: "Success",
+          description: "Merchant status updated successfully!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Error in changing merchant status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <>
       <Sidebar />
@@ -222,7 +264,18 @@ const HomePage = () => {
             <p>Hi</p>
             <p className="text-[20px] text-gray-500">Designation</p>
           </div>
-          <div>
+
+          <div className="flex items-center gap-[30px] ">
+            {role === "Merchant" && (
+              <p className="flex flex-col items-center justify-center">
+                <Switch
+                  value
+                  onChange={handleChangeMerchantStatus}
+                  className="w-fit"
+                />
+                <span className="text-gray-500">Accepting orders</span>
+              </p>
+            )}
             <select name="day" className="bg-white rounded-lg p-3">
               <option>Today</option>
             </select>
