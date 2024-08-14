@@ -1,7 +1,7 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const AddCustomerPricingModal = ({
   isVisible,
@@ -11,7 +11,8 @@ const AddCustomerPricingModal = ({
   BASE_URL,
   onAddRule,
   business,
-}) => {
+}) => { 
+
   const toast = useToast();
   const [confirmLoading,setConfirmLoading]= useState(false)
   const [customerPricing, setCustomerPricing] = useState({
@@ -38,6 +39,11 @@ const AddCustomerPricingModal = ({
     const { name, value } = e.target;
     setCustomerPricing({ ...customerPricing, [name]: value });
   };
+  useEffect (() =>{
+    console.log(business)
+  }
+  )
+  
 
   const submitAction = async (e) => {
     e.preventDefault();
@@ -267,10 +273,10 @@ const AddCustomerPricingModal = ({
           </div>
           {customerPricing.deliveryMode === "Home Delivery" && (
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="business"></label>
+              <label className="w-1/3 text-gray-500" htmlFor="businessCategoryId"></label>
               <select
                 name="businessCategoryId"
-                value={customerPricing?.businessCategoryId}
+                value={customerPricing.businessCategoryId || ""}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
