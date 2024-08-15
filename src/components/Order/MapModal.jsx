@@ -65,14 +65,9 @@ const PlaceSearchPlugin = ({ map }) => {
   return null;
 };
 
-const MapModal = ({
-  isVisible,
-  onClose,
-  BASE_URL,
-  token,
-  location,
-}) => {
-  const { map, setMap, setMapTwo, setCoordinatesTwo, setCoordinates } = useMap(); // Use the context
+const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
+  const { map, setMap, setMapTwo, setCoordinatesTwo, setCoordinates } =
+    useMap(); // Use the context
   const markerRefOne = useRef(null);
   const markerRefTwo = useRef(null);
   const mapContainerRef = useRef(null);
@@ -192,7 +187,7 @@ const MapModal = ({
           console.log("Map two initialized", newMapTwo);
 
           if (newMap && typeof newMap.on === "function") {
-            setMapTwo(newMapTwo)
+            setMapTwo(newMapTwo);
             setMap(newMap); // Save the map instance in context
             setIsMapLoaded(true);
 
@@ -246,6 +241,7 @@ const MapModal = ({
       console.log("Here");
       const getAuthToken = async () => {
         try {
+          console.log("Insode");
           const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
             withCredentials: true,
             headers: {
@@ -295,10 +291,10 @@ const MapModal = ({
       </div>
       {!isMapLoaded && (
         <>
-        <Button onClick={initializeMap} className="mt-2">
-          Initialize Map
-        </Button>
-        <div id="map1" className="h-[500px] relative"></div>
+          <Button onClick={initializeMap} className="mt-2">
+            Initialize Map
+          </Button>
+          <div id="map1" className="h-[500px] relative"></div>
         </>
       )}
     </Modal>

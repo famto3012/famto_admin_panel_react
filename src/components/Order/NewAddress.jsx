@@ -4,11 +4,9 @@ import { useMap } from "../../context/MapContext";
 
 const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const { coordinates } = useMap();
-  console.log(coordinates);
+
   const [addressData, setAddressData] = useState({
     type: "",
-    latitude: coordinates?.latitude,
-    longitude: coordinates?.longitude,
     fullName: "",
     phoneNumber: "",
     flat: "",
@@ -16,6 +14,7 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
     landmark: "",
     saveAddress: false,
   });
+
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -30,36 +29,15 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("coordinates", coordinates);
-    setAddressData({
+
+    const updatedAddressData = {
       ...addressData,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
-    });
-    // console.log(addressData);
-    onAddCustomerAddress(addressData);
-    setAddressData({
-      type: "",
-      latitude: null,
-      longitude: null,
-      fullName: "",
-      phoneNumber: "",
-      flat: "",
-      area: "",
-      landmark: "",
-      saveAddress: false,
-    });
-    setSelectedType("");
-  };
+    };
 
-  const showButton =
-    !addressData.type ||
-    !addressData.latitude ||
-    !addressData.longitude ||
-    !addressData.fullName ||
-    !addressData.phoneNumber ||
-    !addressData.flat ||
-    !addressData.area;
+    onAddCustomerAddress(updatedAddressData);
+  };
 
   return (
     <>
@@ -194,12 +172,6 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
             <div className="flex justify-end mt-5 gap-3">
               <button
                 type="button"
-                // disabled={showButton}
-                // className={`${
-                //   showButton
-                //     ? "bg-teal-700/50 text-white"
-                //     : "bg-teal-700 text-white"
-                // }  px-4 py-2 rounded w-1/2`}
                 className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
                 onClick={handleSubmit}
               >
