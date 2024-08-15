@@ -45,7 +45,7 @@ const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
       );
 
       if (response.status === 201) {
-        closeModal();
+       // closeModal();
         toast({
           title: "Success",
           description: response.data.message,
@@ -80,6 +80,7 @@ const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
         centered
         width="600px"
         onCancel={toggleModal}
+        onOk={toggleModal}
         footer={null}
       >
         <form onSubmit={addNewMerchant}>
