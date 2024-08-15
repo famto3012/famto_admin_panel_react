@@ -3,12 +3,10 @@ import MapModalTwo from "./MapModalTwo";
 import { useMap } from "../../context/MapContext";
 
 const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
-  const {coordinatesTwo} = useMap()
-  console.log(coordinatesTwo)
+  const { coordinatesTwo } = useMap();
+
   const [addressData, setAddressData] = useState({
     type: "",
-    latitude: coordinatesTwo?.latitude,
-    longitude: coordinatesTwo?.longitude,
     fullName: "",
     phoneNumber: "",
     flat: "",
@@ -16,6 +14,7 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
     landmark: "",
     saveAddress: false,
   });
+
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -30,31 +29,15 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setAddressData({ ...addressData, latitude: coordinatesTwo.latitude, longitude: coordinatesTwo.longitude})
-   // console.log(addressData);
-    onAddCustomerAddress(addressData);
-    setAddressData({
-      type: "",
-      latitude: null,
-      longitude: null,
-      fullName: "",
-      phoneNumber: "",
-      flat: "",
-      area: "",
-      landmark: "",
-      saveAddress: false,
-    });
-    setSelectedType("");
-  };
 
-  const showButton =
-    !addressData.type ||
-    !addressData.latitude ||
-    !addressData.longitude ||
-    !addressData.fullName ||
-    !addressData.phoneNumber ||
-    !addressData.flat ||
-    !addressData.area;
+    const updatedAddressData = {
+      ...addressData,
+      latitude: coordinatesTwo.latitude,
+      longitude: coordinatesTwo.longitude,
+    };
+
+    onAddCustomerAddress(updatedAddressData);
+  };
 
   return (
     <>
@@ -189,12 +172,6 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
             <div className="flex justify-end mt-5 gap-3">
               <button
                 type="button"
-                // disabled={showButton}
-                // className={`${
-                //   showButton
-                //     ? "bg-teal-700/50 text-white"
-                //     : "bg-teal-700 text-white"
-                // }  px-4 py-2 rounded w-1/2`}
                 className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
                 onClick={handleSubmit}
               >

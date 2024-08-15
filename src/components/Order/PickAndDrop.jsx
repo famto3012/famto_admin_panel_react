@@ -146,7 +146,7 @@ const PickAndDrop = ({ data }) => {
 
       console.log(invoiceData);
 
-      return;
+      // return;
 
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
