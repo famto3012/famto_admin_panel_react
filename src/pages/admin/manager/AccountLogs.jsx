@@ -29,8 +29,8 @@ const AccountLogs = () => {
 
   useEffect(() => {
     if (!token || role !== "Admin") {
-      navigate("/auth/login")
-      return
+      navigate("/auth/login");
+      return;
     }
     // Fetch merchant details on initial render
     handleRoleFilter("Merchant");
@@ -123,12 +123,11 @@ const AccountLogs = () => {
           )
         );
         toast({
-          title:"Success",
-          description:"Status updated Succesfully.",
-          isClosable:true,
-          duration:3000,
-          status: "success"
-
+          title: "Success",
+          description: "Status updated Succesfully.",
+          isClosable: true,
+          duration: 3000,
+          status: "success",
         });
       }
     } catch (err) {
@@ -218,7 +217,7 @@ const AccountLogs = () => {
                   className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
                   onChange={onRoleChange}
                 >
-                  <option value="Admin">Admin</option>
+                  <option value="Agent">Agent</option>
                   <option defaultValue="Merchant">Merchant</option>
                   <option value="Customer">Customer</option>
                 </select>
@@ -253,7 +252,7 @@ const AccountLogs = () => {
                 <input
                   type="search"
                   name="search"
-                  placeholder="Search User ID"
+                  placeholder="Search user name"
                   value={searchFilter}
                   onChange={onSearchChange}
                   className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"

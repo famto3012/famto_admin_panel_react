@@ -46,6 +46,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
 
         if (managerResponse.status === 200) {
           setManager(managerResponse.data.data);
+          console.log(managerResponse.data.data);
         }
 
         if (geofenceResponse.status === 200) {
@@ -60,8 +61,28 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
     setAgentData(data);
   }, [token, role, navigate]);
 
-  const handleInputChange = (e) => {
-    setAgentData({ ...agentData, [e.target.name]: e.target.value });
+  const handleInputChange = (e, index) => {
+    const { name, value } = e.target;
+
+    setAgentData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      vehicleDetail: prevData.vehicleDetail.map((vehicle, i) =>
+        i === index ? { ...vehicle, [name]: value } : vehicle
+      ),
+      governmentCertificateDetail: {
+        ...prevData.governmentCertificateDetail,
+        [name]: value,
+      },
+      bankDetail: {
+        ...prevData.bankDetail,
+        [name]: value,
+      },
+      workStructure: {
+        ...prevData.workStructure,
+        [name]: value,
+      },
+    }));
   };
 
   const [previewURL, setPreviewURL] = useState({
@@ -109,25 +130,35 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
 
       console.log(agentData);
 
-      const dataToSend = new FormData();
+      const formData = new FormData();
 
-      Object.keys(agentData).forEach((key) => {
-        dataToSend.append(key, agentData[key]);
-      });
+      function appendFormData(data, rootKey = "") {
+        if (typeof data === "object" && !Array.isArray(data) && data !== null) {
+          for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+              appendFormData(data[key], rootKey ? `${rootKey}[${key}]` : key);
+            }
+          }
+        } else if (Array.isArray(data)) {
+          data.forEach((item, index) => {
+            appendFormData(item, `${rootKey}[${index}]`);
+          });
+        } else {
+          formData.append(rootKey, data);
+        }
+      }
+
+      appendFormData(agentData);
 
       Object.keys(selectedFile).forEach((key) => {
         if (selectedFile[key]) {
-          dataToSend.append(key, selectedFile[key]);
+          formData.append(key, selectedFile[key]);
         }
-      });
-
-      dataToSend.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
       });
 
       const addAgentResponse = await axios.put(
         `${BASE_URL}/admin/agents/edit-agent/${data._id}`,
-        dataToSend,
+        formData,
         {
           withCredentials: true,
           headers: {
@@ -233,45 +264,54 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
           </div>
 
           <h1 className="font-semibold text-[18px]">Vehicle Details</h1>
-          {agentData?.vehicleDetail?.map((vehicle) => (
-            <div className="flex">
+          {agentData?.vehicleDetail?.map((vehicle, index) => (
+            <div className="flex" key={index}>
               <div className="w-3/4">
-                <div className="flex items-center ">
-                  <label className="w-1/3 text-gray-500" htmlFor="licensePlate">
+                <div className="flex items-center">
+                  <label
+                    className="w-1/3 text-gray-500"
+                    htmlFor={`licensePlate-${index}`}
+                  >
                     License Plate
                   </label>
                   <input
                     className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                     type="text"
-                    value={vehicle?.licensePlate}
-                    id="licensePlate"
+                    value={vehicle?.licensePlate || ""}
+                    id={`licensePlate-${index}`}
                     name="licensePlate"
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, index)}
                   />
                 </div>
                 <div className="flex mt-5 items-center">
-                  <label className="w-1/3 text-gray-500" htmlFor="model">
+                  <label
+                    className="w-1/3 text-gray-500"
+                    htmlFor={`model-${index}`}
+                  >
                     Vehicle Model
                   </label>
                   <input
                     className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                     type="text"
-                    value={vehicle?.model}
-                    id="model"
+                    value={vehicle?.model || ""}
+                    id={`model-${index}`}
                     name="model"
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, index)}
                   />
                 </div>
                 <div className="flex mt-5 gap-4">
-                  <label className="w-1/2 text-gray-500 " htmlFor="type">
+                  <label
+                    className="w-1/2 text-gray-500"
+                    htmlFor={`type-${index}`}
+                  >
                     Vehicle Type
                   </label>
                   <select
-                    className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5 "
+                    className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5"
                     name="type"
-                    id="type"
-                    value={vehicle?.type}
-                    onChange={handleInputChange}
+                    id={`type-${index}`}
+                    value={vehicle?.type || ""}
+                    onChange={(e) => handleInputChange(e, index)}
                   >
                     <option value="" hidden>
                       Vehicle Type
@@ -618,7 +658,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              <option hidden defaultValue="Select manager">
+              <option hidden defaultValue={"Select manager"}>
                 Select manager
               </option>
               {manager.map((managers) => (
