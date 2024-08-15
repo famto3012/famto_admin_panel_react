@@ -199,10 +199,11 @@ const Products = () => {
     }
   }, [selectedProduct, token]);
 
-  const selectCategory = (id, name) => {
+  const selectCategory = (id, name, status) => {
     setSelectedCategory({
       categoryId: id,
       categoryName: name,
+      categoryStatus: status
     });
   };
 
@@ -231,8 +232,11 @@ const Products = () => {
     setChangeCategoryModal(false);
   };
 
-  const handleAddCategory = (category) =>
+  const handleAddCategory = (category) => {
+    console.log("Adding category:", category);
     setAllCategories([...allCategories, category]);
+    console.log("Updated categories:", allCategories);
+};
 
   const handleAddProduct = (product) =>
     setAllProducts([...allProducts, product]);
@@ -512,7 +516,7 @@ const Products = () => {
                     onDragEnd={handleReorderCategory}
                     onDragOver={(e) => e.preventDefault()}
                     onClick={() =>
-                      selectCategory(category._id, category.categoryName)
+                      selectCategory(category._id, category.categoryName, category.status)
                     }
                     className={` ${
                       selectedCategory.categoryName === category.categoryName
