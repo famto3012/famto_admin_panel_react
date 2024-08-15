@@ -97,7 +97,7 @@ const AddCategoriesModal = ({
       });
 
       if (response.status === 201) {
-        onAddCategory(categoryData.categoryName);
+        onAddCategory(response.data.data);
         setCategoryData({
           categoryName: "",
           description: "",

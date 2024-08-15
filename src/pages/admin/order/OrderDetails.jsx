@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
@@ -15,12 +15,12 @@ import {
   useSteps,
   Box,
 } from "@chakra-ui/react";
-import avatar from "/avatar.svg";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { CSVLink } from "react-csv";
 import { orderBillCSVDatHeading } from "../../../utils/DefaultData";
+import { mappls } from "mappls-web-maps";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -28,12 +28,130 @@ const OrderDetails = () => {
   const [orderDetail, setOrderDetail] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [billData, setBillData] = useState([]);
-
+  const [duration, setDuration] = useState(null);
+  const [coordinates, setCoordinates] = useState([]);
+  const mapContainerRef = useRef(null);
+  const [mapObject, setMapObject] = useState(null);
   const { orderId } = useParams();
 
   const { token, role } = useContext(UserContext);
 
   const navigate = useNavigate();
+
+  const [authToken, setAuthToken] = useState("");
+
+  const getAuthToken = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setAuthToken(response.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in getting auth token`);
+    }
+  };
+
+  const showAgentLocationOnMap = (coordinates, fullName, Id, phoneNumber) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 100,
+      height: 100,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    console.log("Adding markers...");
+    const agentGeoData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} \n
+               Name: ${fullName} \n
+               Phone Number: ${phoneNumber} `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+          },
+        },
+      ],
+    };
+    const mapplsObject = new mappls();
+    agentGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const agentMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await agentMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+        );
+        await agentMarker.setPopup(htmlPopup);
+        mapObject.setView([coordinates[0], coordinates[1]], 17);
+        console.log(`Marker added for location: ${htmlPopup}`);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
+
+  const generatePolyline = async () => {
+    try {
+      const response = await axios.get(
+        `https://apis.mapmyindia.com/advancedmaps/v1/9a632cda78b871b3a6eb69bddc470fef/route_eta/biking/${orderDetail.pickUpLocation[1]},${orderDetail.pickUpLocation[0]};${orderDetail.deliveryLocation[1]},${orderDetail.deliveryLocation[0]}?geometries=geojson`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data.routes[0].geometry);
+        setDuration(response.data.routes[0].duration)
+        response.data.routes[0].geometry.coordinates.map((coor) => {
+          setCoordinates([...coordinates, { lat: coor[1], lng: coor[0] }]);
+        });
+      }
+    } catch (err) {
+      console.log(`Error in getting polyline`);
+    }
+  };
+
+  const setPolyline = ()=>{
+    try{
+
+      if (coordinates.length > 0) {
+       const Polyline = new mappls.Polyline({
+          map: mapObject,
+          path: coordinates,
+          strokeColor: "#OFO",
+          strokeOpacity: 1.0,
+          strokeWeight: 9,
+          fitbounds: true,
+          lineGap: 0,
+          fitboundOptions: {padding: 120,duration:duration},
+          popupHtml: "Route 1",
+          popupOptions: {offset: {'bottom': [0, -20]}}
+      });
+      }
+    }catch(err){
+      console.log(err.message)
+    }
+  }
 
   useEffect(() => {
     if (!token) {
@@ -55,6 +173,7 @@ const OrderDetails = () => {
 
         if (response.status === 200) {
           const { data } = response.data;
+          console.log(data);
           setOrderDetail(data);
           setBillData(data.billDetail);
           console.log(billData);
@@ -68,6 +187,61 @@ const OrderDetails = () => {
 
     getOrderDetail();
   }, [token, orderId]);
+
+  useEffect(() => {
+    if (orderDetail.agentLocation && mapObject) {
+      console.log("inside");
+      const coordinates = orderDetail.agentLocation;
+      showAgentLocationOnMap(
+        coordinates,
+        orderDetail.deliveryAgentDetail.name,
+        orderDetail.deliveryAgentDetail._id,
+        ""
+      );
+      generatePolyline();
+      setPolyline();
+    }
+  }, [mapObject, orderDetail]);
+
+  useEffect(() => {
+    getAuthToken();
+    //  console.log("Token", authToken)
+
+    const mapProps = {
+      center: [8.528818999999999, 76.94310683333333],
+      traffic: true,
+      zoom: 12,
+      geolocation: true,
+      clickableIcons: true,
+    };
+
+    const mapplsClassObject = new mappls();
+    if (authToken) {
+      mapplsClassObject.initialize(`${authToken}`, async () => {
+        if (mapContainerRef.current) {
+          console.log("Initializing map...");
+          const map = await mapplsClassObject.Map({
+            id: "map",
+            properties: mapProps,
+          });
+
+          if (map && typeof map.on === "function") {
+            console.log("Map initialized successfully.");
+            map.on("load", () => {
+              console.log("Map loaded.");
+              setMapObject(map); // Save the map object to state
+            });
+          } else {
+            console.error(
+              "mapObject.on is not a function or mapObject is not defined"
+            );
+          }
+        } else {
+          console.error("Map container not found");
+        }
+      });
+    }
+  }, [authToken]);
 
   const steps = [
     { title: "Created", description: "by Admin ID #123" },
@@ -471,8 +645,12 @@ const OrderDetails = () => {
         </div>
         <h1 className="text-[18px] font-semibold m-5">Order Activity log</h1>
         <div className="bg-white mx-5 p-5 rounded-lg flex justify-between gap-20 items-center">
-          <div className="bg-gray-200 p-3 rounded-full">
-            <img src={avatar} />
+          <div className="bg-gray-200 rounded-full w-[60px] h-[60px]">
+            <img
+              src={orderDetail?.deliveryAgentDetail?.avatar}
+              className=" rounded-full w-[60px] h-[60px]"
+              alt=""
+            />
           </div>
           <div className="flex justify-around w-1/4">
             <label className="text-gray-600">Agent Name</label>
@@ -517,8 +695,12 @@ const OrderDetails = () => {
               ))}
             </Stepper>
           </div>
-          <div className="w-1/2">
-            {/* <img src={map} alt="map" /> */}
+          <div className="w-3/4 bg-white h-[820px]">
+            <div
+              id="map"
+              ref={mapContainerRef}
+              style={{ width: "99%", height: "810px", display: "inline-block" }}
+            ></div>
           </div>
         </div>
       </div>
