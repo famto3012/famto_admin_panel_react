@@ -39,7 +39,7 @@ const Merchant = () => {
   const [isModalReject, setIsModalReject] = useState(false); // Modal to Reject Merchant
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(1);
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
@@ -135,7 +135,7 @@ const Merchant = () => {
     };
 
     filterHandler();
-  }, [serviceable, geofence, businessCategory, token, role]);
+  }, [serviceable, geofence, businessCategory, token, role,  page, limit]);
 
   useEffect(() => {
     const handleSearchMerchant = async () => {
@@ -444,6 +444,8 @@ const Merchant = () => {
     setIsConfirmModal(false);
     setIsModalReject(false);
   };
+
+ 
 
   return (
     <div>

@@ -20,6 +20,7 @@ import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { allAgentsCSVDataHeading } from "../../../utils/DefaultData";
+import { Pagination } from "@mui/material";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -42,6 +43,11 @@ const DeliveryAgent = () => {
   const [isModalApproval, setIsModalApproval] = useState(false);
   const [isModalReject, setIsModalReject] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(1);
+  const [pagination, setPagination] = useState({});
+
   const { token, role } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
@@ -63,6 +69,7 @@ const DeliveryAgent = () => {
           managerResponse,
         ] = await Promise.all([
           axios.get(`${BASE_URL}/admin/agents/all-agents`, {
+            params: { page, limit },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -87,6 +94,7 @@ const DeliveryAgent = () => {
         }
         if (agentResponse.status === 200) {
           setAgent(agentResponse.data.data);
+          setPagination(agentResponse.data.pagination);
         }
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
@@ -99,7 +107,7 @@ const DeliveryAgent = () => {
     };
 
     fetchAgent();
-  }, [token, role, navigate]);
+  }, [token, role, navigate,  page, limit]);
 
   // API function for Geofence filter
 
@@ -379,6 +387,27 @@ const DeliveryAgent = () => {
     setAgent((prevAgents) => [...prevAgents, newAgent]);
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const getItemAriaLabel = (type, page, selected) => {
+    switch (type) {
+      case "page":
+        return `${selected ? "" : "Go to "}page ${page}`;
+      case "first":
+        return "Go to first page";
+      case "last":
+        return "Go to last page";
+      case "next":
+        return "Go to next page";
+      case "previous":
+        return "Go to previous page";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -645,6 +674,18 @@ const DeliveryAgent = () => {
                     ))}
                 </tbody>
               </table>
+            </div>
+            <div className="my-[30px] flex justify-center">
+            <Pagination
+              count={pagination.totalPages || 0}
+              page={pagination.currentPage || page}
+              onChange={handlePageChange}
+              shape="rounded"
+              siblingCount={0}
+              hidePrevButton={!pagination.hasPrevPage}
+              hideNextButton={!pagination.hasNextPage}
+              getItemAriaLabel={getItemAriaLabel}
+            />
             </div>
           </main>
         </>

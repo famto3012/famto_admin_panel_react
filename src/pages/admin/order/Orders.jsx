@@ -30,7 +30,7 @@ const Orders = () => {
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(15);
+  const [limit, setLimit] = useState(5);
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
@@ -224,6 +224,24 @@ const Orders = () => {
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+  const getItemAriaLabel = (type, page, selected) => {
+    switch (type) {
+      case "page":
+        return `${selected ? "" : "Go to "}page ${page}`;
+      case "first":
+        return "Go to first page";
+      case "last":
+        return "Go to last page";
+      case "next":
+        return "Go to next page";
+      case "previous":
+        return "Go to previous page";
+      default:
+        return "";
+    }
+  };
+
 
   const handleToggle = () => {
     setDeliveryOption(!deliveryOption);
@@ -484,15 +502,16 @@ const Orders = () => {
         </div>
 
         <div className="my-[30px] flex justify-center">
-          <Pagination
-            count={pagination.totalPages || 0}
-            page={pagination.currentPage}
-            onChange={handlePageChange}
-            shape="rounded"
-            siblingCount={0}
-            hidePrevButton={!pagination.hasPrevPage}
-            hideNextButton={!pagination.hasNextPage}
-          />
+        <Pagination
+              count={pagination.totalPages || 0}
+              page={pagination.currentPage || page}
+              onChange={handlePageChange}
+              shape="rounded"
+              siblingCount={0}
+              hidePrevButton={!pagination.hasPrevPage}
+              hideNextButton={!pagination.hasNextPage}
+              getItemAriaLabel={getItemAriaLabel}
+            />
         </div>
       </main>
     </>

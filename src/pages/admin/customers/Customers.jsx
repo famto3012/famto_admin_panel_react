@@ -25,7 +25,7 @@ const Customers = () => {
   const [searchFilter, setSearchFilter] = useState("");
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(4);
+  const [limit, setLimit] = useState(5);
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
@@ -43,6 +43,7 @@ const Customers = () => {
 
         const [customersResponse, geofenceResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/customers/get-all`, {
+            params: { page, limit },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -54,7 +55,7 @@ const Customers = () => {
 
         if (customersResponse.status === 200) {
           setCustomers(customersResponse.data.data);
-          setPagination(customersResponse.data.pagination);
+          setPagination(customersResponse.data);
         }
         if (geofenceResponse.status === 200) {
           setAllGeofence(geofenceResponse.data.geofences);
@@ -67,7 +68,7 @@ const Customers = () => {
     };
 
     fetchData();
-  }, [token, role, navigate]);
+  }, [token, role, navigate, page, limit]);
 
   const handleFilterChange = async (filterType, value) => {
     try {
@@ -102,6 +103,23 @@ const Customers = () => {
 
   const handlePageChange = (event, value) => {
     setPage(value);
+  };
+
+  const getItemAriaLabel = (type, page, selected) => {
+    switch (type) {
+      case "page":
+        return `${selected ? "" : "Go to "}page ${page}`;
+      case "first":
+        return "Go to first page";
+      case "last":
+        return "Go to last page";
+      case "next":
+        return "Go to next page";
+      case "previous":
+        return "Go to previous page";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -233,15 +251,16 @@ const Customers = () => {
         </div>
 
         <div className="my-[30px] flex justify-center">
-          <Pagination
-            count={pagination.totalPages || 0}
-            page={pagination.currentPage}
-            onChange={handlePageChange}
-            shape="rounded"
-            siblingCount={0}
-            hidePrevButton={!pagination.hasPrevPage}
-            hideNextButton={!pagination.hasNextPage}
-          />
+        <Pagination
+              count={pagination.totalPages || 0}
+              page={pagination.currentPage || page}
+              onChange={handlePageChange}
+              shape="rounded"
+              siblingCount={0}
+              hidePrevButton={!pagination.hasPrevPage}
+              hideNextButton={!pagination.hasNextPage}
+              getItemAriaLabel={getItemAriaLabel}
+            />
         </div>
       </main>
     </>

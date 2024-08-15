@@ -11,6 +11,7 @@ import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
 import { CSVLink } from "react-csv";
 import { agentPayoutCSVDataHeading } from "../../../utils/DefaultData";
+import { Pagination } from "@mui/material";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -30,6 +31,12 @@ const AgentPayout = () => {
   const [selectedPayout, setSelectedPayout] = useState(null);
   const dateInputRef = useRef(null);
 
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(1);
+  const [pagination, setPagination] = useState({});
+
+  // // Fetch filtered data whenever filter options change
   useEffect(() => {
     fetchFilteredData();
   }, [paymentStatus, selectedAgent, selectedDate, selectedGeofence]);
@@ -40,6 +47,7 @@ const AgentPayout = () => {
         setIsLoading(true);
         const [response, geofenceResponse, agentResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/agents/get-agent-payout`, {
+            params: { page, limit },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -55,6 +63,7 @@ const AgentPayout = () => {
 
         if (response.status === 200) {
           setAllPayout(response.data.data);
+          setPagination(response.data.pagination);
         }
         if (geofenceResponse.status === 200) {
           setAllGeofence(geofenceResponse.data.geofences);
@@ -70,7 +79,7 @@ const AgentPayout = () => {
     };
 
     fetchData();
-  }, [token]);
+  }, [token, page, limit]);
 
   // Fetch filtered data based on selected filters
   const fetchFilteredData = async () => {
@@ -195,6 +204,27 @@ const AgentPayout = () => {
 
   const handleGeofenceChange = (e) => {
     setSelectedGeofence(e.target.value);
+  };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const getItemAriaLabel = (type, page, selected) => {
+    switch (type) {
+      case "page":
+        return `${selected ? "" : "Go to "}page ${page}`;
+      case "first":
+        return "Go to first page";
+      case "last":
+        return "Go to last page";
+      case "next":
+        return "Go to next page";
+      case "previous":
+        return "Go to previous page";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -380,6 +410,18 @@ const AgentPayout = () => {
                     ))}
                 </tbody>
               </table>
+            </div>
+            <div className="my-[30px] flex justify-center">
+            <Pagination
+              count={pagination.totalPages || 0}
+              page={pagination.currentPage || page}
+              onChange={handlePageChange}
+              shape="rounded"
+              siblingCount={0}
+              hidePrevButton={!pagination.hasPrevPage}
+              hideNextButton={!pagination.hasNextPage}
+              getItemAriaLabel={getItemAriaLabel}
+            />
             </div>
           </div>
 
