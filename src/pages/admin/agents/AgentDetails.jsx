@@ -83,6 +83,38 @@ const AgentDetails = () => {
     setImageModalUrl("");
   };
 
+  const changeAgentStatus = async (agentId) => {
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/admin/agents/change-status/${agentId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        toast({
+          title: "Success",
+          description: "Staus Updated successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in toggling status: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in changing status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -97,7 +129,7 @@ const AgentDetails = () => {
             <div className="flex justify-between my-[15px] m-5">
               <Link to="/all-agents" className="font-[600] text-[18px]">
                 <ArrowLeftOutlined className="mr-4" />
-                Agent ID
+                Agent ID <span className="text-red-600">#{agent._id}</span>
               </Link>
               <div className="flex items-center">
                 <button
@@ -432,6 +464,7 @@ const AgentDetails = () => {
               onCancel={handleCancel}
               BASE_URL={BASE_URL}
               token={token}
+              agentId={agentId}
             />
 
             {/* Image Modal */}

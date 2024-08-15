@@ -1,8 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { Modal } from "antd";
+import axios from "axios";
 
-const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token }) => {
+const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
   const [reason, setReason] = useState("");
 
   const toast = useToast();
@@ -23,6 +24,7 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token }) => {
       );
 
       if (response.status === 200) {
+        onCancel();
         toast({
           title: "Success",
           description: `Agent blocked successfully`,
@@ -34,7 +36,7 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token }) => {
     } catch (err) {
       toast({
         title: "Error",
-        description: `Error while blocking merchant`,
+        description: `Error while blocking agent ${err}`,
         status: "error",
         duration: 3000,
         isClosable: true,

@@ -211,7 +211,6 @@ const DeliveryAgent = () => {
   };
 
   // API function for search
-
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -245,7 +244,6 @@ const DeliveryAgent = () => {
   };
 
   // Function for Approved Agent
-
   const handleApprove = async (e, id) => {
     e.preventDefault();
     try {
@@ -292,7 +290,6 @@ const DeliveryAgent = () => {
   };
 
   // Function for Reject Agent
-
   const handleReject = async (e, id) => {
     e.preventDefault();
     try {
@@ -335,7 +332,6 @@ const DeliveryAgent = () => {
   };
 
   // Function for Status Change
-
   const handleToggle = async (agentId) => {
     try {
       const agentResponse = agent.find(
@@ -345,10 +341,7 @@ const DeliveryAgent = () => {
         const updatedStatus = !agentResponse.status;
         await axios.patch(
           `${BASE_URL}/admin/agents/change-status/${agentId}`,
-          {
-            ...agentResponse,
-            status: updatedStatus,
-          },
+          {},
           {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -380,18 +373,9 @@ const DeliveryAgent = () => {
   };
 
   // Function for Modal
-
-  const showAddModal = () => {
-    setAddModalVisible(true);
-  };
-
-  const handleModalApprove = () => {
-    setIsModalApproval(true);
-  };
-
-  const handleModalReject = () => {
-    setIsModalReject(true);
-  };
+  const showAddModal = () => setAddModalVisible(true);
+  const handleModalApprove = () => setIsModalApproval(true);
+  const handleModalReject = () => setIsModalReject(true);
 
   const handleCancel = () => {
     setAddModalVisible(false);
@@ -423,7 +407,6 @@ const DeliveryAgent = () => {
         return "";
     }
   };
-
 
   return (
     <div>

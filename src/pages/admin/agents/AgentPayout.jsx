@@ -29,7 +29,8 @@ const AgentPayout = () => {
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPayout, setSelectedPayout] = useState(null);
-  const dateInputRef = useRef(null); // Create a ref for the date input
+  const dateInputRef = useRef(null);
+
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(1);
@@ -38,7 +39,7 @@ const AgentPayout = () => {
   // // Fetch filtered data whenever filter options change
   useEffect(() => {
     fetchFilteredData();
-  }, [paymentStatus, selectedAgent, selectedDate, selectedGeofence]); // Run the effect when any filter changes
+  }, [paymentStatus, selectedAgent, selectedDate, selectedGeofence]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -182,7 +183,7 @@ const AgentPayout = () => {
   const handlePaymentStatusChange = (e) => {
     setPaymentStatus(e.target.value);
   };
-  
+
   const showModalApprove = (payout) => {
     setSelectedPayout(payout);
     setIsModalVisible(true);
