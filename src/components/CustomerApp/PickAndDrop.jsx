@@ -447,7 +447,7 @@ const PickAndDrop = () => {
                       />
                     </div>
                     <div className="flex mt-5  gap-4">
-                      <label className="w-1/2 text-gray-500">Geofence</label>
+                      <label className="w-1/2 text-gray-500">Description</label>
                       <input
                         type="text"
                         className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
