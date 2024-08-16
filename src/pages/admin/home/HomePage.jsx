@@ -32,7 +32,7 @@ const HomePage = () => {
     useContext(UserContext);
   const toast = useToast();
 
-  const socket = io("https://famto-backend-api.vercel.app", {
+  const socket = io("http://localhost:5000", {
     query: {
       userId: userId && userId,
       fcmToken: fcmToken && fcmToken,
