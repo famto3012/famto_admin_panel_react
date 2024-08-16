@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import axios from "axios";
@@ -10,18 +10,24 @@ import { useToast } from "@chakra-ui/react";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const ServiceCategory = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [allGeofence, setAllGeofence] = useState([]);
-  const [allService, setAllService] = useState([]);
   const [service, setService] = useState({
     title: "",
     geofenceId: "",
     bannerImage: "",
   });
+  const [allGeofence, setAllGeofence] = useState([]);
+  const [allServiceCategory, setAllServiceCategory] = useState([]);
+
   const { token } = useContext(UserContext);
   const toast = useToast();
+  const dragCategory = useRef(0);
+  const dragOverCategory = useRef(0);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const [serviceFile, setServiceFile] = useState(null);
   const [servicePreviewURL, setServicePreviewURL] = useState(null);
+
   const [isSaveLoading, setIsSaveLoading] = useState(false);
 
   useEffect(() => {
@@ -41,7 +47,7 @@ const ServiceCategory = () => {
           setAllGeofence(response.data.geofences);
         }
         if (serviceResponse.status === 200) {
-          setAllService(serviceResponse.data.data);
+          setAllServiceCategory(serviceResponse.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching data ${err.message}`);
@@ -49,9 +55,6 @@ const ServiceCategory = () => {
     };
     fetchData();
   }, [token]);
-
-  console.log("geofence", allGeofence);
-  console.log("services", allService);
 
   const handleService = async (e) => {
     e.preventDefault();
@@ -78,21 +81,27 @@ const ServiceCategory = () => {
         handleCancel();
         toast({
           title: "Success",
-          description: "Custom Order Created Successfully.",
+          description: "Service category created successfully.",
           duration: 3000,
           status: "success",
           isClosable: true,
         });
       }
     } catch (err) {
-      console.error(`Error in creating business ${err.message}`);
+      toast({
+        title: "Error",
+        description: "Error in creating service category",
+        duration: 3000,
+        status: "error",
+        isClosable: true,
+      });
     } finally {
       setIsSaveLoading(false);
     }
   };
 
   const handleAddBanner = (newCategory) => {
-    setAllService((prevBanners) => {
+    setAllServiceCategory((prevBanners) => {
       if (Array.isArray(prevBanners)) {
         return [...prevBanners, newCategory];
       } else {
@@ -112,11 +121,53 @@ const ServiceCategory = () => {
     setService({ ...service, [e.target.name]: e.target.value });
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const showModal = () => setIsModalVisible(true);
+
+  const handleCancel = () => setIsModalVisible(false);
+
+  // Re arrage Categories
+  const handleReorderServiceCategory = async () => {
+    try {
+      const categoryClone = [...allServiceCategory];
+      const temp = categoryClone[dragCategory.current];
+      categoryClone[dragCategory.current] =
+        categoryClone[dragOverCategory.current];
+      categoryClone[dragOverCategory.current] = temp;
+
+      const categories = categoryClone.map((category, index) => {
+        return { id: category._id, order: index + 1 };
+      });
+
+      const response = await axios.put(
+        `${BASE_URL}/admin/service-categories/edit-service-order`,
+        { categories: categories },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setAllServiceCategory(categoryClone);
+        toast({
+          title: "Success",
+          description: "Service category reordered",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error in reodering service categories`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -217,21 +268,30 @@ const ServiceCategory = () => {
           </form>
         </Modal>
       </div>
-      {allService.map((services) => (
-        <div className="flex justify-center mt-5">
+
+      {allServiceCategory.map((service, index) => (
+        <div
+          key={service._id}
+          draggable
+          onDragStart={() => (dragCategory.current = index)}
+          onDragEnter={() => (dragOverCategory.current = index)}
+          onDragEnd={handleReorderServiceCategory}
+          onDragOver={(e) => e.preventDefault()}
+          className="flex justify-center mt-5"
+        >
           <div className="w-96 h-fit">
             <div className="bg-gray-300 flex flex-col gap-3 rounded-lg  w-full">
               <div className="flex items-center relative">
-                <DragIndicatorIcon className="text-3xl mx-3" />
+                <DragIndicatorIcon className="text-3xl mx-3 cursor-pointer" />
                 <figure className="h-32 w-full relative">
                   <img
                     className="rounded w-full h-full object-cover"
-                    src={services.bannerImageURL}
+                    src={service.bannerImageURL}
                     alt="Service Image"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#333] via-transparent to-transparent rounded z-10"></div>
                   <p className="text-white absolute bottom-1 right-1 z-20">
-                    {services.title}
+                    {service.title}
                   </p>
                 </figure>
               </div>

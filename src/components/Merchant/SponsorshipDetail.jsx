@@ -130,6 +130,7 @@ const SponsorshipDetail = ({
       theme: {
         color: "#00CED1",
       },
+      confirm_close: true,
     };
 
     const rzp = new window.Razorpay(options);

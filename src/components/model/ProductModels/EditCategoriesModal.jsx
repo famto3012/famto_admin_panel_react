@@ -92,6 +92,7 @@ const EditCategoriesModal = ({
       formData.append("businessCategoryId", categoryData.businessCategoryId);
       formData.append("categoryName", categoryData.categoryName);
       formData.append("description", categoryData.description);
+      formData.append("categoryImageURL", categoryData.categoryImageURL);
       formData.append("type", categoryData.type);
       formData.append("merchantId", merchantId);
 
@@ -148,7 +149,7 @@ const EditCategoriesModal = ({
             </label>
             <select
               name="businessCategoryId"
-              value={categoryData.businessCategoryId}
+              value={categoryData.businessCategoryId._id}
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
