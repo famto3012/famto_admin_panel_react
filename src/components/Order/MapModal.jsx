@@ -190,6 +190,16 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
             setMapTwo(newMapTwo);
             setMap(newMap); // Save the map instance in context
             setIsMapLoaded(true);
+            if (location) {
+                console.log("true");
+                const { lat, lng } = location;
+                console.log(lat, lng);
+                newMarker = mapplsClassObject.Marker({
+                  map: newMap,
+                  position: { lat, lng },
+                  draggable: false,
+                });
+              }
 
             newMapTwo.on("click", (event) => {
               const { lat, lng } = event.lngLat;
