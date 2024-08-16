@@ -182,7 +182,7 @@ const AgentPayout = () => {
   const handlePaymentStatusChange = (e) => {
     setPaymentStatus(e.target.value);
   };
-  
+
   const showModalApprove = (payout) => {
     setSelectedPayout(payout);
     setIsModalVisible(true);
@@ -411,16 +411,16 @@ const AgentPayout = () => {
               </table>
             </div>
             <div className="my-[30px] flex justify-center">
-            <Pagination
-              count={pagination.totalPages || 0}
-              page={pagination.currentPage || page}
-              onChange={handlePageChange}
-              shape="rounded"
-              siblingCount={0}
-              hidePrevButton={!pagination.hasPrevPage}
-              hideNextButton={!pagination.hasNextPage}
-              getItemAriaLabel={getItemAriaLabel}
-            />
+              <Pagination
+                count={pagination.totalPages || 0}
+                page={pagination.currentPage || page}
+                onChange={handlePageChange}
+                shape="rounded"
+                siblingCount={0}
+                hidePrevButton={!pagination.hasPrevPage}
+                hideNextButton={!pagination.hasNextPage}
+                getItemAriaLabel={getItemAriaLabel}
+              />
             </div>
           </div>
 
