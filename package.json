@@ -44,7 +44,8 @@
     "react-select": "^5.8.0",
     "react-spinners": "^0.14.1",
     "socket.io-client": "^4.7.5",
-    "styled-components": "^6.1.12"
+    "styled-components": "^6.1.12",
+    "use-sound": "^4.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

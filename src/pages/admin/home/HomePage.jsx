@@ -18,6 +18,11 @@ import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../../../firebase";
 import { Switch } from "antd";
 import axios from "axios";
+import {
+  useNewOrderPlayer,
+  //  useNewNotificationPlayer
+} from "../../../utils/notificationSound";
+import { useSoundContext } from "../../../context/SoundContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -30,6 +35,8 @@ const HomePage = () => {
 
   const { token, role, userId, fcmToken, setFcmToken } =
     useContext(UserContext);
+  const { playNewOrderNotificationSound, playNewNotificationSound } =
+    useSoundContext();
   const toast = useToast();
 
   const socket = io("http://localhost:5000", {
@@ -40,9 +47,24 @@ const HomePage = () => {
     autoConnect: true,
     transports: ["websocket"],
     reconnection: true,
-    // reconnectionAttempts: Infinity,
+    reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
+  });
+
+  socket.on("connect_error", (err) => {
+    // the reason of the error, for example "xhr poll error"
+    console.log(err.message);
+
+    // some additional description, for example the status code of the initial HTTP response
+    console.log(err.description);
+
+    // some additional context, for example the XMLHttpRequest object
+    console.log(err.context);
+  });
+
+  socket.on("newOrderCreated", (data) => {
+    console.log(data);
   });
 
   const navigate = useNavigate();
@@ -54,8 +76,10 @@ const HomePage = () => {
 
     // navigate(0);
 
-    socket.on("connect", () => {
+    socket.on("connect", async () => {
       console.log("Connected to server");
+      //  playNewOrderNotificationSound();
+      //  playNewNotificationSound();
     });
 
     const unsubscribe = onMessage(messaging, (payload) => {

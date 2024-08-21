@@ -1,7 +1,16 @@
-import { useToast } from "@chakra-ui/react";
+import {
+  Badge,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useToast,
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@saas-ui/react";
 import { Modal, Switch } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
+import Select from "react-select";
 
 const AddNotificationModal = ({
   isVisible,
@@ -14,6 +23,7 @@ const AddNotificationModal = ({
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     event: "",
+    title: "",
     description: "",
     admin: false,
     customer: false,
@@ -24,13 +34,22 @@ const AddNotificationModal = ({
     sms: false,
   });
 
+  const allEvents = [{ name: "New Order", value: "newOrder" }, {name: " Order", value: "agentOrderAccepted"}];
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const handleEventChange = (e) => {
+    setFormData({ ...formData, event: e.target.value });
   };
   const onChange = (name, checked) => {
     setFormData({ ...formData, [name]: checked });
   };
 
+  const eventOptions = allEvents.map((event) => ({
+    label: event.name,
+    value: event.value,
+  }));       
   const signupAction = async (e) => {
     e.preventDefault();
     try {
@@ -53,7 +72,6 @@ const AddNotificationModal = ({
           duration: 3000,
           isClosable: true,
         });
-        navigate("/notification-settings");
       }
     } catch (err) {
       console.log(`Error in fetching data:${err}`);
@@ -77,10 +95,36 @@ const AddNotificationModal = ({
             <label htmlFor="event" className="w-1/3 text-gray-500">
               Event
             </label>
-            <input
+            {/* <input
               type="text"
               id="event"
               name="event"
+              value={formData.event}
+              onChange={handleInputChange}
+              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+            /> */}
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={eventOptions.filter((option) =>
+                option.value
+              )}
+              isMulti={false}
+              //isSearchable={true}
+              onChange={handleInputChange}
+              options={eventOptions}
+              placeholder="Select Product"
+              //isClearable={true}
+             // components={animatedComponents}
+            />
+          </div>
+          <div className="flex items-center">
+            <label htmlFor="event" className="w-1/3 text-gray-500">
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
               value={formData.event}
               onChange={handleInputChange}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
