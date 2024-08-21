@@ -83,6 +83,18 @@ const allMerchantCSVDataHeading = [
     { label: "Online Status", key: "status" },
   ];
 
+  const allCategoryCSVDataHeading = [
+    {label : "Category Id" , key: "_id"},
+    {label : "Merchant Id" , key: "merchantId"},
+    {label : "Category Name" , key: "categoryName"},
+    {label : "Status" , key: "status"},
+  ]
+
+  const allProductsCSVDataHeading = [
+    {label: "Product Id", key: "_id"},
+    {label: "Product Name", key: "productName"},
+  ]
+
 
 export {
   itemTypes,
@@ -91,5 +103,7 @@ export {
   orderBillCSVDatHeading,
   agentPayoutCSVDataHeading,
   allMerchantCSVDataHeading,
-  allAgentsCSVDataHeading
+  allAgentsCSVDataHeading,
+  allCategoryCSVDataHeading,
+  allProductsCSVDataHeading
 };

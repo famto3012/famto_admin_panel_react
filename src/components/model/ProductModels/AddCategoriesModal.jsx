@@ -3,6 +3,7 @@ import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import { AiOutlineCloudUpload } from "react-icons/ai";
 
 const AddCategoriesModal = ({
   isVisible,
@@ -141,6 +142,19 @@ const AddCategoriesModal = ({
     >
       <form onSubmit={handleAddCategory}>
         <div className="flex flex-col gap-4 mt-5">
+          <div className="grid justify-end">
+            {" "}
+            <button
+              type="button"
+              className="flex gap-2 p-2 bg-teal-800 px-5 font-[500] text-white rounded-xl border"
+            >
+              <AiOutlineCloudUpload className="text-[22px]" />
+              Upload CSV
+            </button>
+            <p className="text-blue-700 underline mx-2">
+              Download Sample CSV
+            </p>
+          </div>
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
               Business Category
@@ -263,7 +277,7 @@ const AddCategoriesModal = ({
               Cancel
             </button>
             <button
-              className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
+              className="bg-teal-800 text-white py-2 px-4 rounded-md focus:outline-none"
               type="submit"
             >
               {isLoading ? `Adding...` : `Add`}

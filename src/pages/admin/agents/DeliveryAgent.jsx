@@ -19,6 +19,8 @@ import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaIndianRupeeSign } from "react-icons/fa6";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+import { TbArrowsSort } from "react-icons/tb";
 import { allAgentsCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 
@@ -43,6 +45,7 @@ const DeliveryAgent = () => {
   const [isModalApproval, setIsModalApproval] = useState(false);
   const [isModalReject, setIsModalReject] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(1);
@@ -107,7 +110,7 @@ const DeliveryAgent = () => {
     };
 
     fetchAgent();
-  }, [token, role, navigate,  page, limit]);
+  }, [token, role, navigate, page, limit]);
 
   // API function for Geofence filter
 
@@ -376,10 +379,14 @@ const DeliveryAgent = () => {
   const showAddModal = () => setAddModalVisible(true);
   const handleModalApprove = () => setIsModalApproval(true);
   const handleModalReject = () => setIsModalReject(true);
+  const showCSVModal = () => {
+    setIsCSVModalVisible(true);
+  };
 
   const handleCancel = () => {
     setAddModalVisible(false);
     setIsModalApproval(false);
+    setIsCSVModalVisible(false);
     setIsModalReject(false);
   };
 
@@ -423,15 +430,45 @@ const DeliveryAgent = () => {
             <div className="flex justify-between mt-5 items-center px-[30px]">
               <h1 className="text-[18px] font-semibold">Delivery Agent</h1>
               <div className="flex space-x-2 justify-end ">
-                <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-                  <CSVLink
-                    data={agent}
-                    headers={allAgentsCSVDataHeading}
-                    filename={"All_Agents_Data.csv"}
-                  >
-                    <ArrowDownOutlined /> <span>CSV</span>
-                  </CSVLink>
+                <button
+                  className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
+                  onClick={showCSVModal}
+                >
+                  <ArrowDownOutlined /> <span>CSV</span>
                 </button>
+                <Modal
+                  open={isCSVModalVisible}
+                  footer={null}
+                  width="30rem"
+                  onCancel={handleCancel}
+                  centered
+                >
+                  <div className="flex rounded-xl justify-between p-10">
+                    <div className="grid">
+                      <button className="flex gap-2 p-3 bg-cyan-200 px-5 font-[500] rounded-xl border">
+                        <AiOutlineCloudUpload className="text-[22px]" />
+                        Upload
+                      </button>
+                      <p className="text-blue-700 underline mx-2">
+                        Download Sample CSV
+                      </p>
+                    </div>
+                    <div>
+                      <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
+                        <CSVLink
+                          data={agent}
+                          headers={allAgentsCSVDataHeading}
+                          filename={"All_DeliveryAgents_Data.csv"}
+                        >
+                          <div className="flex gap-2">
+                            <TbArrowsSort className="text-[22px]" />
+                            Download
+                          </div>
+                        </CSVLink>
+                      </button>
+                    </div>
+                  </div>
+                </Modal>
                 <Link to="/agent-payout">
                   <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
                     <FaIndianRupeeSign /> Agent Payout
@@ -676,16 +713,16 @@ const DeliveryAgent = () => {
               </table>
             </div>
             <div className="my-[30px] flex justify-center">
-            <Pagination
-              count={pagination.totalPages || 0}
-              page={pagination.currentPage || page}
-              onChange={handlePageChange}
-              shape="rounded"
-              siblingCount={0}
-              hidePrevButton={!pagination.hasPrevPage}
-              hideNextButton={!pagination.hasNextPage}
-              getItemAriaLabel={getItemAriaLabel}
-            />
+              <Pagination
+                count={pagination.totalPages || 0}
+                page={pagination.currentPage || page}
+                onChange={handlePageChange}
+                shape="rounded"
+                siblingCount={0}
+                hidePrevButton={!pagination.hasPrevPage}
+                hideNextButton={!pagination.hasNextPage}
+                getItemAriaLabel={getItemAriaLabel}
+              />
             </div>
           </main>
         </>

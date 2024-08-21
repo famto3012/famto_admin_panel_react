@@ -1,7 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  ArrowDownOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { Switch } from "antd";
@@ -17,6 +21,11 @@ import ChangeCategoryModal from "../../../components/model/ProductModels/ChangeC
 import DeleteProductModal from "../../../components/model/ProductModels/DeleteProductModal";
 import ProductDetail from "../../../components/Product/ProductDetail";
 import { Spinner, useToast } from "@chakra-ui/react";
+import { CSVLink } from "react-csv";
+import {
+  allCategoryCSVDataHeading,
+  allProductsCSVDataHeading,
+} from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -25,7 +34,7 @@ const Products = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [selectedMerchant, setSelectedMerchant] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState({ 
+  const [selectedCategory, setSelectedCategory] = useState({
     categoryId: "",
     categoryName: "",
     categoryStatus: null,
@@ -203,7 +212,7 @@ const Products = () => {
     setSelectedCategory({
       categoryId: id,
       categoryName: name,
-      categoryStatus: status
+      categoryStatus: status,
     });
   };
 
@@ -236,7 +245,7 @@ const Products = () => {
     console.log("Adding category:", category);
     setAllCategories([...allCategories, category]);
     console.log("Updated categories:", allCategories);
-};
+  };
 
   const handleAddProduct = (product) =>
     setAllProducts([...allProducts, product]);
@@ -483,6 +492,30 @@ const Products = () => {
               ))}
             </select>
           )}
+          <div className="flex gap-3">
+            <div>
+              <button className="bg-cyan-100 text-black rounded-md p-1 font-semibold flex items-center space-x-2">
+                <CSVLink
+                  data={allCategories}
+                  headers={allCategoryCSVDataHeading}
+                  filename={"All_Categories.csv"}
+                >
+                  <ArrowDownOutlined /> <span>Category CSV</span>
+                </CSVLink>
+              </button>
+            </div>
+            <div>
+              <button className="bg-teal-800 rounded-md p-1 text-white font-semibold flex items-center space-x-2">
+                <CSVLink
+                  data={allProducts}
+                  headers={allProductsCSVDataHeading}
+                  filename={"All_Products.csv"}
+                >
+                  <ArrowDownOutlined /> <span>Product CSV</span>
+                </CSVLink>
+              </button>
+            </div>
+          </div>
           <div>
             <input
               type="search"
@@ -495,10 +528,11 @@ const Products = () => {
         </div>
         <div className="flex">
           <div className="w-1/5 bg-white rounded-md m-5 mr-0">
-            <div className="border-b-2 ">
-              <h1 className="font-[600] pb-5 p-8 text-[18px]">Categories</h1>
+            <div className="border-b-2">
+              <h1 className="font-[600] px-8 pt-8 pb-4 text-[18px]">
+                Categories
+              </h1>
             </div>
-
             <div>
               {isCategoryListLoading && (
                 <div className="flex justify-center my-3 ">
@@ -516,7 +550,11 @@ const Products = () => {
                     onDragEnd={handleReorderCategory}
                     onDragOver={(e) => e.preventDefault()}
                     onClick={() =>
-                      selectCategory(category._id, category.categoryName, category.status)
+                      selectCategory(
+                        category._id,
+                        category.categoryName,
+                        category.status
+                      )
                     }
                     className={` ${
                       selectedCategory.categoryName === category.categoryName
@@ -559,6 +597,7 @@ const Products = () => {
               <h1 className="font-semibold flex ml-3 items-center text-[18px] capitalize">
                 {selectedCategory.categoryName}
               </h1>
+
               <div className="flex gap-5 items-center">
                 Disabled{" "}
                 <Switch
