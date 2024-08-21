@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RatingModal from "../model/Merchant/RatingModal";
 import EditMerchant from "../model/Merchant/EditMerchant";
 import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
 import MapModal from "../Order/MapModal";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import ImageModal from "../model/AgentModels/ImageModal";
+import { useMap } from "../../context/MapContext";
 
 const MerchantData = ({
   detail,
@@ -24,12 +25,26 @@ const MerchantData = ({
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState("");
 
+  const { coordinates } = useMap();
+
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
   const toggleEditModal = (e) => {
     e.preventDefault();
     setShowEditModal(!showEditModal);
   };
   const toggleMapModal = () => setShowMapModal(!showMapModal);
+
+  useEffect(() => {
+    const updatedLocation = [coordinates?.latitude, coordinates?.longitude];
+
+    onDataChange({
+      ...detail,
+      merchantDetail: {
+        ...detail.merchantDetail,
+        location: updatedLocation,
+      },
+    });
+  }, [coordinates]);
 
   const handleSelectImage = (e) => {
     e.preventDefault();
@@ -46,16 +61,6 @@ const MerchantData = ({
       merchantDetail: {
         ...detail.merchantDetail,
         [name]: value,
-      },
-    });
-  };
-
-  const handlePrintLocation = (coordinates) => {
-    console.log(coordinates);
-    onDataChange({
-      merchantDetail: {
-        ...detail.merchantDetail,
-        location: [coordinates.latitude, coordinates.longitude],
       },
     });
   };
@@ -310,7 +315,6 @@ const MerchantData = ({
           <MapModal
             isVisible={showMapModal}
             onClose={toggleMapModal}
-            setCoordinates={handlePrintLocation}
             location={MerchantData?.merchantDetail?.location}
             BASE_URL={BASE_URL}
             token={token}

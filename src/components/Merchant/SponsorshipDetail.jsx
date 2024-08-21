@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Switch } from "antd";
 import { Spinner, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { formatDate } from "../../utils/formatter";
+import { UserContext } from "../../context/UserContext";
 
 const SponsorshipDetail = ({
   data,
@@ -19,6 +20,7 @@ const SponsorshipDetail = ({
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
 
   const toast = useToast();
+  const { role, userId } = useContext(UserContext);
 
   useEffect(() => {
     setSponsorshipData(data);
@@ -48,8 +50,13 @@ const SponsorshipDetail = ({
         return;
       }
 
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/merchants/admin/sponsorship-payment/${merchantId}`
+          : `${BASE_URL}/merchants/sponsorship-payment/${userId}`;
+
       const response = await axios.post(
-        `${BASE_URL}/merchants/admin/sponsorship-payment/${merchantId}`,
+        endPoint,
         {
           currentPlan: selectedPlan,
           sponsorshipStatus: true,
@@ -85,8 +92,13 @@ const SponsorshipDetail = ({
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
           response;
         try {
+          const endPoint =
+            role === "Admin"
+              ? `${BASE_URL}/merchants/admin/verify-payment/${merchantId}`
+              : `${BASE_URL}/merchants/verify-payment/${userId}`;
+
           const verifyResponse = await axios.post(
-            `${BASE_URL}/merchants/admin/verify-payment/${merchantId}`,
+            endPoint,
             {
               razorpay_order_id,
               razorpay_payment_id,
@@ -130,7 +142,7 @@ const SponsorshipDetail = ({
       theme: {
         color: "#00CED1",
       },
-      confirm_close: true,
+      // confirm_close: true,
     };
 
     const rzp = new window.Razorpay(options);

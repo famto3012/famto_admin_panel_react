@@ -26,6 +26,8 @@ import { UserContext } from "../../../context/UserContext";
 import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
 
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const DeliveryManagement = () => {
   const [autoAllocation, setAutoAllocation] = useState({
     autoAllocationType: "",
@@ -46,10 +48,10 @@ const DeliveryManagement = () => {
   const [manualAssign, setManualAssign] = useState("");
   const mapContainerRef = useRef(null);
   const [mapObject, setMapObject] = useState(null);
+  const [visibleTaskModal, setVisibleTaskModal] = useState({});
   const toast = useToast();
   //const [searchOrderId, setOrderId] = useState("")
 
-  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const { token } = useContext(UserContext);
 
   const steps = [
@@ -97,30 +99,6 @@ const DeliveryManagement = () => {
     setAutoAllocation((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // const data = [
-  //   {
-  //     time: "06.00",
-  //     head: "order",
-  //     adress: "56, Post office, Pattom, Thiruvallam Lorem Ipsum Lorem Ipsum",
-  //     phone: "1234",
-  //   },
-  //   {
-  //     time: "06.00",
-  //     head: "order",
-  //     adress: "Pattom",
-  //   },
-  //   {
-  //     time: "06.00",
-  //     head: "order",
-  //     adress: "Pattom",
-  //   },
-  //   {
-  //     time: "06.00",
-  //     head: "order",
-  //     adress: "Pattom",
-  //   },
-  // ];
-
   const autoAllocationStatusUpdate = async () => {
     try {
       if (autoAllocation.isActive) {
@@ -136,8 +114,8 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 201) {
-        // const {data} = response.data;
         toast({
           title: "Success",
           status: "success",
@@ -146,50 +124,37 @@ const DeliveryManagement = () => {
         });
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
       toast({
         title: "Error",
-        status: "error",
+        status: "Error in fetching agent",
         duration: 3000,
         isClosable: true,
       });
     }
   };
 
-  console.log(task);
   const selectChange = (e) => {
     const selectedTask = e.target.value;
-    setTask(selectedTask); // Update selected task state immediately
+    setTask(selectedTask);
     if (selectedTask !== "") {
-      handleTaskFilter(selectedTask); // Call filter function with updated value
+      handleTaskFilter(selectedTask);
     } else {
-      setTaskData([]); // Clear task data when "Select Task" is chosen
+      setTaskData([]);
     }
   };
 
   const selectChangeOfStatus = (e) => {
     const selectedStatus = e.target.value;
-    setStatus(selectedStatus); // Update selected task state immediately
+    setStatus(selectedStatus);
     if (selectedStatus === "") {
-      handleStatusFilter("Free"); // Call filter function with updated value
+      handleStatusFilter("Free");
     } else {
-      handleStatusFilter(selectedStatus); // Clear task data when "Select Task" is chosen
     }
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const showOkModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const showModalCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const [visibleTaskModal, setVisibleTaskModal] = useState({});
+  const showModal = () => setIsModalVisible(true);
+  const showOkModal = () => setIsModalVisible(false);
+  const showModalCancel = () => setIsModalVisible(false);
 
   const showModalTask = (taskId) => {
     setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
@@ -229,6 +194,7 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 201) {
         // const {data} = response.data;
         toast({
@@ -239,18 +205,17 @@ const DeliveryManagement = () => {
         });
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
       toast({
         title: "Error",
-        status: "error",
+        status: "Error in fetching agent",
         duration: 3000,
         isClosable: true,
       });
     }
   };
+
   const handleStatusFilter = async (selectedStatus) => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/delivery-management/agent`,
         {
@@ -259,8 +224,8 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 201) {
-        // const {data} = response.data;
         setAgentData(response.data.data);
       }
     } catch (err) {
@@ -288,8 +253,6 @@ const DeliveryManagement = () => {
   const handleSearch = async (searchOrderId) => {
     setLoading(true);
     try {
-      console.log(searchOrderId);
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/delivery-management/get-order-id`,
         {
@@ -299,8 +262,6 @@ const DeliveryManagement = () => {
         }
       );
       if (response.status === 200) {
-        // const {data} = response.data;
-        console.log(response.data.data);
         setTaskData(response.data.data);
         toast({
           title: "Success",
@@ -310,7 +271,6 @@ const DeliveryManagement = () => {
         });
       }
     } catch (err) {
-      console.log(err);
       toast({
         title: "Error",
         status: "error",
@@ -321,11 +281,10 @@ const DeliveryManagement = () => {
       setLoading(false);
     }
   };
+
   const handleAgentSearch = async (agentName) => {
     setLoading(true);
     try {
-      console.log(agentName);
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/delivery-management/agent-name`,
         {
@@ -335,8 +294,6 @@ const DeliveryManagement = () => {
         }
       );
       if (response.status === 200) {
-        // const {data} = response.data;
-        console.log(response.data);
         setAgentData(response.data);
         toast({
           title: "Success",
@@ -346,7 +303,6 @@ const DeliveryManagement = () => {
         });
       }
     } catch (err) {
-      console.log(err);
       toast({
         title: "Error",
         status: "error",
@@ -358,15 +314,13 @@ const DeliveryManagement = () => {
     }
   };
 
-  // let styleMap
-
   // Initialize the map
   useEffect(() => {
     getAuthToken();
     handleStatusFilter("Free");
     handleGetAllAgent();
     getAutoAllocation();
-    //  console.log("Token", authToken)
+
     const mapProps = {
       center: [8.528818999999999, 76.94310683333333],
       traffic: true,
@@ -417,12 +371,10 @@ const DeliveryManagement = () => {
         draggable: true,
       };
 
-      console.log("Adding markers...");
       const approvedAgents = allAgentData.filter(
         (agent) => agent.isApproved === "Approved"
       );
-      console.log("Geofence", geofenceToggle);
-      console.log("Approved agents", approvedAgents);
+
       const agentGeoData = {
         type: "FeatureCollection",
         features: approvedAgents.map((agent) => ({
@@ -438,7 +390,9 @@ const DeliveryManagement = () => {
           },
         })),
       };
+
       const mapplsObject = new mappls();
+
       agentGeoData.features.forEach(async (feature) => {
         const { coordinates } = feature.geometry;
         const { htmlPopup } = feature.properties;
@@ -453,7 +407,6 @@ const DeliveryManagement = () => {
             "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
           );
           await agentMarker.setPopup(htmlPopup);
-          console.log(`Marker added for location: ${htmlPopup}`);
         } catch (error) {
           console.error("Error adding marker:", error);
         }
@@ -463,17 +416,15 @@ const DeliveryManagement = () => {
 
   const handleTaskFilter = async (selectedTask) => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/delivery-management/task`,
         {
-          params: { filter: selectedTask }, // Use params object for query parameters
+          params: { filter: selectedTask },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (response.status === 201) {
-        // const {data} = response.data;
         setTaskData(response.data.data);
       }
     } catch (err) {
@@ -493,7 +444,6 @@ const DeliveryManagement = () => {
       draggable: true,
     };
 
-    console.log("Adding markers...");
     const agentGeoData = {
       type: "FeatureCollection",
       features: [
@@ -505,12 +455,14 @@ const DeliveryManagement = () => {
           },
           geometry: {
             type: "Point",
-            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+            coordinates: coordinates,
           },
         },
       ],
     };
+
     const mapplsObject = new mappls();
+
     agentGeoData.features.forEach(async (feature) => {
       const { coordinates } = feature.geometry;
       const { htmlPopup } = feature.properties;
@@ -526,7 +478,6 @@ const DeliveryManagement = () => {
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);
-        console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
@@ -545,7 +496,6 @@ const DeliveryManagement = () => {
       draggable: true,
     };
 
-    console.log("Adding markers...");
     const agentGeoData = {
       type: "FeatureCollection",
       features: [
@@ -563,7 +513,9 @@ const DeliveryManagement = () => {
         },
       ],
     };
+
     const mapplsObject = new mappls();
+
     agentGeoData.features.forEach(async (feature) => {
       const { coordinates } = feature.geometry;
       const { htmlPopup } = feature.properties;
@@ -579,7 +531,6 @@ const DeliveryManagement = () => {
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);
-        console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
@@ -589,14 +540,13 @@ const DeliveryManagement = () => {
   const handleGeofenceSwitch = (taskId) => {
     setGeofenceToggle((prevToggle) => {
       const newToggle = !prevToggle;
-      fetchAgentUsingGeofence(taskId, newToggle); // Pass the newToggle value to fetchAgentUsingGeofence
+      fetchAgentUsingGeofence(taskId, newToggle);
       return newToggle;
     });
   };
 
   const fetchAgentUsingGeofence = async (taskId, newToggle) => {
     try {
-      console.log(token);
       const response = await axios.post(
         `${BASE_URL}/admin/delivery-management/agents-in-geofence/${taskId}`,
         {
@@ -607,6 +557,7 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 200) {
         setGeofenceAgentData(response.data.data);
         toast({
@@ -616,12 +567,10 @@ const DeliveryManagement = () => {
           isClosable: true,
         });
       }
-      console.log(geofenceAgentData);
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
       toast({
         title: "Error",
-        status: "error",
+        status: "Error in fetching agent",
         duration: 3000,
         isClosable: true,
       });
@@ -637,11 +586,11 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 200) {
         setAutoAllocation(response.data.data);
         setAutoAllocationStatus(response.data.data.isActive);
       }
-      console.log(autoAllocation);
     } catch (err) {
       console.log("Error in fetching auto allocation: ", err);
     }
@@ -649,12 +598,10 @@ const DeliveryManagement = () => {
 
   const handleManualAssignChange = (data) => {
     setManualAssign({ _id: data._id, name: data.name });
-    console.log(data._id);
   };
 
   const handleSendNotification = async (taskId) => {
     try {
-      console.log(token);
       const response = await axios.post(
         `${BASE_URL}/admin/delivery-management/assign-task/${taskId}`,
         {
@@ -665,6 +612,7 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 200) {
         toast({
           title: "Success",
@@ -674,10 +622,9 @@ const DeliveryManagement = () => {
         });
       }
     } catch (err) {
-      console.log("Error in sending notification: ", err);
       toast({
         title: "Error",
-        status: "error",
+        status: "Error in sending notification",
         duration: 3000,
         isClosable: true,
       });
@@ -945,27 +892,27 @@ const DeliveryManagement = () => {
                                 onOk={() => showModalCancelTask(data._id)}
                                 onCancel={() => showModalCancelTask(data._id)}
                                 open={visibleTaskModal[data._id] || false}
-                                width="600px"
+                                width="750px"
                                 centered
                                 title="Task details"
                                 footer={null}
                               >
                                 <div>
-                                  <div className="flex gap-7 text-[18px] font-normal mt-5">
-                                    <div className="w-1/2 grid gap-3">
+                                  <div className="flex items-center gap-[50px]  text-[18px] font-normal  mt-5">
+                                    <div className="w-1/2 grid gap-3 ">
                                       <div className="flex">
-                                        <div className="text-gray-500 text-[16px] w-full">
+                                        <div className="text-gray-500 text-[16px] w-2/5">
                                           Task Id
                                         </div>
-                                        <p className="text-[15px] ms-[5px]">
+                                        <p className="text-[15px]">
                                           {data._id}
                                         </p>
                                       </div>
                                       <div className="flex">
-                                        <label className="text-gray-500 text-[16px]">
+                                        <label className="text-gray-500 text-[16px] w-2/5">
                                           Delivery Method
                                         </label>
-                                        <p className="text-[15px] ms-[15px]">
+                                        <p className="text-[15px]">
                                           {
                                             data.orderId.orderDetail
                                               .deliveryMode
@@ -973,25 +920,28 @@ const DeliveryManagement = () => {
                                         </p>
                                       </div>
                                     </div>
-                                    <div className="w-1/2 grid gap-3">
+
+                                    <div className="w-1/2 grid gap-3 ">
                                       <div className="flex ">
-                                        <label className="text-gray-500 text-[15px]">
+                                        <label className="text-gray-500 text-[15px] w-2/5 ">
                                           Agent Name
                                         </label>
-                                        <p className="text-[15px] ms-[15px]">
+                                        <p className="text-[15px] overflow-ellipsis">
                                           {data.agentId.fullName}
                                         </p>
                                       </div>
+
                                       <div className="flex ">
-                                        <label className="text-gray-500 text-[15px]">
+                                        <label className="text-gray-500 text-[15px] w-2/5">
                                           Agent ID
                                         </label>
-                                        <p className="text-[15px] ms-[10px]">
+                                        <p className="text-[15px] ">
                                           {data.agentId._id}
                                         </p>
                                       </div>
                                     </div>
                                   </div>
+
                                   <div>
                                     <p className="mt-5 text-lg font-semibold">
                                       Task status
@@ -1005,7 +955,7 @@ const DeliveryManagement = () => {
                                       >
                                         <Step
                                           key={data.orderId.merchantId}
-                                          className="flex gap-5 size-20"
+                                          className="flex gap-5 w-full"
                                         >
                                           <StepIndicator>
                                             <StepStatus
@@ -1028,7 +978,7 @@ const DeliveryManagement = () => {
                                           </StepIndicator>
                                           <Box
                                             flexShrink="0"
-                                            className="ml-4 w-[200px]"
+                                            className=" flex-grow"
                                           >
                                             <StepTitle className="font-semibold text-[16px]">
                                               {
@@ -1046,25 +996,34 @@ const DeliveryManagement = () => {
                                               }
                                             </Step>
                                           </Box>
+
                                           <Box
                                             flexShrink="0"
-                                            className="ml-[70px]"
+                                            className=" flex flex-col"
                                           >
-                                            <Step>
-                                              Expected Time
-                                              {`${formatDate(
-                                                data.orderId.createdAt
-                                              )} ${formatTime(
-                                                data.orderId.createdAt
-                                              )}`}
+                                            <Step className="w-[18rem]">
+                                              <label className="w-2/5">
+                                                Expected Time
+                                              </label>
+                                              <p className="3/5">
+                                                {`${formatDate(
+                                                  data.orderId.createdAt
+                                                )} | ${formatTime(
+                                                  data.orderId.createdAt
+                                                )}`}
+                                              </p>
                                             </Step>
                                             <Step>
-                                              Pick up Time{" "}
-                                              {`${formatDate(
-                                                data.orderId.createdAt
-                                              )} ${formatTime(
-                                                data.orderId.createdAt
-                                              )}`}
+                                              <label className="w-2/5">
+                                                Pick up Time
+                                              </label>
+                                              <p className="w-3/5">
+                                                {`${formatDate(
+                                                  data.orderId.createdAt
+                                                )} | ${formatTime(
+                                                  data.orderId.createdAt
+                                                )}`}
+                                              </p>
                                             </Step>
                                           </Box>
                                           <StepSeparator className="mt-[18px]" />

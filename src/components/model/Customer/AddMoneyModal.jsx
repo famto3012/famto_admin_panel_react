@@ -9,8 +9,9 @@ const AddMoneyModal = ({
   BASE_URL,
   token,
   customerId,
+  onAddMoney,
 }) => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
@@ -45,8 +46,9 @@ const AddMoneyModal = ({
       console.log("clicked");
 
       if (response.status === 200) {
+        onAddMoney(response.data.data);
         onCancel();
-        setAmount(0);
+        setAmount("");
         toast({
           title: "Success",
           description: `Amount added to wallet successfully`,
