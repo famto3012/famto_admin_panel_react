@@ -5,6 +5,7 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
+import { AiOutlineCloudUpload } from "react-icons/ai";
 
 const AddProductItemModal = ({
   isVisible,
@@ -325,6 +326,19 @@ const AddProductItemModal = ({
     >
       <form onSubmit={handleAddProduct} className="max-h-[30rem] overflow-auto">
         <div className="flex flex-col gap-4 mt-5">
+          <div className="grid justify-end">
+            {" "}
+            <button
+              type="button"
+              className="flex gap-2 p-2 bg-teal-800 px-5 font-[500] text-white rounded-xl border"
+            >
+              <AiOutlineCloudUpload className="text-[22px]" />
+              Upload CSV
+            </button>
+            <p className="text-blue-700 underline mx-2">
+              Download Sample CSV
+            </p>
+          </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="productName">
               Product Name
@@ -617,7 +631,7 @@ const AddProductItemModal = ({
               Cancel
             </button>
             <button
-              className="bg-teal-700 text-white py-2 px-4 rounded-md focus:outline-none"
+              className="bg-teal-800 text-white py-2 px-4 rounded-md focus:outline-none"
               type="submit"
             >
               {isLoading ? `Adding...` : `Add`}

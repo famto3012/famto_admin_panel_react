@@ -18,6 +18,8 @@ import AddMerchant from "../../../components/model/Merchant/AddMerchant";
 import { useToast } from "@chakra-ui/react";
 import { allMerchantCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+import { TbArrowsSort } from "react-icons/tb";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -34,6 +36,7 @@ const Merchant = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
+  const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isConfirmModal, setIsConfirmModal] = useState(false); // Modal to approve merchant
   const [isModalReject, setIsModalReject] = useState(false); // Modal to Reject Merchant
@@ -135,7 +138,7 @@ const Merchant = () => {
     };
 
     filterHandler();
-  }, [serviceable, geofence, businessCategory, token, role,  page, limit]);
+  }, [serviceable, geofence, businessCategory, token, role, page, limit]);
 
   useEffect(() => {
     const handleSearchMerchant = async () => {
@@ -440,12 +443,15 @@ const Merchant = () => {
     setIsModalReject(true);
   };
 
+  const showCSVModal = () => {
+    setIsCSVModalVisible(true);
+  };
+
   const handleCancel = () => {
     setIsConfirmModal(false);
     setIsModalReject(false);
+    setIsCSVModalVisible(false);
   };
-
- 
 
   return (
     <div>
@@ -462,15 +468,45 @@ const Merchant = () => {
             <div className="flex justify-between items-center px-[30px]">
               <h1 className="text-[18px] font-semibold">Merchants</h1>
               <div className="flex space-x-2 justify-end ">
-                <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-                  <CSVLink
-                    data={allMerchants}
-                    headers={allMerchantCSVDataHeading}
-                    filename={"All_Merchants.csv"}
-                  >
-                    <ArrowDownOutlined /> <span>CSV</span>
-                  </CSVLink>
+                <button
+                  className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
+                  onClick={showCSVModal}
+                >
+                  <ArrowDownOutlined /> <span>CSV</span>
                 </button>
+                <Modal
+                  open={isCSVModalVisible}
+                  footer={null}
+                  width="30rem"
+                  onCancel={handleCancel}
+                  centered
+                >
+                  <div className="flex rounded-xl justify-between p-10">
+                    <div className="grid">
+                      <button className="flex gap-2 p-3 bg-cyan-200 px-5 font-[500] rounded-xl border">
+                        <AiOutlineCloudUpload className="text-[22px]" />
+                        Upload
+                      </button>
+                      <p className="text-blue-700 underline mx-2">
+                        Download Sample CSV
+                      </p>
+                    </div>
+                    <div>
+                    <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
+                      <CSVLink
+                        data={allMerchants}
+                        headers={allMerchantCSVDataHeading}
+                        filename={"All_Merchants.csv"}
+                      >
+                        <div className="flex gap-2">
+                          <TbArrowsSort className="text-[22px]" />
+                          Download
+                        </div>
+                      </CSVLink>
+                    </button>
+                    </div>
+                  </div>
+                </Modal>
                 <div>
                   <button
                     className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "

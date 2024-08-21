@@ -8,9 +8,12 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import GIFLoader from "../../../components/GIFLoader";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+import { TbArrowsSort } from "react-icons/tb";
 import { CSVLink } from "react-csv";
 import { allCustomerCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
+import { Modal } from "antd";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -23,6 +26,8 @@ const Customers = () => {
 
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+
+  const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
@@ -122,149 +127,187 @@ const Customers = () => {
     }
   };
 
+  const showCSVModal = () => {
+    setIsCSVModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsCSVModalVisible(false);
+  };
+
   return (
     <div>
-    {isLoading ? (
-      <GIFLoader/>
-    ) : (
-    <>
-      <Sidebar />
-      <main className="w-full h-screen pl-[290px] bg-gray-100">
-        <nav className="p-5">
-          <GlobalSearch />
-        </nav>
+      {isLoading ? (
+        <GIFLoader />
+      ) : (
+        <>
+          <Sidebar />
+          <main className="w-full h-screen pl-[290px] bg-gray-100">
+            <nav className="p-5">
+              <GlobalSearch />
+            </nav>
 
-        <div className="flex items-center justify-between mx-8 mt-5">
-          <h1 className="text-lg font-bold">Customers</h1>
-          <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-            <CSVLink
-              data={customers}
-              headers={allCustomerCSVDataHeading}
-              filename={"All_Customer_Data.csv"}
-            >
-              <ArrowDownOutlined /> <span>CSV</span>
-            </CSVLink>
-          </button>
-        </div>
-        <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
-          <select
-            name="type"
-            value={geofenceFilter}
-            className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none"
-            onChange={(e) => {
-              setGeofenceFilter(e.target.value);
-              handleFilterChange("geofence", e.target.value);
-            }}
-          >
-            <option hidden value="">
-              Geofence
-            </option>
-            {allGeofence.map((geoFence) => (
-              <option value={geoFence._id} key={geoFence._id}>
-                {geoFence.name}
-              </option>
-            ))}
-          </select>
-          <div className="relative">
-            <FilterAltOutlined className="text-gray-400" />
-            <input
-              type="search"
-              name="search"
-              placeholder="Search customer"
-              className="bg-gray-100 h-10 px-5 pr-2 rounded-full ml-4 w-72 text-sm focus:outline-none"
-              value={searchFilter}
-              onChange={(e) => {
-                setSearchFilter(e.target.value);
-                handleFilterChange("search", e.target.value);
-              }}
-            />
-            <button type="submit" className="absolute right-2 top-2">
-              <SearchOutlined className="text-xl text-gray-500" />
-            </button>
-          </div>
-        </div>
-        <div className="overflow-auto mt-[20px] w-full">
-          <table className="text-start w-full">
-            <thead>
-              <tr>
-                {[
-                  "ID",
-                  "Name",
-                  "Email",
-                  "Phone",
-                  "Last Platform Used",
-                  "Registration Date",
-                  "Rating",
-                ].map((header, index) => (
-                  <th
-                    key={index}
-                    className="bg-teal-800 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isTableLoading && (
-                <tr>
-                  <td colSpan={7} className="text-center h-20">
-                    Loading Data...
-                  </td>
-                </tr>
-              )}
-              {!isTableLoading && customers?.length === 0 && (
-                <tr>
-                  <td colSpan={7}>
-                    <p className="flex items-center justify-center h-20">
-                      No data available
+            <div className="flex items-center justify-between mx-8 mt-5">
+              <h1 className="text-lg font-bold">Customers</h1>
+              <button
+                className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
+                onClick={showCSVModal}
+              >
+                <ArrowDownOutlined /> <span>CSV</span>
+              </button>
+              <Modal
+                open={isCSVModalVisible}
+                footer={null}
+                width="30rem"
+                onCancel={handleCancel}
+                centered
+              >
+                <div className="flex rounded-xl justify-between p-10">
+                  <div className="grid">
+                    <button className="flex gap-2 p-3 bg-cyan-200 px-5 font-[500] rounded-xl border">
+                      <AiOutlineCloudUpload className="text-[22px]" />
+                      Upload
+                    </button>
+                    <p className="text-blue-700 underline mx-2">
+                      Download Sample CSV
                     </p>
-                  </td>
-                </tr>
-              )}
-              {!isTableLoading &&
-                customers.map((customer) => (
-                  <tr
-                    key={customer._id}
-                    className="align-middle border-b border-gray-300 text-center"
-                  >
-                    <td className="p-4">
-                      <Link
-                        to={`/customer-detail/${customer._id}`}
-                        className="underline underline-offset-4"
+                  </div>
+                  <div>
+                    <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
+                      <CSVLink
+                        data={customers}
+                        headers={allCustomerCSVDataHeading}
+                        filename={"All_Customer_Data.csv"}
                       >
-                        {customer._id}
-                      </Link>
-                    </td>
-                    <td>{customer.fullName}</td>
-                    <td>{customer.email}</td>
-                    <td>{customer.phoneNumber}</td>
-                    <td>{customer.lastPlatformUsed}</td>
-                    <td>{customer.registrationDate}</td>
-                    <td>
-                      <StarRating rating={customer.rating} />
-                    </td>
-                  </tr>
+                        <div className="flex gap-2">
+                          <TbArrowsSort className="text-[22px]" />
+                          Download
+                        </div>
+                      </CSVLink>
+                    </button>
+                  </div>
+                </div>
+              </Modal>
+            </div>
+            <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
+              <select
+                name="type"
+                value={geofenceFilter}
+                className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none"
+                onChange={(e) => {
+                  setGeofenceFilter(e.target.value);
+                  handleFilterChange("geofence", e.target.value);
+                }}
+              >
+                <option hidden value="">
+                  Geofence
+                </option>
+                {allGeofence.map((geoFence) => (
+                  <option value={geoFence._id} key={geoFence._id}>
+                    {geoFence.name}
+                  </option>
                 ))}
-            </tbody>
-          </table>
-        </div>
+              </select>
+              <div className="relative">
+                <FilterAltOutlined className="text-gray-400" />
+                <input
+                  type="search"
+                  name="search"
+                  placeholder="Search customer"
+                  className="bg-gray-100 h-10 px-5 pr-2 rounded-full ml-4 w-72 text-sm focus:outline-none"
+                  value={searchFilter}
+                  onChange={(e) => {
+                    setSearchFilter(e.target.value);
+                    handleFilterChange("search", e.target.value);
+                  }}
+                />
+                <button type="submit" className="absolute right-2 top-2">
+                  <SearchOutlined className="text-xl text-gray-500" />
+                </button>
+              </div>
+            </div>
+            <div className="overflow-auto mt-[20px] w-full">
+              <table className="text-start w-full">
+                <thead>
+                  <tr>
+                    {[
+                      "ID",
+                      "Name",
+                      "Email",
+                      "Phone",
+                      "Last Platform Used",
+                      "Registration Date",
+                      "Rating",
+                    ].map((header, index) => (
+                      <th
+                        key={index}
+                        className="bg-teal-800 text-center text-white py-[20px] border-r-2 border-[#eee]/50"
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {isTableLoading && (
+                    <tr>
+                      <td colSpan={7} className="text-center h-20">
+                        Loading Data...
+                      </td>
+                    </tr>
+                  )}
+                  {!isTableLoading && customers?.length === 0 && (
+                    <tr>
+                      <td colSpan={7}>
+                        <p className="flex items-center justify-center h-20">
+                          No data available
+                        </p>
+                      </td>
+                    </tr>
+                  )}
+                  {!isTableLoading &&
+                    customers.map((customer) => (
+                      <tr
+                        key={customer._id}
+                        className="align-middle border-b border-gray-300 text-center"
+                      >
+                        <td className="p-4">
+                          <Link
+                            to={`/customer-detail/${customer._id}`}
+                            className="underline underline-offset-4"
+                          >
+                            {customer._id}
+                          </Link>
+                        </td>
+                        <td>{customer.fullName}</td>
+                        <td>{customer.email}</td>
+                        <td>{customer.phoneNumber}</td>
+                        <td>{customer.lastPlatformUsed}</td>
+                        <td>{customer.registrationDate}</td>
+                        <td>
+                          <StarRating rating={customer.rating} />
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
 
-        <div className="my-[30px] flex justify-center">
-        <Pagination
-              count={pagination.totalPages || 0}
-              page={pagination.currentPage || page}
-              onChange={handlePageChange}
-              shape="rounded"
-              siblingCount={0}
-              hidePrevButton={!pagination.hasPrevPage}
-              hideNextButton={!pagination.hasNextPage}
-              getItemAriaLabel={getItemAriaLabel}
-            />
-        </div>
-      </main>
-    </>
-    )}
+            <div className="my-[30px] flex justify-center">
+              <Pagination
+                count={pagination.totalPages || 0}
+                page={pagination.currentPage || page}
+                onChange={handlePageChange}
+                shape="rounded"
+                siblingCount={0}
+                hidePrevButton={!pagination.hasPrevPage}
+                hideNextButton={!pagination.hasNextPage}
+                getItemAriaLabel={getItemAriaLabel}
+              />
+            </div>
+          </main>
+        </>
+      )}
     </div>
   );
 };
