@@ -191,15 +191,15 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
             setMap(newMap); // Save the map instance in context
             setIsMapLoaded(true);
             if (location) {
-                console.log("true");
-                const { lat, lng } = location;
-                console.log(lat, lng);
-                newMarker = mapplsClassObject.Marker({
-                  map: newMap,
-                  position: { lat, lng },
-                  draggable: false,
-                });
-              }
+              console.log("true");
+              const { lat, lng } = location;
+              console.log(lat, lng);
+              newMarker = mapplsClassObject.Marker({
+                map: newMap,
+                position: { lat, lng },
+                draggable: false,
+              });
+            }
 
             newMapTwo.on("click", (event) => {
               const { lat, lng } = event.lngLat;
@@ -236,6 +236,7 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
               markerRefOne.current = newMarker;
               setCoordinates({ latitude: lat, longitude: lng });
+              console.log("Coordinates clicked", lat, lng);
               console.log(
                 `Marker added on MapOne at latitude: ${lat}, longitude: ${lng}`
               );

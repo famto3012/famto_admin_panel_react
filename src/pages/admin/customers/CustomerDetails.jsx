@@ -33,6 +33,8 @@ const CustomerDetails = () => {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
 
+  const [showSaveButton, setShowSaveButton] = useState(false);
+
   const [addressToEdit, setAddressToEdit] = useState({});
   const [selectedAddress, setSelectedAddress] = useState({
     type: "",
@@ -69,9 +71,17 @@ const CustomerDetails = () => {
     };
 
     fetchData();
-  }, [token, customerId, navigate]);
+  }, [token, customerId, navigate, customer.walletTransactionDetail]);
 
-  const handleEditClick = () => setEditMode(!editMode);
+  const handleEditClick = () => {
+    setEditMode(!editMode);
+    setShowSaveButton(!showSaveButton);
+  };
+
+  const handleCancelEditClick = () => {
+    setEditMode(!editMode);
+    setShowSaveButton(!showSaveButton);
+  };
 
   const toggleBlockModal = () => setShowBlockModal(true);
   const toggleDeductMoney = () => setShowDeducMoneyModal(true);
@@ -142,6 +152,26 @@ const CustomerDetails = () => {
     }
   };
 
+  const handleAddMoney = (data) => {
+    setCustomer((prevData) => ({
+      ...prevData,
+      walletTransactionDetail: [
+        data,
+        ...(prevData.walletTransactionDetail || []),
+      ],
+    }));
+  };
+
+  const handleDeductMoney = (data) => {
+    setCustomer((prevData) => ({
+      ...prevData,
+      walletTransactionDetail: [
+        data,
+        ...(prevData.walletTransactionDetail || []),
+      ],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -161,6 +191,7 @@ const CustomerDetails = () => {
 
       if (response.status === 200) {
         setEditMode(false);
+        setShowSaveButton(false);
         toast({
           title: "Success",
           description: `Customer updated successfully`,
@@ -330,11 +361,10 @@ const CustomerDetails = () => {
                 type="button"
                 onClick={handleEditClick}
                 disabled={editMode}
-                className="bg-teal-100 flex items-center p-2 rounded-lg mr-3 "
+                className="bg-teal-100 flex items-center p-2 rounded-lg mr-3 cursor-pointer"
               >
                 <MdOutlineEdit className=" rounded-lg " />
                 <span className="ml-3">Edit Customer</span>
-                {editMode ? "" : ""}
               </button>
             </div>
           </div>
@@ -414,7 +444,10 @@ const CustomerDetails = () => {
 
               <div className="flex gap-[30px]">
                 {customer?.otherAddress?.map((address, index) => (
-                  <div className="min-w-[200px] px-2 group relative">
+                  <div
+                    key={index}
+                    className="min-w-[200px] px-2 group relative"
+                  >
                     <div className="flex justify-between">
                       <h2 className="font-semibold bg-gray-200 py-1 px-2 rounded-md">
                         Other {index + 1}
@@ -446,22 +479,25 @@ const CustomerDetails = () => {
           </div>
         </div>
 
-        <div className="flex justify-end gap-4 mt-16 mx-10">
-          <button
-            className="bg-cyan-50 py-2 px-4 rounded-md"
-            type="button"
-            onClick={handleCancelModal}
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-teal-800 text-white py-2 px-4 rounded-md"
-            type="submit"
-            onClick={handleSubmit}
-          >
-            {isLoading ? `Saving...` : `Save`}
-          </button>
-        </div>
+        {showSaveButton && (
+          <div className="flex justify-end gap-4 mt-5 mx-10">
+            <button
+              className="bg-cyan-100 py-2 px-4 rounded-md"
+              type="button"
+              // onClick={handleCancelModal}
+              onClick={handleCancelEditClick}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-teal-800 text-white py-2 px-4 rounded-md"
+              type="submit"
+              onClick={handleSubmit}
+            >
+              {isLoading ? `Saving...` : `Save`}
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between mx-11 mt-10">
           <h1 className="text-md font-semibold">Wallet</h1>
@@ -485,9 +521,9 @@ const CustomerDetails = () => {
           </div>
         </div>
 
-        <div className="overflow-auto mt-[20px] w-full">
-          <table className="text-start w-full">
-            <thead>
+        <div className="overflow-auto mt-[20px] w-full max-h-[30rem]">
+          <table className="text-start w-full ">
+            <thead className=" sticky top-0 left-0">
               <tr>
                 {[
                   "Closing Balance",
@@ -509,7 +545,7 @@ const CustomerDetails = () => {
               {customer?.walletDetails?.length === 0 && (
                 <tr>
                   <td colSpan={5}>
-                    <p className="mb-0 text-center">No data</p>
+                    <p className="mb-0 text-center py-[20px]">No data</p>
                   </td>
                 </tr>
               )}
@@ -517,13 +553,13 @@ const CustomerDetails = () => {
               {customer?.walletDetails?.map((walletDetails) => (
                 <tr
                   key={walletDetails.id}
-                  className="align-middle border-b border-gray-300 text-center"
+                  className="align-middle text-center even:bg-gray-300 last: border-2"
                 >
                   <td className="p-3">{walletDetails.closingBalance}</td>
                   <td className="p-3">{walletDetails.transactionAmount}</td>
                   <td className="p-3">{walletDetails.transactionId}</td>
                   <td className="p-3">{walletDetails.orderId}</td>
-                  <td className="p-3">{walletDetails.datetime}</td>
+                  <td className="p-3">{walletDetails.date}</td>
                 </tr>
               ))}
             </tbody>
@@ -534,9 +570,9 @@ const CustomerDetails = () => {
           <h1 className="text-md font-semibold mx-11 mt-[40px]">
             Order Details
           </h1>
-          <div className="overflow-auto mt-[20px] ml-2 w-full">
+          <div className="overflow-auto mt-[20px] ml-2 w-full max-h-[30rem]">
             <table className="text-start w-full mb-24">
-              <thead>
+              <thead className="sticky top-0 left-0">
                 <tr>
                   {[
                     "Order ID",
@@ -561,28 +597,27 @@ const CustomerDetails = () => {
               </thead>
               <tbody>
                 {customer?.orderDetails?.length === 0 && (
-                  <tr>
+                  <tr className=" even: bg-gray-200">
                     <td colSpan={10}>
-                      <p className="mb-0 text-center">No data</p>
+                      <p className="mb-0 text-center py-[20px]">No data</p>
                     </td>
                   </tr>
                 )}
 
-                {/* {customer?.orderDetails?.map((orderDetails) => ( */}
                 {customer?.orderDetails?.map((orderDetails) => (
                   <tr
-                    key={orderDetails.id}
-                    className="align-middle border-b border-gray-300 text-center"
+                    key={orderDetails.orderId}
+                    className="align-middle even:bg-gray-300 text-center"
                   >
-                    <td className="p-3">{orderDetails.orderid}</td>
+                    <td className="p-3">{orderDetails.orderId}</td>
                     <td className="p-3">{orderDetails.orderStatus}</td>
                     <td className="p-3">{orderDetails.merchantName}</td>
                     <td className="p-3">{orderDetails.deliveryMode}</td>
-                    <td className="p-3">{orderDetails.ordertime}</td>
-                    <td className="p-3">{orderDetails.deliverytime}</td>
+                    <td className="p-3">{orderDetails.orderTime}</td>
+                    <td className="p-3">{orderDetails.deliveryTime}</td>
                     <td className="p-3">{orderDetails.paymentMethod}</td>
                     <td className="p-3">{orderDetails.deliveryOption}</td>
-                    <td className="p-3">{orderDetails.Amount}</td>
+                    <td className="p-3">{orderDetails.amount}</td>
                     <td className="p-3">{orderDetails.paymentStatus}</td>
                   </tr>
                 ))}
@@ -617,6 +652,7 @@ const CustomerDetails = () => {
         BASE_URL={BASE_URL}
         token={token}
         customerId={customerId}
+        onAddMoney={handleAddMoney}
       />
 
       {/* Deduct money from wallet modal */}
@@ -626,6 +662,7 @@ const CustomerDetails = () => {
         BASE_URL={BASE_URL}
         token={token}
         customerId={customerId}
+        onDeductMoney={handleDeductMoney}
       />
 
       {/* Address Modal */}

@@ -83,12 +83,15 @@ const AddCategoriesModal = ({
         dataToSend.append("categoryImage", selectedFile);
       }
 
-      const endpoint =
+      const endPoint =
         role === "Admin"
           ? `${BASE_URL}/categories/admin/add-category`
           : `${BASE_URL}/categories/add-category`;
 
-      const response = await axios.post(endpoint, dataToSend, {
+      console.log(endPoint);
+      Objects.keys;
+
+      const response = await axios.post(endPoint, dataToSend, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,

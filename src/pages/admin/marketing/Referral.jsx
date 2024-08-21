@@ -305,9 +305,9 @@ const Referral = () => {
 
             <p className="mx-5 mb-5 font-bold text-[20px]">Referral Statics</p>
 
-            <div className=" overflow-x-auto mb-10">
+            <div className="overflow-auto mb-10 max-h-[30rem]">
               <table className="">
-                <thead>
+                <thead className="sticky top0 left-0">
                   <tr>
                     {[
                       "Customers Id",
@@ -329,7 +329,7 @@ const Referral = () => {
                   {allReferralDetails?.map((referral) => (
                     <tr
                       key={referral._id}
-                      className="text-center h-[50px] odd:bg-gray-200"
+                      className="text-center h-[50px] even:bg-gray-200 last:border-2"
                     >
                       <td>{referral.customerId}</td>
                       <td>{referral.name || "-"}</td>

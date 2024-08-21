@@ -9,8 +9,9 @@ const DeductMoneyModal = ({
   BASE_URL,
   token,
   customerId,
+  onDeductMoney,
 }) => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
@@ -44,8 +45,9 @@ const DeductMoneyModal = ({
       );
 
       if (response.status === 200) {
+        onDeductMoney(response.data.data);
         onCancel();
-        setAmount(0);
+        setAmount("");
         toast({
           title: "Success",
           description: `Amount deducted from wallet successfully`,

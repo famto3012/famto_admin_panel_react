@@ -33,7 +33,7 @@ const AgentPricing = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
   const { token, role } = useContext(UserContext);
-  const toast = useToast()
+  const toast = useToast();
   const navigate = useNavigate();
   useEffect(() => {
     if (!token) {
@@ -95,31 +95,30 @@ const AgentPricing = () => {
     setModalVisibleAddSurge(false);
   };
 
- // Function to update the agent rule in the list
+  // Function to update the agent rule in the list
 
- const handleEditRule = (updatedRule) => {
-  setAgentPricing((prevRules) =>
-    prevRules.map((agentrule) =>
-      agentrule._id === updatedRule._id ? updatedRule : agentrule
-    )
-  );
-};
- // Function to update the agent surge in the list
+  const handleEditRule = (updatedRule) => {
+    setAgentPricing((prevRules) =>
+      prevRules.map((agentrule) =>
+        agentrule._id === updatedRule._id ? updatedRule : agentrule
+      )
+    );
+  };
+  // Function to update the agent surge in the list
 
- const handleEditSurge = (updatedSurge) => {
-  setAgentSurge((prevSurge) =>
-    prevSurge.map((agentsurge) =>
-      agentsurge._id === updatedSurge._id ? updatedSurge : agentsurge
-    )
-  );
-};
+  const handleEditSurge = (updatedSurge) => {
+    setAgentSurge((prevSurge) =>
+      prevSurge.map((agentsurge) =>
+        agentsurge._id === updatedSurge._id ? updatedSurge : agentsurge
+      )
+    );
+  };
 
   // Modal function for Add rule in Agent Pricing
 
   const showModalAddRule = () => {
     setModalVisibleAddRule(true);
   };
-
 
   // Modal function for Add surge in Agent Surge
 
@@ -217,7 +216,7 @@ const AgentPricing = () => {
           status: "success",
           duration: 3000,
           isClosable: true,
-        })
+        });
       }
     } catch (err) {
       console.log(`Error in toggling status: ${err}`);
@@ -262,7 +261,7 @@ const AgentPricing = () => {
           status: "success",
           duration: 3000,
           isClosable: true,
-        })
+        });
       }
     } catch (err) {
       console.log(`Error in toggling status: ${err}`);
@@ -300,9 +299,9 @@ const AgentPricing = () => {
         </div>
       </div>
 
-      <div className="overflow-auto w-full">
+      <div className="overflow-auto w-full max-h-[30rem]">
         <table className="w-full mt-[20px]">
-          <thead>
+          <thead className="sticky top-0 left-0">
             <tr>
               {[
                 "Rule Name",
@@ -326,78 +325,81 @@ const AgentPricing = () => {
             </tr>
           </thead>
           <tbody>
-          {isLoading && (
-                <tr>
-                  <td colSpan={10} className="text-center h-20">
-                    Loading Data...
-                  </td>
-                </tr>
-              )}
-              {!isLoading && agentpricing?.length === 0 && (
-                <tr>
-                  <td colSpan={10}>
-                    <p className="flex items-center justify-center h-20">
-                      No data available
-                    </p>
-                  </td>
-                </tr>
-              )}
-             {!isLoading && agentpricing.map((agentpricing) => (
-              <tr
-                key={agentpricing._id}
-                className="align-middle border-b border-gray-300 text-center p-4"
-              >
-                <td className="p-4">{agentpricing.ruleName}</td>
-                <td className="p-4">{agentpricing.baseFare}</td>
-                <td className="p-4">{agentpricing.baseDistanceFare}</td>
-                <td className="p-4">{agentpricing.extraFarePerDay}</td>
-                <td className="p-4">{agentpricing.baseDistanceFarePerKM}</td>
-                <td className="p-4">{agentpricing.waitingFare}</td>
-                <td className="p-4 px-2">{agentpricing.waitingTime}</td>
-                <td className="p-4">{agentpricing.purchaseFarePerHour}</td>
-                <td className="p-4">{agentpricing?.geofenceId?.name}</td>
-                <td className="p-4">
-                  <div className="flex justify-center items-center gap-3">
-                    <div>
-                      <Switch
-                        checked={agentpricing.status}
-                        onChange={() => handleToggleRule(agentpricing._id)}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        onClick={() => showModalEditRule(agentpricing._id)}
-                      >
-                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 outline-none focus:outline-none text-[35px]" />
-                      </button>
-                      <EditAgentPricingModal
-                        isVisible={isModalVisibleEditRule}
-                        handleCancel={handleCancel}
-                        token={token}
-                        currentEdit={currentEditRule}
-                        BASE_URL={BASE_URL}
-                        geofence={geofence}
-                        onEditRule={handleEditRule}
-                      />
-                    </div>
-                    <button
-                      onClick={() => showModalDeleteRule(agentpricing._id)}
-                    >
-                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                    </button>
-                    <DeleteAgentPricingModal
-                      isVisible={isModalVisibleDeleteRule}
-                      handleCancel={handleCancel}
-                      handleConfirmDelete={handleConfirmDeleteRule}
-                      currentDelete={currentDeleteRule}
-                      token={token}
-                      BASE_URL={BASE_URL}
-                      remove={removeRule}
-                    />
-                  </div>
+            {isLoading && (
+              <tr>
+                <td colSpan={10} className="text-center h-20">
+                  Loading Data...
                 </td>
               </tr>
-            ))}
+            )}
+
+            {!isLoading && agentpricing?.length === 0 && (
+              <tr>
+                <td colSpan={10}>
+                  <p className="flex items-center justify-center h-20">
+                    No data available
+                  </p>
+                </td>
+              </tr>
+            )}
+
+            {!isLoading &&
+              agentpricing.map((agentpricing) => (
+                <tr
+                  key={agentpricing._id}
+                  className="align-middle even:bg-gray-200 last:border-2 text-center p-4"
+                >
+                  <td className="p-4">{agentpricing.ruleName}</td>
+                  <td className="p-4">{agentpricing.baseFare}</td>
+                  <td className="p-4">{agentpricing.baseDistanceFare}</td>
+                  <td className="p-4">{agentpricing.extraFarePerDay}</td>
+                  <td className="p-4">{agentpricing.baseDistanceFarePerKM}</td>
+                  <td className="p-4">{agentpricing.waitingFare}</td>
+                  <td className="p-4 px-2">{agentpricing.waitingTime}</td>
+                  <td className="p-4">{agentpricing.purchaseFarePerHour}</td>
+                  <td className="p-4">{agentpricing?.geofenceId?.name}</td>
+                  <td className="p-4">
+                    <div className="flex justify-center items-center gap-3">
+                      <div>
+                        <Switch
+                          checked={agentpricing.status}
+                          onChange={() => handleToggleRule(agentpricing._id)}
+                        />
+                      </div>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => showModalEditRule(agentpricing._id)}
+                        >
+                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 outline-none focus:outline-none text-[35px]" />
+                        </button>
+                        <EditAgentPricingModal
+                          isVisible={isModalVisibleEditRule}
+                          handleCancel={handleCancel}
+                          token={token}
+                          currentEdit={currentEditRule}
+                          BASE_URL={BASE_URL}
+                          geofence={geofence}
+                          onEditRule={handleEditRule}
+                        />
+                      </div>
+                      <button
+                        onClick={() => showModalDeleteRule(agentpricing._id)}
+                      >
+                        <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                      </button>
+                      <DeleteAgentPricingModal
+                        isVisible={isModalVisibleDeleteRule}
+                        handleCancel={handleCancel}
+                        handleConfirmDelete={handleConfirmDeleteRule}
+                        currentDelete={currentDeleteRule}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                        remove={removeRule}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
@@ -422,9 +424,9 @@ const AgentPricing = () => {
         </div>
       </div>
 
-      <div className="overflow-auto w-full">
+      <div className="overflow-auto w-full max-h-[30rem]">
         <table className="w-full mt-[20px]">
-          <thead>
+          <thead className="sticky top-0 left-0">
             <tr>
               {[
                 "Rule Name",
@@ -445,75 +447,78 @@ const AgentPricing = () => {
             </tr>
           </thead>
           <tbody>
-          {isLoading && (
-                <tr>
-                  <td colSpan={7} className="text-center h-20">
-                    Loading Data...
-                  </td>
-                </tr>
-              )}
-              {!isLoading && agentsurge?.length === 0 && (
-                <tr>
-                  <td colSpan={7}>
-                    <p className="flex items-center justify-center h-20">
-                      No data available
-                    </p>
-                  </td>
-                </tr>
-              )}
-            {!isLoading && agentsurge.map((agentsurge) => (
-              <tr
-                key={agentsurge._id}
-                className="align-middle border-b border-gray-300 text-center "
-              >
-                <td>{agentsurge.ruleName}</td>
-                <td>{agentsurge.baseFare}</td>
-                <td>{agentsurge.baseDistance}</td>
-                <td>{agentsurge.waitingFare}</td>
-                <td>{agentsurge.waitingTime}</td>
-                <td>{agentsurge.geofenceId.name}</td>
-                <td className="py-3 ">
-                  <div className="flex items-center gap-3 justify-end mx-4">
-                    <div>
-                      <Switch
-                        checked={agentsurge.status}
-                        onChange={() => handleToggleSurge(agentsurge._id)}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        onClick={() => showModalEditSurge(agentsurge._id)}
-                      >
-                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                      </button>
-                      <EditAgentSurgeModal
-                        isVisible={isModalVisibleEditSurge}
-                        handleCancel={handleCancel}
-                        token={token}
-                        currentEdit={currentEditSurge}
-                        BASE_URL={BASE_URL}
-                        geofence={geofence}
-                        onEditSurge={handleEditSurge}
-                      />
-                    </div>
-                    <button
-                      onClick={() => showModalDeleteSurge(agentsurge._id)}
-                    >
-                      <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                    </button>
-                    <DeleteAgentSurgeModal
-                      isVisible={isModalVisibleDeleteSurge}
-                      handleCancel={handleCancel}
-                      handleConfirmDelete={handleConfirmDeleteSurge}
-                      currentDelete={currentDeleteSurge}
-                      token={token}
-                      BASE_URL={BASE_URL}
-                      remove={removeSurge}
-                    />
-                  </div>
+            {isLoading && (
+              <tr>
+                <td colSpan={7} className="text-center h-20">
+                  Loading Data...
                 </td>
               </tr>
-            ))}
+            )}
+
+            {!isLoading && agentsurge?.length === 0 && (
+              <tr>
+                <td colSpan={7}>
+                  <p className="flex items-center justify-center h-20">
+                    No data available
+                  </p>
+                </td>
+              </tr>
+            )}
+
+            {!isLoading &&
+              agentsurge.map((agentsurge) => (
+                <tr
+                  key={agentsurge._id}
+                  className="align-middle even:bg-gray-200 last:border-2 text-center "
+                >
+                  <td>{agentsurge.ruleName}</td>
+                  <td>{agentsurge.baseFare}</td>
+                  <td>{agentsurge.baseDistance}</td>
+                  <td>{agentsurge.waitingFare}</td>
+                  <td>{agentsurge.waitingTime}</td>
+                  <td>{agentsurge.geofenceId.name}</td>
+                  <td className="py-3 ">
+                    <div className="flex items-center gap-3 justify-end mx-4">
+                      <div>
+                        <Switch
+                          checked={agentsurge.status}
+                          onChange={() => handleToggleSurge(agentsurge._id)}
+                        />
+                      </div>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => showModalEditSurge(agentsurge._id)}
+                        >
+                          <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                        </button>
+                        <EditAgentSurgeModal
+                          isVisible={isModalVisibleEditSurge}
+                          handleCancel={handleCancel}
+                          token={token}
+                          currentEdit={currentEditSurge}
+                          BASE_URL={BASE_URL}
+                          geofence={geofence}
+                          onEditSurge={handleEditSurge}
+                        />
+                      </div>
+                      <button
+                        onClick={() => showModalDeleteSurge(agentsurge._id)}
+                      >
+                        <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                      </button>
+                      <DeleteAgentSurgeModal
+                        isVisible={isModalVisibleDeleteSurge}
+                        handleCancel={handleCancel}
+                        handleConfirmDelete={handleConfirmDeleteSurge}
+                        currentDelete={currentDeleteSurge}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                        remove={removeSurge}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
