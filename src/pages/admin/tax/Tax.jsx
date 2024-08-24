@@ -129,12 +129,12 @@ const Tax = () => {
           )
         );
         toast({
-          title:"Success",
-          description:"Tax status Updated successfully.",
+          title: "Success",
+          description: "Tax status Updated successfully.",
           duration: 3000,
-          isClosable:true,
-          status:"success"
-        })
+          isClosable: true,
+          status: "success",
+        });
       }
     } catch (err) {
       console.log(`Error in toggling tax status: ${err}`);
@@ -218,7 +218,7 @@ const Tax = () => {
                 {isTableLoading && (
                   <tr>
                     <td colSpan={6} className="text-center text-[16px] py-6">
-                      Loading Data... <Spinner size={"sm"} />
+                      Loading Data... <Spinner size="sm" />
                     </td>
                   </tr>
                 )}

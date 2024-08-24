@@ -15,15 +15,16 @@ import { Pagination } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { allOrdersCSVDataHeading } from "../../../utils/DefaultData";
 import { formatDate } from "../../../utils/formatter";
-import { Modal } from "antd";
+import { Spinner, useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [deliveryOption, setDeliveryOption] = useState(false);
+  const [deliveryOption, setDeliveryOption] = useState(true);
 
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [orderActionLoading, setOrderActionLoading] = useState({});
 
   const [orderStatus, setOrderStatus] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
@@ -31,11 +32,11 @@ const Orders = () => {
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
-
+  const toast = useToast();
   const navigate = useNavigate();
 
   const onSearch = (e) => {
@@ -164,6 +165,11 @@ const Orders = () => {
 
   const handleConfirmOrder = async (orderId) => {
     try {
+      setOrderActionLoading((prevLoading) => ({
+        ...prevLoading,
+        [orderId]: true,
+      }));
+
       const endpoint =
         role === "Admin"
           ? `${BASE_URL}/orders/admin/confirm-order/${orderId}`
@@ -188,12 +194,28 @@ const Orders = () => {
         );
       }
     } catch (err) {
-      console.log(`Error in confirming order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in confirming order",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setOrderActionLoading((prevLoading) => ({
+        ...prevLoading,
+        [orderId]: false,
+      }));
     }
   };
 
   const handleRejectOrder = async (orderId) => {
     try {
+      setOrderActionLoading((prevLoading) => ({
+        ...prevLoading,
+        [orderId]: true,
+      }));
+
       const endpoint =
         role === "Admin"
           ? `${BASE_URL}/orders/admin/reject-order/${orderId}`
@@ -218,7 +240,18 @@ const Orders = () => {
         );
       }
     } catch (err) {
-      console.log(`Error in rejecting order: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in rejecting order",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setOrderActionLoading((prevLoading) => ({
+        ...prevLoading,
+        [orderId]: false,
+      }));
     }
   };
 
@@ -243,10 +276,8 @@ const Orders = () => {
     }
   };
 
-  const handleToggle = () => {
-    setDeliveryOption(!deliveryOption);
-  };
-  
+  const handleToggle = () => setDeliveryOption(!deliveryOption);
+
   return (
     <>
       <Sidebar />
@@ -256,31 +287,28 @@ const Orders = () => {
         </nav>
 
         <div className="flex justify-between items-center px-[30px]">
-          <div className="">
+          <div className=" border-2 border-black rounded-full">
             <label
-              htmlFor="Toggle3"
-              className="inline-flex items-center p-1 outline-2  outline outline-gray-500 rounded-3xl border-gray-700 bg-gray-100  cursor-pointer"
+              htmlFor="Toggle"
+              className="inline-flex items-center p-1 outline-2 outline-gray-500 rounded-3xl border-gray-700 bg-gray-100 cursor-pointer"
             >
               <input
-                id="Toggle3"
+                id="Toggle"
                 type="checkbox"
                 className="hidden peer rounded-3xl"
+                checked={deliveryOption}
                 onChange={handleToggle}
               />
               <span
-                className={`px-4 py-2 rounded-3xl dark:bg-gray-100 ${
-                  deliveryOption
-                    ? "peer-checked:dark:bg-teal-800 text-white"
-                    : "peer-checked:dark:bg-gray-100"
+                className={`px-4 py-2 rounded-3xl ${
+                  deliveryOption ? "bg-teal-800 text-white" : "bg-gray-100"
                 }`}
               >
                 Orders
               </span>
               <span
-                className={`px-4 py-2 rounded-3xl dark:bg-teal-800 ${
-                  deliveryOption
-                    ? "peer-checked:dark:bg-gray-100"
-                    : "peer-checked:dark:bg-teal-800 text-white"
+                className={`px-4 py-2 rounded-3xl ${
+                  deliveryOption ? "bg-gray-100" : "bg-teal-800 text-white"
                 }`}
               >
                 Scheduled Orders
@@ -289,7 +317,7 @@ const Orders = () => {
           </div>
 
           <div className="flex space-x-2 justify-end">
-            <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2" >
+            <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
               <CSVLink
                 data={orders}
                 headers={allOrdersCSVDataHeading}
@@ -298,15 +326,14 @@ const Orders = () => {
                 <ArrowDownOutlined /> <span>CSV</span>
               </CSVLink>
             </button>
-            
+
             <div>
-              <button className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold flex items-center space-x-1" >
+              <button className="bg-teal-700 text-white rounded-md px-4 py-2 font-semibold flex items-center space-x-1">
                 <PlusOutlined />
                 <Link to="/create-order">
                   <span>Create Order</span>
                 </Link>
               </button>
-              
             </div>
           </div>
         </div>
@@ -442,7 +469,7 @@ const Orders = () => {
                       </Link>
                     </td>
                     <td className="p-4 w-[120px]">
-                      <div className="flex space-x-2 justify-center">
+                      <div className="flex space-x-4 justify-center">
                         <>
                           {order.orderStatus === "Completed" && (
                             <p className=" text-green-500">Completed</p>
@@ -458,14 +485,23 @@ const Orders = () => {
 
                           {order.orderStatus === "Pending" && (
                             <>
-                              <CheckCircleOutlined
-                                className="text-2xl cursor-pointer text-white"
-                                onClick={() => handleConfirmOrder(order._id)}
-                              />
-                              <CloseCircleOutlined
-                                className="text-2xl cursor-pointer text-white"
-                                onClick={() => handleRejectOrder(order._id)}
-                              />
+                              {orderActionLoading[order._id] ? (
+                                <Spinner size={"sm"} />
+                              ) : (
+                                <>
+                                  <CheckCircleOutlined
+                                    className="text-2xl cursor-pointer text-white"
+                                    onClick={() =>
+                                      handleConfirmOrder(order._id)
+                                    }
+                                  />
+
+                                  <CloseCircleOutlined
+                                    className="text-2xl cursor-pointer text-white"
+                                    onClick={() => handleRejectOrder(order._id)}
+                                  />
+                                </>
+                              )}
                             </>
                           )}
                         </>
@@ -504,16 +540,16 @@ const Orders = () => {
         </div>
 
         <div className="my-[30px] flex justify-center">
-        <Pagination
-              count={pagination.totalPages || 0}
-              page={pagination.currentPage || page}
-              onChange={handlePageChange}
-              shape="rounded"
-              siblingCount={0}
-              hidePrevButton={!pagination.hasPrevPage}
-              hideNextButton={!pagination.hasNextPage}
-              getItemAriaLabel={getItemAriaLabel}
-            />
+          <Pagination
+            count={pagination.totalPages || 0}
+            page={pagination.currentPage || page}
+            onChange={handlePageChange}
+            shape="rounded"
+            siblingCount={0}
+            hidePrevButton={!pagination.hasPrevPage}
+            hideNextButton={!pagination.hasNextPage}
+            getItemAriaLabel={getItemAriaLabel}
+          />
         </div>
       </main>
     </>

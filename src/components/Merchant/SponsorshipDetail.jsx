@@ -209,7 +209,7 @@ const SponsorshipDetail = ({
               className="bg-teal-700 text-white p-2 rounded-md w-[20rem] mt-4"
               onClick={handlePaymentController}
             >
-              {isPaymentLoading ? <Spinner /> : `Pay`}
+              {isPaymentLoading ? <Spinner size="sm" /> : `Pay`}
             </button>
             <p className="w-[25rem] text-[14px] text-gray-700">
               Note: Choose the date range for showing your shop on top of the

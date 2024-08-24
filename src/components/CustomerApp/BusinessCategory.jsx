@@ -227,7 +227,7 @@ const BusinessCategory = () => {
 
       {isLoading && (
         <div className="h-[20rem] flex items-center justify-center">
-          <Spinner />
+          <Spinner size="sm" />
         </div>
       )}
 

@@ -1,24 +1,57 @@
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const CommissionComponent = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { token, role } = useContext(UserContext);
-  const navigate = useNavigate();
-  const toast = useToast();
   const [isForm, setIsForm] = useState({
     commissionType: "Fixed",
     merchantId: "",
     commissionValue: "",
   });
 
-  const fetchData = (commissionType) => {
-    console.log(`Fetching data for commission type: ${commissionType}`);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [commissionDetail, setCommissionDetail] = useState({
+    commissionType: "",
+    commissionValue: "",
+  });
+
+  const { token, role } = useContext(UserContext);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (role === "Merchant") {
+      const getCommissionDetail = async () => {
+        try {
+          const response = await axios.get(
+            `${BASE_URL}/admin/commission/commission-detail`,
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            setCommissionDetail(response.data.data);
+          }
+        } catch (err) {
+          toast({
+            title: "Error",
+            description: "Error occoured while fetching the commission detail",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      };
+
+      getCommissionDetail();
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +63,7 @@ const CommissionComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       setIsLoading(true);
       const addResponse = await axios.post(
@@ -51,7 +85,6 @@ const CommissionComponent = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in fetching data:${err}`);
       toast({
         title: "Error",
         description: "There was an error occured",
@@ -141,9 +174,13 @@ const CommissionComponent = () => {
       )}
 
       {role === "Merchant" && (
-        <div className=" ml-[250px] px-[30px] shadow-md bg-white h-fit py-4 w-fit flex gap-5 rounded">
-          <p className="w-[300px]">Commission value</p>
-          <p className="w-[300px]">Commission value</p>
+        <div className=" ml-[250px] px-[30px] shadow-md bg-white h-fit py-4 w-fit flex justify-between gap-5 rounded">
+          <p className="w-[150px]">Commission value</p>
+          <p className="w-[150px] text-end">
+            {commissionDetail.commissionType === "Percentage"
+              ? `${commissionDetail.commissionValue} %`
+              : `${commissionDetail.commissionValue}`}
+          </p>
         </div>
       )}
     </div>
