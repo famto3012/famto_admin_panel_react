@@ -126,6 +126,8 @@ const HomeDelivery = ({ data }) => {
   };
 
   const selectProduct = (product) => {
+    console.log("selected product", product);
+
     const existingProduct = homeDeliveryData.items.find(
       (item) => item.productId === product._id
     );
@@ -148,15 +150,15 @@ const HomeDelivery = ({ data }) => {
           ...homeDeliveryData.items,
           {
             productName: product.productName,
-            productId: product._id,
+            productId: product.id,
             price: product.price,
             quantity: 1,
-            variants: product.variants.map((variant) => ({
+            variants: product?.variants?.map((variant) => ({
               variantName: variant.variantName,
               variantTypes: variant.variantTypes.map((type) => ({
                 typeName: type.typeName,
                 price: type.price,
-                _id: type._id,
+                id: type.id,
               })),
             })),
           },
@@ -384,9 +386,9 @@ const HomeDelivery = ({ data }) => {
 
               {productResults.length > 0 && (
                 <ul className="absolute bg-white border w-full mt-1 z-50">
-                  {productResults.map((result) => (
+                  {productResults.map((result, index) => (
                     <li
-                      key={result._id}
+                      key={index}
                       className="p-2 hover:bg-gray-200 cursor-pointer"
                       onClick={() => selectProduct(result)}
                     >
@@ -404,7 +406,7 @@ const HomeDelivery = ({ data }) => {
               <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
                 {homeDeliveryData.items.map((item, itemIndex) => (
                   <div
-                    key={item.productId}
+                    key={item.itemIndex}
                     className="flex items-center gap-3 py-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
                   >
                     <div>
@@ -412,7 +414,7 @@ const HomeDelivery = ({ data }) => {
                         {item.productName}
                       </p>
                       <p className="text-gray-600">
-                        {item.variants.length === 0 ? `₹${item.price}` : ""}
+                        {item?.variants?.length === 0 ? `₹${item.price}` : ""}
                       </p>
 
                       {item?.variants?.length > 0 && (
@@ -432,7 +434,7 @@ const HomeDelivery = ({ data }) => {
                             </option>
                             {item.variants.flatMap((variant) =>
                               variant.variantTypes.map((type) => (
-                                <option key={type._id} value={type._id}>
+                                <option key={type.id} value={type.id}>
                                   {variant.variantName} - {type.typeName} - ₹
                                   {type.price}
                                 </option>

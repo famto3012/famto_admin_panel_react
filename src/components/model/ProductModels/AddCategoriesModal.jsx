@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
-import { useToast } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const AddCategoriesModal = ({
   isVisible,
@@ -26,9 +28,14 @@ const AddCategoriesModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
 
+  const [selectedCSVFile, setSelectedCSVFile] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
 
   const toast = useToast();
+  const navigate = useNavigate();
+  const { userId } = useContext(UserContext);
 
   useEffect(() => {
     const getAllBusinessCategories = async () => {
@@ -89,9 +96,6 @@ const AddCategoriesModal = ({
           ? `${BASE_URL}/categories/admin/add-category`
           : `${BASE_URL}/categories/add-category`;
 
-      console.log(endPoint);
-      Objects.keys;
-
       const response = await axios.post(endPoint, dataToSend, {
         withCredentials: true,
         headers: {
@@ -134,6 +138,94 @@ const AddCategoriesModal = ({
     }
   };
 
+  const downloadSampleCSV = async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await axios.get(
+        `${BASE_URL}/categories/admin/download-sample-category-csv`,
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Create a URL for the file and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      console.log("url", url);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Category_sample.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.log(`Error in downloading sample CSV file: ${err.stack}`);
+    }
+  };
+
+  const handleSelectCSVFile = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setSelectedCSVFile(file);
+  };
+
+  const handlUploadCSVFile = async (e) => {
+    try {
+      e.preventDefault();
+
+      setIsUploadLoading(true);
+
+      const userIdToSend = role === "Admin" ? merchantId : userId;
+
+      const csvToSend = new FormData();
+
+      if (selectedCSVFile) {
+        csvToSend.append("categoryCSV", selectedCSVFile);
+        csvToSend.append("merchantId", userIdToSend);
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/categories/admin/upload-category-csv`,
+        csvToSend,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSelectedCSVFile(null);
+        handleCancel();
+        toast({
+          title: "Success",
+          description: "CSV data added successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        // navigate(0);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Error in uploading CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsUploadLoading(false);
+    }
+  };
+
   return (
     <Modal
       title="Add Categories"
@@ -145,19 +237,6 @@ const AddCategoriesModal = ({
     >
       <form onSubmit={handleAddCategory}>
         <div className="flex flex-col gap-4 mt-5">
-          <div className="grid justify-end">
-            {" "}
-            <button
-              type="button"
-              className="flex gap-2 p-2 bg-teal-800 px-5 font-[500] text-white rounded-xl border"
-            >
-              <AiOutlineCloudUpload className="text-[22px]" />
-              Upload CSV
-            </button>
-            <p className="text-blue-700 underline mx-2">
-              Download Sample CSV
-            </p>
-          </div>
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
               Business Category
@@ -178,6 +257,7 @@ const AddCategoriesModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="categoryName">
               Category Name
@@ -191,6 +271,7 @@ const AddCategoriesModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
               Description
@@ -241,6 +322,7 @@ const AddCategoriesModal = ({
             />
             <label className="cursor-pointer"> Both</label>
           </div>
+
           <div className="flex items-center">
             <label className=" w-1/3">Photos</label>
             <div className="flex items-center gap-[30px]">
@@ -272,19 +354,61 @@ const AddCategoriesModal = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-4 mt-6">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-            <button
-              className="bg-teal-800 text-white py-2 px-4 rounded-md focus:outline-none"
-              type="submit"
-            >
-              {isLoading ? `Adding...` : `Add`}
-            </button>
+          <div className="flex items-start justify-between gap-4 mt-5">
+            <div className="flex flex-col">
+              <label
+                htmlFor="uploadCSV"
+                className="flex items-center bg-teal-800 w-fit p-2 gap-2 text-white rounded-xl border cursor-pointer"
+              >
+                <AiOutlineCloudUpload size={20} />
+                Upload CSV
+                <input
+                  type="file"
+                  name="uploadCSV"
+                  id="uploadCSV"
+                  className="hidden"
+                  onChange={handleSelectCSVFile}
+                />
+              </label>
+
+              <p
+                onClick={downloadSampleCSV}
+                className="text-gray-500 underline underline-offset-2 cursor-pointer"
+              >
+                Download Sample CSV
+              </p>
+
+              {selectedCSVFile && (
+                <div className="flex items-center gap-4 mt-[20px]">
+                  <p>{selectedCSVFile.name}</p>
+                  {isUploadLoading ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <AiOutlineCloudUpload
+                      size={25}
+                      onClick={handlUploadCSVFile}
+                      className="cursor-pointer  text-teal-600"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-4 w-fit h-fit">
+              <button
+                className="bg-cyan-50 py-2 px-4 rounded-md"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="bg-teal-800 text-white py-2 px-4 rounded-md focus:outline-none"
+                type="submit"
+              >
+                {isLoading ? `Adding...` : `Add`}
+              </button>
+            </div>
           </div>
         </div>
       </form>

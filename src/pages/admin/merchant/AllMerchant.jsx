@@ -15,7 +15,7 @@ import GIFLoader from "../../../components/GIFLoader";
 import axios from "axios";
 import { CSVLink } from "react-csv";
 import AddMerchant from "../../../components/model/Merchant/AddMerchant";
-import { useToast } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 import { allMerchantCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 import { AiOutlineCloudUpload } from "react-icons/ai";
@@ -38,12 +38,15 @@ const Merchant = () => {
   const [approveLoading, setApproveLoading] = useState(false);
   const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isConfirmModal, setIsConfirmModal] = useState(false); // Modal to approve merchant
-  const [isModalReject, setIsModalReject] = useState(false); // Modal to Reject Merchant
+  const [isConfirmModal, setIsConfirmModal] = useState(false);
+  const [isModalReject, setIsModalReject] = useState(false);
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(1);
+  const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
+
+  const [selectedCSVFile, setSelectedCSVFile] = useState(null);
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
 
   const { token, role } = useContext(UserContext);
 
@@ -338,10 +341,6 @@ const Merchant = () => {
     }
   };
 
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible);
-  };
-
   useEffect(() => {
     const filterHandler = async () => {
       try {
@@ -385,11 +384,13 @@ const Merchant = () => {
 
     filterHandler();
   }, [serviceable, geofence, businessCategory, token, role]);
+
   const onSearch = (e) => {
     let text = e.target.value;
     setSearch(text);
     console.log(search);
   };
+
   useEffect(() => {
     const handleSearchMerchant = async () => {
       try {
@@ -435,22 +436,100 @@ const Merchant = () => {
     };
   }, [search]);
 
-  const handleApprovedModal = () => {
-    setIsConfirmModal(true);
-  };
-
-  const showModalReject = () => {
-    setIsModalReject(true);
-  };
-
-  const showCSVModal = () => {
-    setIsCSVModalVisible(true);
-  };
+  const toggleModal = () => setIsModalVisible(!isModalVisible);
+  const handleApprovedModal = () => setIsConfirmModal(true);
+  const showModalReject = () => setIsModalReject(true);
+  const showCSVModal = () => setIsCSVModalVisible(true);
 
   const handleCancel = () => {
     setIsConfirmModal(false);
     setIsModalReject(false);
     setIsCSVModalVisible(false);
+  };
+
+  const downloadSampleCSV = async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await axios.get(
+        `${BASE_URL}/merchants/admin/download-sample-merchant-csv`,
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Create a URL for the file and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      console.log("url", url);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Merchant_Sample.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.log(`Error in downloading sample CSV file: ${err.stack}`);
+    }
+  };
+
+  const handleSelectCSVFile = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setSelectedCSVFile(file);
+  };
+
+  const handlUploadCSVFile = async (e) => {
+    try {
+      e.preventDefault();
+
+      setIsUploadLoading(true);
+
+      const csvToSend = new FormData();
+
+      if (selectedCSVFile) {
+        csvToSend.append("merchantCSV", selectedCSVFile);
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/merchants/admin/upload-merchant-csv`,
+        csvToSend,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSelectedCSVFile(null);
+        handleCancel();
+        toast({
+          title: "Success",
+          description: "CSV data added successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        navigate(0);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Error in uploading CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsUploadLoading(false);
+    }
   };
 
   return (
@@ -482,28 +561,58 @@ const Merchant = () => {
                   centered
                 >
                   <div className="flex rounded-xl justify-between p-10">
-                    <div className="grid">
-                      <button className="flex gap-2 p-3 bg-cyan-200 px-5 font-[500] rounded-xl border">
-                        <AiOutlineCloudUpload className="text-[22px]" />
-                        Upload
-                      </button>
-                      <p className="text-blue-700 underline mx-2">
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="uploadCSV"
+                        className="flex items-center bg-teal-800 w-fit p-2 gap-2 text-white rounded-xl border cursor-pointer"
+                      >
+                        <AiOutlineCloudUpload size={20} />
+                        Upload CSV
+                        <input
+                          type="file"
+                          name="uploadCSV"
+                          id="uploadCSV"
+                          className="hidden"
+                          onChange={handleSelectCSVFile}
+                        />
+                      </label>
+
+                      <p
+                        onClick={downloadSampleCSV}
+                        className="text-gray-500 underline underline-offset-2 cursor-pointer"
+                      >
                         Download Sample CSV
                       </p>
-                    </div>
-                    <div>
-                    <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
-                      <CSVLink
-                        data={allMerchants}
-                        headers={allMerchantCSVDataHeading}
-                        filename={"All_Merchants.csv"}
-                      >
-                        <div className="flex gap-2">
-                          <TbArrowsSort className="text-[22px]" />
-                          Download
+
+                      {selectedCSVFile && (
+                        <div className="flex items-center gap-4 mt-[20px]">
+                          <p>{selectedCSVFile.name}</p>
+                          {isUploadLoading ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <AiOutlineCloudUpload
+                              size={25}
+                              onClick={handlUploadCSVFile}
+                              className="cursor-pointer  text-teal-600"
+                            />
+                          )}
                         </div>
-                      </CSVLink>
-                    </button>
+                      )}
+                    </div>
+
+                    <div>
+                      <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
+                        <CSVLink
+                          data={allMerchants}
+                          headers={allMerchantCSVDataHeading}
+                          filename={"All_Merchants.csv"}
+                        >
+                          <div className="flex gap-2">
+                            <TbArrowsSort className="text-[22px]" />
+                            Download
+                          </div>
+                        </CSVLink>
+                      </button>
                     </div>
                   </div>
                 </Modal>
@@ -643,7 +752,7 @@ const Merchant = () => {
                     allMerchants.map((data) => (
                       <tr
                         key={data._id}
-                        className="align-middle border-b border-gray-300"
+                        className="align-middle text-center even:bg-gray-200"
                       >
                         <td className="p-4 underline underline-offset-4">
                           <Link to={`/merchant-detail/${data._id}`}>

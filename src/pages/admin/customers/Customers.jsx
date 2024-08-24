@@ -14,6 +14,7 @@ import { CSVLink } from "react-csv";
 import { allCustomerCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 import { Modal } from "antd";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -28,13 +29,15 @@ const Customers = () => {
   const [searchFilter, setSearchFilter] = useState("");
 
   const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
+  const [selectedCSVFile, setSelectedCSVFile] = useState(null);
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     if (!token) {
@@ -74,6 +77,9 @@ const Customers = () => {
 
     fetchData();
   }, [token, role, navigate, page, limit]);
+
+  const showCSVModal = () => setIsCSVModalVisible(true);
+  const handleCancel = () => setIsCSVModalVisible(false);
 
   const handleFilterChange = async (filterType, value) => {
     try {
@@ -127,12 +133,88 @@ const Customers = () => {
     }
   };
 
-  const showCSVModal = () => {
-    setIsCSVModalVisible(true);
+  const downloadSampleCSV = async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/customers/download-sample-customer-csv`,
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Create a URL for the file and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "customerSample.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Error while downloading the sample CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
-  const handleCancel = () => {
-    setIsCSVModalVisible(false);
+  const handleSelectCSVFile = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setSelectedCSVFile(file);
+  };
+
+  const handlUploadCSVFile = async (e) => {
+    try {
+      e.preventDefault();
+
+      const csvToSend = new FormData();
+
+      if (selectedCSVFile) {
+        csvToSend.append("customerCSV", selectedCSVFile);
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/admin/customers/upload-customer-csv`,
+        csvToSend,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSelectedCSVFile(null);
+        handleCancel();
+        toast({
+          title: "Success",
+          description: "CSV data added successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Erro while uploading the CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -163,29 +245,45 @@ const Customers = () => {
                 centered
               >
                 <div className="flex rounded-xl justify-between p-10">
-                  <div className="grid">
-                    <button className="flex gap-2 p-3 bg-cyan-200 px-5 font-[500] rounded-xl border">
+                  <div>
+                    <label
+                      htmlFor="uploadCSV"
+                      className="flex gap-2 p-3 w-fit bg-cyan-200 px-5 font-[500] rounded-xl border cursor-pointer"
+                    >
                       <AiOutlineCloudUpload className="text-[22px]" />
                       Upload
-                    </button>
-                    <p className="text-blue-700 underline mx-2">
+                    </label>
+                    <input
+                      id="uploadCSV"
+                      type="file"
+                      className="hidden"
+                      onChange={handleSelectCSVFile}
+                    />
+                    <p
+                      onClick={downloadSampleCSV}
+                      className="text-gray-500 hover:underline mx-2 mt-2 underline-offset-2 cursor-pointer"
+                    >
                       Download Sample CSV
                     </p>
                   </div>
                   <div>
-                    <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
+                    <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white cursor-pointer">
                       <CSVLink
                         data={customers}
                         headers={allCustomerCSVDataHeading}
                         filename={"All_Customer_Data.csv"}
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:text-white">
                           <TbArrowsSort className="text-[22px]" />
                           Download
                         </div>
                       </CSVLink>
                     </button>
                   </div>
+
+                  {selectedCSVFile && (
+                    <p onClick={handlUploadCSVFile}>Upload</p>
+                  )}
                 </div>
               </Modal>
             </div>
@@ -228,7 +326,7 @@ const Customers = () => {
             </div>
             <div className="overflow-auto mt-[20px] w-full">
               <table className="text-start w-full">
-                <thead>
+                <thead className=" sticky top-0 left-0">
                   <tr>
                     {[
                       "ID",
@@ -256,6 +354,7 @@ const Customers = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isTableLoading && customers?.length === 0 && (
                     <tr>
                       <td colSpan={7}>
@@ -265,11 +364,12 @@ const Customers = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isTableLoading &&
                     customers.map((customer) => (
                       <tr
                         key={customer._id}
-                        className="align-middle border-b border-gray-300 text-center"
+                        className="align-middle even:bg-gray-200 text-center"
                       >
                         <td className="p-4">
                           <Link

@@ -26,6 +26,7 @@ import {
   allCategoryCSVDataHeading,
   allProductsCSVDataHeading,
 } from "../../../utils/DefaultData";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -241,11 +242,8 @@ const Products = () => {
     setChangeCategoryModal(false);
   };
 
-  const handleAddCategory = (category) => {
-    console.log("Adding category:", category);
+  const handleAddCategory = (category) =>
     setAllCategories([...allCategories, category]);
-    console.log("Updated categories:", allCategories);
-  };
 
   const handleAddProduct = (product) =>
     setAllProducts([...allProducts, product]);
@@ -254,6 +252,7 @@ const Products = () => {
     setAllCategories(
       allCategories.filter((category) => category._id !== categoryId)
     );
+
     if (allCategories.length > 1) {
       setSelectedCategory({
         categoryId: allCategories[0]._id,
@@ -271,6 +270,7 @@ const Products = () => {
 
   const filterDeletedProduct = (productId) => {
     setAllProducts(allProducts.filter((product) => product._id !== productId));
+
     if (allProducts.length > 1) {
       setSelectedProduct({
         productId: allProducts[0]._id,
@@ -406,7 +406,6 @@ const Products = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in reodering categories: ${err.stack}`);
       toast({
         title: "Error",
         description: `Error in reodering categories`,
@@ -452,7 +451,6 @@ const Products = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in re-odering products: ${err}`);
       toast({
         title: "Error",
         description: `Error in re-odering products`,
@@ -463,6 +461,11 @@ const Products = () => {
     }
   };
 
+  const merchantOptions = allMerchants.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
+
   return (
     <>
       <Sidebar />
@@ -470,28 +473,25 @@ const Products = () => {
         <nav className="p-5">
           <GlobalSearch />
         </nav>
-        <div
-          className={`flex ${
-            role === "Admin" ? "justify-between" : "justify-end"
-          } bg-white p-5 mx-5 rounded-md`}
-        >
+
+        <div className="flex justify-between bg-white p-5 mx-5 rounded-md">
           {role === "Admin" && (
-            <select
-              name="merchantId"
-              value={selectedMerchant}
-              className="bg-blue-50 p-2 rounded focus:outline-none outline-none"
-              onChange={(e) => setSelectedMerchant(e.target.value)}
-            >
-              <option defaultValue={"Select merchant"} hidden>
-                Select merchant
-              </option>
-              {allMerchants?.map((merchant) => (
-                <option key={merchant._id} value={merchant._id}>
-                  {merchant.merchantName}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-[200px] outline-none focus:outline-none"
+              value={merchantOptions.find(
+                (option) => option.value === selectedMerchant
+              )}
+              isMulti={false}
+              isSearchable={true}
+              onChange={(option) =>
+                setSelectedMerchant(option ? option.value : "")
+              }
+              options={merchantOptions}
+              placeholder="Select Merchant"
+              isClearable={false}
+            />
           )}
+
           <div className="flex gap-3">
             <div>
               <button className="bg-cyan-100 text-black rounded-md p-1 font-semibold flex items-center space-x-2">
@@ -504,6 +504,7 @@ const Products = () => {
                 </CSVLink>
               </button>
             </div>
+
             <div>
               <button className="bg-teal-800 rounded-md p-1 text-white font-semibold flex items-center space-x-2">
                 <CSVLink
@@ -516,16 +517,8 @@ const Products = () => {
               </button>
             </div>
           </div>
-          <div>
-            <input
-              type="search"
-              name="search"
-              className="bg-gray-100 relative p-2 rounded-2xl"
-              placeholder="Search records"
-            />
-            <SearchOutlined className="absolute -ml-7 mt-3" />
-          </div>
         </div>
+
         <div className="flex">
           <div className="w-1/5 bg-white rounded-md m-5 mr-0">
             <div className="border-b-2">
@@ -533,10 +526,11 @@ const Products = () => {
                 Categories
               </h1>
             </div>
-            <div>
+
+            <div className="max-h-[30rem] overflow-auto">
               {isCategoryListLoading && (
                 <div className="flex justify-center my-3 ">
-                  <Spinner />
+                  <Spinner size="sm" />
                 </div>
               )}
 
@@ -643,10 +637,10 @@ const Products = () => {
 
             <div className="flex">
               <div className=" border border-gray-200 w-1/3">
-                <div>
+                <div className="max-h-[30rem] overflow-auto">
                   {isProductListLoading && (
                     <div className="flex justify-center my-3 ">
-                      <Spinner />
+                      <Spinner size="sm" />
                     </div>
                   )}
 
@@ -699,7 +693,7 @@ const Products = () => {
               <div className="w-full">
                 {isProductDetailLoading && (
                   <div className="flex justify-center items-center h-[55dvh]">
-                    <Spinner />
+                    <Spinner size="sm" />
                   </div>
                 )}
 
