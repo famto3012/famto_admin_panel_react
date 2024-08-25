@@ -19,8 +19,6 @@ const AddNotificationModal = ({
   BASE_URL,
   onAddNotification,
 }) => {
-  const toast = useToast();
-  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     event: "",
     title: "",
@@ -33,15 +31,25 @@ const AddNotificationModal = ({
     email: false,
     sms: false,
   });
+  const toast = useToast();
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const allEvents = [{ name: "New Order", value: "newOrder" }, {name: " Order", value: "agentOrderAccepted"}];
+  const allEvents = [
+    { name: "New Order", value: "newOrder" },
+    { name: "Agent Order Accepted", value: "agentOrderAccepted" }, // Fixed event name here
+  ];
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleEventChange = (e) => {
-    setFormData({ ...formData, event: e.target.value });
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      event: selectedOption ? selectedOption.value : "",
+    });
   };
+
   const onChange = (name, checked) => {
     setFormData({ ...formData, [name]: checked });
   };
@@ -49,11 +57,13 @@ const AddNotificationModal = ({
   const eventOptions = allEvents.map((event) => ({
     label: event.name,
     value: event.value,
-  }));       
+  }));
+
   const signupAction = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
+
       const addResponse = await axios.post(
         `${BASE_URL}/admin/notification/notification-setting`,
         formData,
@@ -62,6 +72,7 @@ const AddNotificationModal = ({
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (addResponse.status === 201) {
         handleCancel();
         onAddNotification(addResponse.data.data);
@@ -78,7 +89,6 @@ const AddNotificationModal = ({
     } finally {
       setConfirmLoading(false);
     }
-    console.log(formData);
   };
 
   return (
@@ -95,26 +105,19 @@ const AddNotificationModal = ({
             <label htmlFor="event" className="w-1/3 text-gray-500">
               Event
             </label>
-            {/* <input
-              type="text"
-              id="event"
-              name="event"
-              value={formData.event}
-              onChange={handleInputChange}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-            /> */}
+
             <Select
               className="w-2/3 outline-none focus:outline-none"
-              value={eventOptions.filter((option) =>
-                option.value
+              value={eventOptions.find(
+                (option) => option.value === formData.event
               )}
+              name="event"
               isMulti={false}
-              //isSearchable={true}
-              onChange={handleInputChange}
+              isSearchable={true}
+              onChange={handleSelectChange}
               options={eventOptions}
-              placeholder="Select Product"
-              //isClearable={true}
-             // components={animatedComponents}
+              placeholder="Select event name"
+              isClearable={false}
             />
           </div>
           <div className="flex items-center">
@@ -125,7 +128,7 @@ const AddNotificationModal = ({
               type="text"
               id="title"
               name="title"
-              value={formData.event}
+              value={formData.title}
               onChange={handleInputChange}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
