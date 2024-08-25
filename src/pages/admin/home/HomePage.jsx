@@ -124,7 +124,7 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { 
     requestPermission();
   }, []);
 
