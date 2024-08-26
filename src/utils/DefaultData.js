@@ -73,28 +73,27 @@ const allMerchantCSVDataHeading = [
   { label: "Geofence", key: "geofence" },
 ];
 
-  const allAgentsCSVDataHeading = [
-    { label: "AgentID", key: "_id" },
-    { label: "FullName", key: "fullName" },
-    { label: "Email", key: "email" },
-    { label: "Phone", key: "phoneNumber" },
-    { label: "Manager", key: "manager" },
-    { label: "Geofence", key: "geofence" },
-    { label: "Online Status", key: "status" },
-  ];
+const allAgentsCSVDataHeading = [
+  { label: "AgentID", key: "_id" },
+  { label: "FullName", key: "fullName" },
+  { label: "Email", key: "email" },
+  { label: "Phone", key: "phoneNumber" },
+  { label: "Manager", key: "manager" },
+  { label: "Geofence", key: "geofence" },
+  { label: "Online Status", key: "status" },
+];
 
-  const allCategoryCSVDataHeading = [
-    {label : "Category Id" , key: "_id"},
-    {label : "Merchant Id" , key: "merchantId"},
-    {label : "Category Name" , key: "categoryName"},
-    {label : "Status" , key: "status"},
-  ]
+const allCategoryCSVDataHeading = [
+  { label: "Category Id", key: "_id" },
+  { label: "Merchant Id", key: "merchantId" },
+  { label: "Category Name", key: "categoryName" },
+  { label: "Status", key: "status" },
+];
 
-  const allProductsCSVDataHeading = [
-    {label: "Product Id", key: "_id"},
-    {label: "Product Name", key: "productName"},
-  ]
-
+const allProductsCSVDataHeading = [
+  { label: "Product Id", key: "_id" },
+  { label: "Product Name", key: "productName" },
+];
 
 export {
   itemTypes,
@@ -105,5 +104,5 @@ export {
   allMerchantCSVDataHeading,
   allAgentsCSVDataHeading,
   allCategoryCSVDataHeading,
-  allProductsCSVDataHeading
+  allProductsCSVDataHeading,
 };

@@ -35,8 +35,20 @@ const AddNotificationModal = ({
   const [confirmLoading, setConfirmLoading] = useState(false);
 
   const allEvents = [
-    { name: "New Order", value: "newOrder" },
-    { name: "Agent Order Accepted", value: "agentOrderAccepted" }, // Fixed event name here
+    { name: "New Order created", value: "newOrderCreated" },
+    { name: "Order accepted", value: "orderAccepted" },
+    { name: "Order rejected", value: "orderRejected" },
+    { name: "Subscription plan end", value: "subscriptionPlanEnd" },
+    {
+      name: "Agent Order Accepted (For customer)",
+      value: "agentOrderAccepted",
+    },
+    { name: "Agent Order Rejected (For Admin)", value: "agentOrderRejected" }, // TODO: Check if added notification
+    { name: "Sponsorship plan expired", value: "sponsorshipPlanExpired" },
+    {
+      name: "Agent reached delivery Location",
+      value: "reachedDeliveryLocation",
+    },
   ];
 
   const handleInputChange = (e) => {
@@ -76,6 +88,18 @@ const AddNotificationModal = ({
       if (addResponse.status === 201) {
         handleCancel();
         onAddNotification(addResponse.data.data);
+        setFormData({
+          event: "",
+          title: "",
+          description: "",
+          admin: false,
+          customer: false,
+          driver: false,
+          merchant: false,
+          whatsapp: false,
+          email: false,
+          sms: false,
+        });
         toast({
           title: "Success",
           description: "Notification Created Successfully",
