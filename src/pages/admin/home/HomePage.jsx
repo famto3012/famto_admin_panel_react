@@ -28,6 +28,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
+  const [realTimeDataCount, setRealTimeDataCount] = useState({});
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -63,23 +64,22 @@ const HomePage = () => {
     console.log(err.context);
   });
 
-  socket.on("newOrderCreated", (data) => {
-    console.log(data);
-  });
-
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
     }
 
-    // navigate(0);
-
     socket.on("connect", async () => {
-      console.log("Connected to server");
+      // console.log("Connected to server");
       //  playNewOrderNotificationSound();
       //  playNewNotificationSound();
+    });
+
+    socket.on("realTimeDataCount", (dataCount) => {
+      setTimeout(() => {
+        console.log(dataCount);
+        setRealTimeDataCount(dataCount);
+      }, 5000);
     });
 
     const unsubscribe = onMessage(messaging, (payload) => {
@@ -93,9 +93,9 @@ const HomePage = () => {
 
     return () => {
       unsubscribe();
-      // Clean up other listeners as needed
+      socket.off("realTimeDataCount");
     };
-  }, [token, navigate, socket]);
+  }, [token, socket, userId]);
 
   const requestPermission = async () => {
     try {
@@ -124,7 +124,7 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     requestPermission();
   }, []);
 
@@ -378,7 +378,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="flex">
-          <HomeComponents />
+          <HomeComponents realTimeDataCount={realTimeDataCount} />
         </div>
       </div>
     </>
