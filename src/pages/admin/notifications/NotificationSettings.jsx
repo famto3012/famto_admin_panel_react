@@ -207,7 +207,7 @@ const NotificationSettings = () => {
                 <tbody>
                   {notification.map((notification) => (
                     <tr className="bg-white w-full" key={notification._id}>
-                      <td className="px-7 py-4">{notification.event}</td>
+                      <td className="px-7 py-4">{notification.title}</td>
                       <td className="items-left px-4 py-4">
                         {notification.description}
                       </td>
