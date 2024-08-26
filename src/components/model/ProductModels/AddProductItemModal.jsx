@@ -53,8 +53,7 @@ const AddProductItemModal = ({
     if (!categoryId || !merchantId) return;
 
     if (isVisible) {
-      const fetchData = async () => {                                                                                                                                                                                                     
-        console.log("started", merchantId);
+      const fetchData = async () => {
         const discountEndPoint =
           role === "Admin"
             ? `${BASE_URL}/merchant/product-discount/get-product-discount-admin/${merchantId}`
