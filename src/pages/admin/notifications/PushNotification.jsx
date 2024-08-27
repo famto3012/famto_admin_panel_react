@@ -19,6 +19,7 @@ const PushNotification = () => {
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentData, setCurrentData] = useState(null);
+  const [currentId, setCurrentId] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
   const [type, setType] = useState("");
   const [data, setData] = useState([]);
@@ -205,6 +206,7 @@ const PushNotification = () => {
     }
   };
   const sendNotification = async (e, id) => {
+    
     e.preventDefault();
     try {
       setDataLoading(true);
@@ -291,7 +293,8 @@ const PushNotification = () => {
     }
   };
 
-  const showModal = () => {
+  const showModal = (id) => {
+    setCurrentId(id);
     setIsModalVisible(true);
   };
 
@@ -517,8 +520,7 @@ const PushNotification = () => {
                   <td>
                     <div className="flex items-center justify-center gap-3">
                       <button
-                        onClick={showModal}
-                        // onClick={() => sendNotification(data._id)}
+                        onClick={() => showModal(data._id)}
                       >
                         <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
                       </button>
@@ -532,7 +534,7 @@ const PushNotification = () => {
                           Are you sure you want to Send?
                         </p>
                         <div className="flex justify-end">
-                          <form onSubmit={(e) => sendNotification(e, data._id)}>
+                          <form>
                             <button
                               type="button"
                               className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
@@ -542,6 +544,7 @@ const PushNotification = () => {
                             </button>
                             <button
                               type="submit"
+                              onClick={(e) => sendNotification(e, currentId)}
                               className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"
                             >
                               {dataLoading ? "Sending..." : "Send"}
