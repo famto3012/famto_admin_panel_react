@@ -6,11 +6,13 @@ import CustomerSub from "./components/model/SubscriptionModels/CustomerSub";
 import { UserContext } from "./context/UserContext";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 
+
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
 const Success = lazy(() => import("./pages/auth/Success"));
 const Merchant = lazy(() => import("./pages/admin/merchant/AllMerchant"));
 const Tax = lazy(() => import("./pages/admin/tax/Tax"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
 const Verification = lazy(() => import("./pages/auth/Verification"));
 const MerchantDetails = lazy(() =>
   import("./pages/admin/merchant/MerchantDetails")
@@ -85,9 +87,9 @@ function App() {
               <Route path="sign-up" element={<Signup />} />
               <Route path="success" element={<Success />} />
               <Route path="verify" element={<Verification />} />
+              <Route path="reset-password" element={<ResetPassword />} />
               <Route path="forgot-password" element={<ForgotPassword />}/>
             </Route>
-
             <Route path="/all-orders" element={<Orders />} />
             <Route path="/order-details/:orderId" element={<OrderDetails />} />
             <Route path="/all-merchants" element={<Merchant />} />
