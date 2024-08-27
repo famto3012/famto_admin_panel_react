@@ -55,7 +55,7 @@ const Orders = () => {
     const handleChangeAccepterOrderStatus = ({ orderId }) => {
       console.log(orderId);
       setOrders((prevOrders) =>
-        prevOrders.filter((order) =>
+        prevOrders.map((order) =>
           order._id === orderId ? { ...order, orderStatus: "On-going" } : order
         )
       );
@@ -64,7 +64,7 @@ const Orders = () => {
     const handleChangeRejectedOrderStatus = ({ orderId }) => {
       console.log(orderId);
       setOrders((prevOrders) =>
-        prevOrders.filter((order) =>
+        prevOrders.map((order) =>
           order._id === orderId ? { ...order, orderStatus: "Cancelled" } : order
         )
       );

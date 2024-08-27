@@ -19,7 +19,7 @@ const AddProductItemModal = ({
 }) => {
   const [productData, setProductData] = useState({
     productName: "",
-    price: "", 
+    price: "",
     minQuantityToOrder: "",
     maxQuantityPerOrder: "",
     costPrice: "",

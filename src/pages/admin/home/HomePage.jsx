@@ -16,6 +16,7 @@ import { messaging } from "../../../firebase";
 import { Switch } from "antd";
 import axios from "axios";
 import { useSocket } from "../../../context/SocketContext";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -27,8 +28,7 @@ const HomePage = () => {
     setSelectedOption(event.target.value);
   };
 
-  const { token, role, userId, setFcmToken } =
-    useContext(UserContext);
+  const { token, role, userId, setFcmToken } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
 
