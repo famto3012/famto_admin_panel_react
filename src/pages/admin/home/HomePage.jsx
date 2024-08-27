@@ -23,13 +23,14 @@ import {
   //  useNewNotificationPlayer
 } from "../../../utils/notificationSound";
 import { useSoundContext } from "../../../context/SoundContext";
+import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
   const [realTimeDataCount, setRealTimeDataCount] = useState({});
-
+  const {socket} = useSocket();
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
@@ -40,20 +41,20 @@ const HomePage = () => {
     useSoundContext();
   const toast = useToast();
 
-  const socket = io("http://localhost:5000", {
-    query: {
-      userId: userId && userId,
-      fcmToken: fcmToken && fcmToken,
-    },
-    autoConnect: true,
-    transports: ["websocket"],
-    reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-  });
+  // const socket = io("http://localhost:5000", {
+  //   query: {
+  //     userId: userId && userId,
+  //     fcmToken: fcmToken && fcmToken,
+  //   },
+  //   autoConnect: true,
+  //   transports: ["websocket"],
+  //   reconnection: true,
+  //   reconnectionAttempts: Infinity,
+  //   reconnectionDelay: 1000,
+  //   reconnectionDelayMax: 5000,
+  // });
 
-  socket.on("connect_error", (err) => {
+  socket?.on("connect_error", (err) => {
     // the reason of the error, for example "xhr poll error"
     console.log(err.message);
 
@@ -69,18 +70,20 @@ const HomePage = () => {
       navigate("/auth/login");
     }
 
-    socket.on("connect", async () => {
-      // console.log("Connected to server");
-      //  playNewOrderNotificationSound();
-      //  playNewNotificationSound();
-    });
-
-    socket.on("realTimeDataCount", (dataCount) => {
-      setTimeout(() => {
-        console.log(dataCount);
-        setRealTimeDataCount(dataCount);
-      }, 5000);
-    });
+    // socket.on("connect", async () => {
+    //    console.log("Connected to server");
+    //   //  playNewOrderNotificationSound();
+    //   //  playNewNotificationSound();
+    // });
+    // if (socket) {
+    //   console.log("socket", socket)
+      socket?.on("realTimeDataCount", (dataCount) => {
+        setTimeout(() => {
+          console.log(dataCount);
+          setRealTimeDataCount(dataCount);
+        }, 5000);
+      });
+    // }
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received:", payload);
@@ -93,7 +96,7 @@ const HomePage = () => {
 
     return () => {
       unsubscribe();
-      socket.off("realTimeDataCount");
+      socket?.off("realTimeDataCount");
     };
   }, [token, socket, userId]);
 
