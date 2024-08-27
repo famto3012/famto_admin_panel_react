@@ -5,6 +5,8 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { formatDate, formatTime } from "../../../utils/formatter";
 import { Pagination } from "@mui/material";
+import { useSocket } from "../../../context/SocketContext";
+import { useSoundContext } from "../../../context/SoundContext";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Notificationlog = () => {
@@ -13,6 +15,9 @@ const Notificationlog = () => {
   const [pagination, setPagination] = useState({});
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const {socket} = useSocket()
+  const { playNewOrderNotificationSound, playNewNotificationSound } =
+    useSoundContext();
 
   useEffect(() => {
     if (role === "Admin") {
@@ -21,6 +26,23 @@ const Notificationlog = () => {
       getMerchantNotificationLog(page, limit);
     }
   }, [page, limit, role]);
+
+  useEffect(() => {
+   socket?.on("pushNotification", async(data)=>{
+    await playNewNotificationSound()
+    console.log("Push notification", data)
+    addNotificationToTable(data);
+   }) 
+   socket?.on("alertNotification", async(data)=>{
+    await playNewNotificationSound()
+    console.log("Alert notification", data)
+    addNotificationToTable(data);
+   }) 
+  }, [socket])
+
+  const addNotificationToTable = (newNotification) => {
+    setTableData((prevData) => [newNotification, ...prevData]);
+  };
 
   const getAdminNotificationLog = async (page, limit) => {
     try {

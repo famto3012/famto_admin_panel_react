@@ -11,18 +11,10 @@ import {
 } from "@chakra-ui/react";
 import { LineChart } from "@saas-ui/charts";
 import { UserContext } from "../../../context/UserContext";
-import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
-
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../../../firebase";
 import { Switch } from "antd";
 import axios from "axios";
-import {
-  useNewOrderPlayer,
-  //  useNewNotificationPlayer
-} from "../../../utils/notificationSound";
-import { useSoundContext } from "../../../context/SoundContext";
 import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -35,10 +27,8 @@ const HomePage = () => {
     setSelectedOption(event.target.value);
   };
 
-  const { token, role, userId, fcmToken, setFcmToken } =
+  const { token, role, userId, setFcmToken } =
     useContext(UserContext);
-  const { playNewOrderNotificationSound, playNewNotificationSound } =
-    useSoundContext();
   const toast = useToast();
 
   socket?.on("connect_error", (err) => {
