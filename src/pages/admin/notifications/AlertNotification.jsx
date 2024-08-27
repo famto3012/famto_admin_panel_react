@@ -11,6 +11,7 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
+import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AlertNotification = () => {
@@ -32,6 +33,7 @@ const AlertNotification = () => {
   });
   const [visibleTaskModal, setVisibleTaskModal] = useState({});
   const toast = useToast();
+  const {socket} = useSocket()
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -64,6 +66,15 @@ const AlertNotification = () => {
     fetchData();
   }, [token, role, navigate]);
 
+  useEffect(() => {
+    socket?.on("pushNotification", (data)=>{
+     console.log("Push notification", data)
+    }) 
+    socket?.on("alertNotification", (data)=>{
+     console.log("Alert notification", data)
+    }) 
+   }, [socket])
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setState((prevState) => ({
@@ -88,7 +99,6 @@ const AlertNotification = () => {
       }
     } catch (err) {
       console.error(`Error in fetching data: ${err}`);
-    } finally {
     }
   };
 
@@ -190,8 +200,7 @@ const AlertNotification = () => {
       }
     } catch (err) {
       console.error(`Error in fetching data: ${err}`);
-    } finally {
-    }
+    } 
   };
 
   const onAddNotification = (newNotification) => {
