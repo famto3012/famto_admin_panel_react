@@ -39,19 +39,19 @@ const HomeComponents = ({ realTimeDataCount }) => {
           <div className="flex-grow flex gap-[50px] font-normal">
             <div className="border-l-8  px-10 border-teal-700">
               <p>Open</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.merchantCount?.open}</p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Closed</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.merchantCount?.closed}</p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Active</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.merchantCount?.active}</p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Inactive</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.merchantCount?.notActive}</p>
             </div>
           </div>
         </div>
@@ -63,15 +63,15 @@ const HomeComponents = ({ realTimeDataCount }) => {
           <div className=" flex-grow flex gap-[50px] font-normal">
             <div className="border-l-8  px-10 border-teal-700">
               <p>Free</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.agentCount?.free}</p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Inactive</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.agentCount?.inActive}</p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Busy</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">{realTimeDataCount?.agentCount?.busy}</p>
             </div>
           </div>
         </div>
