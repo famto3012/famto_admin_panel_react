@@ -1,6 +1,6 @@
 import React from "react";
 
-const HomeComponents = () => {
+const HomeComponents = ({ realTimeDataCount }) => {
   return (
     <>
       <div className="w-full">
@@ -9,19 +9,27 @@ const HomeComponents = () => {
           <div className="flex-grow flex gap-[35px] font-normal">
             <div className="border-l-8  px-10 border-teal-700">
               <p>Pending</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">
+                {realTimeDataCount?.orderCount?.pending}
+              </p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Ongoing</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">
+                {realTimeDataCount?.orderCount?.ongoing}
+              </p>
             </div>
             <div className="border-l-8  px-10 border-teal-700">
               <p>Completed</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">
+                {realTimeDataCount?.orderCount?.completed}
+              </p>
             </div>
             <div className="border-l-8  px-5 border-teal-700">
               <p>Cancelled</p>
-              <p className="text-[24px] font-bold text-teal-600">20</p>
+              <p className="text-[24px] font-bold text-teal-600">
+                {realTimeDataCount?.orderCount?.cancelled}
+              </p>
             </div>
           </div>
         </div>

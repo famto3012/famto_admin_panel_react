@@ -4,6 +4,7 @@ import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
 import CustomerSub from "./components/model/SubscriptionModels/CustomerSub";
 import { UserContext } from "./context/UserContext";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
@@ -87,8 +88,8 @@ function App() {
               <Route path="success" element={<Success />} />
               <Route path="verify" element={<Verification />} />
               <Route path="reset-password" element={<ResetPassword />} />
+              <Route path="forgot-password" element={<ForgotPassword />}/>
             </Route>
-
             <Route path="/all-orders" element={<Orders />} />
             <Route path="/order-details/:orderId" element={<OrderDetails />} />
             <Route path="/all-merchants" element={<Merchant />} />
