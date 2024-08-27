@@ -16,6 +16,7 @@ import { CSVLink } from "react-csv";
 import { allOrdersCSVDataHeading } from "../../../utils/DefaultData";
 import { formatDate } from "../../../utils/formatter";
 import { Spinner, useToast } from "@chakra-ui/react";
+import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -36,6 +37,7 @@ const Orders = () => {
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
+  const { socket } = useSocket();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -43,6 +45,41 @@ const Orders = () => {
     let text = e.target.value;
     setSearch(text);
   };
+
+  useEffect(() => {
+    const handleNewOrder = (orderData) => {
+      console.log(orderData);
+      setOrders((prevOrders) => [orderData, ...prevOrders]);
+    };
+
+    const handleChangeAccepterOrderStatus = ({ orderId }) => {
+      console.log(orderId);
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) =>
+          order._id === orderId ? { ...order, orderStatus: "On-going" } : order
+        )
+      );
+    };
+
+    const handleChangeRejectedOrderStatus = ({ orderId }) => {
+      console.log(orderId);
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) =>
+          order._id === orderId ? { ...order, orderStatus: "Cancelled" } : order
+        )
+      );
+    };
+
+    socket?.on("newOrderCreated", handleNewOrder);
+    socket?.on("orderAccepted", handleChangeAccepterOrderStatus);
+    socket?.on("orderRejected", handleChangeRejectedOrderStatus);
+
+    return () => {
+      socket?.off("newOrderCreated", handleNewOrder);
+      socket?.off("orderAccepted", handleChangeAccepterOrderStatus);
+      socket?.off("orderRejected", handleChangeRejectedOrderStatus);
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (!token) {
