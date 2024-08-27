@@ -30,6 +30,7 @@ const HomePage = () => {
   const { token, role, userId, setFcmToken } =
     useContext(UserContext);
   const toast = useToast();
+  const navigate = useNavigate();
 
   socket?.on("connect_error", (err) => {
     console.log(err.message);
@@ -49,7 +50,7 @@ const HomePage = () => {
       }, 1000);
     });
 
-    socket.emit("getRealTimeDataOnRefresh");
+    socket.emit("getRealTimeDataOnRefresh", "");
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received:", payload);
