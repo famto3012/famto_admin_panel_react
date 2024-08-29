@@ -58,8 +58,8 @@ const OrderDetails = () => {
   const [mapObject, setMapObject] = useState(null);
   const { orderId } = useParams();
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [activeStepIndex, setActiveStepIndex] = useState(0)
-  const [steps, setStep] = useState()
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
+  const [steps, setStep] = useState();
 
   const { token, role } = useContext(UserContext);
 
@@ -140,7 +140,7 @@ const OrderDetails = () => {
   const PolylineComponent = ({ map }) => {
     const polylineRef = useRef(null);
     const [coordinates, setCoordinates] = useState([]);
-    
+
     const generatePolyline = async () => {
       try {
         const pickupLat = orderDetail.pickUpLocation[0];
@@ -229,47 +229,63 @@ const OrderDetails = () => {
       );
     }
     let mappedSteps = [];
-    orderDetail?.stepperDetail?.map((item) => {
-     // Define an array to hold the steps
-   
-     // Add steps up to the "Cancelled" step
-     const addStep = (step, label, index) => {
-       if (step) {
-         mappedSteps.push({
-           title: label,
-           description: `by ${step?.by} with Id ${step?.userId || "N/A"} on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
-         });
-         if (!item?.cancelled && step?.date) {
-           setActiveStepIndex(index)
-         }
-       }
-     };
-   
-     addStep(item?.created, "Created", mappedSteps.length);
-     addStep(item?.assigned, "Assigned", mappedSteps.length);
-     addStep(item?.accepted, "Accepted", mappedSteps.length);
-     addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
-     addStep(item?.reachedPickupLocation, "Reached pickup location", mappedSteps.length);
-     addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
-     addStep(item?.reachedDeliveryLocation, "Reached delivery location", mappedSteps.length);
-     addStep(item?.noteAdded, "Note Added", mappedSteps.length);
-     addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
-     addStep(item?.imageAdded, "Image Added", mappedSteps.length);
-   
-     // If the order was cancelled, only keep steps up to and including "Cancelled"
-     if (item?.cancelled) {
-       mappedSteps.push({
-         title: "Cancelled",
-         description: `by ${item?.cancelled?.by} with Id ${item?.cancelled?.userId || "N/A"}
-          on ${formatDate(item?.cancelled?.date)}, ${formatTime(item?.cancelled?.date)}`,
-       });
-       setActiveStepIndex(mappedSteps.length-1)
-     }
-    setStep(mappedSteps)
-     return mappedSteps;
-   }).flat();
-   
-  console.log(activeStepIndex)
+    orderDetail?.stepperDetail
+      ?.map((item) => {
+        // Define an array to hold the steps
+
+        // Add steps up to the "Cancelled" step
+        const addStep = (step, label, index) => {
+          if (step) {
+            mappedSteps.push({
+              title: label,
+              description: `by ${step?.by} with Id ${
+                step?.userId || "N/A"
+              } on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
+            });
+            if (!item?.cancelled && step?.date) {
+              setActiveStepIndex(index);
+            }
+          }
+        };
+
+        addStep(item?.created, "Created", mappedSteps.length);
+        addStep(item?.assigned, "Assigned", mappedSteps.length);
+        addStep(item?.accepted, "Accepted", mappedSteps.length);
+        addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
+        addStep(
+          item?.reachedPickupLocation,
+          "Reached pickup location",
+          mappedSteps.length
+        );
+        addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
+        addStep(
+          item?.reachedDeliveryLocation,
+          "Reached delivery location",
+          mappedSteps.length
+        );
+        addStep(item?.noteAdded, "Note Added", mappedSteps.length);
+        addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
+        addStep(item?.imageAdded, "Image Added", mappedSteps.length);
+
+        // If the order was cancelled, only keep steps up to and including "Cancelled"
+        if (item?.cancelled) {
+          mappedSteps.push({
+            title: "Cancelled",
+            description: `by ${item?.cancelled?.by} with Id ${
+              item?.cancelled?.userId || "N/A"
+            }
+          on ${formatDate(item?.cancelled?.date)}, ${formatTime(
+              item?.cancelled?.date
+            )}`,
+          });
+          setActiveStepIndex(mappedSteps.length - 1);
+        }
+        setStep(mappedSteps);
+        return mappedSteps;
+      })
+      .flat();
+
+    console.log(activeStepIndex);
   }, [mapObject, orderDetail]);
 
   useEffect(() => {
@@ -285,29 +301,32 @@ const OrderDetails = () => {
     };
 
     if (authToken) {
-      mapplsClassObject.initialize(`9a632cda78b871b3a6eb69bddc470fef`, async () => {
-        if (mapContainerRef.current) {
-          console.log("Initializing map...");
-          const map = await mapplsClassObject.Map({
-            id: "map",
-            properties: mapProps,
-          });
-
-          if (map && typeof map.on === "function") {
-            map.on("load", () => {
-              console.log("Map loaded.");
-              setMapObject(map);
-              setIsMapLoaded(true); // Save the map object to state
+      mapplsClassObject.initialize(
+        `9a632cda78b871b3a6eb69bddc470fef`,
+        async () => {
+          if (mapContainerRef.current) {
+            console.log("Initializing map...");
+            const map = await mapplsClassObject.Map({
+              id: "map",
+              properties: mapProps,
             });
+
+            if (map && typeof map.on === "function") {
+              map.on("load", () => {
+                console.log("Map loaded.");
+                setMapObject(map);
+                setIsMapLoaded(true); // Save the map object to state
+              });
+            } else {
+              console.error(
+                "mapObject.on is not a function or mapObject is not defined"
+              );
+            }
           } else {
-            console.error(
-              "mapObject.on is not a function or mapObject is not defined"
-            );
+            console.error("Map container not found");
           }
-        } else {
-          console.error("Map container not found");
         }
-      });
+      );
     }
   }, [authToken]);
 
@@ -330,88 +349,87 @@ const OrderDetails = () => {
   //   { title: "Completed", description: "by Agent Name" },
   //   { title: "Cancelled", description: "by Agent Name" },
   // ];
- 
 
   // const steps = orderDetail?.stepperDetail
   //   ?.map((item) => {
-      // Collect the steps in the required format
-    //   return [
-    //     {
-    //       title: "Created",
-    //       description: `by ${item?.created?.by} with Id ${
-    //         item?.created?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Assigned",
-    //       description: `by ${item?.assigned?.by} with Id ${
-    //         item?.assigned?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Accepted",
-    //       description: `by ${item?.accepted?.by} with Id ${
-    //         item?.accepted?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Pickup Started",
-    //       description: `by ${item?.pickupStarted?.by} with Id ${
-    //         item?.pickupStarted?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Reached pickup location",
-    //       description: `by ${item?.reachedPickupLocation?.by} with Id ${
-    //         item?.reachedPickupLocation?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Delivery started",
-    //       description: `by ${item?.deliveryStarted?.by} with Id ${
-    //         item?.deliveryStarted?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Reached delivery location",
-    //       description: `by ${item?.reachedDeliveryLocation?.by} with Id ${
-    //         item?.reachedDeliveryLocation?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Note Added",
-    //       description: `by ${item?.noteAdded?.by} with Id ${
-    //         item?.noteAdded?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Signature Added",
-    //       description: `by ${item?.signatureAdded?.by} with Id ${
-    //         item?.signatureAdded?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Image Added",
-    //       description: `by ${item?.imageAdded?.by} with Id ${
-    //         item?.imageAdded?.userId || "N/A"
-    //       }`,
-    //     },
-    //     {
-    //       title: "Completed",
-    //       description: `by ${item?.completed?.by} with Id ${
-    //         item?.completed?.userId || "N/A"
-    //       }`,
-    //     },
-    //     item?.cancelled ? 
-    //     {
-    //       title: "Cancelled",
-    //       description: `by ${item?.cancelled?.by} with Id ${
-    //         item?.cancelled?.userId || "N/A"
-    //       }`,
-    //     } : ""
-    //   ];
-    // })
-    // .flat();
+  // Collect the steps in the required format
+  //   return [
+  //     {
+  //       title: "Created",
+  //       description: `by ${item?.created?.by} with Id ${
+  //         item?.created?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Assigned",
+  //       description: `by ${item?.assigned?.by} with Id ${
+  //         item?.assigned?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Accepted",
+  //       description: `by ${item?.accepted?.by} with Id ${
+  //         item?.accepted?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Pickup Started",
+  //       description: `by ${item?.pickupStarted?.by} with Id ${
+  //         item?.pickupStarted?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Reached pickup location",
+  //       description: `by ${item?.reachedPickupLocation?.by} with Id ${
+  //         item?.reachedPickupLocation?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Delivery started",
+  //       description: `by ${item?.deliveryStarted?.by} with Id ${
+  //         item?.deliveryStarted?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Reached delivery location",
+  //       description: `by ${item?.reachedDeliveryLocation?.by} with Id ${
+  //         item?.reachedDeliveryLocation?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Note Added",
+  //       description: `by ${item?.noteAdded?.by} with Id ${
+  //         item?.noteAdded?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Signature Added",
+  //       description: `by ${item?.signatureAdded?.by} with Id ${
+  //         item?.signatureAdded?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Image Added",
+  //       description: `by ${item?.imageAdded?.by} with Id ${
+  //         item?.imageAdded?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Completed",
+  //       description: `by ${item?.completed?.by} with Id ${
+  //         item?.completed?.userId || "N/A"
+  //       }`,
+  //     },
+  //     item?.cancelled ?
+  //     {
+  //       title: "Cancelled",
+  //       description: `by ${item?.cancelled?.by} with Id ${
+  //         item?.cancelled?.userId || "N/A"
+  //       }`,
+  //     } : ""
+  //   ];
+  // })
+  // .flat();
 
   const { activeStep } = useSteps({
     index: activeStepIndex,
@@ -825,36 +843,35 @@ const OrderDetails = () => {
         </div>
         <div className="flex m-5 mx-10 ">
           <div className="w-1/2 ">
-          {activeStepIndex !== null && (
+            {activeStepIndex !== null && (
+              <Stepper
+                index={activeStep}
+                orientation="vertical"
+                height="800px"
+                colorScheme="teal"
+                m="20px"
+                gap="0"
+              >
+                {steps?.map((step, index) => (
+                  <Step key={index}>
+                    <StepIndicator>
+                      <StepStatus
+                        complete={<StepIcon />}
+                        incomplete={<StepNumber />}
+                        active={<StepNumber />}
+                      />
+                    </StepIndicator>
 
-            <Stepper
-              index={activeStep}
-              orientation="vertical"
-              height="800px"
-              colorScheme="teal"
-              m="20px"
-              gap="0"
-            >
-              {steps?.map((step, index) => (
-                <Step key={index}>
-                  <StepIndicator>
-                    <StepStatus
-                      complete={<StepIcon />}
-                      incomplete={<StepNumber />}
-                      active={<StepNumber />}
-                    />
-                  </StepIndicator>
+                    <Box flexShrink="0">
+                      <StepTitle>{step.title}</StepTitle>
+                      <StepDescription>{step.description}</StepDescription>
+                    </Box>
 
-                  <Box flexShrink="0">
-                    <StepTitle>{step.title}</StepTitle>
-                    <StepDescription>{step.description}</StepDescription>
-                  </Box>
-
-                  <StepSeparator />
-                </Step>
-              ))}
-            </Stepper>
-          )}
+                    <StepSeparator />
+                  </Step>
+                ))}
+              </Stepper>
+            )}
           </div>
           <div className="w-3/4 bg-white h-[820px]">
             <div
