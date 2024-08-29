@@ -11,8 +11,7 @@ import AddTaxModal from "../../../components/model/Tax/AddTaxModal";
 import EditTaxModal from "../../../components/model/Tax/EditTaxModal";
 import DeleteTaxModal from "../../../components/model/Tax/DeleteTaxModal";
 import { useNavigate } from "react-router-dom";
-import GIFLoader from "../../../components/GIFLoader";
-import { Spinner, Toast, useToast } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -77,7 +76,13 @@ const Tax = () => {
           setBusinessCategory(businessCategoryResponse.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        toast({
+          title: "Error",
+          description: "There is an error occoured while fetching all taxes",
+          duration: 3000,
+          isClosable: true,
+          status: "error",
+        });
       } finally {
         setIsTableLoading(false);
       }
@@ -109,10 +114,12 @@ const Tax = () => {
 
   const handleToggle = async (taxId) => {
     try {
-      const tax = allTax.find((tax) => tax._id === taxId);
+      const tax = allTax.find((tax) => tax.taxId === taxId);
+
       if (tax) {
         const updatedStatus = !tax.status;
-        await axios.post(
+
+        const response = await axios.post(
           `${BASE_URL}/admin/taxes/change-status/${taxId}`,
           {
             ...tax,
@@ -123,21 +130,31 @@ const Tax = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setAllTax(
-          allTax.map((t) =>
-            t._id === taxId ? { ...t, status: updatedStatus } : t
-          )
-        );
-        toast({
-          title: "Success",
-          description: "Tax status Updated successfully.",
-          duration: 3000,
-          isClosable: true,
-          status: "success",
-        });
+
+        if (response.status === 200) {
+          setAllTax(
+            allTax.map((t) =>
+              t.taxId === taxId ? { ...t, status: updatedStatus } : t
+            )
+          );
+
+          toast({
+            title: "Success",
+            description: "Tax status Updated successfully.",
+            duration: 3000,
+            isClosable: true,
+            status: "success",
+          });
+        }
       }
     } catch (err) {
-      console.log(`Error in toggling tax status: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error un changing tax status",
+        duration: 3000,
+        isClosable: true,
+        status: "error",
+      });
     }
   };
 
@@ -146,20 +163,20 @@ const Tax = () => {
   };
 
   const handleDeletedTax = (taxId) => {
-    setAllTax(allTax.filter((tax) => tax._id !== taxId));
+    setAllTax(allTax.filter((tax) => tax.taxId !== taxId));
   };
 
   const handleEditedTax = (editedTax) => {
     setAllTax((prevTax) =>
       prevTax.map((tax) =>
-        tax._id === editedTax._id
+        tax.taxId === editedTax.taxId
           ? {
               ...tax,
               taxName: editedTax.taxName,
               tax: editedTax.tax,
               taxType: editedTax.taxType,
-              assignToBusinessCategoryId: editedTax.assignToBusinessCategoryId,
-              geofenceId: editedTax.geofenceId,
+              assignToBusinessCategory: editedTax.assignToBusinessCategory,
+              geofences: editedTax.geofences,
               status: editedTax.status,
             }
           : tax
@@ -194,7 +211,7 @@ const Tax = () => {
           </p>
           <div className="w-full">
             <table className="bg-white mt-[45px] text-center w-full">
-              <thead>
+              <thead className=" sticky top-0 left-0">
                 <tr>
                   {[
                     // "Tax Id",
@@ -233,43 +250,36 @@ const Tax = () => {
 
                 {!isTableLoading &&
                   allTax?.map((tax) => (
-                    <tr key={tax._id}>
-                      {/* <td className="py-2 px-4 border-b border-gray-100">
-                        {tax._id}
-                      </td> */}
-
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {tax.taxName}
+                    <tr
+                      key={tax.taxId}
+                      className="even:bg-gray-200 last:border-b max-h-[30rem] overflow-y-auto"
+                    >
+                      <td className="py-2 px-4">{tax.taxName}</td>
+                      <td className="py-2 px-4">{tax.tax}</td>
+                      <td className="py-2 px-4">{tax.taxType}</td>
+                      <td className="py-2 px-4">
+                        {tax?.assignToBusinessCategory}
                       </td>
-
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {tax.tax}
+                      <td className="py-2 px-4">
+                        {tax?.geofences?.map((geofence, index) => (
+                          <span key={index} className="flex flex-col">
+                            {geofence}
+                            {index < tax.geofences.length - 1 && ", "}
+                          </span>
+                        ))}
                       </td>
-
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {tax.taxType}
-                      </td>
-
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {tax?.assignToBusinessCategoryId?.title}
-                      </td>
-
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {tax?.geofenceId?.name}
-                      </td>
-
-                      <td className="py-5 px-4 border-b border-gray-100">
+                      <td className="py-5 px-4">
                         <div className="flex justify-center items-center gap-3">
                           <Switch
                             className="text-teal-700 mt-2"
                             checked={tax.status}
-                            onChange={() => handleToggle(tax._id)}
+                            onChange={() => handleToggle(tax.taxId)}
                           />
-                          <button onClick={() => showEditModal(tax._id)}>
+                          <button onClick={() => showEditModal(tax.taxId)}>
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
                           <button
-                            onClick={() => showDeleteModal(tax._id)}
+                            onClick={() => showDeleteModal(tax.taxId)}
                             className="outline-none focus:outline-none"
                           >
                             <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />

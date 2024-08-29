@@ -43,7 +43,6 @@ const Signup = () => {
 
   const signupAction = async (e) => {
     e.preventDefault();
-    console.log(signUpData);
   };
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const Signup = () => {
         signUpData.phoneNumber,
         recaptcha
       );
-      console.log("confirmation", confirmation);
+
       setSignUp(signUpData);
       setVerification(confirmation);
       toast({
@@ -118,7 +117,6 @@ const Signup = () => {
           });
           break;
       }
-      console.log(error);
     } finally {
       setIsButtonDisabled(false);
     }

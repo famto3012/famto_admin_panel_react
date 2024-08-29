@@ -48,7 +48,7 @@ const DeliveryAgent = () => {
   const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(1);
+  const [limit, setLimit] = useState(30);
   const [pagination, setPagination] = useState({});
 
   const { token, role } = useContext(UserContext);
@@ -379,9 +379,7 @@ const DeliveryAgent = () => {
   const showAddModal = () => setAddModalVisible(true);
   const handleModalApprove = () => setIsModalApproval(true);
   const handleModalReject = () => setIsModalReject(true);
-  const showCSVModal = () => {
-    setIsCSVModalVisible(true);
-  };
+  const showCSVModal = () => setIsCSVModalVisible(true);
 
   const handleCancel = () => {
     setAddModalVisible(false);
@@ -558,9 +556,9 @@ const DeliveryAgent = () => {
               </div>
             </div>
 
-            <div className="overflow-auto mt-[20px] w-full">
+            <div className="overflow-auto mt-[20px] w-full max-h-[30rem]">
               <table className="text-start w-full mb-24">
-                <thead>
+                <thead className=" sticky top-0 left-0">
                   <tr className="">
                     {[
                       "Agent ID",
@@ -589,6 +587,7 @@ const DeliveryAgent = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isTableLoading && agent?.length === 0 && (
                     <tr>
                       <td colSpan={8}>
@@ -598,11 +597,12 @@ const DeliveryAgent = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isTableLoading &&
                     agent.map((agent) => (
                       <tr
                         key={agent._id}
-                        className="align-middle border-b border-gray-300 text-center"
+                        className="align-middle even:bg-gray-200 text-center"
                       >
                         <td className="p-4 text-center">
                           <Link to={`/agent-details/${agent._id}`}>

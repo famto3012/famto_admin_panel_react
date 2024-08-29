@@ -15,7 +15,7 @@ const Notificationlog = () => {
   const [pagination, setPagination] = useState({});
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const {socket} = useSocket()
+  const { socket } = useSocket();
   const { playNewOrderNotificationSound, playNewNotificationSound } =
     useSoundContext();
 
@@ -28,17 +28,17 @@ const Notificationlog = () => {
   }, [page, limit, role]);
 
   useEffect(() => {
-   socket?.on("pushNotification", async(data)=>{
-    await playNewNotificationSound()
-    console.log("Push notification", data)
-    addNotificationToTable(data);
-   }) 
-   socket?.on("alertNotification", async(data)=>{
-    await playNewNotificationSound()
-    console.log("Alert notification", data)
-    addNotificationToTable(data);
-   }) 
-  }, [socket])
+    socket?.on("pushNotification", async (data) => {
+      await playNewNotificationSound();
+
+      addNotificationToTable(data);
+    });
+    socket?.on("alertNotification", async (data) => {
+      await playNewNotificationSound();
+
+      addNotificationToTable(data);
+    });
+  }, [socket]);
 
   const addNotificationToTable = (newNotification) => {
     setTableData((prevData) => [newNotification, ...prevData]);
@@ -46,7 +46,6 @@ const Notificationlog = () => {
 
   const getAdminNotificationLog = async (page, limit) => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/notification/get-admin-notification-log`,
         {
@@ -60,13 +59,18 @@ const Notificationlog = () => {
         setPagination(response.data);
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error",
+        description: "An error occoured while getting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
   const getMerchantNotificationLog = async (page, limit) => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/notification/get-merchant-notification-log`,
         {
@@ -80,7 +84,13 @@ const Notificationlog = () => {
         setPagination(response.data);
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error",
+        description: "An error occoured while getting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

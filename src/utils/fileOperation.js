@@ -40,9 +40,7 @@ const deleteFileFromFirebase = async (fileUrl) => {
   try {
     const storageRef = ref(storage, fileUrl);
     await deleteObject(storageRef);
-    console.log("File deleted successfully");
   } catch (error) {
-    console.error("Error deleting file:", error);
     throw error;
   }
 };

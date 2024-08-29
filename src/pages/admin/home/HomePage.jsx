@@ -205,7 +205,7 @@ const HomePage = () => {
   ];
 
   const valueFormatter = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
     }).format(value);
@@ -269,61 +269,65 @@ const HomePage = () => {
                 <span className="text-gray-500">Accepting orders</span>
               </p>
             )}
+          </div>
+        </div>
+
+        <div className="bg-white p-2 mt-5 mx-5">
+          <div className="flex items-center mx-[20px] justify-between">
+            <div className="flex item-center space-x-2 w-2/3 gap-3">
+              <input
+                type="radio"
+                id="sales"
+                name="sales"
+                value="sales"
+                onChange={handleOptionChange}
+                checked={selectedOption === "sales"}
+                className=""
+              />
+              <label htmlFor="sales" className="mr-4">
+                Sales
+              </label>
+
+              <input
+                type="radio"
+                id="merchants"
+                name="merchants"
+                value="merchants"
+                onChange={handleOptionChange}
+                checked={selectedOption === "merchants"}
+                className=""
+              />
+              <label htmlFor="merchants" className="mr-4">
+                Merchants
+              </label>
+
+              <input
+                type="radio"
+                id="commission"
+                name="commission"
+                value="commission"
+                onChange={handleOptionChange}
+                checked={selectedOption === "commission"}
+                className="mr-2"
+              />
+              <label htmlFor="commission">Commission (in)</label>
+              <input
+                type="radio"
+                id="subscription"
+                name="subscription"
+                value="subscription"
+                onChange={handleOptionChange}
+                checked={selectedOption === "subscription"}
+                className="mr-2"
+              />
+              <label htmlFor="subscription" className="mr-4">
+                Subscription (in)
+              </label>
+            </div>
+
             <select name="day" className="bg-white rounded-lg p-3">
               <option>Today</option>
             </select>
-          </div>
-        </div>
-        <div className="bg-white p-2 mt-5 mx-5">
-          <div className="flex item-center space-x-2 w-2/3 gap-3">
-            <input
-              type="radio"
-              id="sales"
-              name="sales"
-              value="sales"
-              onChange={handleOptionChange}
-              checked={selectedOption === "sales"}
-              className=""
-            />
-            <label htmlFor="sales" className="mr-4">
-              Sales
-            </label>
-
-            <input
-              type="radio"
-              id="merchants"
-              name="merchants"
-              value="merchants"
-              onChange={handleOptionChange}
-              checked={selectedOption === "merchants"}
-              className=""
-            />
-            <label htmlFor="merchants" className="mr-4">
-              Merchants
-            </label>
-
-            <input
-              type="radio"
-              id="commission"
-              name="commission"
-              value="commission"
-              onChange={handleOptionChange}
-              checked={selectedOption === "commission"}
-              className="mr-2"
-            />
-            <label htmlFor="commission">Commission (in)</label>
-            <input
-              type="radio"
-              id="subscription"
-              name="subscription"
-              value="subscription"
-              onChange={handleOptionChange}
-              checked={selectedOption === "subscription"}
-              className="mr-2"
-            />
-            <label htmlFor="subscription" className="mr-4">
-              Subscription (in)
-            </label>
           </div>
 
           <div>
@@ -333,6 +337,7 @@ const HomePage = () => {
                   Revenue over time
                 </Heading>
               </CardHeader>
+
               <CardBody>
                 <LineChart
                   data={data}
@@ -346,7 +351,8 @@ const HomePage = () => {
             </Card>
           </div>
         </div>
-        <div className="flex">
+
+        <div className="flex pb-[20px]">
           <HomeComponents realTimeDataCount={realTimeDataCount} />
         </div>
       </div>

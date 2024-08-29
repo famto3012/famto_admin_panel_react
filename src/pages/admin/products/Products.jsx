@@ -58,6 +58,7 @@ const Products = () => {
   const [isCategoryListLoading, setIsCategoryListLoading] = useState(false);
   const [isProductListLoading, setIsProductListLoading] = useState(false);
   const [isProductDetailLoading, setIsProductDetailLoading] = useState(false);
+  const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
 
   const { token, role, userId } = useContext(UserContext);
   const navigate = useNavigate();
@@ -93,14 +94,19 @@ const Products = () => {
         if (response.status === 200) {
           const { data } = response.data;
           setAllMerchants(data);
-          console.log(data);
+
           if (data.length > 0) {
             setSelectedMerchant(data[0]._id);
-            console.log("SelectedMerchant", selectedMerchant);
           }
         }
       } catch (err) {
-        console.log(`Error in getting all merchants: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     };
 
@@ -115,7 +121,6 @@ const Products = () => {
     const getAllCategories = async (merchantId) => {
       try {
         setIsCategoryListLoading(true);
-        console.log("Merchant id in getting categories", merchantId);
 
         const endPoint =
           role === "Admin"
@@ -139,7 +144,13 @@ const Products = () => {
           }
         }
       } catch (err) {
-        console.log(`Error in getting all categories: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsCategoryListLoading(false);
       }
@@ -172,7 +183,13 @@ const Products = () => {
           });
         }
       } catch (err) {
-        console.log(`Error in getting products by category: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsProductListLoading(false);
       }
@@ -198,7 +215,13 @@ const Products = () => {
           setProductDetail(data);
         }
       } catch (err) {
-        console.log(`Error in getting product detail: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsProductDetailLoading(false);
       }
@@ -322,10 +345,9 @@ const Products = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in changing product status: ${err}`);
       toast({
         title: "Error",
-        description: `Error in changing category status`,
+        description: "An error occoured while changing category status",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -361,10 +383,9 @@ const Products = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in changing product status: ${err}`);
       toast({
         title: "Error",
-        description: `Error in changing product status`,
+        description: "An error occoured while changing product status",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -427,8 +448,6 @@ const Products = () => {
         return { id: product._id, order: index + 1 };
       });
 
-      console.log(products);
-
       const response = await axios.put(
         `${BASE_URL}/products/change-order`,
         { products: products },
@@ -466,6 +485,48 @@ const Products = () => {
     value: merchant._id,
   }));
 
+  const handleDownloadCSV = async (e) => {
+    try {
+      setCSVDownloadLoading(true);
+
+      const idToSend = role === "Admin" ? selectedMerchant : userId;
+
+      const response = await axios.post(
+        `${BASE_URL}/products/download-product-csv`,
+        { merchantId: idToSend },
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Create a URL for the file and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Combined_product.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while downloading CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setCSVDownloadLoading(false);
+    }
+  };
+
   return (
     <>
       <Sidebar />
@@ -494,26 +555,19 @@ const Products = () => {
 
           <div className="flex gap-3">
             <div>
-              <button className="bg-cyan-100 text-black rounded-md p-1 font-semibold flex items-center space-x-2">
-                <CSVLink
-                  data={allCategories}
-                  headers={allCategoryCSVDataHeading}
-                  filename={"All_Categories.csv"}
-                >
-                  <ArrowDownOutlined /> <span>Category CSV</span>
-                </CSVLink>
-              </button>
-            </div>
-
-            <div>
-              <button className="bg-teal-800 rounded-md p-1 text-white font-semibold flex items-center space-x-2">
-                <CSVLink
-                  data={allProducts}
-                  headers={allProductsCSVDataHeading}
-                  filename={"All_Products.csv"}
-                >
-                  <ArrowDownOutlined /> <span>Product CSV</span>
-                </CSVLink>
+              <button
+                onClick={handleDownloadCSV}
+                className="bg-cyan-100 text-black rounded-md p-2 font-semibold flex gap-[5px] items-center"
+              >
+                {CSVDownloadLoading ? (
+                  <>
+                    <Spinner size="sm" /> <span>CSV</span>
+                  </>
+                ) : (
+                  <>
+                    <ArrowDownOutlined /> <span>CSV</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

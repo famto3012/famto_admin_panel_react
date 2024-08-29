@@ -26,17 +26,16 @@ const AgentPayout = () => {
   const [allGeofence, setAllGeofence] = useState([]);
   const { token } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPayout, setSelectedPayout] = useState(null);
   const dateInputRef = useRef(null);
 
-
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(1);
   const [pagination, setPagination] = useState({});
 
-  // // Fetch filtered data whenever filter options change
   useEffect(() => {
     fetchFilteredData();
   }, [paymentStatus, selectedAgent, selectedDate, selectedGeofence]);
@@ -51,10 +50,12 @@ const AgentPayout = () => {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
+
           axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
+
           axios.get(`${BASE_URL}/admin/agents/all-agents`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -85,6 +86,7 @@ const AgentPayout = () => {
   const fetchFilteredData = async () => {
     try {
       setIsTableLoading(true);
+
       const response = await axios.get(
         `${BASE_URL}/admin/agents/filter-payment`,
         {
@@ -113,6 +115,8 @@ const AgentPayout = () => {
     if (!selectedPayout) return;
 
     try {
+      setIsConfirmLoading(true);
+
       const { _id: agentId, detailId } = selectedPayout;
 
       const response = await axios.patch(
@@ -138,6 +142,8 @@ const AgentPayout = () => {
       handleCancel(); // Close the modal after confirmation
     } catch (err) {
       console.error(`Error in approving payout ${err}`);
+    } finally {
+      setIsConfirmLoading(false);
     }
   };
 
@@ -173,9 +179,8 @@ const AgentPayout = () => {
 
   // Function to trigger the date input click
   const openDatePicker = () => {
-    console.log("clicked");
     if (dateInputRef.current) {
-      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
+      dateInputRef.current.showPicker();
     }
   };
 
@@ -365,6 +370,7 @@ const AgentPayout = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isTableLoading && allPayout?.length === 0 && (
                     <tr>
                       <td colSpan={11}>
@@ -374,11 +380,12 @@ const AgentPayout = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isTableLoading &&
                     allPayout.map((payout) => (
                       <tr
                         key={payout._id}
-                        className="align-middle border-b border-gray-300 text-center h-20"
+                        className="align-middle even:bg-gray-200 text-center h-20"
                       >
                         <td>
                           <Link
@@ -448,7 +455,7 @@ const AgentPayout = () => {
                 className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"
                 onClick={handleConfirm}
               >
-                Confirm
+                {isConfirmLoading ? `Confirming...` : `Confirm`}
               </button>
             </div>
           </Modal>

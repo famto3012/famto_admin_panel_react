@@ -58,7 +58,7 @@ const agentPayoutCSVDataHeading = [
   { label: "Cancelled orders", key: "cancelledOrders" },
   { label: "Total distance", key: "totalDistance" },
   { label: "Login Hours", key: "loginHours" },
-  { label: "CIH", key: "cashInHand" },
+  { label: "Cash in hand", key: "cashInHand" },
   { label: "Total Earnings", key: "totalEarnings" },
   { label: "Status Approval", key: "paymentSettled" },
 ];

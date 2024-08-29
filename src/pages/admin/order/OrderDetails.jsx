@@ -140,7 +140,7 @@ const OrderDetails = () => {
   const PolylineComponent = ({ map }) => {
     const polylineRef = useRef(null);
     const [coordinates, setCoordinates] = useState([]);
-
+    
     const generatePolyline = async () => {
       try {
         const pickupLat = orderDetail.pickUpLocation[0];
@@ -294,7 +294,6 @@ const OrderDetails = () => {
           });
 
           if (map && typeof map.on === "function") {
-            console.log("Map initialized successfully.");
             map.on("load", () => {
               console.log("Map loaded.");
               setMapObject(map);
