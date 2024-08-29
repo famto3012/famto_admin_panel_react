@@ -14,8 +14,9 @@ import EditDiscountModal from "../../../components/model/DiscountModels/EditDisc
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import GIFLoader from "../../../components/GIFLoader";
-import { useToast } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 import { formatDate, formatTime } from "../../../utils/formatter";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -86,13 +87,12 @@ const Discount = () => {
     };
 
     fetchData();
-  }, [token, role, selectedMerchant]);
+  }, [token, role]);
 
-  // Add merchant discount by admin
-
-  const handleChange = async (e) => {
-    setSelectedMerchant(e.target.value); // Set selectedMerchant to the selected value (merchant ID)
-  };
+  const merchantOptions = merchant.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
 
   useEffect(() => {
     const fetchDiscount = async () => {
@@ -108,6 +108,7 @@ const Discount = () => {
         );
         if (response.status === 200) {
           setDiscount(response.data.data);
+          console.log(response.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching discount ${err.message}`);
@@ -115,6 +116,7 @@ const Discount = () => {
         setIsTableLoading(false);
       }
     };
+
     if (selectedMerchant) {
       fetchDiscount();
     }
@@ -168,8 +170,6 @@ const Discount = () => {
     }
   };
 
-  // Delete Current Product...
-
   const removeProduct = (currentProductDelete) => {
     setDiscount(
       discount.filter((discount) => discount._id !== currentProductDelete)
@@ -215,8 +215,6 @@ const Discount = () => {
       setConfirmLoading(false);
     }
   };
-
-  // API to update Merchant discount status
 
   const handleToggle = async (merchantDiscountId) => {
     try {
@@ -264,8 +262,6 @@ const Discount = () => {
       });
     }
   };
-
-  // API to update Product discount status
 
   const handleToggleProduct = async (DiscountId) => {
     try {
@@ -350,9 +346,7 @@ const Discount = () => {
     );
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
+  const showModal = () => setIsModalVisible(true);
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -402,22 +396,25 @@ const Discount = () => {
             <nav className="p-5">
               <GlobalSearch />
             </nav>
+
             <div className="flex justify-between mx-5 focus:outline-none">
-              <select
-                value={selectedMerchant || ""}
-                name="merchantName"
-                className="bg-blue-50 p-3 rounded-lg outline-none focus:outline-none text-black"
-                onChange={handleChange}
-              >
-                <option defaultValue hidden className="text-black">
-                  Select Merchant
-                </option>
-                {merchant.map((data) => (
-                  <option value={data._id} key={data._id}>
-                    {data.merchantName}
-                  </option>
-                ))}
-              </select>
+              {role === "Admin" && (
+                <Select
+                  className="w-[200px] outline-none focus:outline-none"
+                  value={merchantOptions.find(
+                    (option) => option.value === selectedMerchant
+                  )}
+                  isMulti={false}
+                  isSearchable={true}
+                  onChange={(option) => {
+                    setSelectedMerchant(option ? option.value : "");
+                  }}
+                  options={merchantOptions}
+                  placeholder="Select Merchant"
+                  isClearable={false}
+                />
+              )}
+
               <Switch />
             </div>
             <div className="flex justify-between mt-5 mx-5">
@@ -466,13 +463,15 @@ const Discount = () => {
                 </thead>
                 <tbody className="bg-white">
                   {isTableLoading && (
-                    <tr>
-                      <td colSpan={7}>Loading data...</td>
+                    <tr className="h-[70px]">
+                      <td colSpan={7}>
+                        Loading data <Spinner size="sm" className="ms-2" />
+                      </td>
                     </tr>
                   )}
 
                   {!isTableLoading && discount.length === 0 && (
-                    <tr>
+                    <tr className="h-[70px]">
                       <td colSpan={7}>No data available</td>
                     </tr>
                   )}
@@ -621,100 +620,116 @@ const Discount = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  {productDiscounts.map((table, index) => (
-                    <tr
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
-                      }}
-                      key={table._id}
-                    >
-                      <td className="py-5 px-4 border-b  border-gray-100">
-                        {table.discountName}
+                  {isTableLoading && (
+                    <tr className="h-[70px]">
+                      <td colSpan={7}>
+                        Loading data <Spinner size="sm" className="ms-2" />
                       </td>
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {table.discountValue}
-                      </td>
-                      <td className="py-2 px-4 border-b border-gray-100 text-start">
-                        {table.description}
-                      </td>
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {formatDate(table.validFrom)}
-                        <br />
-                        {formatTime(table.validFrom)}
-                      </td>
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {formatDate(table.validTo)}
-                        <br />
-                        {formatTime(table.validTo)}
-                      </td>
-                      <td className="py-2 px-4 border-b border-gray-100">
-                        {table.geofence}
-                      </td>
-                      <td className="py-5 px-4 border-b  border-gray-100">
-                        <div className="flex gap-4">
-                          <Switch
-                            className="text-teal-700 mt-2"
-                            checked={table.status}
-                            onChange={() => handleToggleProduct(table._id)}
-                          />
-                          <div className="flex item-center">
-                            <button
-                              onClick={() => showModalProductEdit(table._id)}
-                            >
-                              <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                            </button>
-
-                            <EditProductModal
-                              isVisible={isModalVisibleProductEdit}
-                              token={token}
-                              geofence={geofence}
-                              merchant={merchant}
-                              currentProduct={currentProduct}
-                              BASE_URL={BASE_URL}
-                              onEditProduct={handleEditProduct}
-                              handleCancel={handleCancel}
-                            />
-                          </div>
-                          <button
-                            onClick={() => showModalDelete2(table._id)}
-                            className="outline-none focus:outline-none"
-                          >
-                            <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                          </button>
-                          <Modal
-                            onCancel={handleCancel}
-                            footer={null}
-                            open={isShowModalDelete2}
-                            centered
-                          >
-                            <p className="font-semibold text-[18px] mb-5">
-                              <Spin spinning={confirmLoading}>
-                                Are you sure want to delete?
-                              </Spin>
-                            </p>
-                            <div className="flex justify-end">
-                              <button
-                                className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                                onClick={handleCancel}
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                                onClick={() =>
-                                  confirmDeleteProduct(currentProductDelete)
-                                }
-                              >
-                                {" "}
-                                Delete
-                              </button>
-                            </div>
-                          </Modal>
-                        </div>
-                      </td>
-                      <td className="border-b border-gray-300"></td>
                     </tr>
-                  ))}
+                  )}
+
+                  {!isTableLoading && discount.length === 0 && (
+                    <tr className="h-[70px]">
+                      <td colSpan={7}>No data available</td>
+                    </tr>
+                  )}
+
+                  {!isTableLoading &&
+                    productDiscounts.map((table, index) => (
+                      <tr
+                        style={{
+                          backgroundColor:
+                            index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
+                        }}
+                        key={table._id}
+                      >
+                        <td className="py-5 px-4 border-b  border-gray-100">
+                          {table.discountName}
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-100">
+                          {table.discountValue}
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-100 text-start">
+                          {table.description}
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-100">
+                          {formatDate(table.validFrom)}
+                          <br />
+                          {formatTime(table.validFrom)}
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-100">
+                          {formatDate(table.validTo)}
+                          <br />
+                          {formatTime(table.validTo)}
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-100">
+                          {table.geofence}
+                        </td>
+                        <td className="py-5 px-4 border-b  border-gray-100">
+                          <div className="flex gap-4">
+                            <Switch
+                              className="text-teal-700 mt-2"
+                              checked={table.status}
+                              onChange={() => handleToggleProduct(table._id)}
+                            />
+                            <div className="flex item-center">
+                              <button
+                                onClick={() => showModalProductEdit(table._id)}
+                              >
+                                <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                              </button>
+
+                              <EditProductModal
+                                isVisible={isModalVisibleProductEdit}
+                                token={token}
+                                geofence={geofence}
+                                merchant={merchant}
+                                currentProduct={currentProduct}
+                                BASE_URL={BASE_URL}
+                                onEditProduct={handleEditProduct}
+                                handleCancel={handleCancel}
+                              />
+                            </div>
+                            <button
+                              onClick={() => showModalDelete2(table._id)}
+                              className="outline-none focus:outline-none"
+                            >
+                              <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                            </button>
+                            <Modal
+                              onCancel={handleCancel}
+                              footer={null}
+                              open={isShowModalDelete2}
+                              centered
+                            >
+                              <p className="font-semibold text-[18px] mb-5">
+                                <Spin spinning={confirmLoading}>
+                                  Are you sure want to delete?
+                                </Spin>
+                              </p>
+                              <div className="flex justify-end">
+                                <button
+                                  className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                                  onClick={handleCancel}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                                  onClick={() =>
+                                    confirmDeleteProduct(currentProductDelete)
+                                  }
+                                >
+                                  {" "}
+                                  Delete
+                                </button>
+                              </div>
+                            </Modal>
+                          </div>
+                        </td>
+                        <td className="border-b border-gray-300"></td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

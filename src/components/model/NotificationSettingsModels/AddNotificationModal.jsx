@@ -49,6 +49,10 @@ const AddNotificationModal = ({
       name: "Agent reached delivery Location",
       value: "reachedDeliveryLocation",
     },
+    {
+      name: "New order (Agent)",
+      value: "newOrder",
+    },
   ];
 
   const handleInputChange = (e) => {

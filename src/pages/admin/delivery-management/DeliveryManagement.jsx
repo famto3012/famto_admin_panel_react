@@ -18,6 +18,8 @@ import {
   Menu,
   Badge,
   useToast,
+  StepIcon,
+  StepNumber,
 } from "@chakra-ui/react";
 import SidebarDelivery from "../../../components/model/SidebarDelivery";
 import { mappls } from "mappls-web-maps";
@@ -25,6 +27,7 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -53,6 +56,7 @@ const DeliveryManagement = () => {
   //const [searchOrderId, setOrderId] = useState("")
 
   const { token } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const steps = [
     {
@@ -86,11 +90,17 @@ const DeliveryManagement = () => {
         setAuthToken(response.data.data);
       }
     } catch (err) {
-      console.log(`Error in getting auth token`);
+      toast({
+        title: "Error",
+        description: "Error in initializing map",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
-  const { activeStep } = useSteps({
+  const { activeStep, setActiveStep } = useSteps({
     index: 2,
     count: steps.length,
   });
@@ -101,11 +111,6 @@ const DeliveryManagement = () => {
 
   const autoAllocationStatusUpdate = async () => {
     try {
-      if (autoAllocation.isActive) {
-        setAutoAllocationStatus(false);
-      } else {
-        setAutoAllocationStatus(true);
-      }
       const response = await axios.put(
         `${BASE_URL}/admin/auto-allocation/update-status`,
         {},
@@ -116,8 +121,15 @@ const DeliveryManagement = () => {
       );
 
       if (response.status === 201) {
+        if (autoAllocation.isActive) {
+          setAutoAllocationStatus(false);
+        } else {
+          setAutoAllocationStatus(true);
+        }
+
         toast({
           title: "Success",
+          description: "Auto allocation status updated",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -126,7 +138,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       toast({
         title: "Error",
-        status: "Error in fetching agent",
+        status: "Error in updating auto allocation status",
         duration: 3000,
         isClosable: true,
       });
@@ -196,9 +208,9 @@ const DeliveryManagement = () => {
       );
 
       if (response.status === 201) {
-        // const {data} = response.data;
         toast({
           title: "Success",
+          description: "Auto allocation updated successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -229,7 +241,13 @@ const DeliveryManagement = () => {
         setAgentData(response.data.data);
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error",
+        description: "Error in filtering by status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -246,29 +264,31 @@ const DeliveryManagement = () => {
         setAllAgentData(response.data.data);
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error",
+        description: "Error in getting all agents",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
   const handleSearch = async (searchOrderId) => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         `${BASE_URL}/admin/delivery-management/get-order-id`,
+        { orderId: searchOrderId },
         {
-          params: { orderId: searchOrderId },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 200) {
         setTaskData(response.data.data);
-        toast({
-          title: "Success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        console.log(response.data.data);
       }
     } catch (err) {
       toast({
@@ -293,18 +313,14 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 200) {
         setAgentData(response.data);
-        toast({
-          title: "Success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
       }
     } catch (err) {
       toast({
         title: "Error",
+        description: "Error in searching agent",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -424,11 +440,18 @@ const DeliveryManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.status === 201) {
         setTaskData(response.data.data);
       }
     } catch (err) {
-      console.log("Error in fetching agent: ", err);
+      toast({
+        title: "Error",
+        description: "Error in filtering tasks",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -560,17 +583,11 @@ const DeliveryManagement = () => {
 
       if (response.status === 200) {
         setGeofenceAgentData(response.data.data);
-        toast({
-          title: "Success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
       }
     } catch (err) {
       toast({
         title: "Error",
-        status: "Error in fetching agent",
+        status: "Error in fetching agent using geofence",
         duration: 3000,
         isClosable: true,
       });
@@ -592,7 +609,13 @@ const DeliveryManagement = () => {
         setAutoAllocationStatus(response.data.data.isActive);
       }
     } catch (err) {
-      console.log("Error in fetching auto allocation: ", err);
+      toast({
+        title: "Error",
+        description: "Error in getting auto-allocation detail",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -616,6 +639,7 @@ const DeliveryManagement = () => {
       if (response.status === 200) {
         toast({
           title: "Success",
+          description: "Agent assigned successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -624,7 +648,7 @@ const DeliveryManagement = () => {
     } catch (err) {
       toast({
         title: "Error",
-        status: "Error in sending notification",
+        status: "Error in assigning agent",
         duration: 3000,
         isClosable: true,
       });
@@ -634,193 +658,205 @@ const DeliveryManagement = () => {
   return (
     <>
       <SidebarDelivery />
-      <div className="p-5 pl-[75px] bg-gray-100 h-screen">
-        <p className="text-[18px] font-semibold mt-5">
-          {" "}
-          <ArrowLeftOutlined /> Delivery Management
-        </p>
-        <div className="bg-white rounded-lg flex justify-between p-5 mt-5 ">
-          <div>
-            <select className="bg-blue-50 p-2 rounded-md" name="day">
-              <option>Today</option>
-              <option>Tomorrow</option>
-            </select>
-            <select className="bg-blue-50 p-2 ml-5 rounded-md" name="agent">
-              <option>All Agents</option>
-              <option>Agents</option>
-            </select>
-          </div>
-          <div className="flex gap-8 items-center">
-            <SettingOutlined
-              className="p-4 bg-gray-200 rounded-2xl"
-              onClick={showModal}
+      <div className="p-5 pl-[75px] bg-gray-100 h-full">
+        <div className="h-[10%]">
+          <p className="text-[18px] font-semibold mt-5">
+            <ArrowLeftOutlined
+              onClick={() => navigate("/home")}
+              className="cursor-pointer me-4"
             />
-            <Modal
-              onOk={showOkModal}
-              onCancel={showModalCancel}
-              open={isModalVisible}
-              width="600px"
-              centered
-              footer={null}
-            >
-              <div>
-                <form onSubmit={submitAutoAllocation}>
-                  <div>
-                    <div className="flex mt-5">
-                      <label className="text-[16px] mr-5 font-semibold">
-                        Request expires
-                      </label>
-                      <input
-                        type="text"
-                        name="expireTime"
-                        className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
-                        value={autoAllocation.expireTime}
-                        onChange={handleChange}
-                      />
-                      <div>
-                        <p className="font-semibold text-[16px] ml-5">sec</p>
-                      </div>
-                    </div>
+            Delivery Management
+          </p>
+          <div className="bg-white rounded-lg flex justify-between p-5 mt-5 ">
+            <div>
+              <select className="bg-blue-50 p-2 rounded-md" name="day">
+                <option>Today</option>
+                <option>Tomorrow</option>
+              </select>
+              <select className="bg-blue-50 p-2 ml-5 rounded-md" name="agent">
+                <option>All Agents</option>
+                <option>Agents</option>
+              </select>
+            </div>
+            <div className="flex gap-8 items-center">
+              <SettingOutlined
+                className="p-4 bg-gray-200 rounded-2xl"
+                onClick={showModal}
+              />
+              <Modal
+                title="Auto allocation"
+                onOk={showOkModal}
+                onCancel={showModalCancel}
+                open={isModalVisible}
+                width="600px"
+                centered
+                footer={null}
+              >
+                <div>
+                  <form onSubmit={submitAutoAllocation}>
                     <div>
-                      <label className="text-[18px] mb-3 font-semibold">
-                        Set auto allocation
-                      </label>
-                      <div className="flex items-center ">
-                        <input
-                          type="radio"
-                          id="send-to-all"
-                          name="autoAllocationType"
-                          value="All"
-                          onChange={handleOptionChange}
-                          checked={autoAllocation.autoAllocationType === "All"}
-                          className=""
-                        />
-                        <label
-                          htmlFor="send-to-all"
-                          className="ml-2 font-semibold"
-                        >
-                          Send-to-all
+                      <div className="flex mt-5">
+                        <label className="text-[16px] mr-5 font-semibold">
+                          Request expires
                         </label>
-                      </div>
-                      <div className="flex items-center ">
                         <input
-                          type="radio"
-                          id="nearest-available"
-                          name="autoAllocationType"
-                          value="Nearest"
-                          onChange={handleOptionChange}
-                          checked={
-                            autoAllocation.autoAllocationType === "Nearest"
-                          }
-                          className=""
+                          type="text"
+                          name="expireTime"
+                          className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
+                          value={autoAllocation.expireTime}
+                          onChange={handleChange}
                         />
-                        <label
-                          htmlFor="nearest-available"
-                          className="ml-2 font-semibold"
-                        >
-                          Nearest Available
-                        </label>
-                      </div>
-                    </div>
-                    {autoAllocation.autoAllocationType === "All" && (
-                      <div>
-                        <p className="text-gray-600 mt-5 text-[14px]">
-                          Force assigns the task to Agent based on availability
-                          and distance
-                        </p>
-                        <div className="flex mt-5">
-                          <label className="text-[18px] font-semibold mr-5">
-                            Maximum Radius
-                          </label>
-                          <input
-                            type="text"
-                            name="maxRadius"
-                            value={autoAllocation.maxRadius}
-                            className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
-                            onChange={handleChange}
-                          />
-                          <div>
-                            <p className="font-semibold text-[16px] ml-5">Km</p>
-                          </div>
+                        <div>
+                          <p className="font-semibold text-[16px] ml-5">sec</p>
                         </div>
                       </div>
-                    )}
-                    {autoAllocation.autoAllocationType === "Nearest" && (
-                      <p className="mt-5">
-                        {`Sends the task request notification to the Agent
+                      <div>
+                        <label className="text-[18px] mb-3 font-semibold">
+                          Set auto allocation
+                        </label>
+                        <div className="flex items-center ">
+                          <input
+                            type="radio"
+                            id="send-to-all"
+                            name="autoAllocationType"
+                            value="All"
+                            onChange={handleOptionChange}
+                            checked={
+                              autoAllocation.autoAllocationType === "All"
+                            }
+                            className=""
+                          />
+                          <label
+                            htmlFor="send-to-all"
+                            className="ml-2 font-semibold"
+                          >
+                            Send-to-all
+                          </label>
+                        </div>
+                        <div className="flex items-center ">
+                          <input
+                            type="radio"
+                            id="nearest-available"
+                            name="autoAllocationType"
+                            value="Nearest"
+                            onChange={handleOptionChange}
+                            checked={
+                              autoAllocation.autoAllocationType === "Nearest"
+                            }
+                            className=""
+                          />
+                          <label
+                            htmlFor="nearest-available"
+                            className="ml-2 font-semibold"
+                          >
+                            Nearest Available
+                          </label>
+                        </div>
+                      </div>
+                      {autoAllocation.autoAllocationType === "All" && (
+                        <div>
+                          <p className="text-gray-600 mt-5 text-[14px]">
+                            Force assigns the task to Agent based on
+                            availability and distance
+                          </p>
+                          <div className="flex mt-5">
+                            <label className="text-[18px] font-semibold mr-5">
+                              Maximum Radius
+                            </label>
+                            <input
+                              type="text"
+                              name="maxRadius"
+                              value={autoAllocation.maxRadius}
+                              className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
+                              onChange={handleChange}
+                            />
+                            <div>
+                              <p className="font-semibold text-[16px] ml-5">
+                                Km
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {autoAllocation.autoAllocationType === "Nearest" && (
+                        <p className="mt-5">
+                          {`Sends the task request notification to the Agent
                         (maximum limit: 500 Agent) available in
                         the task time-slot. task gets assigned to the "Agent who
                         accepts the task request first. If no Agent accepts
                         the task, it remains unassigned.`}
-                      </p>
-                    )}
-                    <div className="grid">
-                      <label className="text-[18px] mt-3 font-semibold">
-                        Prioritize
-                      </label>
-                      <div className="flex mt-2 gap-2">
-                        <input
-                          type="radio"
-                          name="priorityType"
-                          value="Default"
-                          checked={autoAllocation.priorityType === "Default"}
-                          onChange={handleRadioChange}
-                        />
-                        <label className="font-semibold">Default</label>
-                      </div>
-                      <div className="flex">
-                        <input
-                          type="radio"
-                          name="priorityType"
-                          value="Monthly-salaried"
-                          checked={
-                            autoAllocation.priorityType === "Monthly-salaried"
-                          }
-                          onChange={handleRadioChange}
-                        />
-                        <label className="font-semibold ml-2">
-                          Monthly salaried employees{" "}
+                        </p>
+                      )}
+                      <div className="grid">
+                        <label className="text-[18px] mt-3 font-semibold">
+                          Prioritize
                         </label>
+                        <div className="flex mt-2 gap-2">
+                          <input
+                            type="radio"
+                            name="priorityType"
+                            value="Default"
+                            checked={autoAllocation.priorityType === "Default"}
+                            onChange={handleRadioChange}
+                          />
+                          <label className="font-semibold">Default</label>
+                        </div>
+                        <div className="flex">
+                          <input
+                            type="radio"
+                            name="priorityType"
+                            value="Monthly-salaried"
+                            checked={
+                              autoAllocation.priorityType === "Monthly-salaried"
+                            }
+                            onChange={handleRadioChange}
+                          />
+                          <label className="font-semibold ml-2">
+                            Monthly salaried employees{" "}
+                          </label>
+                        </div>
+                      </div>
+                      <div className="flex gap-4 mt-5">
+                        <button
+                          onClick={showModalCancel}
+                          className="bg-blue-50 p-3 rounded-lg w-1/2 font-semibold"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={showOkModal}
+                          type="submit"
+                          className="bg-teal-800 text-white p-3 w-1/2 rounded-lg"
+                        >
+                          Apply Auto Allocation
+                        </button>
                       </div>
                     </div>
-                    <div className="flex gap-4 mt-5">
-                      <button
-                        onClick={showModalCancel}
-                        className="bg-blue-50 p-3 rounded-lg w-1/2 font-semibold"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={showOkModal}
-                        type="submit"
-                        className="bg-teal-800 text-white p-3 w-1/2 rounded-lg"
-                      >
-                        Apply Auto Allocation
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </Modal>
+                  </form>
+                </div>
+              </Modal>
 
-            <p className="font-medium">
-              Auto Allocation{" "}
-              <Switch
-                className="ml-2"
-                value={autoAllocationStatus}
-                onChange={autoAllocationStatusUpdate}
-              />
-            </p>
+              <p className="font-medium">
+                Auto Allocation{" "}
+                <Switch
+                  className="ml-2"
+                  value={autoAllocationStatus}
+                  onChange={autoAllocationStatusUpdate}
+                />
+              </p>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2 mt-5">
+
+        <div className="flex gap-2 mt-5 h-full">
           <div className="w-1/4 rounded-lg bg-white">
             <div className="bg-teal-800 text-white p-5 rounded-lg flex">
-              Tasks{" "}
+              Tasks
               <p className="ms-[240px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
                 {taskData.length}
               </p>
             </div>
+
             <div className="w-full p-2 mt-4">
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
@@ -847,51 +883,51 @@ const DeliveryManagement = () => {
               <div className="px-5 bg-white max-h-[300px] overflow-y-auto">
                 {/* {task === "Unassigned" && ( */}
                 <div>
-                  {taskData.map((data) => (
-                    <Card className="bg-zinc-100 mt-3" key={data._id}>
+                  {taskData?.map((data) => (
+                    <Card className="bg-zinc-100 mt-3" key={data?._id}>
                       <CardBody>
                         <Typography
                           variant="h5"
                           color=""
                           className="text-[15px]"
                         >
-                          {`${formatDate(data.createdAt)} ${formatTime(
-                            data.createdAt
+                          {`${formatDate(data?.createdAt)} ${formatTime(
+                            data?.createdAt
                           )}`}
                         </Typography>
                         <Typography className="text-[16px]">
-                          {data.pickupDetail.pickupAddress.fullName}
+                          {data?.pickupDetail?.pickupAddress?.fullName}
                         </Typography>
                         <Typography className="text-[15px]">
-                          {data.pickupDetail.pickupAddress.area}
+                          {data?.pickupDetail?.pickupAddress?.area}
                         </Typography>
                         <Typography className="flex justify-between mt-3">
                           <Button
                             className=" bg-gray-100 text-black text-[12px] p-4 font-semibold"
                             onClick={() =>
                               showShopLocationOnMap(
-                                data.pickupDetail.pickupLocation,
-                                data.pickupDetail.pickupAddress.fullName,
-                                data._id
+                                data?.pickupDetail?.pickupLocation,
+                                data?.pickupDetail?.pickupAddress?.fullName,
+                                data?._id
                               )
                             }
                           >
                             View on Map
                           </Button>
 
-                          {data.taskStatus === "Assigned" ||
-                          data.taskStatus === "Completed" ? (
+                          {data?.taskStatus === "Assigned" ||
+                          data?.taskStatus === "Completed" ? (
                             <div>
                               <Button
                                 className=" bg-teal-800 text-white text-[12px] p-4 font-semibold"
-                                onClick={() => showModalTask(data._id)}
+                                onClick={() => showModalTask(data?._id)}
                               >
                                 View Details
                               </Button>
                               <Modal
-                                onOk={() => showModalCancelTask(data._id)}
-                                onCancel={() => showModalCancelTask(data._id)}
-                                open={visibleTaskModal[data._id] || false}
+                                onOk={() => showModalCancelTask(data?._id)}
+                                onCancel={() => showModalCancelTask(data?._id)}
+                                open={visibleTaskModal[data?._id] || false}
                                 width="750px"
                                 centered
                                 title="Task details"
@@ -905,7 +941,7 @@ const DeliveryManagement = () => {
                                           Task Id
                                         </div>
                                         <p className="text-[15px]">
-                                          {data._id}
+                                          {data?._id}
                                         </p>
                                       </div>
                                       <div className="flex">
@@ -914,8 +950,8 @@ const DeliveryManagement = () => {
                                         </label>
                                         <p className="text-[15px]">
                                           {
-                                            data.orderId.orderDetail
-                                              .deliveryMode
+                                            data?.orderId?.orderDetail
+                                              ?.deliveryMode
                                           }
                                         </p>
                                       </div>
@@ -927,7 +963,7 @@ const DeliveryManagement = () => {
                                           Agent Name
                                         </label>
                                         <p className="text-[15px] overflow-ellipsis">
-                                          {data.agentId.fullName}
+                                          {data?.agentId?.fullName}
                                         </p>
                                       </div>
 
@@ -936,7 +972,7 @@ const DeliveryManagement = () => {
                                           Agent ID
                                         </label>
                                         <p className="text-[15px] ">
-                                          {data.agentId._id}
+                                          {data?.agentId?._id}
                                         </p>
                                       </div>
                                     </div>
@@ -954,26 +990,14 @@ const DeliveryManagement = () => {
                                         gap="2"
                                       >
                                         <Step
-                                          key={data.orderId.merchantId}
+                                          key={data?.orderId?.merchantId}
                                           className="flex gap-5 w-full"
                                         >
                                           <StepIndicator>
                                             <StepStatus
-                                              complete={
-                                                <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                  1
-                                                </div>
-                                              }
-                                              incomplete={
-                                                <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
-                                                  1
-                                                </div>
-                                              }
-                                              active={
-                                                <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                  1
-                                                </div>
-                                              }
+                                              complete={<StepIcon />}
+                                              incomplete={<StepNumber />}
+                                              active={<StepNumber />}
                                             />
                                           </StepIndicator>
                                           <Box
@@ -982,8 +1006,8 @@ const DeliveryManagement = () => {
                                           >
                                             <StepTitle className="font-semibold text-[16px]">
                                               {
-                                                data.orderId.orderDetail
-                                                  .pickupAddress.fullName
+                                                data?.orderId?.orderDetail
+                                                  ?.pickupAddress?.fullName
                                               }
                                             </StepTitle>
                                             <StepDescription className="text-sm text-gray-500">
@@ -991,8 +1015,8 @@ const DeliveryManagement = () => {
                                             </StepDescription>
                                             <Step className="text-sm text-gray-500">
                                               {
-                                                data.orderId.orderDetail
-                                                  .pickupAddress.area
+                                                data?.orderId?.orderDetail
+                                                  ?.pickupAddress?.area
                                               }
                                             </Step>
                                           </Box>
@@ -1005,11 +1029,11 @@ const DeliveryManagement = () => {
                                               <label className="w-2/5">
                                                 Expected Time
                                               </label>
-                                              <p className="3/5">
+                                              <p className="w-3/5">
                                                 {`${formatDate(
-                                                  data.orderId.createdAt
+                                                  data?.orderId?.createdAt
                                                 )} | ${formatTime(
-                                                  data.orderId.createdAt
+                                                  data?.orderId?.createdAt
                                                 )}`}
                                               </p>
                                             </Step>
@@ -1019,9 +1043,9 @@ const DeliveryManagement = () => {
                                               </label>
                                               <p className="w-3/5">
                                                 {`${formatDate(
-                                                  data.orderId.createdAt
+                                                  data?.orderId?.createdAt
                                                 )} | ${formatTime(
-                                                  data.orderId.createdAt
+                                                  data?.orderId?.createdAt
                                                 )}`}
                                               </p>
                                             </Step>
@@ -1030,7 +1054,7 @@ const DeliveryManagement = () => {
                                         </Step>
 
                                         {/* <div className="w-[60%] border-t border-dotted border-gray-400 my-[5px] mx-[110px]"></div> */}
-                                        <div className="relative flex items-center ml-[60px] my-[5px]">
+                                        <div className="relative flex items-center ml-[60px] my-[15px]">
                                           {/* Oval container on the left */}
                                           <div className="absolute left-0 bg-blue-50 w-[110px] h-[24px] flex items-center justify-center rounded-full text-black font-semibold">
                                             <span className="text-sm">
@@ -1039,17 +1063,17 @@ const DeliveryManagement = () => {
                                           </div>
 
                                           {/* Dotted separator */}
-                                          <div className="w-[260px] border-t border-dotted border-gray-900 my-[5px] mx-[100px]"></div>
+                                          <div className="w-[350px] border-t border-dotted border-gray-900 my-[5px] mx-[100px]"></div>
 
                                           {/* Oval container on the right */}
                                           <div className="absolute right-0 bg-blue-50 w-[140px] h-[24px] flex items-center justify-center rounded-full text-black ">
                                             <span className="text-sm font-semibold">
                                               <span className="text-gray-400 mr-1">
                                                 Distance
-                                              </span>{" "}
+                                              </span>
                                               {
-                                                data.orderId.orderDetail
-                                                  .distance
+                                                data?.orderId?.orderDetail
+                                                  ?.distance
                                               }
                                               Kms
                                             </span>
@@ -1057,36 +1081,24 @@ const DeliveryManagement = () => {
                                         </div>
 
                                         <Step
-                                          key={data.orderId.customerId}
-                                          className="flex gap-5 size-20"
+                                          key={data?.orderId?.customerId}
+                                          className="flex gap-5 w-full"
                                         >
                                           <StepIndicator>
                                             <StepStatus
-                                              complete={
-                                                <div className="bg-teal-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                  2
-                                                </div>
-                                              }
-                                              incomplete={
-                                                <div className="bg-gray-300 w-8 h-8 flex items-center justify-center rounded-full text-gray-700 font-bold">
-                                                  2
-                                                </div>
-                                              }
-                                              active={
-                                                <div className="bg-teal-800 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold">
-                                                  2
-                                                </div>
-                                              }
+                                              complete={<StepIcon />}
+                                              incomplete={<StepNumber />}
+                                              active={<StepNumber />}
                                             />
                                           </StepIndicator>
                                           <Box
                                             flexShrink="0"
-                                            className="ml-4 w-[200px]"
+                                            className=" flex-grow"
                                           >
                                             <StepTitle className="font-semibold text-[16px]">
                                               {
-                                                data.orderId.orderDetail
-                                                  .deliveryAddress.fullName
+                                                data?.orderId?.orderDetail
+                                                  ?.deliveryAddress?.fullName
                                               }
                                             </StepTitle>
                                             <StepDescription className="text-sm text-gray-500">
@@ -1094,45 +1106,56 @@ const DeliveryManagement = () => {
                                             </StepDescription>
                                             <Step className="text-sm text-gray-500">
                                               {
-                                                data.orderId.orderDetail
-                                                  .deliveryAddress.flat
+                                                data?.orderId?.orderDetail
+                                                  ?.deliveryAddress?.flat
                                               }
+                                              ,{" "}
                                               {
-                                                data.orderId.orderDetail
-                                                  .deliveryAddress.area
+                                                data?.orderId?.orderDetail
+                                                  ?.deliveryAddress?.area
                                               }
+                                              ,{" "}
                                               {
-                                                data.orderId.orderDetail
-                                                  .deliveryAddress.landMark
+                                                data?.orderId?.orderDetail
+                                                  ?.deliveryAddress?.landMark
                                               }
                                             </Step>
                                           </Box>
+
                                           <Box
                                             flexShrink="0"
-                                            className="ml-[70px]"
+                                            className=" flex flex-col"
                                           >
-                                            <Step>
-                                              Expected Time{" "}
-                                              {`${formatDate(
-                                                data.orderId.orderDetail
-                                                  .deliveryTime
-                                              )} ${formatTime(
-                                                data.orderId.orderDetail
-                                                  .deliveryTime
-                                              )}`}
+                                            <Step className="w-[18rem]">
+                                              <label className="w-2/5">
+                                                Expected Time
+                                              </label>
+                                              <p className="w-3/5">
+                                                {`${formatDate(
+                                                  data?.orderId?.orderDetail
+                                                    ?.deliveryTime
+                                                )} | ${formatTime(
+                                                  data?.orderId?.orderDetail
+                                                    ?.deliveryTime
+                                                )}`}
+                                              </p>
                                             </Step>
                                             <Step>
-                                              Delivery Time{" "}
-                                              {`${formatDate(
-                                                data.orderId.orderDetail
-                                                  .deliveryTime
-                                              )} ${formatTime(
-                                                data.orderId.orderDetail
-                                                  .deliveryTime
-                                              )}`}
+                                              <label className="w-2/5">
+                                                Pick up Time
+                                              </label>
+                                              <p className="w-3/5">
+                                                {`${formatDate(
+                                                  data?.orderId?.orderDetail
+                                                    ?.deliveryTime
+                                                )} | ${formatTime(
+                                                  data?.orderId?.orderDetail
+                                                    ?.deliveryTime
+                                                )}`}
+                                              </p>
                                             </Step>
                                           </Box>
-                                          <StepSeparator className="my-2" />
+                                          <StepSeparator className="mt-[18px]" />
                                         </Step>
                                       </Stepper>
                                     </div>
@@ -1144,26 +1167,26 @@ const DeliveryManagement = () => {
                             <div>
                               <Button
                                 className=" bg-teal-800  text-white text-[12px] p-4  font-semibold"
-                                onClick={() => showModalTask(data._id)}
+                                onClick={() => showModalTask(data?._id)}
                               >
                                 Assign Agent
                               </Button>
                               <Modal
                                 title="Assign Agent"
-                                onOk={() => showModalCancelTask(data._id)}
-                                onCancel={() => showModalCancelTask(data._id)}
-                                open={visibleTaskModal[data._id] || false}
+                                onOk={() => showModalCancelTask(data?._id)}
+                                onCancel={() => showModalCancelTask(data?._id)}
+                                open={visibleTaskModal[data?._id] || false}
                                 width="600px"
                                 centered
                                 footer={null}
-                                key={data._id}
+                                key={data?._id}
                               >
                                 <div>
                                   <div className="flex mt-5">
                                     <label className="w-1/3 text-gray-600">
                                       Task ID
                                     </label>
-                                    <p className="font-semibold">{data._id}</p>
+                                    <p className="font-semibold">{data?._id}</p>
                                   </div>
                                   <div className="flex mt-5">
                                     <label className="w-1/3 text-gray-600">
@@ -1173,7 +1196,7 @@ const DeliveryManagement = () => {
                                       <Switch
                                         value={geofenceToggle}
                                         onClick={() =>
-                                          handleGeofenceSwitch(data._id)
+                                          handleGeofenceSwitch(data?._id)
                                         }
                                       />
                                     </p>
@@ -1189,15 +1212,15 @@ const DeliveryManagement = () => {
                                         className="text-gray-500 font-normal w-[300px] text-left"
                                       >
                                         {manualAssign
-                                          ? manualAssign.name
+                                          ? manualAssign?.name
                                           : "Select agent"}
                                       </MenuButton>
                                       <MenuList className="h-[100px] overflow-y-auto">
-                                        {geofenceAgentData.map((data) => (
+                                        {geofenceAgentData?.map((data) => (
                                           <MenuItem
-                                            key={data._id}
+                                            key={data?._id}
                                             className="h-[70px]"
-                                            value={data._id}
+                                            value={data?._id}
                                             onClick={() =>
                                               handleManualAssignChange(data)
                                             }
@@ -1205,11 +1228,11 @@ const DeliveryManagement = () => {
                                             <div className="justify-between items-center w-[300px]">
                                               <div className="flex-1 flex justify-between">
                                                 <span className="font-semibold">
-                                                  {data._id}
-                                                  {data.workStructure ===
+                                                  {data?._id}
+                                                  {data?.workStructure ===
                                                   "Fish & Meat" ? (
                                                     <Badge
-                                                      bg="red.500"
+                                                      bg="red?.500"
                                                       className="w-[15px] h-[14px] ml-3"
                                                     ></Badge>
                                                   ) : (
@@ -1218,25 +1241,25 @@ const DeliveryManagement = () => {
                                                 </span>
                                                 <span
                                                   className={
-                                                    data.status === "Active"
+                                                    data?.status === "Active"
                                                       ? "text-green-400 font-semibold"
-                                                      : data.status ===
+                                                      : data?.status ===
                                                         "Inactive"
                                                       ? "text-gray-500 font-semibold"
-                                                      : data.status === "Busy"
+                                                      : data?.status === "Busy"
                                                       ? "text-red-500 font-semibold"
                                                       : "text-red-500 font-semibold"
                                                   }
                                                 >
-                                                  {data.status}
+                                                  {data?.status}
                                                 </span>
                                               </div>
                                               <div className="flex-1 flex justify-between">
                                                 <span className="font-semibold">
-                                                  {data.name}
+                                                  {data?.name}
                                                 </span>
                                                 <span className="font-semibold">
-                                                  {data.distance} Kms
+                                                  {data?.distance} Kms
                                                 </span>
                                               </div>
                                             </div>
@@ -1249,7 +1272,7 @@ const DeliveryManagement = () => {
                                     <button
                                       className="bg-zinc-200 p-2 rounded-md px-4"
                                       onClick={() =>
-                                        showModalCancelTask(data._id)
+                                        showModalCancelTask(data?._id)
                                       }
                                     >
                                       Cancel
@@ -1257,7 +1280,7 @@ const DeliveryManagement = () => {
                                     <button
                                       className="bg-teal-800 text-white p-2 rounded-md px-4"
                                       onClick={() =>
-                                        handleSendNotification(data._id)
+                                        handleSendNotification(data?._id)
                                       }
                                     >
                                       Assign Agent
@@ -1276,20 +1299,26 @@ const DeliveryManagement = () => {
             </div>
           </div>
 
-          <div className="w-2/4 bg-white h-[520px]">
+          <div className="w-2/4 bg-white h-[fit]">
             <div
               id="map"
               ref={mapContainerRef}
-              style={{ width: "99%", height: "510px", display: "inline-block" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "inline-block",
+              }}
             ></div>
           </div>
+
           <div className="w-1/4 rounded-lg bg-white">
             <div className="bg-teal-800 text-white p-5 rounded-lg flex">
               Agents{" "}
               <p className="ms-[230px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
-                {agentData.length}
+                {agentData?.length}
               </p>
             </div>
+
             <div className="w-full p-2 bg-white ">
               <select
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
@@ -1307,21 +1336,22 @@ const DeliveryManagement = () => {
                 name="search"
                 placeholder="Search agents"
                 onChange={(e) => {
-                  handleAgentSearch(e.target.value);
+                  handleAgentSearch(e?.target?.value);
                 }}
               />
             </div>
+
             <div className="px-5 max-h-[300px] overflow-y-auto">
-              {agentData.map((data) => (
+              {agentData?.map((data) => (
                 <Card
                   className="bg-zinc-100 mt-3 flex"
-                  key={data._id}
+                  key={data?._id}
                   onClick={() =>
                     showAgentLocationOnMap(
-                      data.location,
-                      data.fullName,
-                      data._id,
-                      data.phoneNumber
+                      data?.location,
+                      data?.fullName,
+                      data?._id,
+                      data?.phoneNumber
                     )
                   }
                 >
@@ -1329,15 +1359,15 @@ const DeliveryManagement = () => {
                     <div className="w-2/3">
                       <CardBody>
                         <Typography variant="h5" className="text-[15px]">
-                          {data._id}
+                          {data?._id}
                         </Typography>
-                        <Typography>{data.fullName}</Typography>
-                        <Typography>{data.phoneNumber}</Typography>
+                        <Typography>{data?.fullName}</Typography>
+                        <Typography>{data?.phoneNumber}</Typography>
                       </CardBody>
                     </div>
                     <div className="w-1/3 flex justify-center items-center">
                       <div className="bg-teal-800 rounded-full h-[40px] w-[40px] flex justify-center items-center text-white">
-                        {data.taskCompleted}
+                        {data?.taskCompleted}
                       </div>
                     </div>
                     {/* <p className="font-semibold mt-[85px]">Tasks</p> */}
