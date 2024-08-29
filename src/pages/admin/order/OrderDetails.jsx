@@ -21,18 +21,45 @@ import axios from "axios";
 import { CSVLink } from "react-csv";
 import { orderBillCSVDatHeading } from "../../../utils/DefaultData";
 import { mappls } from "mappls-web-maps";
+import { formatDate, formatTime } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+const mapplsClassObject = new mappls();
+
+const polyCoordinates = [
+  { lat: 8.54881, lng: 76.917378 },
+  { lat: 8.548255, lng: 76.918937 },
+  { lat: 8.548355, lng: 76.920218 },
+  { lat: 8.547625, lng: 76.921741 },
+  { lat: 8.547227, lng: 76.921869 },
+  { lat: 8.545724, lng: 76.921746 },
+  { lat: 8.543342, lng: 76.922764 },
+  { lat: 8.540434, lng: 76.9244 },
+  { lat: 8.53875, lng: 76.925722 },
+  { lat: 8.535536, lng: 76.927088 },
+  { lat: 8.533248, lng: 76.928814 },
+  { lat: 8.532626, lng: 76.928964 },
+  { lat: 8.530617, lng: 76.928856 },
+  { lat: 8.530067, lng: 76.928985 },
+  { lat: 8.529644, lng: 76.930363 },
+  { lat: 8.529621, lng: 76.932304 },
+  { lat: 8.528969, lng: 76.933257 },
+  { lat: 8.528887, lng: 76.933811 },
+  { lat: 8.52895, lng: 76.934542 },
+  { lat: 8.529441, lng: 76.935897 },
+  { lat: 8.530068, lng: 76.935844 },
+];
 
 const OrderDetails = () => {
   const [orderDetail, setOrderDetail] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [billData, setBillData] = useState([]);
-  const [duration, setDuration] = useState(null);
-  const [coordinates, setCoordinates] = useState([]);
   const mapContainerRef = useRef(null);
   const [mapObject, setMapObject] = useState(null);
   const { orderId } = useParams();
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [activeStepIndex, setActiveStepIndex] = useState(0)
+  const [steps, setStep] = useState()
 
   const { token, role } = useContext(UserContext);
 
@@ -110,48 +137,50 @@ const OrderDetails = () => {
     });
   };
 
-  const generatePolyline = async () => {
-    try {
-      const response = await axios.get(
-        `https://apis.mapmyindia.com/advancedmaps/v1/9a632cda78b871b3a6eb69bddc470fef/route_eta/biking/${orderDetail.pickUpLocation[1]},${orderDetail.pickUpLocation[0]};${orderDetail.deliveryLocation[1]},${orderDetail.deliveryLocation[0]}?geometries=geojson`,
-        {
-          withCredentials: true,
+  const PolylineComponent = ({ map }) => {
+    const polylineRef = useRef(null);
+    const [coordinates, setCoordinates] = useState([]);
+
+    const generatePolyline = async () => {
+      try {
+        const pickupLat = orderDetail.pickUpLocation[0];
+        const pickupLng = orderDetail.pickUpLocation[1];
+        const deliveryLat = orderDetail.deliveryLocation[0];
+        const deliveryLng = orderDetail.deliveryLocation[1];
+        const response = await axios.post(
+          `${BASE_URL}/admin/map/get-polyline`,
+          { pickupLat, pickupLng, deliveryLat, deliveryLng },
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (response.status === 200) {
+          console.log(response.data.routes[0].geometry);
+          response.data.routes[0].geometry.coordinates.map((coor) => {
+            setCoordinates([...coordinates, { lat: coor[1], lng: coor[0] }]);
+          });
         }
-      );
-
-      if (response.status === 200) {
-        console.log(response.data.routes[0].geometry);
-        setDuration(response.data.routes[0].duration)
-        response.data.routes[0].geometry.coordinates.map((coor) => {
-          setCoordinates([...coordinates, { lat: coor[1], lng: coor[0] }]);
-        });
+      } catch (err) {
+        console.log(`Error in getting polyline`);
       }
-    } catch (err) {
-      console.log(`Error in getting polyline`);
-    }
-  };
+    };
 
-  const setPolyline = ()=>{
-    try{
-
-      if (coordinates.length > 0) {
-       const Polyline = new mappls.Polyline({
-          map: mapObject,
-          path: coordinates,
-          strokeColor: "#OFO",
-          strokeOpacity: 1.0,
-          strokeWeight: 9,
-          fitbounds: true,
-          lineGap: 0,
-          fitboundOptions: {padding: 120,duration:duration},
-          popupHtml: "Route 1",
-          popupOptions: {offset: {'bottom': [0, -20]}}
+    useEffect(() => {
+      generatePolyline();
+      if (polylineRef.current) {
+        mapplsClassObject.removeLayer({ map: map, layer: polylineRef.current });
+      }
+      polylineRef.current = mapplsClassObject.Polyline({
+        map: map,
+        path: coordinates,
+        strokeColor: "#333",
+        strokeOpacity: 1.0,
+        strokeWeight: 10,
+        fitbounds: true,
       });
-      }
-    }catch(err){
-      console.log(err.message)
-    }
-  }
+    }, []);
+  };
 
   useEffect(() => {
     if (!token) {
@@ -198,9 +227,49 @@ const OrderDetails = () => {
         orderDetail.deliveryAgentDetail._id,
         ""
       );
-      generatePolyline();
-      setPolyline();
     }
+    let mappedSteps = [];
+    orderDetail?.stepperDetail?.map((item) => {
+     // Define an array to hold the steps
+   
+     // Add steps up to the "Cancelled" step
+     const addStep = (step, label, index) => {
+       if (step) {
+         mappedSteps.push({
+           title: label,
+           description: `by ${step?.by} with Id ${step?.userId || "N/A"} on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
+         });
+         if (!item?.cancelled && step?.date) {
+           setActiveStepIndex(index)
+         }
+       }
+     };
+   
+     addStep(item?.created, "Created", mappedSteps.length);
+     addStep(item?.assigned, "Assigned", mappedSteps.length);
+     addStep(item?.accepted, "Accepted", mappedSteps.length);
+     addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
+     addStep(item?.reachedPickupLocation, "Reached pickup location", mappedSteps.length);
+     addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
+     addStep(item?.reachedDeliveryLocation, "Reached delivery location", mappedSteps.length);
+     addStep(item?.noteAdded, "Note Added", mappedSteps.length);
+     addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
+     addStep(item?.imageAdded, "Image Added", mappedSteps.length);
+   
+     // If the order was cancelled, only keep steps up to and including "Cancelled"
+     if (item?.cancelled) {
+       mappedSteps.push({
+         title: "Cancelled",
+         description: `by ${item?.cancelled?.by} with Id ${item?.cancelled?.userId || "N/A"}
+          on ${formatDate(item?.cancelled?.date)}, ${formatTime(item?.cancelled?.date)}`,
+       });
+       setActiveStepIndex(mappedSteps.length-1)
+     }
+    setStep(mappedSteps)
+     return mappedSteps;
+   }).flat();
+   
+  console.log(activeStepIndex)
   }, [mapObject, orderDetail]);
 
   useEffect(() => {
@@ -215,9 +284,8 @@ const OrderDetails = () => {
       clickableIcons: true,
     };
 
-    const mapplsClassObject = new mappls();
     if (authToken) {
-      mapplsClassObject.initialize(`${authToken}`, async () => {
+      mapplsClassObject.initialize(`9a632cda78b871b3a6eb69bddc470fef`, async () => {
         if (mapContainerRef.current) {
           console.log("Initializing map...");
           const map = await mapplsClassObject.Map({
@@ -229,7 +297,8 @@ const OrderDetails = () => {
             console.log("Map initialized successfully.");
             map.on("load", () => {
               console.log("Map loaded.");
-              setMapObject(map); // Save the map object to state
+              setMapObject(map);
+              setIsMapLoaded(true); // Save the map object to state
             });
           } else {
             console.error(
@@ -243,23 +312,111 @@ const OrderDetails = () => {
     }
   }, [authToken]);
 
-  
+  // let steps
+  // orderDetail.stepperDetail.map((item)=>{
+  //   steps = [{title: item, description: `by ${item.by} with Id ${item.userId}`}]
+  // })
 
-  const steps = [
-    { title: "Created", description: "by Admin ID #123" },
-    { title: "Assigned", description: "by Admin ID #123" },
-    { title: "Accepted", description: "by Agent Name" },
-    { title: "Started", description: "by Agent Name" },
-    { title: "Reached pickup location", description: "by Agent Name" },
-    { title: "Note Added", description: "by Agent Name" },
-    { title: "Signature Added", description: "by Agent Name" },
-    { title: "Image Added", description: "by Agent Name" },
-    { title: "Completed", description: "by Agent Name" },
-  ];
+  // const step = [
+  //   { title: "Created", description: "by Admin ID #123" },
+  //   { title: "Assigned", description: "by Admin ID #123" },
+  //   { title: "Accepted", description: "by Agent Name" },
+  //   { title: "Pickup Started", description: "by Agent Name" },
+  //   { title: "Reached pickup location", description: "by Agent Name" },
+  //   { title: "Delivery Started", description: "by Agent Name" },
+  //   { title: "Reached delivery location", description: "by Agent Name" },
+  //   { title: "Note Added", description: "by Agent Name" },
+  //   { title: "Signature Added", description: "by Agent Name" },
+  //   { title: "Image Added", description: "by Agent Name" },
+  //   { title: "Completed", description: "by Agent Name" },
+  //   { title: "Cancelled", description: "by Agent Name" },
+  // ];
+ 
+
+  // const steps = orderDetail?.stepperDetail
+  //   ?.map((item) => {
+      // Collect the steps in the required format
+    //   return [
+    //     {
+    //       title: "Created",
+    //       description: `by ${item?.created?.by} with Id ${
+    //         item?.created?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Assigned",
+    //       description: `by ${item?.assigned?.by} with Id ${
+    //         item?.assigned?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Accepted",
+    //       description: `by ${item?.accepted?.by} with Id ${
+    //         item?.accepted?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Pickup Started",
+    //       description: `by ${item?.pickupStarted?.by} with Id ${
+    //         item?.pickupStarted?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Reached pickup location",
+    //       description: `by ${item?.reachedPickupLocation?.by} with Id ${
+    //         item?.reachedPickupLocation?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Delivery started",
+    //       description: `by ${item?.deliveryStarted?.by} with Id ${
+    //         item?.deliveryStarted?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Reached delivery location",
+    //       description: `by ${item?.reachedDeliveryLocation?.by} with Id ${
+    //         item?.reachedDeliveryLocation?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Note Added",
+    //       description: `by ${item?.noteAdded?.by} with Id ${
+    //         item?.noteAdded?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Signature Added",
+    //       description: `by ${item?.signatureAdded?.by} with Id ${
+    //         item?.signatureAdded?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Image Added",
+    //       description: `by ${item?.imageAdded?.by} with Id ${
+    //         item?.imageAdded?.userId || "N/A"
+    //       }`,
+    //     },
+    //     {
+    //       title: "Completed",
+    //       description: `by ${item?.completed?.by} with Id ${
+    //         item?.completed?.userId || "N/A"
+    //       }`,
+    //     },
+    //     item?.cancelled ? 
+    //     {
+    //       title: "Cancelled",
+    //       description: `by ${item?.cancelled?.by} with Id ${
+    //         item?.cancelled?.userId || "N/A"
+    //       }`,
+    //     } : ""
+    //   ];
+    // })
+    // .flat();
 
   const { activeStep } = useSteps({
-    index: 2,
-    count: steps.length,
+    index: activeStepIndex,
+    count: steps?.length,
   });
 
   return (
@@ -669,6 +826,8 @@ const OrderDetails = () => {
         </div>
         <div className="flex m-5 mx-10 ">
           <div className="w-1/2 ">
+          {activeStepIndex !== null && (
+
             <Stepper
               index={activeStep}
               orientation="vertical"
@@ -677,7 +836,7 @@ const OrderDetails = () => {
               m="20px"
               gap="0"
             >
-              {steps.map((step, index) => (
+              {steps?.map((step, index) => (
                 <Step key={index}>
                   <StepIndicator>
                     <StepStatus
@@ -696,13 +855,16 @@ const OrderDetails = () => {
                 </Step>
               ))}
             </Stepper>
+          )}
           </div>
           <div className="w-3/4 bg-white h-[820px]">
             <div
               id="map"
               ref={mapContainerRef}
               style={{ width: "99%", height: "810px", display: "inline-block" }}
-            ></div>
+            >
+              {isMapLoaded && <PolylineComponent map={mapObject} />}
+            </div>
           </div>
         </div>
       </div>
