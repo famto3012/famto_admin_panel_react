@@ -140,7 +140,6 @@ const OrderDetails = () => {
   const PolylineComponent = ({ map }) => {
     const polylineRef = useRef(null);
     const [coordinates, setCoordinates] = useState([]);
-
     const generatePolyline = async () => {
       try {
         const pickupLat = orderDetail.pickUpLocation[0];
@@ -154,34 +153,42 @@ const OrderDetails = () => {
             withCredentials: true,
           }
         );
-
+  
         if (response.status === 200) {
-          console.log(response.data.routes[0].geometry);
-          response.data.routes[0].geometry.coordinates.map((coor) => {
-            setCoordinates([...coordinates, { lat: coor[1], lng: coor[0] }]);
-          });
+          console.log("Response", response.data.routes[0].geometry)
+          const coords = response.data.routes[0].geometry.coordinates.map((coor) => ({
+            lat: coor[1],
+            lng: coor[0],
+          }));
+          setCoordinates(coords);
         }
       } catch (err) {
         console.log(`Error in getting polyline`);
       }
     };
-
+  
     useEffect(() => {
       generatePolyline();
-      if (polylineRef.current) {
-        mapplsClassObject.removeLayer({ map: map, layer: polylineRef.current });
-      }
-      polylineRef.current = mapplsClassObject.Polyline({
-        map: map,
-        path: coordinates,
-        strokeColor: "#333",
-        strokeOpacity: 1.0,
-        strokeWeight: 10,
-        fitbounds: true,
-      });
     }, []);
-  };
-
+  
+    useEffect(() => {
+      if (coordinates.length > 0) {
+        if (polylineRef.current) {
+          mapplsClassObject.removeLayer({ map: map, layer: polylineRef.current });
+        }
+  
+        polylineRef.current = mapplsClassObject.Polyline({
+          map: map,
+          path: coordinates,
+          strokeColor: "#00CED1",
+          strokeOpacity: 1.0,
+          strokeWeight: 10,
+          fitbounds: true,
+        });
+      }
+    }, [coordinates]);
+    };
+  
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -228,65 +235,58 @@ const OrderDetails = () => {
         ""
       );
     }
-    let mappedSteps = [];
-    orderDetail?.stepperDetail
-      ?.map((item) => {
-        // Define an array to hold the steps
-
-        // Add steps up to the "Cancelled" step
-        const addStep = (step, label, index) => {
-          if (step) {
-            mappedSteps.push({
-              title: label,
-              description: `by ${step?.by} with Id ${
-                step?.userId || "N/A"
-              } on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
-            });
-            if (!item?.cancelled && step?.date) {
-              setActiveStepIndex(index);
-            }
-          }
-        };
-
-        addStep(item?.created, "Created", mappedSteps.length);
-        addStep(item?.assigned, "Assigned", mappedSteps.length);
-        addStep(item?.accepted, "Accepted", mappedSteps.length);
-        addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
-        addStep(
-          item?.reachedPickupLocation,
-          "Reached pickup location",
-          mappedSteps.length
-        );
-        addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
-        addStep(
-          item?.reachedDeliveryLocation,
-          "Reached delivery location",
-          mappedSteps.length
-        );
-        addStep(item?.noteAdded, "Note Added", mappedSteps.length);
-        addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
-        addStep(item?.imageAdded, "Image Added", mappedSteps.length);
-
-        // If the order was cancelled, only keep steps up to and including "Cancelled"
-        if (item?.cancelled) {
+  
+    let mappedSteps = [];  
+    orderDetail?.stepperDetail?.forEach((item) => {
+      const addStep = (step, label, index) => {
+        if (step) {
           mappedSteps.push({
-            title: "Cancelled",
-            description: `by ${item?.cancelled?.by} with Id ${
-              item?.cancelled?.userId || "N/A"
-            }
-          on ${formatDate(item?.cancelled?.date)}, ${formatTime(
-              item?.cancelled?.date
-            )}`,
+            title: label,
+            description: `by ${step?.by} with Id ${step?.userId || "N/A"} on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
           });
-          setActiveStepIndex(mappedSteps.length - 1);
+          if (!item?.cancelled && step?.date) {
+            setActiveStepIndex(index);
+          }
         }
-        setStep(mappedSteps);
-        return mappedSteps;
-      })
-      .flat();
-
-    console.log(activeStepIndex);
+      };
+  
+      addStep(item?.created, "Created", mappedSteps.length);
+      addStep(item?.assigned, "Assigned", mappedSteps.length);
+      addStep(item?.accepted, "Accepted", mappedSteps.length);
+      addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
+      addStep(item?.reachedPickupLocation, "Reached pickup location", mappedSteps.length);
+      addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
+      addStep(item?.reachedDeliveryLocation, "Reached delivery location", mappedSteps.length);
+      addStep(item?.noteAdded, "Note Added", mappedSteps.length);
+      addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
+      addStep(item?.imageAdded, "Image Added", mappedSteps.length);
+  
+      if (item?.cancelled) {
+        mappedSteps.push({
+          title: "Cancelled",
+          description: `by ${item?.cancelled?.by} with Id ${item?.cancelled?.userId || "N/A"}
+              on ${formatDate(item?.cancelled?.date)}, ${formatTime(item?.cancelled?.date)}`,
+        });
+        setActiveStepIndex(mappedSteps.length);
+      }
+    });
+  
+    setStep(mappedSteps);
   }, [mapObject, orderDetail]);
+  
+  useEffect(() => {
+    if (activeStepIndex !== -1 && steps?.length > 0) {
+      // Trigger any necessary actions after activeStepIndex is set
+      console.log(`Active step set to index ${activeStepIndex}`);
+      setActiveStep(activeStepIndex)
+    }
+  }, [activeStepIndex, steps]);
+
+  console.log("Here", activeStepIndex)
+  const { activeStep, setActiveStep } = useSteps({
+    index: activeStepIndex,
+    count: steps?.length,
+  });
 
   useEffect(() => {
     getAuthToken();
@@ -431,10 +431,7 @@ const OrderDetails = () => {
   // })
   // .flat();
 
-  const { activeStep } = useSteps({
-    index: activeStepIndex,
-    count: steps?.length,
-  });
+
 
   return (
     <>
