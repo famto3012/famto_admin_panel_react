@@ -12,8 +12,6 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { Pagination } from "@mui/material";
-import { CSVLink } from "react-csv";
-import { allOrdersCSVDataHeading } from "../../../utils/DefaultData";
 import { formatDate } from "../../../utils/formatter";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { useSocket } from "../../../context/SocketContext";
@@ -25,6 +23,7 @@ const Orders = () => {
   const [deliveryOption, setDeliveryOption] = useState(true);
 
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
   const [orderActionLoading, setOrderActionLoading] = useState({});
 
   const [orderStatus, setOrderStatus] = useState("");
@@ -48,12 +47,10 @@ const Orders = () => {
 
   useEffect(() => {
     const handleNewOrder = (orderData) => {
-      console.log(orderData);
       setOrders((prevOrders) => [orderData, ...prevOrders]);
     };
 
     const handleChangeAccepterOrderStatus = ({ orderId }) => {
-      console.log(orderId);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId ? { ...order, orderStatus: "On-going" } : order
@@ -62,7 +59,6 @@ const Orders = () => {
     };
 
     const handleChangeRejectedOrderStatus = ({ orderId }) => {
-      console.log(orderId);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId ? { ...order, orderStatus: "Cancelled" } : order
@@ -112,7 +108,13 @@ const Orders = () => {
           setPagination(response.data.pagination);
         }
       } catch (err) {
-        console.log(`Error in getting all orders: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting all orders",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsTableLoading(false);
       }
@@ -151,7 +153,13 @@ const Orders = () => {
           setPagination(response.data.pagination);
         }
       } catch (err) {
-        console.log(`Error in filtering orders: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while filtering the orders",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsTableLoading(false);
       }
@@ -183,9 +191,13 @@ const Orders = () => {
           }
         }
       } catch (err) {
-        console.log(
-          `Error in searching orders: ${err.response?.data || err.message}`
-        );
+        toast({
+          title: "Error",
+          description: "An error occoured while searching the order",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsTableLoading(false);
       }
@@ -315,6 +327,48 @@ const Orders = () => {
 
   const handleToggle = () => setDeliveryOption(!deliveryOption);
 
+  const handleDownloadCSV = async (e) => {
+    try {
+      setCSVDownloadLoading(true);
+
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/orders/admin/download-csv`
+          : `${BASE_URL}/orders/download-csv`;
+
+      const response = await axios.get(endPoint, {
+        params: { orderStatus, paymentMode, deliveryMode, query: search },
+        responseType: "blob",
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        // Create a URL for the file and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Order_Data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while downloading CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setCSVDownloadLoading(false);
+    }
+  };
+
   return (
     <>
       <Sidebar />
@@ -354,14 +408,17 @@ const Orders = () => {
           </div>
 
           <div className="flex space-x-2 justify-end">
-            <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-              <CSVLink
-                data={orders}
-                headers={allOrdersCSVDataHeading}
-                filename={`All_Orders_Data - (${formatDate(new Date())}).csv`}
-              >
-                <ArrowDownOutlined /> <span>CSV</span>
-              </CSVLink>
+            <button
+              onClick={handleDownloadCSV}
+              className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
+            >
+              {CSVDownloadLoading ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <ArrowDownOutlined /> <span>CSV</span>
+                </>
+              )}
             </button>
 
             <div>

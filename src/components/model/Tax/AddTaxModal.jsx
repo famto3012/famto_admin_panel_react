@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const AddTaxModal = ({
   isVisible,
@@ -16,13 +18,21 @@ const AddTaxModal = ({
     taxName: "",
     tax: "",
     taxType: "",
-    assignToBusinessCategoryId: "",
-    geofenceId: "",
+    assignToBusinessCategory: "",
+    geofences: [],
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
+  const animatedComponents = makeAnimated();
+
+  const handleSelectGeofence = (selectedOptions) => {
+    setTaxData({
+      ...taxData,
+      geofences: selectedOptions.map((option) => option.value),
+    });
+  };
 
   const handleInputChange = (e) => {
     setTaxData({ ...taxData, [e.target.name]: e.target.value });
@@ -35,10 +45,18 @@ const AddTaxModal = ({
     }));
   };
 
+  const geofenceOptions = allGeofence.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
   const submitAction = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
+
+      console.log(taxData);
+
       const response = await axios.post(
         `${BASE_URL}/admin/taxes/add-tax`,
         taxData,
@@ -52,13 +70,14 @@ const AddTaxModal = ({
 
       if (response.status === 201) {
         onAddTax(response.data.data);
+        console.log(response.data.data);
         handleCancel();
         setTaxData({
           taxName: "",
           tax: "",
           taxType: "",
-          assignToBusinessCategoryId: "",
-          geofenceId: "",
+          assignToBusinessCategory: "",
+          geofences: "",
         });
         toast({
           title: "Success",
@@ -86,9 +105,9 @@ const AddTaxModal = ({
     <Modal
       title="Add Tax"
       open={isVisible}
-      className="mt-24"
       onCancel={handleCancel}
       footer={null}
+      centered
     >
       <form onSubmit={submitAction}>
         <div className="flex flex-col gap-4 justify-between">
@@ -135,21 +154,19 @@ const AddTaxModal = ({
           </div>
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">Geofence</label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="geofenceId"
-              value={taxData.geofenceId}
-              onChange={handleInputChange}
-            >
-              <option defaultValue={"Select geofence"} hidden>
-                Select geofence
-              </option>
-              {allGeofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={geofenceOptions?.filter((option) =>
+                taxData?.geofences?.includes(option.value)
+              )}
+              isMulti={true}
+              isSearchable={true}
+              onChange={handleSelectGeofence}
+              options={geofenceOptions}
+              placeholder="Select geofence"
+              isClearable={true}
+              components={animatedComponents}
+            />
           </div>
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
@@ -157,8 +174,8 @@ const AddTaxModal = ({
             </label>
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="assignToBusinessCategoryId"
-              value={taxData.assignToBusinessCategoryId}
+              name="assignToBusinessCategory"
+              value={taxData.assignToBusinessCategory}
               onChange={handleInputChange}
             >
               <option defaultValue={"Select business category"} hidden>

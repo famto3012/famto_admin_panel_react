@@ -90,8 +90,6 @@ const Discount = () => {
 
   // Add merchant discount by admin
 
-  console.log("merchantrId", currentDiscount);
-
   const handleChange = async (e) => {
     setSelectedMerchant(e.target.value); // Set selectedMerchant to the selected value (merchant ID)
   };
@@ -151,17 +149,16 @@ const Discount = () => {
         handleConfirmDelete();
         toast({
           title: "Success",
-          description: "Discount Deleted Successfully.",
+          description: "Discount deleted successfully.",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
-      console.error(`Error in deleting discount ${err.message}`);
       toast({
         title: "Error",
-        description: "Error in deleting Discount.",
+        description: "Error in deleting discount.",
         status: "error",
         isClosable: true,
         duration: 3000,
@@ -170,7 +167,6 @@ const Discount = () => {
       setConfirmLoading(false);
     }
   };
-
 
   // Delete Current Product...
 
@@ -201,17 +197,16 @@ const Discount = () => {
         handleConfirmDeleteProduct();
         toast({
           title: "Success",
-          description: "Discount Deleted Successfully.",
+          description: "Discount deleted successfully.",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
       }
     } catch (err) {
-      console.error(`Error in deleting discount ${err.message}`);
       toast({
         title: "Error",
-        description: "Error in deleting Discount.",
+        description: "Error in deleting discount.",
         status: "error",
         isClosable: true,
         duration: 3000,
@@ -328,8 +323,8 @@ const Discount = () => {
     });
   };
 
-   // Function to update the discount in the list
-   const handleEditDiscount = (updatedDiscount) => {
+  // Function to update the discount in the list
+  const handleEditDiscount = (updatedDiscount) => {
     setDiscount((prevDiscounts) =>
       prevDiscounts.map((discount) =>
         discount._id === updatedDiscount._id ? updatedDiscount : discount

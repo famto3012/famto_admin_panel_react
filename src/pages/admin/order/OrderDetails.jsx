@@ -121,7 +121,7 @@ const OrderDetails = () => {
 
       if (response.status === 200) {
         console.log(response.data.routes[0].geometry);
-        setDuration(response.data.routes[0].duration)
+        setDuration(response.data.routes[0].duration);
         response.data.routes[0].geometry.coordinates.map((coor) => {
           setCoordinates([...coordinates, { lat: coor[1], lng: coor[0] }]);
         });
@@ -131,11 +131,10 @@ const OrderDetails = () => {
     }
   };
 
-  const setPolyline = ()=>{
-    try{
-
+  const setPolyline = () => {
+    try {
       if (coordinates.length > 0) {
-       const Polyline = new mappls.Polyline({
+        const Polyline = new mappls.Polyline({
           map: mapObject,
           path: coordinates,
           strokeColor: "#OFO",
@@ -143,15 +142,15 @@ const OrderDetails = () => {
           strokeWeight: 9,
           fitbounds: true,
           lineGap: 0,
-          fitboundOptions: {padding: 120,duration:duration},
+          fitboundOptions: { padding: 120, duration: duration },
           popupHtml: "Route 1",
-          popupOptions: {offset: {'bottom': [0, -20]}}
-      });
+          popupOptions: { offset: { bottom: [0, -20] } },
+        });
       }
-    }catch(err){
-      console.log(err.message)
+    } catch (err) {
+      console.log(err.message);
     }
-  }
+  };
 
   useEffect(() => {
     if (!token) {
@@ -226,9 +225,7 @@ const OrderDetails = () => {
           });
 
           if (map && typeof map.on === "function") {
-            console.log("Map initialized successfully.");
             map.on("load", () => {
-              console.log("Map loaded.");
               setMapObject(map); // Save the map object to state
             });
           } else {
@@ -242,8 +239,6 @@ const OrderDetails = () => {
       });
     }
   }, [authToken]);
-
-  
 
   const steps = [
     { title: "Created", description: "by Admin ID #123" },

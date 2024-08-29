@@ -123,7 +123,6 @@ const SponsorshipDetail = ({
             });
           }
         } catch (err) {
-          console.error("Error verifying payment:", err);
           toast({
             title: "Error",
             description: "Error in verifying payment",

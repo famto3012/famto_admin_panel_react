@@ -56,6 +56,7 @@ const PushNotification = () => {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
+
           axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -63,14 +64,18 @@ const PushNotification = () => {
         ]);
         if (tableResponse.status === 200) {
           setData(tableResponse.data.data);
-          console.log(tableResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
-          console.log(geofence);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -86,8 +91,6 @@ const PushNotification = () => {
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      console.log("formData", formData);
-
       setIsDataLoading(true);
       const addpushToSend = new FormData();
       addpushToSend.append("title", formData.title);
@@ -97,9 +100,6 @@ const PushNotification = () => {
       addpushToSend.append("driver", formData.driver);
       addpushToSend.append("merchant", formData.merchant);
       addpushToSend.append("pushNotificationImage", notificationFile);
-
-      console.log("here");
-      console.log("data for test", addpushToSend);
 
       const addPushResponse = await axios.post(
         `${BASE_URL}/admin/notification/push-notification`,
@@ -121,15 +121,18 @@ const PushNotification = () => {
           isClosable: true,
           status: "success",
         });
-        console.log("MESSAGE:", addPushResponse.data);
       }
     } catch (err) {
-      console.error(`Error in fetch datas : ${err.message}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while submitting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setIsDataLoading(false);
     }
-
-    console.log(formData);
   };
 
   const handleNotificationImageChange = (e) => {
@@ -141,14 +144,10 @@ const PushNotification = () => {
 
   const onChange = (name, checked) => {
     setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
-    console.log(formData.customer);
-    console.log(formData.merchant);
-    console.log(formData.driver);
   };
 
   const showModalDelete = (dataId) => {
     setCurrentData(dataId);
-    console.log(dataId);
     setIsShowModalDelete(true);
   };
 
@@ -200,13 +199,19 @@ const PushNotification = () => {
         });
       }
     } catch (err) {
-      console.error("Error in deleting banner:", err);
+      toast({
+        title: "Error",
+        description: "An error occoured while deleting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setConfirmLoading(false);
     }
   };
+
   const sendNotification = async (e, id) => {
-    
     e.preventDefault();
     try {
       setDataLoading(true);
@@ -227,10 +232,15 @@ const PushNotification = () => {
           isClosable: true,
           status: "success",
         });
-        console.log("notification send", sendResponse.data.data);
       }
     } catch (err) {
-      console.error("Error in send notification:", err);
+      toast({
+        title: "Error",
+        description: "An error occoured while sending notification",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setDataLoading(false);
     }
@@ -248,7 +258,6 @@ const PushNotification = () => {
 
   const handleTypeFilter = async (selectedType) => {
     try {
-      console.log(token);
       const typeResponse = await axios.get(
         `${BASE_URL}/admin/notification/push-notification-type`,
         {
@@ -261,7 +270,13 @@ const PushNotification = () => {
         setData(typeResponse.data.data);
       }
     } catch (err) {
-      console.log(`Error in fetching notification`, err);
+      toast({
+        title: "Error",
+        description: "An error occoured while getting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
   const onSearchChange = (e) => {
@@ -276,7 +291,6 @@ const PushNotification = () => {
 
   const handleSearchChangeFilter = async (searchService) => {
     try {
-      console.log(token);
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/notification/push-notification-search`,
         {
@@ -289,7 +303,13 @@ const PushNotification = () => {
         setData(searchResponse.data.data);
       }
     } catch (err) {
-      console.log(`Error in fetching notification`, err);
+      toast({
+        title: "Error",
+        description: "An error occoured while searching the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -519,9 +539,7 @@ const PushNotification = () => {
 
                   <td>
                     <div className="flex items-center justify-center gap-3">
-                      <button
-                        onClick={() => showModal(data._id)}
-                      >
+                      <button onClick={() => showModal(data._id)}>
                         <AiOutlineCloudUpload className="bg-green-100 text-green-500 text-[35px] p-2  rounded-lg" />
                       </button>
                       <Modal

@@ -1,7 +1,10 @@
+import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const AddBusinessCategoryModal = ({
   isOpen,
@@ -13,7 +16,7 @@ const AddBusinessCategoryModal = ({
 }) => {
   const [categoryData, setCategoryData] = useState({
     title: "",
-    geofenceId: "",
+    geofenceId: [],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -21,8 +24,18 @@ const AddBusinessCategoryModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
 
+  const toast = useToast();
+  const animatedComponents = makeAnimated();
+
   const handleInputChange = (e) => {
     setCategoryData({ ...categoryData, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectGeofence = (selectedOptions) => {
+    setCategoryData({
+      ...categoryData,
+      geofenceId: selectedOptions.map((option) => option.value),
+    });
   };
 
   const handleImageChange = (e) => {
@@ -32,14 +45,23 @@ const AddBusinessCategoryModal = ({
     setPreviewURL(URL.createObjectURL(file));
   };
 
+  const geofenceOptions = allGeofence.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
   const handleAddBusinessCategory = async (e) => {
     e.preventDefault();
 
     try {
       setIsLoading(true);
+
       const businessDataToSend = new FormData();
-      businessDataToSend.append("geofenceId", categoryData.geofenceId);
+
       businessDataToSend.append("title", categoryData.title);
+      categoryData.geofenceId.forEach((id) => {
+        businessDataToSend.append("geofenceId[]", id);
+      });
       if (selectedFile) {
         businessDataToSend.append("bannerImage", selectedFile);
       }
@@ -96,21 +118,20 @@ const AddBusinessCategoryModal = ({
 
         <div className="flex mt-5  gap-4">
           <label className="w-1/2 text-gray-500">Geofence</label>
-          <select
-            name="geofenceId"
-            value={categoryData?.geofenceId}
-            onChange={handleInputChange}
-            className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-          >
-            <option defaultValue="Select geofence" hidden>
-              Select Geofence
-            </option>
-            {allGeofence.map((geofence) => (
-              <option value={geofence._id} key={geofence._id}>
-                {geofence.name}
-              </option>
-            ))}
-          </select>
+
+          <Select
+            className="w-2/3 outline-none focus:outline-none"
+            value={geofenceOptions.filter((option) =>
+              categoryData.geofenceId.includes(option.value)
+            )}
+            isMulti={true}
+            isSearchable={true}
+            onChange={handleSelectGeofence}
+            options={geofenceOptions}
+            placeholder="Select geofence"
+            isClearable={true}
+            components={animatedComponents}
+          />
         </div>
 
         <div className="flex">

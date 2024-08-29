@@ -134,7 +134,13 @@ const NotificationSettings = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in toggling status: ${err}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while toggling the status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

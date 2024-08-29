@@ -43,10 +43,15 @@ const Settings = () => {
 
         if (settingResponse.status === 200) {
           setSettingsData(settingResponse.data.data);
-          console.log(settingResponse.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -61,7 +66,6 @@ const Settings = () => {
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("settingsData", settingsData);
       const updateResponse = await axios.put(
         `${BASE_URL}/settings/update-settings`,
         settingsData,
@@ -74,7 +78,6 @@ const Settings = () => {
       );
 
       if (updateResponse.status === 200) {
-        console.log("update data", updateResponse.data.message);
         toast({
           title: "Success",
           description: "Updated successfully.",
@@ -84,9 +87,14 @@ const Settings = () => {
         });
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while getting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
-    console.log(settingsData);
   };
 
   // Modal Function
@@ -117,7 +125,7 @@ const Settings = () => {
       );
 
       if (passwordResponse.status === 200) {
-        console.log("PASSWORD", passwordResponse.data.message);
+        handleModalClose();
         toast({
           title: "Success",
           description: "Admin Password Changed Successfully",
@@ -127,11 +135,14 @@ const Settings = () => {
         });
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while changing password",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
-
-    console.log(addData);
-    handleModalClose(); // Close the modal after submitting the form
   };
 
   return (

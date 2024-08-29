@@ -99,13 +99,11 @@ const PickAndDrop = ({ data }) => {
     });
   };
 
-  const toggleNewPickupAddress = () => {
+  const toggleNewPickupAddress = () =>
     setIsNewPickupAddressVisible(!isNewPickupAddressVisible);
-  };
 
-  const toggleNewDeliveryAddress = () => {
+  const toggleNewDeliveryAddress = () =>
     setIsNewDeliveryAddressVisible(!isNewDeliveryAddressVisible);
-  };
 
   const handlePickUpAddress = (address) => {
     setPickAndDropData((prevState) => ({

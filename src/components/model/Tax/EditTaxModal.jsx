@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const EditTaxModal = ({
   isVisible,
@@ -19,12 +21,25 @@ const EditTaxModal = ({
     taxName: "",
     tax: "",
     taxType: "",
-    assignToBusinessCategoryId: "",
-    geofenceId: "",
+    assignToBusinessCategory: "",
+    geofences: [],
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
+  const animatedComponents = makeAnimated();
+
+  const handleSelectGeofence = (selectedOptions) => {
+    setEditTaxData({
+      ...editTaxData,
+      geofences: selectedOptions.map((option) => option.value),
+    });
+  };
+
+  const geofenceOptions = allGeofence.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   useEffect(() => {
     const getTaxData = async () => {
@@ -51,20 +66,6 @@ const EditTaxModal = ({
     setEditTaxData({ ...editTaxData, [e.target.name]: e.target.value });
   };
 
-  // const handleSelectChange = (e) => {
-  //   setEditTaxData({
-  //     ...editTaxData,
-  //     [e.target.name]: { ...editTaxData[e.target.name], _id: e.target.value },
-  //   });
-  // };
-
-  const handleRadioChange = (e) => {
-    setEditTaxData((tax) => ({
-      ...tax,
-      taxType: e.target.value,
-    }));
-  };
-
   const submitAction = async (e) => {
     e.preventDefault();
     try {
@@ -87,8 +88,8 @@ const EditTaxModal = ({
           taxName: "",
           tax: "",
           taxType: "",
-          assignToBusinessCategoryId: "",
-          geofenceId: "",
+          assignToBusinessCategory: "",
+          geofences: "",
         });
         toast({
           title: "Success",
@@ -116,9 +117,9 @@ const EditTaxModal = ({
     <Modal
       title="Edit Tax"
       open={isVisible}
-      className="mt-24"
       onCancel={handleCancel}
       footer={null}
+      centered
     >
       <form onSubmit={submitAction}>
         <div className="flex flex-col gap-4 justify-between">
@@ -166,20 +167,21 @@ const EditTaxModal = ({
             <label className="w-1/2 text-gray-500">Percentage</label>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
             <label className="w-1/2 text-gray-500">Geofence</label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="geofenceId"
-              value={editTaxData.geofenceId?._id}
-              onChange={handleInputChange}
-            >
-              {allGeofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={geofenceOptions.filter((option) =>
+                editTaxData.geofences.includes(option.value)
+              )}
+              isMulti={true}
+              isSearchable={true}
+              onChange={handleSelectGeofence}
+              options={geofenceOptions}
+              placeholder="Select geofence"
+              isClearable={true}
+              components={animatedComponents}
+            />
           </div>
 
           <div className="flex gap-4">
@@ -188,8 +190,8 @@ const EditTaxModal = ({
             </label>
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="assignToBusinessCategoryId"
-              value={editTaxData.assignToBusinessCategoryId?._id}
+              name="assignToBusinessCategory"
+              value={editTaxData.assignToBusinessCategory}
               onChange={handleInputChange}
             >
               {allBusinessCategory.map((category) => (

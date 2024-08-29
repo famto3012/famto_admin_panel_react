@@ -71,7 +71,6 @@ const MerchantDetails = () => {
           setBusinessCategory(businessCategoryResponse.data.data);
         }
       } catch (err) {
-        console.log(`Error in getting merchant data: ${err}`);
         toast({
           title: "Error",
           description: `Error in getting merchant data`,
@@ -163,8 +162,6 @@ const MerchantDetails = () => {
     try {
       setIsLoading(true);
 
-      console.log(merchantData);
-
       const formData = new FormData();
 
       function appendFormData(data, rootKey = "") {
@@ -213,7 +210,6 @@ const MerchantDetails = () => {
         });
       }
     } catch (error) {
-      console.error("Error updating merchant details:", error);
       toast({
         title: "Error",
         description: "Failed to update merchant details.",

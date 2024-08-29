@@ -33,7 +33,7 @@ const AlertNotification = () => {
   });
   const [visibleTaskModal, setVisibleTaskModal] = useState({});
   const toast = useToast();
-  const {socket} = useSocket()
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -52,9 +52,9 @@ const AlertNotification = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
         if (alertResponse.status === 200) {
           setAlert(alertResponse.data.data);
-          console.log("alert", alertResponse.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -67,13 +67,13 @@ const AlertNotification = () => {
   }, [token, role, navigate]);
 
   useEffect(() => {
-    socket?.on("pushNotification", (data)=>{
-     console.log("Push notification", data)
-    }) 
-    socket?.on("alertNotification", (data)=>{
-     console.log("Alert notification", data)
-    }) 
-   }, [socket])
+    socket?.on("pushNotification", (data) => {
+      console.log("Push notification", data);
+    });
+    socket?.on("alertNotification", (data) => {
+      console.log("Alert notification", data);
+    });
+  }, [socket]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,12 +93,18 @@ const AlertNotification = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (typeResponse.status === 200) {
         setAlert(typeResponse.data.alertNotifications);
-        console.log("type", typeResponse.data.alertNotifications);
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while searching the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -126,7 +132,7 @@ const AlertNotification = () => {
       );
       if (alertNotificationResponse.status === 201) {
         showModalCancel();
-        onAddNotification(alertNotificationResponse.data.alertNotification)
+        onAddNotification(alertNotificationResponse.data.alertNotification);
         toast({
           title: "Success",
           description: "Alert notification send successfully",
@@ -134,7 +140,6 @@ const AlertNotification = () => {
           duration: 3000,
           isClosable: true,
         });
-        console.log("alertNotification", alertNotificationResponse.data);
       }
     } catch (err) {
       console.error(`Error in adding data: ${err}`);
@@ -146,7 +151,7 @@ const AlertNotification = () => {
   const handleNotificationImageChange = (e) => {
     const file = e.target.files[0];
     const previewURL = URL.createObjectURL(file);
-    console.log("file", file);
+
     setState((prevState) => ({
       ...prevState,
       alertNotificationImage: file,
@@ -157,7 +162,7 @@ const AlertNotification = () => {
   const handleDelete = async (id) => {
     try {
       setIsDeleteLoading(true);
-  
+
       const deleteResponse = await axios.delete(
         `${BASE_URL}/admin/notification/alert-notification/${id}`,
         {
@@ -174,16 +179,21 @@ const AlertNotification = () => {
           duration: 3000,
           isClosable: true,
         });
-        console.log("delete", deleteResponse.data);
       }
     } catch (err) {
-      console.error(`Error in deleting data: ${err}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while deleting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setIsDeleteLoading(false);
-      showModalCancelTask(id); // Close the modal after deletion is complete
+      showModalCancelTask(id);
     }
   };
-  
+
   const handleTitleChange = async (e) => {
     try {
       const searchResponse = await axios.get(
@@ -196,11 +206,16 @@ const AlertNotification = () => {
       );
       if (searchResponse.status === 200) {
         setAlert(searchResponse.data.alertNotifications);
-        console.log("search", searchResponse.data.alertNotifications);
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
-    } 
+      toast({
+        title: "Error",
+        description: "An error occoured while searching the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const onAddNotification = (newNotification) => {
@@ -220,7 +235,7 @@ const AlertNotification = () => {
 
   const showModalCancel = () => {
     setIsModalVisible(false);
-  }
+  };
 
   const showModalTask = (taskId) => {
     setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
@@ -364,34 +379,34 @@ const AlertNotification = () => {
                     <button
                       className="bg-teal-800 text-white py-2 px-10 rounded-md"
                       type="submit"
-                      onClick={(e) =>showModal(e)}
+                      onClick={(e) => showModal(e)}
                     >
                       Send
                     </button>
-                    <Modal 
-                    open={isModalVisible}
-                    onCancel={showModalCancel}
-                    footer={null} 
-                    centered>
+                    <Modal
+                      open={isModalVisible}
+                      onCancel={showModalCancel}
+                      footer={null}
+                      centered
+                    >
                       <p className="font-semibold text-[18px] mb-5">
                         Are you sure you want to Send?
                       </p>
                       <div className="flex justify-end">
-                        <form onSubmit={(e) =>handleConfirm(e)}>
-                        <button
-                        type="button"
-                          className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                          onClick={showModalCancel}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"
-
-                        >
-                          {confirmLoading ? "Sending..." : "Send"}
-                        </button>
+                        <form onSubmit={(e) => handleConfirm(e)}>
+                          <button
+                            type="button"
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={showModalCancel}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"
+                          >
+                            {confirmLoading ? "Sending..." : "Send"}
+                          </button>
                         </form>
                       </div>
                     </Modal>

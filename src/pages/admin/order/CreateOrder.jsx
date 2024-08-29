@@ -83,7 +83,13 @@ const CreateOrder = () => {
         );
         if (response.status === 200) setCustomerResults(response.data.data);
       } catch (err) {
-        console.log(`Error in searching customer: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while searching the cuatomer",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }

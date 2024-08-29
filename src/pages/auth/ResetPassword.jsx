@@ -53,9 +53,14 @@ const ResetPassword = () => {
         });
       }
     } catch (err) {
-      console.error("Error in reset password");
+      toast({
+        title: "Error",
+        description: "An error occoured while resetting the password",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
-    console.log(passwords);
   };
 
   return (

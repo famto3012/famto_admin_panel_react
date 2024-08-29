@@ -44,15 +44,14 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         const { token, role, _id } = response.data;
-        console.log(response.data);
+
         setToken(token);
         setRole(role);
         setUserId(_id);
-        console.log("Finished setting");
+
         navigate("/home");
       }
     } catch (err) {
-      console.log("Error in login: ", err);
       if (err.response && err.response.data && err.response.data.errors) {
         const { errors } = err.response.data;
 
@@ -63,8 +62,6 @@ const LoginPage = () => {
           role: errors.role || "",
           general: errors.general || "",
         });
-
-        console.log(errors);
       }
     } finally {
       setIsLoading(false);

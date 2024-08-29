@@ -86,7 +86,13 @@ const Merchant = () => {
           setAllBusinessCategories(businessCategoryResponse.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        toast({
+          title: "Error",
+          description: "An error occoured while getting the data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -126,8 +132,6 @@ const Merchant = () => {
           setPagination(response.data.pagination);
         }
       } catch (err) {
-        console.log(`Error in filtering merchant: ${err}`);
-
         toast({
           title: "Error",
           description: `Error in filtering merchant`,
@@ -167,10 +171,6 @@ const Merchant = () => {
           fetchAllMerchants();
         }
       } catch (err) {
-        console.log(
-          `Error in searching orders: ${err.response?.data || err.message}`
-        );
-
         toast({
           title: "Error",
           description: `Error in searching merchant`,
@@ -208,7 +208,13 @@ const Merchant = () => {
         setPagination(response.data.pagination);
       }
     } catch (err) {
-      console.log(`Error in getting all merchants`);
+      toast({
+        title: "Error",
+        description: "An error occoured while getting all data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -249,7 +255,6 @@ const Merchant = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in changing merchant status: ${err}`);
       toast({
         title: "Error",
         description: `Error in changing merchant status`,
@@ -291,7 +296,6 @@ const Merchant = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in approving merchant: ${err}`);
       toast({
         title: "Error",
         description: `Error in approving merchant`,
@@ -330,7 +334,6 @@ const Merchant = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in rejecting merchant: ${err}`);
       toast({
         title: "Error",
         description: `Error in rejecting merchant`,
@@ -368,8 +371,6 @@ const Merchant = () => {
           setAllMerchants(response.data.data);
         }
       } catch (err) {
-        console.log(`Error in filtering merchant: ${err}`);
-
         toast({
           title: "Error",
           description: `Error in filtering merchant`,
@@ -388,7 +389,6 @@ const Merchant = () => {
   const onSearch = (e) => {
     let text = e.target.value;
     setSearch(text);
-    console.log(search);
   };
 
   useEffect(() => {
@@ -411,10 +411,6 @@ const Merchant = () => {
           }
         }
       } catch (err) {
-        console.log(
-          `Error in searching orders: ${err.response?.data || err.message}`
-        );
-
         toast({
           title: "Error",
           description: `Error in searching merchants`,
@@ -465,8 +461,6 @@ const Merchant = () => {
       // Create a URL for the file and trigger the download
       const url = window.URL.createObjectURL(new Blob([response.data]));
 
-      console.log("url", url);
-
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "Merchant_Sample.csv");
@@ -474,7 +468,13 @@ const Merchant = () => {
       link.click();
       document.body.removeChild(link);
     } catch (err) {
-      console.log(`Error in downloading sample CSV file: ${err.stack}`);
+      toast({
+        title: "Error",
+        description: "An error occoured while downloading sample CSV",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
