@@ -14,7 +14,7 @@ import { CSVLink } from "react-csv";
 import { allCustomerCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 import { Modal } from "antd";
-import { useToast } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -297,9 +297,7 @@ const Customers = () => {
                   handleFilterChange("geofence", e.target.value);
                 }}
               >
-                <option hidden value="">
-                  Geofence
-                </option>
+                <option defaultValue="all">All</option>
                 {allGeofence.map((geoFence) => (
                   <option value={geoFence._id} key={geoFence._id}>
                     {geoFence.name}
@@ -350,7 +348,7 @@ const Customers = () => {
                   {isTableLoading && (
                     <tr>
                       <td colSpan={7} className="text-center h-20">
-                        Loading Data...
+                        Loading Data <Spinner size="sm" className="ms-2" />
                       </td>
                     </tr>
                   )}
