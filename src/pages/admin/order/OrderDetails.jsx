@@ -26,29 +26,29 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const mapplsClassObject = new mappls();
 
-const polyCoordinates = [
-  { lat: 8.54881, lng: 76.917378 },
-  { lat: 8.548255, lng: 76.918937 },
-  { lat: 8.548355, lng: 76.920218 },
-  { lat: 8.547625, lng: 76.921741 },
-  { lat: 8.547227, lng: 76.921869 },
-  { lat: 8.545724, lng: 76.921746 },
-  { lat: 8.543342, lng: 76.922764 },
-  { lat: 8.540434, lng: 76.9244 },
-  { lat: 8.53875, lng: 76.925722 },
-  { lat: 8.535536, lng: 76.927088 },
-  { lat: 8.533248, lng: 76.928814 },
-  { lat: 8.532626, lng: 76.928964 },
-  { lat: 8.530617, lng: 76.928856 },
-  { lat: 8.530067, lng: 76.928985 },
-  { lat: 8.529644, lng: 76.930363 },
-  { lat: 8.529621, lng: 76.932304 },
-  { lat: 8.528969, lng: 76.933257 },
-  { lat: 8.528887, lng: 76.933811 },
-  { lat: 8.52895, lng: 76.934542 },
-  { lat: 8.529441, lng: 76.935897 },
-  { lat: 8.530068, lng: 76.935844 },
-];
+// const polyCoordinates = [
+//   { lat: 8.54881, lng: 76.917378 },
+//   { lat: 8.548255, lng: 76.918937 },
+//   { lat: 8.548355, lng: 76.920218 },
+//   { lat: 8.547625, lng: 76.921741 },
+//   { lat: 8.547227, lng: 76.921869 },
+//   { lat: 8.545724, lng: 76.921746 },
+//   { lat: 8.543342, lng: 76.922764 },
+//   { lat: 8.540434, lng: 76.9244 },
+//   { lat: 8.53875, lng: 76.925722 },
+//   { lat: 8.535536, lng: 76.927088 },
+//   { lat: 8.533248, lng: 76.928814 },
+//   { lat: 8.532626, lng: 76.928964 },
+//   { lat: 8.530617, lng: 76.928856 },
+//   { lat: 8.530067, lng: 76.928985 },
+//   { lat: 8.529644, lng: 76.930363 },
+//   { lat: 8.529621, lng: 76.932304 },
+//   { lat: 8.528969, lng: 76.933257 },
+//   { lat: 8.528887, lng: 76.933811 },
+//   { lat: 8.52895, lng: 76.934542 },
+//   { lat: 8.529441, lng: 76.935897 },
+//   { lat: 8.530068, lng: 76.935844 },
+// ];
 
 const OrderDetails = () => {
   const [orderDetail, setOrderDetail] = useState({});
@@ -103,8 +103,8 @@ const OrderDetails = () => {
         {
           type: "Feature",
           properties: {
-            htmlPopup: `Id:${Id} \n
-               Name: ${fullName} \n
+            htmlPopup: `Id:${Id} |
+               Name: ${fullName} |
                Phone Number: ${phoneNumber} `,
           },
           geometry: {
@@ -126,10 +126,120 @@ const OrderDetails = () => {
           properties: { ...markerProps, popupHtml: htmlPopup },
         });
         await agentMarker.setIcon(
-          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fgoride%20icon.svg?alt=media&token=71896ad1-d821-4ccd-996c-f3131fd09404"
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);
+        console.log(`Marker added for location: ${htmlPopup}`);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
+
+  const showShopLocationOnMap = (coordinates, fullName, Id) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 100,
+      height: 100,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    const shopGeoData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} |
+               Name: ${fullName} | `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates,
+          },
+        },
+      ],
+    };
+
+    const mapplsObject = new mappls();
+
+    shopGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const shopMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await shopMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fshop-svgrepo-com.svg?alt=media&token=1da55e13-4b6e-477b-98ed-8024cfb89f24"
+        );
+        await shopMarker.setPopup(htmlPopup);
+        // mapObject.setView([coordinates[0], coordinates[1]], 17);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
+
+  const showDeliveryLocationOnMap = (
+    coordinates,
+    fullName,
+    Id,
+    phoneNumber
+  ) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 25,
+      height: 40,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    console.log("Adding markers...");
+    const deliveryGeoData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} |
+               Name: ${fullName} |
+               Phone Number: ${phoneNumber} `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+          },
+        },
+      ],
+    };
+    const mapplsObject = new mappls();
+    deliveryGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const houseMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await houseMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fhouse-svgrepo-com%201%201.svg?alt=media&token=3b738e30-6cf1-4f21-97d6-7f713831562f4"
+        );
+        await houseMarker.setPopup(htmlPopup);
+        // mapObject.setView([coordinates[0], coordinates[1]], 17);
         console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
@@ -153,30 +263,35 @@ const OrderDetails = () => {
             withCredentials: true,
           }
         );
-  
+
         if (response.status === 200) {
-          console.log("Response", response.data.routes[0].geometry)
-          const coords = response.data.routes[0].geometry.coordinates.map((coor) => ({
-            lat: coor[1],
-            lng: coor[0],
-          }));
+          console.log("Response", response.data.routes[0].geometry);
+          const coords = response.data.routes[0].geometry.coordinates.map(
+            (coor) => ({
+              lat: coor[1],
+              lng: coor[0],
+            })
+          );
           setCoordinates(coords);
         }
       } catch (err) {
         console.log(`Error in getting polyline`);
       }
     };
-  
+
     useEffect(() => {
       generatePolyline();
     }, []);
-  
+
     useEffect(() => {
       if (coordinates.length > 0) {
         if (polylineRef.current) {
-          mapplsClassObject.removeLayer({ map: map, layer: polylineRef.current });
+          mapplsClassObject.removeLayer({
+            map: map,
+            layer: polylineRef.current,
+          });
         }
-  
+
         polylineRef.current = mapplsClassObject.Polyline({
           map: map,
           path: coordinates,
@@ -187,8 +302,8 @@ const OrderDetails = () => {
         });
       }
     }, [coordinates]);
-    };
-  
+  };
+
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -225,64 +340,91 @@ const OrderDetails = () => {
   }, [token, orderId]);
 
   useEffect(() => {
-    if (orderDetail.agentLocation && mapObject) {
+    if (orderDetail && mapObject) {
       console.log("inside");
       const coordinates = orderDetail.agentLocation;
       showAgentLocationOnMap(
         coordinates,
         orderDetail.deliveryAgentDetail.name,
         orderDetail.deliveryAgentDetail._id,
-        ""
+        orderDetail.deliveryAgentDetail.phoneNumber
+      );
+      const shopCoordinates = orderDetail.pickUpLocation;
+      showShopLocationOnMap(
+        shopCoordinates,
+        orderDetail.merchantDetail.name,
+        orderDetail.merchantDetail._id
+      );
+      const deliveryLocation = orderDetail.deliveryLocation;
+      showDeliveryLocationOnMap(
+        deliveryLocation,
+        orderDetail.customerDetail.name,
+        "",
+        orderDetail.customerDetail.address.phoneNumber
       );
     }
-  
-    let mappedSteps = [];  
+
+    let mappedSteps = [];
     orderDetail?.stepperDetail?.forEach((item) => {
       const addStep = (step, label, index) => {
         if (step) {
           mappedSteps.push({
             title: label,
-            description: `by ${step?.by} with Id ${step?.userId || "N/A"} on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
+            description: `by ${step?.by} with Id ${
+              step?.userId || "N/A"
+            } on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
           });
           if (!item?.cancelled && step?.date) {
             setActiveStepIndex(index);
           }
         }
       };
-  
+
       addStep(item?.created, "Created", mappedSteps.length);
       addStep(item?.assigned, "Assigned", mappedSteps.length);
       addStep(item?.accepted, "Accepted", mappedSteps.length);
       addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
-      addStep(item?.reachedPickupLocation, "Reached pickup location", mappedSteps.length);
+      addStep(
+        item?.reachedPickupLocation,
+        "Reached pickup location",
+        mappedSteps.length
+      );
       addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
-      addStep(item?.reachedDeliveryLocation, "Reached delivery location", mappedSteps.length);
+      addStep(
+        item?.reachedDeliveryLocation,
+        "Reached delivery location",
+        mappedSteps.length
+      );
       addStep(item?.noteAdded, "Note Added", mappedSteps.length);
       addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
       addStep(item?.imageAdded, "Image Added", mappedSteps.length);
-  
+
       if (item?.cancelled) {
         mappedSteps.push({
           title: "Cancelled",
-          description: `by ${item?.cancelled?.by} with Id ${item?.cancelled?.userId || "N/A"}
-              on ${formatDate(item?.cancelled?.date)}, ${formatTime(item?.cancelled?.date)}`,
+          description: `by ${item?.cancelled?.by} with Id ${
+            item?.cancelled?.userId || "N/A"
+          }
+              on ${formatDate(item?.cancelled?.date)}, ${formatTime(
+            item?.cancelled?.date
+          )}`,
         });
         setActiveStepIndex(mappedSteps.length);
       }
     });
-  
+
     setStep(mappedSteps);
   }, [mapObject, orderDetail]);
-  
+
   useEffect(() => {
     if (activeStepIndex !== -1 && steps?.length > 0) {
       // Trigger any necessary actions after activeStepIndex is set
       console.log(`Active step set to index ${activeStepIndex}`);
-      setActiveStep(activeStepIndex)
+      setActiveStep(activeStepIndex);
     }
   }, [activeStepIndex, steps]);
 
-  console.log("Here", activeStepIndex)
+  console.log("Here", activeStepIndex);
   const { activeStep, setActiveStep } = useSteps({
     index: activeStepIndex,
     count: steps?.length,
@@ -329,109 +471,6 @@ const OrderDetails = () => {
       );
     }
   }, [authToken]);
-
-  // let steps
-  // orderDetail.stepperDetail.map((item)=>{
-  //   steps = [{title: item, description: `by ${item.by} with Id ${item.userId}`}]
-  // })
-
-  // const step = [
-  //   { title: "Created", description: "by Admin ID #123" },
-  //   { title: "Assigned", description: "by Admin ID #123" },
-  //   { title: "Accepted", description: "by Agent Name" },
-  //   { title: "Pickup Started", description: "by Agent Name" },
-  //   { title: "Reached pickup location", description: "by Agent Name" },
-  //   { title: "Delivery Started", description: "by Agent Name" },
-  //   { title: "Reached delivery location", description: "by Agent Name" },
-  //   { title: "Note Added", description: "by Agent Name" },
-  //   { title: "Signature Added", description: "by Agent Name" },
-  //   { title: "Image Added", description: "by Agent Name" },
-  //   { title: "Completed", description: "by Agent Name" },
-  //   { title: "Cancelled", description: "by Agent Name" },
-  // ];
-
-  // const steps = orderDetail?.stepperDetail
-  //   ?.map((item) => {
-  // Collect the steps in the required format
-  //   return [
-  //     {
-  //       title: "Created",
-  //       description: `by ${item?.created?.by} with Id ${
-  //         item?.created?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Assigned",
-  //       description: `by ${item?.assigned?.by} with Id ${
-  //         item?.assigned?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Accepted",
-  //       description: `by ${item?.accepted?.by} with Id ${
-  //         item?.accepted?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Pickup Started",
-  //       description: `by ${item?.pickupStarted?.by} with Id ${
-  //         item?.pickupStarted?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Reached pickup location",
-  //       description: `by ${item?.reachedPickupLocation?.by} with Id ${
-  //         item?.reachedPickupLocation?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Delivery started",
-  //       description: `by ${item?.deliveryStarted?.by} with Id ${
-  //         item?.deliveryStarted?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Reached delivery location",
-  //       description: `by ${item?.reachedDeliveryLocation?.by} with Id ${
-  //         item?.reachedDeliveryLocation?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Note Added",
-  //       description: `by ${item?.noteAdded?.by} with Id ${
-  //         item?.noteAdded?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Signature Added",
-  //       description: `by ${item?.signatureAdded?.by} with Id ${
-  //         item?.signatureAdded?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Image Added",
-  //       description: `by ${item?.imageAdded?.by} with Id ${
-  //         item?.imageAdded?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Completed",
-  //       description: `by ${item?.completed?.by} with Id ${
-  //         item?.completed?.userId || "N/A"
-  //       }`,
-  //     },
-  //     item?.cancelled ?
-  //     {
-  //       title: "Cancelled",
-  //       description: `by ${item?.cancelled?.by} with Id ${
-  //         item?.cancelled?.userId || "N/A"
-  //       }`,
-  //     } : ""
-  //   ];
-  // })
-  // .flat();
-
-
 
   return (
     <>
