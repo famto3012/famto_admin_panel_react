@@ -26,29 +26,29 @@ import { useSocket } from "../../../context/SocketContext";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const mapplsClassObject = new mappls();
 
-const polyCoordinates = [
-  { lat: 8.54881, lng: 76.917378 },
-  { lat: 8.548255, lng: 76.918937 },
-  { lat: 8.548355, lng: 76.920218 },
-  { lat: 8.547625, lng: 76.921741 },
-  { lat: 8.547227, lng: 76.921869 },
-  { lat: 8.545724, lng: 76.921746 },
-  { lat: 8.543342, lng: 76.922764 },
-  { lat: 8.540434, lng: 76.9244 },
-  { lat: 8.53875, lng: 76.925722 },
-  { lat: 8.535536, lng: 76.927088 },
-  { lat: 8.533248, lng: 76.928814 },
-  { lat: 8.532626, lng: 76.928964 },
-  { lat: 8.530617, lng: 76.928856 },
-  { lat: 8.530067, lng: 76.928985 },
-  { lat: 8.529644, lng: 76.930363 },
-  { lat: 8.529621, lng: 76.932304 },
-  { lat: 8.528969, lng: 76.933257 },
-  { lat: 8.528887, lng: 76.933811 },
-  { lat: 8.52895, lng: 76.934542 },
-  { lat: 8.529441, lng: 76.935897 },
-  { lat: 8.530068, lng: 76.935844 },
-];
+// const polyCoordinates = [
+//   { lat: 8.54881, lng: 76.917378 },
+//   { lat: 8.548255, lng: 76.918937 },
+//   { lat: 8.548355, lng: 76.920218 },
+//   { lat: 8.547625, lng: 76.921741 },
+//   { lat: 8.547227, lng: 76.921869 },
+//   { lat: 8.545724, lng: 76.921746 },
+//   { lat: 8.543342, lng: 76.922764 },
+//   { lat: 8.540434, lng: 76.9244 },
+//   { lat: 8.53875, lng: 76.925722 },
+//   { lat: 8.535536, lng: 76.927088 },
+//   { lat: 8.533248, lng: 76.928814 },
+//   { lat: 8.532626, lng: 76.928964 },
+//   { lat: 8.530617, lng: 76.928856 },
+//   { lat: 8.530067, lng: 76.928985 },
+//   { lat: 8.529644, lng: 76.930363 },
+//   { lat: 8.529621, lng: 76.932304 },
+//   { lat: 8.528969, lng: 76.933257 },
+//   { lat: 8.528887, lng: 76.933811 },
+//   { lat: 8.52895, lng: 76.934542 },
+//   { lat: 8.529441, lng: 76.935897 },
+//   { lat: 8.530068, lng: 76.935844 },
+// ];
 
 const OrderDetails = () => {
   const [orderDetail, setOrderDetail] = useState({});
@@ -103,8 +103,8 @@ const OrderDetails = () => {
         {
           type: "Feature",
           properties: {
-            htmlPopup: `Id:${Id} \n
-               Name: ${fullName} \n
+            htmlPopup: `Id:${Id} |
+               Name: ${fullName} |
                Phone Number: ${phoneNumber} `,
           },
           geometry: {
@@ -126,10 +126,120 @@ const OrderDetails = () => {
           properties: { ...markerProps, popupHtml: htmlPopup },
         });
         await agentMarker.setIcon(
-          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fgoride%20icon.svg?alt=media&token=71896ad1-d821-4ccd-996c-f3131fd09404"
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);
+        console.log(`Marker added for location: ${htmlPopup}`);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
+
+  const showShopLocationOnMap = (coordinates, fullName, Id) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 100,
+      height: 100,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    const shopGeoData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} |
+               Name: ${fullName} | `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates,
+          },
+        },
+      ],
+    };
+
+    const mapplsObject = new mappls();
+
+    shopGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const shopMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await shopMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fshop-svgrepo-com.svg?alt=media&token=1da55e13-4b6e-477b-98ed-8024cfb89f24"
+        );
+        await shopMarker.setPopup(htmlPopup);
+        // mapObject.setView([coordinates[0], coordinates[1]], 17);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
+
+  const showDeliveryLocationOnMap = (
+    coordinates,
+    fullName,
+    Id,
+    phoneNumber
+  ) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 25,
+      height: 40,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    console.log("Adding markers...");
+    const deliveryGeoData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} |
+               Name: ${fullName} |
+               Phone Number: ${phoneNumber} `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+          },
+        },
+      ],
+    };
+    const mapplsObject = new mappls();
+    deliveryGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const houseMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await houseMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fhouse-svgrepo-com%201%201.svg?alt=media&token=3b738e30-6cf1-4f21-97d6-7f713831562f4"
+        );
+        await houseMarker.setPopup(htmlPopup);
+        // mapObject.setView([coordinates[0], coordinates[1]], 17);
         console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
@@ -230,14 +340,27 @@ const OrderDetails = () => {
   }, [token, orderId]);
 
   useEffect(() => {
-    if (orderDetail.agentLocation && mapObject) {
+    if (orderDetail && mapObject) {
       console.log("inside");
       const coordinates = orderDetail.agentLocation;
       showAgentLocationOnMap(
         coordinates,
         orderDetail.deliveryAgentDetail.name,
         orderDetail.deliveryAgentDetail._id,
-        ""
+        orderDetail.deliveryAgentDetail.phoneNumber
+      );
+      const shopCoordinates = orderDetail.pickUpLocation;
+      showShopLocationOnMap(
+        shopCoordinates,
+        orderDetail.merchantDetail.name,
+        orderDetail.merchantDetail._id
+      );
+      const deliveryLocation = orderDetail.deliveryLocation;
+      showDeliveryLocationOnMap(
+        deliveryLocation,
+        orderDetail.customerDetail.name,
+        "",
+        orderDetail.customerDetail.address.phoneNumber
       );
     }
 

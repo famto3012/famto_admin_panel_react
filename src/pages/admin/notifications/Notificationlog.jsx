@@ -7,6 +7,9 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 import { Pagination } from "@mui/material";
 import { useSocket } from "../../../context/SocketContext";
 import { useSoundContext } from "../../../context/SoundContext";
+import { useToast } from "@chakra-ui/react";
+import { initializeApp } from "firebase/app";
+import { getMessaging, onMessage } from "firebase/messaging";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Notificationlog = () => {
@@ -18,6 +21,18 @@ const Notificationlog = () => {
   const { socket } = useSocket();
   const { playNewOrderNotificationSound, playNewNotificationSound } =
     useSoundContext();
+  const toast = useToast();
+
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
+    authDomain: "famto-aa73e.firebaseapp.com",
+    projectId: "famto-aa73e",
+    storageBucket: "famto-aa73e.appspot.com",
+    messagingSenderId: "773492185977",
+    appId: "1:773492185977:web:e425f759d3c13e8c2c2da8",
+    measurementId: "G-TZ0J50H36P",
+  };
 
   useEffect(() => {
     if (role === "Admin") {
@@ -27,16 +42,38 @@ const Notificationlog = () => {
     }
   }, [page, limit, role]);
 
+  const handleNotification = (payload) => {
+    if (payload.notification.title === "New Order") {
+      playNewOrderNotificationSound();
+    } else {
+      playNewNotificationSound();
+    }
+    // addNotificationToTable(payload.notification);
+  };
+
   useEffect(() => {
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+
     socket?.on("pushNotification", async (data) => {
       await playNewNotificationSound();
-
       addNotificationToTable(data);
     });
     socket?.on("alertNotification", async (data) => {
-      await playNewNotificationSound();
-
+      await playNewOrderNotificationSound();
       addNotificationToTable(data);
+    });
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "NOTIFICATION_RECEIVED") {
+        const payload = event.data.payload;
+        handleNotification(payload);
+      }
+    });
+
+    // Handle messages when the app is in the foreground
+    onMessage(messaging, (payload) => {
+      console.log("Received foreground message ", payload);
+      handleNotification(payload);
     });
   }, [socket]);
 
