@@ -14,14 +14,14 @@ import {
   Stepper,
   useSteps,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
-import { CSVLink } from "react-csv";
-import { orderBillCSVDatHeading } from "../../../utils/DefaultData";
 import { mappls } from "mappls-web-maps";
 import { formatDate, formatTime } from "../../../utils/formatter";
+import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const mapplsClassObject = new mappls();
@@ -60,12 +60,12 @@ const OrderDetails = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [steps, setStep] = useState();
-
-  const { token, role } = useContext(UserContext);
-
-  const navigate = useNavigate();
-
   const [authToken, setAuthToken] = useState("");
+
+  const toast = useToast();
+  const { token, role } = useContext(UserContext);
+  const { socket } = useSocket();
+  const navigate = useNavigate();
 
   const getAuthToken = async () => {
     try {
@@ -153,30 +153,35 @@ const OrderDetails = () => {
             withCredentials: true,
           }
         );
-  
+
         if (response.status === 200) {
-          console.log("Response", response.data.routes[0].geometry)
-          const coords = response.data.routes[0].geometry.coordinates.map((coor) => ({
-            lat: coor[1],
-            lng: coor[0],
-          }));
+          console.log("Response", response.data.routes[0].geometry);
+          const coords = response.data.routes[0].geometry.coordinates.map(
+            (coor) => ({
+              lat: coor[1],
+              lng: coor[0],
+            })
+          );
           setCoordinates(coords);
         }
       } catch (err) {
         console.log(`Error in getting polyline`);
       }
     };
-  
+
     useEffect(() => {
       generatePolyline();
     }, []);
-  
+
     useEffect(() => {
       if (coordinates.length > 0) {
         if (polylineRef.current) {
-          mapplsClassObject.removeLayer({ map: map, layer: polylineRef.current });
+          mapplsClassObject.removeLayer({
+            map: map,
+            layer: polylineRef.current,
+          });
         }
-  
+
         polylineRef.current = mapplsClassObject.Polyline({
           map: map,
           path: coordinates,
@@ -187,8 +192,8 @@ const OrderDetails = () => {
         });
       }
     }, [coordinates]);
-    };
-  
+  };
+
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -235,54 +240,67 @@ const OrderDetails = () => {
         ""
       );
     }
-  
-    let mappedSteps = [];  
+
+    let mappedSteps = [];
     orderDetail?.stepperDetail?.forEach((item) => {
       const addStep = (step, label, index) => {
         if (step) {
           mappedSteps.push({
             title: label,
-            description: `by ${step?.by} with Id ${step?.userId || "N/A"} on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
+            description: `by ${step?.by} with Id ${
+              step?.userId || "N/A"
+            } on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
           });
           if (!item?.cancelled && step?.date) {
             setActiveStepIndex(index);
           }
         }
       };
-  
+
       addStep(item?.created, "Created", mappedSteps.length);
       addStep(item?.assigned, "Assigned", mappedSteps.length);
       addStep(item?.accepted, "Accepted", mappedSteps.length);
       addStep(item?.pickupStarted, "Pickup Started", mappedSteps.length);
-      addStep(item?.reachedPickupLocation, "Reached pickup location", mappedSteps.length);
+      addStep(
+        item?.reachedPickupLocation,
+        "Reached pickup location",
+        mappedSteps.length
+      );
       addStep(item?.deliveryStarted, "Delivery started", mappedSteps.length);
-      addStep(item?.reachedDeliveryLocation, "Reached delivery location", mappedSteps.length);
+      addStep(
+        item?.reachedDeliveryLocation,
+        "Reached delivery location",
+        mappedSteps.length
+      );
       addStep(item?.noteAdded, "Note Added", mappedSteps.length);
       addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
       addStep(item?.imageAdded, "Image Added", mappedSteps.length);
-  
+
       if (item?.cancelled) {
         mappedSteps.push({
           title: "Cancelled",
-          description: `by ${item?.cancelled?.by} with Id ${item?.cancelled?.userId || "N/A"}
-              on ${formatDate(item?.cancelled?.date)}, ${formatTime(item?.cancelled?.date)}`,
+          description: `by ${item?.cancelled?.by} with Id ${
+            item?.cancelled?.userId || "N/A"
+          }
+              on ${formatDate(item?.cancelled?.date)}, ${formatTime(
+            item?.cancelled?.date
+          )}`,
         });
         setActiveStepIndex(mappedSteps.length);
       }
     });
-  
+
     setStep(mappedSteps);
   }, [mapObject, orderDetail]);
-  
+
   useEffect(() => {
     if (activeStepIndex !== -1 && steps?.length > 0) {
       // Trigger any necessary actions after activeStepIndex is set
       console.log(`Active step set to index ${activeStepIndex}`);
-      setActiveStep(activeStepIndex)
+      setActiveStep(activeStepIndex);
     }
   }, [activeStepIndex, steps]);
 
-  console.log("Here", activeStepIndex)
   const { activeStep, setActiveStep } = useSteps({
     index: activeStepIndex,
     count: steps?.length,
@@ -329,6 +347,56 @@ const OrderDetails = () => {
       );
     }
   }, [authToken]);
+
+  useEffect(() => {
+    socket.on("newOrderCreated", (data) => {
+      console.log("Stepper Dataof newOrderCreated", data);
+    });
+
+    socket.on("orderAccepted", (data) => {
+      console.log(data);
+    });
+
+    socket.on("orderRejected", (data) => {
+      console.log(data);
+    });
+
+    socket.on("agentPickupStarted", (data) => {
+      console.log(data);
+    });
+
+    socket.on("reachedPickupLocation", (data) => {
+      console.log(data);
+    });
+
+    socket.on("agentDeliveryStarted", (data) => {
+      console.log(data);
+    });
+
+    socket.on("reachedDeliveryLocation", (data) => {
+      console.log(data);
+    });
+
+    socket.on("agentOrderDetailUpdated", (data) => {
+      console.log(data);
+    });
+
+    socket.on("orderCompleted", (data) => {
+      console.log(data);
+    });
+
+    return () => {
+      socket.off("newOrderCreated");
+      socket.off("orderAccepted");
+      socket.off("orderRejected");
+      socket.off("agentPickupStarted");
+      socket.off("reachedPickupLocation");
+      socket.off("agentDeliveryStarted");
+      socket.off("reachedDeliveryLocation");
+      socket.off("agentOrderDetailUpdated");
+      socket.off("orderCompleted");
+    };
+  }, [socket]);
 
   // let steps
   // orderDetail.stepperDetail.map((item)=>{
@@ -431,7 +499,45 @@ const OrderDetails = () => {
   // })
   // .flat();
 
+  const downloadOrderBill = async (e) => {
+    try {
+      e.preventDefault();
 
+      console.log(orderId);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/download-order-bill`,
+        { orderId },
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Bill_(${orderId}).pdf`);
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error downloading invoice`,
+        status: "err",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <>
@@ -450,14 +556,11 @@ const OrderDetails = () => {
             </p>
           </div>
           <div>
-            <button className="bg-blue-100 px-4 p-2 rounded-md">
-              <CSVLink
-                data={""}
-                headers={orderBillCSVDatHeading}
-                filename={`Order Bill ()`}
-              >
-                <DownloadOutlined /> Bill
-              </CSVLink>
+            <button
+              onClick={downloadOrderBill}
+              className="bg-blue-100 px-4 p-2 rounded-md"
+            >
+              <DownloadOutlined /> Bill
             </button>
           </div>
         </div>

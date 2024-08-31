@@ -6,10 +6,11 @@ export const UserContext = createContext();
 const UserProvider = ({ children }) => {
   const [token, setToken] = useState(Cookies.get("token") || null);
   const [role, setRole] = useState(Cookies.get("role") || null);
+  const [username, setUsername] = useState(Cookies.get("role") || null);
   const [userId, setUserId] = useState(Cookies.get("userId") || null);
   const [fcmToken, setFcmToken] = useState(Cookies.get("fcmToken") || null);
-  const [signUp , setSignUp] = useState({})
-  const [verification , setVerification] = useState("")
+  const [signUp, setSignUp] = useState({});
+  const [verification, setVerification] = useState("");
 
   useEffect(() => {
     if (token && role) {
@@ -17,9 +18,11 @@ const UserProvider = ({ children }) => {
       Cookies.set("role", role, { expires: 7 });
       Cookies.set("userId", userId, { expires: 7 });
       Cookies.set("fcmToken", fcmToken, { expires: 7 });
+      Cookies.set("username", username, { expires: 7 });
     } else {
       Cookies.remove("token");
       Cookies.remove("role");
+      Cookies.remove("username");
       Cookies.remove("userId");
       Cookies.remove("fcmToken");
     }
@@ -39,7 +42,9 @@ const UserProvider = ({ children }) => {
         signUp,
         setSignUp,
         verification,
-        setVerification
+        setVerification,
+        username,
+        setUsername,
       }}
     >
       {children}
@@ -48,5 +53,3 @@ const UserProvider = ({ children }) => {
 };
 
 export default UserProvider;
-
-// --------------------------

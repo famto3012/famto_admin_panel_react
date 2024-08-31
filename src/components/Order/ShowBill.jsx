@@ -23,6 +23,49 @@ const ShowBill = ({ data }) => {
     setCartData(data);
   }, [data]);
 
+  const downloadInvoiceBill = async (e) => {
+    try {
+      e.preventDefault();
+
+      const data = {
+        cartId: cartData.cartId,
+        deliveryMode: cartData.deliveryMode,
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/download-invoice-bill`,
+        data,
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${cartData.deliveryMode}_invoice.pdf`);
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error downloading invoice`,
+        status: "err",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   const createOrder = async (e) => {
     e.preventDefault();
     try {
@@ -65,7 +108,6 @@ const ShowBill = ({ data }) => {
         });
       }
     } catch (err) {
-      console.log(`Error in creating order: ${err}`);
       toast({
         title: "Error",
         description: "Error in creating invoice",
@@ -173,6 +215,7 @@ const ShowBill = ({ data }) => {
         <button
           className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
           type="button"
+          onClick={downloadInvoiceBill}
         >
           <SaveAltIcon /> Bill
         </button>
