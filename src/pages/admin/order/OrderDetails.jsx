@@ -14,14 +14,14 @@ import {
   Stepper,
   useSteps,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
-import { CSVLink } from "react-csv";
-import { orderBillCSVDatHeading } from "../../../utils/DefaultData";
 import { mappls } from "mappls-web-maps";
 import { formatDate, formatTime } from "../../../utils/formatter";
+import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const mapplsClassObject = new mappls();
@@ -60,12 +60,12 @@ const OrderDetails = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [steps, setStep] = useState();
-
-  const { token, role } = useContext(UserContext);
-
-  const navigate = useNavigate();
-
   const [authToken, setAuthToken] = useState("");
+
+  const toast = useToast();
+  const { token, role } = useContext(UserContext);
+  const { socket } = useSocket();
+  const navigate = useNavigate();
 
   const getAuthToken = async () => {
     try {
@@ -424,7 +424,6 @@ const OrderDetails = () => {
     }
   }, [activeStepIndex, steps]);
 
-  console.log("Here", activeStepIndex);
   const { activeStep, setActiveStep } = useSteps({
     index: activeStepIndex,
     count: steps?.length,
@@ -472,6 +471,197 @@ const OrderDetails = () => {
     }
   }, [authToken]);
 
+  useEffect(() => {
+    socket.on("newOrderCreated", (data) => {
+      console.log("Stepper Dataof newOrderCreated", data);
+    });
+
+    socket.on("orderAccepted", (data) => {
+      console.log(data);
+    });
+
+    socket.on("orderRejected", (data) => {
+      console.log(data);
+    });
+
+    socket.on("agentPickupStarted", (data) => {
+      console.log(data);
+    });
+
+    socket.on("reachedPickupLocation", (data) => {
+      console.log(data);
+    });
+
+    socket.on("agentDeliveryStarted", (data) => {
+      console.log(data);
+    });
+
+    socket.on("reachedDeliveryLocation", (data) => {
+      console.log(data);
+    });
+
+    socket.on("agentOrderDetailUpdated", (data) => {
+      console.log(data);
+    });
+
+    socket.on("orderCompleted", (data) => {
+      console.log(data);
+    });
+
+    return () => {
+      socket.off("newOrderCreated");
+      socket.off("orderAccepted");
+      socket.off("orderRejected");
+      socket.off("agentPickupStarted");
+      socket.off("reachedPickupLocation");
+      socket.off("agentDeliveryStarted");
+      socket.off("reachedDeliveryLocation");
+      socket.off("agentOrderDetailUpdated");
+      socket.off("orderCompleted");
+    };
+  }, [socket]);
+
+  // let steps
+  // orderDetail.stepperDetail.map((item)=>{
+  //   steps = [{title: item, description: `by ${item.by} with Id ${item.userId}`}]
+  // })
+
+  // const step = [
+  //   { title: "Created", description: "by Admin ID #123" },
+  //   { title: "Assigned", description: "by Admin ID #123" },
+  //   { title: "Accepted", description: "by Agent Name" },
+  //   { title: "Pickup Started", description: "by Agent Name" },
+  //   { title: "Reached pickup location", description: "by Agent Name" },
+  //   { title: "Delivery Started", description: "by Agent Name" },
+  //   { title: "Reached delivery location", description: "by Agent Name" },
+  //   { title: "Note Added", description: "by Agent Name" },
+  //   { title: "Signature Added", description: "by Agent Name" },
+  //   { title: "Image Added", description: "by Agent Name" },
+  //   { title: "Completed", description: "by Agent Name" },
+  //   { title: "Cancelled", description: "by Agent Name" },
+  // ];
+
+  // const steps = orderDetail?.stepperDetail
+  //   ?.map((item) => {
+  // Collect the steps in the required format
+  //   return [
+  //     {
+  //       title: "Created",
+  //       description: `by ${item?.created?.by} with Id ${
+  //         item?.created?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Assigned",
+  //       description: `by ${item?.assigned?.by} with Id ${
+  //         item?.assigned?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Accepted",
+  //       description: `by ${item?.accepted?.by} with Id ${
+  //         item?.accepted?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Pickup Started",
+  //       description: `by ${item?.pickupStarted?.by} with Id ${
+  //         item?.pickupStarted?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Reached pickup location",
+  //       description: `by ${item?.reachedPickupLocation?.by} with Id ${
+  //         item?.reachedPickupLocation?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Delivery started",
+  //       description: `by ${item?.deliveryStarted?.by} with Id ${
+  //         item?.deliveryStarted?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Reached delivery location",
+  //       description: `by ${item?.reachedDeliveryLocation?.by} with Id ${
+  //         item?.reachedDeliveryLocation?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Note Added",
+  //       description: `by ${item?.noteAdded?.by} with Id ${
+  //         item?.noteAdded?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Signature Added",
+  //       description: `by ${item?.signatureAdded?.by} with Id ${
+  //         item?.signatureAdded?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Image Added",
+  //       description: `by ${item?.imageAdded?.by} with Id ${
+  //         item?.imageAdded?.userId || "N/A"
+  //       }`,
+  //     },
+  //     {
+  //       title: "Completed",
+  //       description: `by ${item?.completed?.by} with Id ${
+  //         item?.completed?.userId || "N/A"
+  //       }`,
+  //     },
+  //     item?.cancelled ?
+  //     {
+  //       title: "Cancelled",
+  //       description: `by ${item?.cancelled?.by} with Id ${
+  //         item?.cancelled?.userId || "N/A"
+  //       }`,
+  //     } : ""
+  //   ];
+  // })
+  // .flat();
+
+  const downloadOrderBill = async (e) => {
+    try {
+      e.preventDefault();
+
+      console.log(orderId);
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/download-order-bill`,
+        { orderId },
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Bill_(${orderId}).pdf`);
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error downloading invoice`,
+        status: "err",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <>
       <Sidebar />
@@ -489,14 +679,11 @@ const OrderDetails = () => {
             </p>
           </div>
           <div>
-            <button className="bg-blue-100 px-4 p-2 rounded-md">
-              <CSVLink
-                data={""}
-                headers={orderBillCSVDatHeading}
-                filename={`Order Bill ()`}
-              >
-                <DownloadOutlined /> Bill
-              </CSVLink>
+            <button
+              onClick={downloadOrderBill}
+              className="bg-blue-100 px-4 p-2 rounded-md"
+            >
+              <DownloadOutlined /> Bill
             </button>
           </div>
         </div>

@@ -28,7 +28,8 @@ const HomePage = () => {
     setSelectedOption(event.target.value);
   };
 
-  const { token, role, userId, setFcmToken } = useContext(UserContext);
+  const { token, role, userId, setFcmToken, username } =
+    useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -254,8 +255,10 @@ const HomePage = () => {
         </nav>
         <div className="flex justify-between mx-5 mt-5">
           <div>
-            <p>Hi</p>
-            <p className="text-[20px] text-gray-500">Designation</p>
+            <p>
+              Hi <span>{username}</span>
+            </p>
+            <p className="text-[20px] text-gray-500 capitalize">{role}</p>
           </div>
 
           <div className="flex items-center gap-[30px] ">
@@ -282,11 +285,8 @@ const HomePage = () => {
                 value="sales"
                 onChange={handleOptionChange}
                 checked={selectedOption === "sales"}
-                className=""
               />
-              <label htmlFor="sales" className="mr-4">
-                Sales
-              </label>
+              <label htmlFor="sales">Sales</label>
 
               <input
                 type="radio"
@@ -295,11 +295,8 @@ const HomePage = () => {
                 value="merchants"
                 onChange={handleOptionChange}
                 checked={selectedOption === "merchants"}
-                className=""
               />
-              <label htmlFor="merchants" className="mr-4">
-                Merchants
-              </label>
+              <label htmlFor="merchants">Merchants</label>
 
               <input
                 type="radio"
@@ -308,9 +305,9 @@ const HomePage = () => {
                 value="commission"
                 onChange={handleOptionChange}
                 checked={selectedOption === "commission"}
-                className="mr-2"
               />
               <label htmlFor="commission">Commission (in)</label>
+
               <input
                 type="radio"
                 id="subscription"
@@ -318,11 +315,8 @@ const HomePage = () => {
                 value="subscription"
                 onChange={handleOptionChange}
                 checked={selectedOption === "subscription"}
-                className="mr-2"
               />
-              <label htmlFor="subscription" className="mr-4">
-                Subscription (in)
-              </label>
+              <label htmlFor="subscription">Subscription (in)</label>
             </div>
 
             <select name="day" className="bg-white rounded-lg p-3">

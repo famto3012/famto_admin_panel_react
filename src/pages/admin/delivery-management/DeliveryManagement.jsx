@@ -42,21 +42,30 @@ const DeliveryManagement = () => {
   const [agentData, setAgentData] = useState([]);
   const [allAgentData, setAllAgentData] = useState([]);
   const [geofenceAgentData, setGeofenceAgentData] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [task, setTask] = useState("");
+
+  const [task, setTask] = useState("Unassigned");
   const [status, setStatus] = useState("Free");
+
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [visibleTaskModal, setVisibleTaskModal] = useState({});
+
   const [geofenceToggle, setGeofenceToggle] = useState(false);
   const [autoAllocationStatus, setAutoAllocationStatus] = useState(false);
   const [manualAssign, setManualAssign] = useState("");
   const mapContainerRef = useRef(null);
+  const [isLoading, setLoading] = useState(false);
   const [mapObject, setMapObject] = useState(null);
-  const [visibleTaskModal, setVisibleTaskModal] = useState({});
-  const toast = useToast();
-  //const [searchOrderId, setOrderId] = useState("")
+  const [authToken, setAuthToken] = useState("");
 
-  const { token } = useContext(UserContext);
+  const toast = useToast();
   const navigate = useNavigate();
+  const { token } = useContext(UserContext);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth/login");
+    }
+  }, [token, navigate]);
 
   const steps = [
     {
@@ -74,8 +83,6 @@ const DeliveryManagement = () => {
       time: "HH :MM",
     },
   ];
-
-  const [authToken, setAuthToken] = useState("");
 
   const getAuthToken = async () => {
     try {
@@ -161,7 +168,9 @@ const DeliveryManagement = () => {
     if (selectedStatus === "") {
       handleStatusFilter("Free");
     } else {
-      
+
+      handleStatusFilter(selectedStatus);
+
     }
   };
 
@@ -638,6 +647,8 @@ const DeliveryManagement = () => {
       );
 
       if (response.status === 200) {
+        showModalCancelTask(taskId);
+        setManualAssign("");
         toast({
           title: "Success",
           description: "Agent assigned successfully",
@@ -684,6 +695,7 @@ const DeliveryManagement = () => {
                 className="p-4 bg-gray-200 rounded-2xl"
                 onClick={showModal}
               />
+
               <Modal
                 title="Auto allocation"
                 onOk={showOkModal}
@@ -851,9 +863,9 @@ const DeliveryManagement = () => {
 
         <div className="flex gap-2 mt-5 h-full">
           <div className="w-1/4 rounded-lg bg-white">
-            <div className="bg-teal-800 text-white p-5 rounded-lg flex">
-              Tasks
-              <p className="ms-[240px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
+            <div className="bg-teal-800 text-white p-5 xl:px-[25px] rounded-lg flex items-center justify-between">
+              <p>Tasks</p>
+              <p className=" bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
                 {taskData.length}
               </p>
             </div>
@@ -863,15 +875,13 @@ const DeliveryManagement = () => {
                 className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
                 name="task"
                 value={task}
-                onChange={selectChange} // Update state and call handleTaskFilter
+                onChange={selectChange}
               >
-                <option value="" hidden disabled>
-                  Select Task
-                </option>
                 <option value="Unassigned">Unassigned Tasks </option>
                 <option value="Assigned">Assigned Tasks</option>
                 <option value="Completed">Completed Tasks</option>
               </select>
+
               <input
                 type="search"
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 mb-5 p-2 w-full focus:outline-none"
@@ -881,9 +891,13 @@ const DeliveryManagement = () => {
                   handleSearch(e.target.value);
                 }}
               />
+
               <div className="px-5 bg-white max-h-[300px] overflow-y-auto">
-                {/* {task === "Unassigned" && ( */}
                 <div>
+                  {taskData?.length === 0 && (
+                    <p className="text-center mt-[20px]">No Tasks Found.</p>
+                  )}
+
                   {taskData?.map((data) => (
                     <Card className="bg-zinc-100 mt-3" key={data?._id}>
                       <CardBody>
@@ -896,12 +910,15 @@ const DeliveryManagement = () => {
                             data?.createdAt
                           )}`}
                         </Typography>
+
                         <Typography className="text-[16px]">
                           {data?.pickupDetail?.pickupAddress?.fullName}
                         </Typography>
+
                         <Typography className="text-[15px]">
                           {data?.pickupDetail?.pickupAddress?.area}
                         </Typography>
+
                         <Typography className="flex justify-between mt-3">
                           <Button
                             className=" bg-gray-100 text-black text-[12px] p-4 font-semibold"
@@ -941,14 +958,17 @@ const DeliveryManagement = () => {
                                         <div className="text-gray-500 text-[16px] w-2/5">
                                           Task Id
                                         </div>
+
                                         <p className="text-[15px]">
                                           {data?._id}
                                         </p>
                                       </div>
+
                                       <div className="flex">
                                         <label className="text-gray-500 text-[16px] w-2/5">
                                           Delivery Method
                                         </label>
+
                                         <p className="text-[15px]">
                                           {
                                             data?.orderId?.orderDetail
@@ -963,6 +983,7 @@ const DeliveryManagement = () => {
                                         <label className="text-gray-500 text-[15px] w-2/5 ">
                                           Agent Name
                                         </label>
+
                                         <p className="text-[15px] overflow-ellipsis">
                                           {data?.agentId?.fullName}
                                         </p>
@@ -972,6 +993,7 @@ const DeliveryManagement = () => {
                                         <label className="text-gray-500 text-[15px] w-2/5">
                                           Agent ID
                                         </label>
+
                                         <p className="text-[15px] ">
                                           {data?.agentId?._id}
                                         </p>
@@ -983,6 +1005,7 @@ const DeliveryManagement = () => {
                                     <p className="mt-5 text-lg font-semibold">
                                       Task status
                                     </p>
+
                                     <div className="mt-5">
                                       <Stepper
                                         index={activeStep}
@@ -1001,6 +1024,7 @@ const DeliveryManagement = () => {
                                               active={<StepNumber />}
                                             />
                                           </StepIndicator>
+
                                           <Box
                                             flexShrink="0"
                                             className=" flex-grow"
@@ -1011,9 +1035,11 @@ const DeliveryManagement = () => {
                                                   ?.pickupAddress?.fullName
                                               }
                                             </StepTitle>
+
                                             <StepDescription className="text-sm text-gray-500">
                                               By Admin
                                             </StepDescription>
+
                                             <Step className="text-sm text-gray-500">
                                               {
                                                 data?.orderId?.orderDetail
@@ -1038,6 +1064,7 @@ const DeliveryManagement = () => {
                                                 )}`}
                                               </p>
                                             </Step>
+
                                             <Step>
                                               <label className="w-2/5">
                                                 Pick up Time
@@ -1051,10 +1078,10 @@ const DeliveryManagement = () => {
                                               </p>
                                             </Step>
                                           </Box>
+
                                           <StepSeparator className="mt-[18px]" />
                                         </Step>
 
-                                        {/* <div className="w-[60%] border-t border-dotted border-gray-400 my-[5px] mx-[110px]"></div> */}
                                         <div className="relative flex items-center ml-[60px] my-[15px]">
                                           {/* Oval container on the left */}
                                           <div className="absolute left-0 bg-blue-50 w-[110px] h-[24px] flex items-center justify-center rounded-full text-black font-semibold">
@@ -1092,6 +1119,7 @@ const DeliveryManagement = () => {
                                               active={<StepNumber />}
                                             />
                                           </StepIndicator>
+
                                           <Box
                                             flexShrink="0"
                                             className=" flex-grow"
@@ -1102,9 +1130,11 @@ const DeliveryManagement = () => {
                                                   ?.deliveryAddress?.fullName
                                               }
                                             </StepTitle>
+
                                             <StepDescription className="text-sm text-gray-500">
                                               By Admin
                                             </StepDescription>
+
                                             <Step className="text-sm text-gray-500">
                                               {
                                                 data?.orderId?.orderDetail
@@ -1131,6 +1161,7 @@ const DeliveryManagement = () => {
                                               <label className="w-2/5">
                                                 Expected Time
                                               </label>
+
                                               <p className="w-3/5">
                                                 {`${formatDate(
                                                   data?.orderId?.orderDetail
@@ -1141,10 +1172,12 @@ const DeliveryManagement = () => {
                                                 )}`}
                                               </p>
                                             </Step>
+
                                             <Step>
                                               <label className="w-2/5">
                                                 Pick up Time
                                               </label>
+
                                               <p className="w-3/5">
                                                 {`${formatDate(
                                                   data?.orderId?.orderDetail
@@ -1172,9 +1205,10 @@ const DeliveryManagement = () => {
                               >
                                 Assign Agent
                               </Button>
+
                               <Modal
                                 title="Assign Agent"
-                                onOk={() => showModalCancelTask(data?._id)}
+                                // onOk={() => showModalCancelTask(data?._id)}
                                 onCancel={() => showModalCancelTask(data?._id)}
                                 open={visibleTaskModal[data?._id] || false}
                                 width="600px"
@@ -1187,12 +1221,15 @@ const DeliveryManagement = () => {
                                     <label className="w-1/3 text-gray-600">
                                       Task ID
                                     </label>
+
                                     <p className="font-semibold">{data?._id}</p>
                                   </div>
+
                                   <div className="flex mt-5">
                                     <label className="w-1/3 text-gray-600">
                                       Geofence
                                     </label>
+
                                     <p className="font-semibold">
                                       <Switch
                                         value={geofenceToggle}
@@ -1202,10 +1239,12 @@ const DeliveryManagement = () => {
                                       />
                                     </p>
                                   </div>
+
                                   <div className="flex mt-5 ">
                                     <label className="w-1/3 text-gray-600">
                                       Agent
                                     </label>
+
                                     <Menu>
                                       <MenuButton
                                         as={Button}
@@ -1300,7 +1339,7 @@ const DeliveryManagement = () => {
             </div>
           </div>
 
-          <div className="w-2/4 bg-white h-[fit]">
+          <div className="w-2/4 bg-white h-[33rem]">
             <div
               id="map"
               ref={mapContainerRef}
@@ -1312,10 +1351,10 @@ const DeliveryManagement = () => {
             ></div>
           </div>
 
-          <div className="w-1/4 rounded-lg bg-white">
-            <div className="bg-teal-800 text-white p-5 rounded-lg flex">
-              Agents{" "}
-              <p className="ms-[230px] bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
+          <div className="w-1/4 rounded-lg bg-white  pb-5">
+            <div className="bg-teal-800 text-white p-5 xl:px-[25px] rounded-t-lg flex items-center justify-between">
+              <p>Agents</p>
+              <p className="bg-white text-teal-800 font-bold rounded-full w-[25px] h-[25px] flex justify-center items-center">
                 {agentData?.length}
               </p>
             </div>
@@ -1343,6 +1382,10 @@ const DeliveryManagement = () => {
             </div>
 
             <div className="px-5 max-h-[300px] overflow-y-auto">
+              {agentData?.length === 0 && (
+                <p className="text-center mt-[20px]">No Agents Found.</p>
+              )}
+
               {agentData?.map((data) => (
                 <Card
                   className="bg-zinc-100 mt-3 flex"
@@ -1362,16 +1405,18 @@ const DeliveryManagement = () => {
                         <Typography variant="h5" className="text-[15px]">
                           {data?._id}
                         </Typography>
+
                         <Typography>{data?.fullName}</Typography>
+
                         <Typography>{data?.phoneNumber}</Typography>
                       </CardBody>
                     </div>
+
                     <div className="w-1/3 flex justify-center items-center">
                       <div className="bg-teal-800 rounded-full h-[40px] w-[40px] flex justify-center items-center text-white">
                         {data?.taskCompleted}
                       </div>
                     </div>
-                    {/* <p className="font-semibold mt-[85px]">Tasks</p> */}
                   </div>
                 </Card>
               ))}
