@@ -21,11 +21,6 @@ import ChangeCategoryModal from "../../../components/model/ProductModels/ChangeC
 import DeleteProductModal from "../../../components/model/ProductModels/DeleteProductModal";
 import ProductDetail from "../../../components/Product/ProductDetail";
 import { Spinner, useToast } from "@chakra-ui/react";
-import { CSVLink } from "react-csv";
-import {
-  allCategoryCSVDataHeading,
-  allProductsCSVDataHeading,
-} from "../../../utils/DefaultData";
 import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;

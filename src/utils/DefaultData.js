@@ -83,18 +83,6 @@ const allAgentsCSVDataHeading = [
   { label: "Online Status", key: "status" },
 ];
 
-const allCategoryCSVDataHeading = [
-  { label: "Category Id", key: "_id" },
-  { label: "Merchant Id", key: "merchantId" },
-  { label: "Category Name", key: "categoryName" },
-  { label: "Status", key: "status" },
-];
-
-const allProductsCSVDataHeading = [
-  { label: "Product Id", key: "_id" },
-  { label: "Product Name", key: "productName" },
-];
-
 export {
   itemTypes,
   allCustomerCSVDataHeading,
@@ -103,6 +91,4 @@ export {
   agentPayoutCSVDataHeading,
   allMerchantCSVDataHeading,
   allAgentsCSVDataHeading,
-  allCategoryCSVDataHeading,
-  allProductsCSVDataHeading,
 };

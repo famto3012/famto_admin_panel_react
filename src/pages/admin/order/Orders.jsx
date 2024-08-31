@@ -69,6 +69,9 @@ const Orders = () => {
     socket?.on("newOrderCreated", handleNewOrder);
     socket?.on("orderAccepted", handleChangeAccepterOrderStatus);
     socket?.on("orderRejected", handleChangeRejectedOrderStatus);
+    socket?.on("error", (message) => {
+      console.log(message);
+    });
 
     return () => {
       socket?.off("newOrderCreated", handleNewOrder);
@@ -566,15 +569,21 @@ const Orders = () => {
                       <div className="flex space-x-4 justify-center">
                         <>
                           {order.orderStatus === "Completed" && (
-                            <p className=" text-green-500">Completed</p>
+                            <p className=" text-green-500 font-[600]">
+                              Completed
+                            </p>
                           )}
 
                           {order.orderStatus === "Cancelled" && (
-                            <p className=" text-red-500">Cancelled</p>
+                            <p className=" text-red-500 font-[600]">
+                              Cancelled
+                            </p>
                           )}
 
                           {order.orderStatus === "On-going" && (
-                            <p className=" text-orange-500">On-going</p>
+                            <p className=" text-orange-500 font-[600]">
+                              On-going
+                            </p>
                           )}
 
                           {order.orderStatus === "Pending" && (
@@ -616,10 +625,10 @@ const Orders = () => {
                           <p>N/A</p>
                         )}
 
-                        {(order?.deliveryDate || order?.deliveryTime) && (
+                        {order?.deliveryDate && order?.deliveryTime && (
                           <>
-                            <p>{order.deliveryDate}</p>
-                            <p>{order.deliveryTime}</p>
+                            <p>{order?.deliveryDate}</p>
+                            <p>{order?.deliveryTime}</p>
                           </>
                         )}
                       </>
