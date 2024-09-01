@@ -1,11 +1,9 @@
-import { lazy, Suspense, useContext } from "react";
+import { lazy, Suspense, useContext, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
-import CustomerSub from "./components/model/SubscriptionModels/CustomerSub";
 import { UserContext } from "./context/UserContext";
 import ForgotPassword from "./pages/auth/ForgotPassword";
-
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -72,8 +70,50 @@ const DeliveryManagement = lazy(() =>
 const Commission = lazy(() => import("./pages/admin/commission/Commission"));
 const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
 
+const playStoreLink = import.meta.env.VITE_APP_PLAYSTORE_LINK;
+const appStoreLink = import.meta.env.VITE_APP_APPSTORE_LINK;
+
 function App() {
   const { role } = useContext(UserContext);
+
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenWidth = () => {
+      setIsSmallScreen(window.innerWidth < 1080);
+    };
+
+    // Initial check
+    checkScreenWidth();
+
+    // Add event listener to check on window resize
+    window.addEventListener("resize", checkScreenWidth);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", checkScreenWidth);
+    };
+  }, []);
+
+  if (isSmallScreen) {
+    return (
+      <div className="h-screen flex items-center justify-center flex-col">
+        <p>
+          For a better experience, please download our app from the Play Store /
+          App Store.
+        </p>
+        <div className=" flex gap-[30px] mt-[30px]">
+          <a href={playStoreLink} target="_blank" rel="noopener noreferrer">
+            Download from Play Store
+          </a>
+          <a href={appStoreLink} target="_blank" rel="noopener noreferrer">
+            Download from App Store
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <BrowserRouter>
@@ -88,7 +128,7 @@ function App() {
               <Route path="success" element={<Success />} />
               <Route path="verify" element={<Verification />} />
               <Route path="reset-password" element={<ResetPassword />} />
-              <Route path="forgot-password" element={<ForgotPassword />}/>
+              <Route path="forgot-password" element={<ForgotPassword />} />
             </Route>
             <Route path="/all-orders" element={<Orders />} />
             <Route path="/order-details/:orderId" element={<OrderDetails />} />

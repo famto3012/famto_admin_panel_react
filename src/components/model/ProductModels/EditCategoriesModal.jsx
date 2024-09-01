@@ -57,14 +57,14 @@ const EditCategoriesModal = ({
       if (businessCategoryResponse.status === 200) {
         setAllBusinessCategory(businessCategoryResponse.data.data);
       }
+
       if (categoryResponse.status === 200) {
         setCategoryData(categoryResponse.data.data);
-        console.log(categoryResponse.data.data);
       }
     };
 
     fetchData();
-  }, [BASE_URL, role, token, merchantId, categoryId]);
+  }, [role, token, merchantId, categoryId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,11 +82,10 @@ const EditCategoriesModal = ({
   };
 
   const submitCategory = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
     try {
-      console.log(categoryData);
+      e.preventDefault();
+
+      setIsLoading(true);
 
       const formData = new FormData();
       formData.append("businessCategoryId", categoryData.businessCategoryId);

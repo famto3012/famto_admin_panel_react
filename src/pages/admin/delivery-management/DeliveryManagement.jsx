@@ -54,6 +54,7 @@ const DeliveryManagement = () => {
   const [manualAssign, setManualAssign] = useState("");
   const mapContainerRef = useRef(null);
   const [isLoading, setLoading] = useState(false);
+  const [assignLoading, setAssignLoading] = useState(false);
   const [mapObject, setMapObject] = useState(null);
   const [authToken, setAuthToken] = useState("");
 
@@ -168,9 +169,7 @@ const DeliveryManagement = () => {
     if (selectedStatus === "") {
       handleStatusFilter("Free");
     } else {
-
       handleStatusFilter(selectedStatus);
-
     }
   };
 
@@ -635,6 +634,8 @@ const DeliveryManagement = () => {
 
   const handleSendNotification = async (taskId) => {
     try {
+      setAssignLoading(true);
+
       const response = await axios.post(
         `${BASE_URL}/admin/delivery-management/assign-task/${taskId}`,
         {
@@ -664,6 +665,8 @@ const DeliveryManagement = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setAssignLoading(false);
     }
   };
 
@@ -1323,7 +1326,9 @@ const DeliveryManagement = () => {
                                         handleSendNotification(data?._id)
                                       }
                                     >
-                                      Assign Agent
+                                      {assignLoading
+                                        ? `Assigning...`
+                                        : `Assign Agent`}
                                     </button>
                                   </div>
                                 </div>

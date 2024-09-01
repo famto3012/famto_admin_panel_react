@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -13,42 +12,48 @@ const AddIndividualModal = ({
   BASE_URL,
   onAddIndBanner,
 }) => {
-  const [individualdata, SetIndividualData] = useState({
+  const [bannerData, setBannerData] = useState({
     name: "",
     merchantId: "",
     geofenceId: "",
     bannerImage: "",
   });
 
-  const [errors, setErrors] = useState({
-    name: "",
-    merchantId: "",
-    geofenceId: "",
-    appBannerImage: "",
-  });
-
   const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
-  const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
 
-  const formSubmit = async (e) => {
+  const toast = useToast();
+
+  const handleInputChangeIndividual = (e) => {
+    setBannerData({ ...bannerData, [e.target.name]: e.target.value });
+  };
+
+  const handleAdImageChange = (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+    setSelectedFile(file);
+    setPreviewURL(URL.createObjectURL(file));
+  };
+
+  const handleAddIndividualBanner = async (e) => {
     e.preventDefault();
 
     try {
       setIsLoading(true);
 
-      const IndBannerDataToSend = new FormData();
-      IndBannerDataToSend.append("name", individualdata.name);
-      IndBannerDataToSend.append("merchantId", individualdata.merchantId);
-      IndBannerDataToSend.append("geofenceId", individualdata.geofenceId);
+      const dataToSend = new FormData();
+      dataToSend.append("name", bannerData.name);
+      dataToSend.append("merchantId", bannerData.merchantId);
+      dataToSend.append("geofenceId", bannerData.geofenceId);
 
-      if (adFile) {
-        IndBannerDataToSend.append("bannerImage", adFile);
+      if (selectedFile) {
+        dataToSend.append("bannerImage", selectedFile);
       }
 
       const IndBannerResponse = await axios.post(
         `${BASE_URL}/admin/banner/add-banner`,
-        IndBannerDataToSend, // Send FormData directly
+        dataToSend,
         {
           withCredentials: true,
           headers: {
@@ -60,8 +65,8 @@ const AddIndividualModal = ({
 
       if (IndBannerResponse.status === 201) {
         onAddIndBanner(IndBannerResponse.data.data);
-        setAdFile(null);
-        setAdPreviewURL(null);
+        setSelectedFile(null);
+        setPreviewURL(null);
         handleCancel();
         toast({
           title: "Success",
@@ -73,16 +78,6 @@ const AddIndividualModal = ({
       }
     } catch (err) {
       console.error(`Error in fetch data: ${err.message}`);
-
-      if (err.response && err.response.data && err.response.data.errors) {
-        const { errors } = err.response.data;
-        setErrors({
-          name: errors.name || "",
-          merchantId: errors.merchantId || "",
-          geofenceId: errors.geofenceId || "",
-          appBannerImage: errors.appBannerImage || "",
-        });
-      }
 
       toast({
         title: "Error",
@@ -96,28 +91,15 @@ const AddIndividualModal = ({
     }
   };
 
-  const handleInputChangeIndividual = (e) => {
-    SetIndividualData({ ...individualdata, [e.target.name]: e.target.value });
-  };
-
-  const [adFile, setAdFile] = useState(null);
-  const [adPreviewURL, setAdPreviewURL] = useState(null);
-
-  const handleAdImageChange = (e) => {
-    const file = e.target.files[0];
-    setAdFile(file);
-    setAdPreviewURL(URL.createObjectURL(file));
-  };
-
   return (
     <Modal
       title="Individual Merchant Ad Banner"
       open={isVisible}
-      className="mt-20"
+      centered
       onCancel={handleCancel}
       footer={null}
     >
-      <form onSubmit={formSubmit}>
+      <form onSubmit={handleAddIndividualBanner}>
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="name" className="w-1/3">
@@ -128,7 +110,7 @@ const AddIndividualModal = ({
               placeholder="Name"
               id="name"
               name="name"
-              value={individualdata.name}
+              value={bannerData.name}
               onChange={handleInputChangeIndividual}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
@@ -142,7 +124,7 @@ const AddIndividualModal = ({
               placeholder="Merchant ID"
               id="merchantId"
               name="merchantId"
-              value={individualdata.merchantId}
+              value={bannerData.merchantId}
               onChange={handleInputChangeIndividual}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
             />
@@ -154,7 +136,7 @@ const AddIndividualModal = ({
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
-              value={individualdata.geofenceId}
+              value={bannerData.geofenceId}
               onChange={handleInputChangeIndividual}
             >
               <option defaultValue={"Select geofence"} hidden>
@@ -170,13 +152,13 @@ const AddIndividualModal = ({
           <div className="flex items-center">
             <label className=" w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              {!adPreviewURL && (
+              {!previewURL && (
                 <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
               )}
-              {adPreviewURL && (
+              {previewURL && (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
-                    src={adPreviewURL}
+                    src={previewURL}
                     alt="profile"
                     className="w-full rounded h-full object-cover"
                   />

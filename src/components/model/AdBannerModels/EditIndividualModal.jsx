@@ -33,7 +33,6 @@ const EditIndividualModal = ({
   const [adPreviewURL, setAdPreviewURL] = useState(null);
 
   const toast = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const getData = async () => {
@@ -153,9 +152,9 @@ const EditIndividualModal = ({
     <Modal
       title="Edit Individual Merchant Ad Banner"
       open={isVisible}
-      className="mt-20"
       onCancel={handleCancel}
       footer={null}
+      centered
     >
       <form onSubmit={formSubmit}>
         <div className="flex flex-col gap-4">
@@ -275,4 +274,3 @@ const EditIndividualModal = ({
 };
 
 export default EditIndividualModal;
-

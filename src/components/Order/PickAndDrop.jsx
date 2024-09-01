@@ -28,7 +28,7 @@ const PickAndDrop = ({ data }) => {
     vehicleType: "",
     instructionInPickup: "",
     instructionInDelivery: "",
-    addedTip: 0,
+    addedTip: null,
   });
 
   const [allCustomerAddress, setAllCustomerAddress] = useState([]);
@@ -353,19 +353,22 @@ const PickAndDrop = ({ data }) => {
             )}
           </div>
 
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="orderTime">
-              Order Time
-            </label>
-            <input
-              type="text"
-              name="orderTime"
-              placeholder="In scheduled order, it will be filled automatically as scheduled"
-              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              value={data?.ifScheduled?.time}
-              onChange={handleInputChange}
-            />
-          </div>
+          {data?.ifScheduled?.time && (
+            <div className="flex items-center">
+              <label className="w-1/3 px-6" htmlFor="orderTime">
+                Order Time
+              </label>
+              <input
+                type="text"
+                name="orderTime"
+                placeholder="In scheduled order, it will be filled automatically as scheduled"
+                readOnly
+                className="h-10 ps-3 text-sm w-1/2  outline-none focus:outline-none"
+                value={data?.ifScheduled?.time}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
 
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="pickData.instructions">
@@ -612,19 +615,22 @@ const PickAndDrop = ({ data }) => {
             )}
           </div>
 
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="deliveryTime">
-              Delivery Time
-            </label>
-            <input
-              type="text"
-              name="deliveryime"
-              placeholder="In scheduled order, it will be filled automatically as scheduled"
-              className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
-              value={data?.deliveryTime}
-              onChange={handleInputChange}
-            />
-          </div>
+          {data?.deliveryTime && (
+            <div className="flex items-center">
+              <label className="w-1/3 px-6" htmlFor="deliveryTime">
+                Delivery Time
+              </label>
+              <input
+                type="text"
+                name="deliveryime"
+                readOnly
+                placeholder="In scheduled order, it will be filled automatically as scheduled"
+                className="h-10 ps-3 text-sm w-1/2  outline-none focus:outline-none"
+                value={data?.deliveryTime}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
 
           <div className="flex items-center">
             <label className="w-1/3 px-6" htmlFor="dropData.instructions">
@@ -647,10 +653,12 @@ const PickAndDrop = ({ data }) => {
             <input
               type="text"
               name="addedTip"
+              pattern="[0-9]"
               placeholder="Tip for the delivery"
               className="h-10 ps-3 text-sm border-2 w-1/2 rounded-md outline-none focus:outline-none"
               value={pickAndDropData.addedTip}
               onChange={handleInputChange}
+              inputmode="numeric"
             />
           </div>
 

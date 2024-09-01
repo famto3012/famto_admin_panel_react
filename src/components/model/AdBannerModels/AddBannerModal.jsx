@@ -117,9 +117,9 @@ const AddBannerModal = ({
     <Modal
       title="Add App Ad Banner"
       open={isVisible}
-      className="mt-20"
       onCancel={handleCancel}
       footer={null}
+      centered
     >
       <form onSubmit={saveAction}>
         <div className="flex flex-col gap-4">

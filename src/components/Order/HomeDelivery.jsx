@@ -36,7 +36,7 @@ const HomeDelivery = ({ data }) => {
   const [isProductLoading, setIsProductLoading] = useState(false);
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
 
-  const { token } = useContext(UserContext);
+  const { token, role, userId } = useContext(UserContext);
   const toast = useToast();
 
   const [selectedAddress, setSelectedAddress] = useState("");
@@ -45,7 +45,10 @@ const HomeDelivery = ({ data }) => {
 
   useEffect(() => {
     setAllCustomerAddress(data.customerAddress);
-  }, [data]);
+    if (role === "Merchant") {
+      setHomeDeliveryData({ ...homeDeliveryData, merchantId: userId });
+    }
+  }, [data, role]);
 
   const handleInputChange = (e) => {
     setHomeDeliveryData({
@@ -54,9 +57,7 @@ const HomeDelivery = ({ data }) => {
     });
   };
 
-  const toggleNewAddressForm = () => {
-    setFormVisible(!isFormVisible);
-  };
+  const toggleNewAddressForm = () => setFormVisible(!isFormVisible);
 
   const handleAddCustomerAddress = (newCustomerAddress) => {
     setFormVisible(true);
@@ -129,7 +130,7 @@ const HomeDelivery = ({ data }) => {
     console.log("selected product", product);
 
     const existingProduct = homeDeliveryData.items.find(
-      (item) => item.productId === product._id
+      (item) => item.productId === product.id
     );
 
     if (existingProduct) {
@@ -137,7 +138,7 @@ const HomeDelivery = ({ data }) => {
       setHomeDeliveryData({
         ...homeDeliveryData,
         items: homeDeliveryData.items.map((item) =>
-          item.productId === product._id
+          item.productId === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         ),
@@ -223,6 +224,8 @@ const HomeDelivery = ({ data }) => {
   };
 
   const handleVariantChange = (productId, variantId) => {
+    console.log(productId);
+    console.log(variantId);
     setHomeDeliveryData({
       ...homeDeliveryData,
       items: homeDeliveryData.items.map((item) =>
@@ -246,19 +249,16 @@ const HomeDelivery = ({ data }) => {
         // Find the selected variant type for the item
         const selectedVariant = item.variants
           .flatMap((variant) => variant.variantTypes)
-          .find((type) => type._id === item.selectedVariantId);
-
-        // console.log("selectedVariant", selectedVariant);
+          .find((type) => type.id === item.selectedVariantId);
 
         // Determine the price based on whether a variant is selected or not
         const price = selectedVariant ? selectedVariant.price : item.price;
-        // console.log("price", price);
 
         return {
           productId: item.productId,
           quantity: item.quantity,
           price: price,
-          variantTypeId: item.selectedVariantId || null, // Use selectedVariantId if available
+          variantTypeId: item.selectedVariantId || null,
         };
       });
 
@@ -274,18 +274,17 @@ const HomeDelivery = ({ data }) => {
         items: formattedItems,
       };
 
-      console.log(invoiceData.items);
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/orders/admin/create-order-invoice`
+          : `${BASE_URL}/orders/create-order-invoice`;
 
-      const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order-invoice`,
-        invoiceData,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.post(endPoint, invoiceData, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200) {
         const { data } = response.data;
@@ -300,7 +299,21 @@ const HomeDelivery = ({ data }) => {
         });
       }
     } catch (err) {
-      console.log(`Error in creating Home Delivery invoice: ${err}`);
+      // if (err.response && err.response.data && err.response.data.errors) {
+      //   const { errors } = err.response.data;
+
+      //   const formattedErrors = Object.entries(errors)
+      //     .map(([field, message]) => "• " + message + <br />)
+      //     .join("\n");
+
+      //   toast({
+      //     title: "Error",
+      //     description: formattedErrors,
+      //     status: "error",
+      //     duration: 4000,
+      //     isClosable: true,
+      //   });
+      // } else {
       toast({
         title: "Error",
         description: "Error in creating invoice",
@@ -308,6 +321,7 @@ const HomeDelivery = ({ data }) => {
         duration: 3000,
         isClosable: true,
       });
+      // }
     } finally {
       setIsInvoiceLoading(false);
     }
@@ -317,47 +331,49 @@ const HomeDelivery = ({ data }) => {
     <div className="bg-white  mt-5 rounded">
       <form onSubmit={createInvoice}>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center relative">
-            <label className="w-1/3 px-6" htmlFor="merchantId">
-              Select Merchant
-            </label>
-            <div className="relative w-1/2">
-              <input
-                type="text"
-                name="merchantName"
-                placeholder="Search merchant..."
-                className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
-                value={merchantName}
-                onChange={handleSearchMerchant}
-              />
-
-              {isMerchantLoading && (
-                <ClipLoader
-                  size={15}
-                  className="absolute top-[30%] right-[10px]"
+          {role === "Admin" && (
+            <div className="flex items-center relative">
+              <label className="w-1/3 px-6" htmlFor="merchantId">
+                Select Merchant
+              </label>
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  name="merchantName"
+                  placeholder="Search merchant..."
+                  className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
+                  value={merchantName}
+                  onChange={handleSearchMerchant}
                 />
-              )}
 
-              {!isMerchantLoading && (
-                <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
-              )}
+                {isMerchantLoading && (
+                  <ClipLoader
+                    size={15}
+                    className="absolute top-[30%] right-[10px]"
+                  />
+                )}
 
-              {merchantResults.length > 0 && (
-                <ul className="absolute bg-white border w-full mt-1 z-50">
-                  {merchantResults.map((result) => (
-                    <li
-                      key={result._id}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
-                      onClick={() => selectMerchant(result)}
-                    >
-                      {result.merchantName} - {result.geofence} (
-                      {result.status ? "Open" : "Closed"})
-                    </li>
-                  ))}
-                </ul>
-              )}
+                {!isMerchantLoading && (
+                  <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+                )}
+
+                {merchantResults.length > 0 && (
+                  <ul className="absolute bg-white border w-full mt-1 z-50">
+                    {merchantResults.map((result) => (
+                      <li
+                        key={result._id}
+                        className="p-2 hover:bg-gray-200 cursor-pointer"
+                        onClick={() => selectMerchant(result)}
+                      >
+                        {result.merchantName} - {result.geofence} (
+                        {result.status ? "Open" : "Closed"})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="product">
@@ -404,9 +420,9 @@ const HomeDelivery = ({ data }) => {
             <div className="flex items-center">
               <label className="w-1/3 px-6">Selected Products</label>
               <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
-                {homeDeliveryData.items.map((item, itemIndex) => (
+                {homeDeliveryData.items.map((item) => (
                   <div
-                    key={item.itemIndex}
+                    key={item._id}
                     className="flex items-center gap-3 py-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
                   >
                     <div>
@@ -466,24 +482,26 @@ const HomeDelivery = ({ data }) => {
             </div>
           )}
 
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="instructionToMerchant">
-              Instruction to Merchant
-            </label>
-            <textarea
-              name="instructionToMerchant"
-              id="instructionToMerchant"
-              placeholder="Instruction to Merchant"
-              className="h-20 text-sm ps-3 pt-2 border-2 w-1/2 outline-none focus:outline-none resize-y overflow-y-auto"
-              value={homeDeliveryData.instructionToMerchant}
-              onChange={(e) =>
-                setHomeDeliveryData({
-                  ...homeDeliveryData,
-                  instructionToMerchant: e.target.value,
-                })
-              }
-            />
-          </div>
+          {role === "Admin" && (
+            <div className="flex items-center">
+              <label className="w-1/3 px-6" htmlFor="instructionToMerchant">
+                Instruction to Merchant
+              </label>
+              <textarea
+                name="instructionToMerchant"
+                id="instructionToMerchant"
+                placeholder="Instruction to Merchant"
+                className="h-20 text-sm ps-3 pt-2 border-2 w-1/2 outline-none focus:outline-none resize-y overflow-y-auto"
+                value={homeDeliveryData.instructionToMerchant}
+                onChange={(e) =>
+                  setHomeDeliveryData({
+                    ...homeDeliveryData,
+                    instructionToMerchant: e.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
 
           {allCustomerAddress?.length > 0 && (
             <div className="flex items-start ">
