@@ -59,7 +59,7 @@ const ShowBill = ({ data }) => {
       toast({
         title: "Error",
         description: `Error downloading invoice`,
-        status: "err",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
