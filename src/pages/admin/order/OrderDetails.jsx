@@ -402,6 +402,7 @@ const OrderDetails = () => {
       addStep(item?.noteAdded, "Note Added", mappedSteps.length);
       addStep(item?.signatureAdded, "Signature Added", mappedSteps.length);
       addStep(item?.imageAdded, "Image Added", mappedSteps.length);
+      addStep(item?.completed, "Completed", mappedSteps.length);
 
       if (item?.cancelled) {
         mappedSteps.push({
@@ -419,6 +420,117 @@ const OrderDetails = () => {
 
     setStep(mappedSteps);
   }, [mapObject, orderDetail]);
+
+  // useEffect(() => {
+  //   if (orderDetail && mapObject) {
+  //     console.log("inside");
+  //     const coordinates = orderDetail.agentLocation;
+  //     showAgentLocationOnMap(
+  //       coordinates,
+  //       orderDetail.deliveryAgentDetail.name,
+  //       orderDetail.deliveryAgentDetail._id,
+  //       orderDetail.deliveryAgentDetail.phoneNumber
+  //     );
+  //     const shopCoordinates = orderDetail.pickUpLocation;
+  //     showShopLocationOnMap(
+  //       shopCoordinates,
+  //       orderDetail.merchantDetail.name,
+  //       orderDetail.merchantDetail._id
+  //     );
+  //     const deliveryLocation = orderDetail.deliveryLocation;
+  //     showDeliveryLocationOnMap(
+  //       deliveryLocation,
+  //       orderDetail.customerDetail.name,
+  //       "",
+  //       orderDetail.customerDetail.address.phoneNumber
+  //     );
+  //   }
+
+  //   const mapSteps = (stepperData) => {
+  //     let mappedSteps = [];
+  //     if (!Array.isArray(stepperData)) {
+  //       stepperData = [stepperData];
+  //     }
+  //     stepperData?.forEach((item) => {
+  //       console.log("Item", item)
+  //       const addStep = (step, label) => {
+  //         console.log("Step", step)
+  //         if (step) {
+  //           mappedSteps?.push({
+  //             title: label,
+  //             description: `by ${step?.by}`,
+  //             id: step?.userId || "N/A",
+  //             time: `${formatDate(step?.date)} | ${formatTime(step?.date)}`,
+  //           });
+  //           if (!item?.cancelled && step?.date) {
+  //             setActiveStepIndex(mappedSteps.length - 1);
+  //           }
+  //         }
+  //       };
+
+  //       addStep(item?.created, "Created");
+  //       addStep(item?.assigned, "Assigned");
+  //       addStep(item?.accepted, "Accepted");
+  //       addStep(item?.pickupStarted, "Pickup Started");
+  //       addStep(item?.reachedPickupLocation, "Reached pickup location");
+  //       addStep(item?.deliveryStarted, "Delivery started");
+  //       addStep(item?.reachedDeliveryLocation, "Reached delivery location");
+  //       addStep(item?.noteAdded, "Note Added");
+  //       addStep(item?.signatureAdded, "Signature Added");
+  //       addStep(item?.imageAdded, "Image Added");
+
+  //       if (item?.cancelled) {
+  //         mappedSteps.push({
+  //           title: "Cancelled",
+  //           description: `by ${item?.cancelled?.by} with Id ${
+  //             item?.cancelled?.userId || "N/A"
+  //           } on ${formatDate(item?.cancelled?.date)}, ${formatTime(
+  //             item?.cancelled?.date
+  //           )}`,
+  //         });
+  //         setActiveStepIndex(mappedSteps.length - 1);
+  //       }
+  //     });
+
+  //     return mappedSteps;
+  //   };
+
+  //   // Initial mapping
+  //   const initialSteps = mapSteps(orderDetail?.orderDetailStepper || []);
+  //   setStep(initialSteps);
+
+  //   // Real-time updates
+  //   const handleSocketEvent = ({ orderDetailStepper }) => {
+  //     console.log(orderDetailStepper)
+  //     setStep((prevSteps) => {
+  //       const updatedSteps = mapSteps(orderDetailStepper);
+  //       return [...prevSteps, ...updatedSteps];
+  //     });
+  //   };
+
+  //   const events = [
+  //     "newOrderCreated",
+  //     "orderAccepted",
+  //     "orderRejected",
+  //     "agentOrderAccepted",
+  //     "agentPickupStarted",
+  //     "reachedPickupLocation",
+  //     "agentDeliveryStarted",
+  //     "reachedDeliveryLocation",
+  //     "agentOrderDetailUpdated",
+  //     "orderCompleted",
+  //   ];
+
+  //   events.forEach((event) => {
+  //     socket.on(event, handleSocketEvent);
+  //   });
+
+  //   return () => {
+  //     events.forEach((event) => {
+  //       socket.off(event, handleSocketEvent);
+  //     });
+  //   };
+  // }, [mapObject, orderDetail, socket]);
 
   useEffect(() => {
     if (activeStepIndex !== -1 && steps?.length > 0) {
@@ -476,12 +588,14 @@ const OrderDetails = () => {
   }, [authToken]);
 
   useEffect(() => {
+    let mappedSteps = [];
     socket.on("newOrderCreated", ({ orderDetailStepper }) => {
       console.log("Order created", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{ created: orderDetailStepper}],
       }));
+      // addStep(orderDetailStepper, "Created", mappedSteps.length, );
     });
 
     socket.on("orderAccepted", ({ orderDetailStepper }) => {
@@ -491,7 +605,7 @@ const OrderDetails = () => {
           ...prev,
           orderDetailStepper: [
             ...(prev.orderDetailStepper || []),
-            orderDetailStepper,
+           {accepted: orderDetailStepper},
           ],
         };
       });
@@ -501,7 +615,7 @@ const OrderDetails = () => {
       console.log("Order rejected", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{ orderDetailStepper}],
       }));
     });
 
@@ -509,7 +623,7 @@ const OrderDetails = () => {
       console.log("Agent order accepted", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{assigned: orderDetailStepper}],
       }));
     });
 
@@ -517,7 +631,7 @@ const OrderDetails = () => {
       console.log("Agent pickup started", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{pickupStarted: orderDetailStepper}],
       }));
     });
 
@@ -525,7 +639,7 @@ const OrderDetails = () => {
       console.log("Agent reached pickup", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{reachedPickupLocation: orderDetailStepper}],
       }));
     });
 
@@ -533,7 +647,7 @@ const OrderDetails = () => {
       console.log("Agent delivery started", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper, {deliveryStarted: orderDetailStepper}],
       }));
     });
 
@@ -541,7 +655,7 @@ const OrderDetails = () => {
       console.log("Agent reached delivery", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{reachedDeliveryLocation: orderDetailStepper}],
       }));
     });
 
@@ -557,9 +671,10 @@ const OrderDetails = () => {
       console.log("Order completed", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+        orderDetailStepper: [...prev.orderDetailStepper,{completed: orderDetailStepper}],
       }));
     });
+    setStep(mappedSteps);
 
     return () => {
       socket.off("newOrderCreated");

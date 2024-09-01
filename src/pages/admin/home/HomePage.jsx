@@ -17,15 +17,34 @@ import { Switch } from "antd";
 import axios from "axios";
 import { useSocket } from "../../../context/SocketContext";
 import { useNavigate } from "react-router-dom";
+import DateRangePicker from "@wojtekmaj/react-daterange-picker";
+import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
+import "react-calendar/dist/Calendar.css";
+import { formatDate } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
   const [realTimeDataCount, setRealTimeDataCount] = useState({});
+  const [value, setValue] = useState([new Date(), new Date()]);
+  const [sales, setSales] = useState([]);
+  const [merchants, setMerchants] = useState([]);
+  const [data, setData] = useState([]);
+  const [commission, setCommission] = useState([]);
+  const [subscription, setSubscription] = useState([]);
   const { socket } = useSocket();
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
+    if(event.target.value === "sales"){
+      setData(sales)
+    }else if(event.target.value === "merchants"){
+      setData(merchants)
+    }else if(event.target.value === "subscription"){
+      setData(subscription)
+    }else if(event.target.value === "commission"){
+      setData(commission)
+    }
   };
 
   const { token, role, userId, setFcmToken, username } =
@@ -98,112 +117,125 @@ const HomePage = () => {
     requestPermission();
   }, []);
 
-  const data = [
-    {
-      date: "Jan 1",
-      Revenue: 1475,
-    },
-    {
-      date: "Jan 8",
-      Revenue: 1936,
-    },
-    {
-      date: "Jan 15",
-      Revenue: 1555,
-    },
-    {
-      date: "Jan 22",
-      Revenue: 1557,
-    },
-    {
-      date: "Jan 29",
-      Revenue: 1977,
-    },
-    {
-      date: "Feb 5",
-      Revenue: 2315,
-    },
-    {
-      date: "Feb 12",
-      Revenue: 1736,
-    },
-    {
-      date: "Feb 19",
-      Revenue: 1981,
-    },
-    {
-      date: "Feb 26",
-      Revenue: 2581,
-    },
-    {
-      date: "Mar 5",
-      Revenue: 2592,
-    },
-    {
-      date: "Mar 12",
-      Revenue: 2635,
-    },
-    {
-      date: "Mar 19",
-      Revenue: 2074,
-    },
-    {
-      date: "Mar 26",
-      Revenue: 2984,
-    },
-    {
-      date: "Apr 2",
-      Revenue: 2254,
-    },
-    {
-      date: "Apr 9",
-      Revenue: 3159,
-    },
-    {
-      date: "Apr 16",
-      Revenue: 2804,
-    },
-    {
-      date: "Apr 23",
-      Revenue: 2602,
-    },
-    {
-      date: "Apr 30",
-      Revenue: 2840,
-    },
-    {
-      date: "May 7",
-      Revenue: 3299,
-    },
-    {
-      date: "May 14",
-      Revenue: 3487,
-    },
-    {
-      date: "May 21",
-      Revenue: 3439,
-    },
-    {
-      date: "May 28",
-      Revenue: 3095,
-    },
-    {
-      date: "Jun 4",
-      Revenue: 3252,
-    },
-    {
-      date: "Jun 11",
-      Revenue: 4096,
-    },
-    {
-      date: "Jun 18",
-      Revenue: 4193,
-    },
-    {
-      date: "Jun 25",
-      Revenue: 4759,
-    },
-  ];
+  function convertRevenueDataToSalesChartFormat(revenueData) {
+    return revenueData.map((entry) => {
+      const date = new Date(entry.createdAt);
+
+      // Format date as desired, e.g., "Jan 1"
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      return {
+        date: formattedDate,
+        Revenue: entry.sales, // Assuming sales corresponds to the Revenue in your chart
+      };
+    });
+  }
+
+  function convertRevenueDataToMerchantChartFormat(revenueData) {
+    return revenueData.map((entry) => {
+      const date = new Date(entry.createdAt);
+
+      // Format date as desired, e.g., "Jan 1"
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      return {
+        date: formattedDate,
+        Revenue: entry.merchants, // Assuming sales corresponds to the Revenue in your chart
+      };
+    });
+  }
+
+  function convertRevenueDataToCommissionChartFormat(revenueData) {
+    return revenueData.map((entry) => {
+      const date = new Date(entry.createdAt);
+
+      // Format date as desired, e.g., "Jan 1"
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      return {
+        date: formattedDate,
+        Revenue: entry.commission, // Assuming sales corresponds to the Revenue in your chart
+      };
+    });
+  }
+
+  function convertRevenueDataToSubscriptionChartFormat(revenueData) {
+    return revenueData.map((entry) => {
+      const date = new Date(entry.createdAt);
+
+      // Format date as desired, e.g., "Jan 1"
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      return {
+        date: formattedDate,
+        Revenue: entry.subscription, // Assuming sales corresponds to the Revenue in your chart
+      };
+    });
+  }
+
+  const selectDateRange = async (value) => {
+    setValue(value);
+    const formattedStartDate = formatDate(value[0]);
+    const formattedEndDate = formatDate(value[1]);
+    try {
+      let endpoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/home/home-screen-sale-data`
+          : `${BASE_URL}/admin/home/home-screen-sale-data-merchant`;
+      console.log("Start", formattedStartDate, "End", formattedEndDate)
+      const response = await axios.get(endpoint, {
+        params: { startDate: formattedStartDate, endDate: formattedEndDate },
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        if (role === "Admin") {
+          setSales(convertRevenueDataToSalesChartFormat(response.data));
+          setMerchants(convertRevenueDataToMerchantChartFormat(response.data));
+          setCommission(
+            convertRevenueDataToCommissionChartFormat(response.data)
+          );
+          setSubscription(
+            convertRevenueDataToSubscriptionChartFormat(response.data)
+          );
+        } else {
+          setSales(convertRevenueDataToSalesChartFormat(response.data));
+          setCommission(
+            convertRevenueDataToCommissionChartFormat(response.data)
+          );
+        }
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while filtering the orders",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+   console.log("sales", sales)
+   console.log("merchants", merchants)
+   console.log("commission", commission)
+   console.log("subscription", subscription)
+  }, [sales,merchants,commission,subscription])
+
 
   const valueFormatter = (value) => {
     return new Intl.NumberFormat("en-IN", {
@@ -215,7 +247,7 @@ const HomePage = () => {
   const handleChangeMerchantStatus = async () => {
     try {
       const response = await axios.patch(
-        `${BASE_URL}/merchants/change-status/${userId}`,
+        `${BASE_URL}/merchants/change-status`,
         {},
         {
           withCredentials: true,
@@ -287,17 +319,19 @@ const HomePage = () => {
                 checked={selectedOption === "sales"}
               />
               <label htmlFor="sales">Sales</label>
-
-              <input
-                type="radio"
-                id="merchants"
-                name="merchants"
-                value="merchants"
-                onChange={handleOptionChange}
-                checked={selectedOption === "merchants"}
-              />
-              <label htmlFor="merchants">Merchants</label>
-
+              {role === "Admin" && (
+                <>
+                  <input
+                    type="radio"
+                    id="merchants"
+                    name="merchants"
+                    value="merchants"
+                    onChange={handleOptionChange}
+                    checked={selectedOption === "merchants"}
+                  />
+                  <label htmlFor="merchants">Merchants</label>
+                </>
+              )}
               <input
                 type="radio"
                 id="commission"
@@ -307,28 +341,36 @@ const HomePage = () => {
                 checked={selectedOption === "commission"}
               />
               <label htmlFor="commission">Commission (in)</label>
-
-              <input
-                type="radio"
-                id="subscription"
-                name="subscription"
-                value="subscription"
-                onChange={handleOptionChange}
-                checked={selectedOption === "subscription"}
-              />
-              <label htmlFor="subscription">Subscription (in)</label>
+              {role === "Admin" && (
+                <>
+                  <input
+                    type="radio"
+                    id="subscription"
+                    name="subscription"
+                    value="subscription"
+                    onChange={handleOptionChange}
+                    checked={selectedOption === "subscription"}
+                  />
+                  <label htmlFor="subscription">Subscription (in)</label>
+                </>
+              )}
             </div>
 
-            <select name="day" className="bg-white rounded-lg p-3">
-              <option>Today</option>
-            </select>
+            <DateRangePicker
+              onChange={selectDateRange}
+              name="date"
+              value={value}
+              format="y-MM-dd"
+              // minDate={new Date()}
+              // maxDate={new Date(new Date().setDate(new Date().getDate() + 30))}
+            />
           </div>
 
           <div>
             <Card>
               <CardHeader pb="0">
                 <Heading as="h4" fontWeight="medium" size="md">
-                  Revenue over time
+                { selectedOption === "merchants" ? "Logins over time" : "Revenue over time"}
                 </Heading>
               </CardHeader>
 
@@ -336,7 +378,7 @@ const HomePage = () => {
                 <LineChart
                   data={data}
                   categories={["Revenue"]}
-                  valueFormatter={valueFormatter}
+                  valueFormatter={selectedOption === "merchants" ? "" : valueFormatter}
                   yAxisWidth={80}
                   height="300px"
                   colors={["#115e59"]}

@@ -23,7 +23,6 @@ const Notificationlog = () => {
     useSoundContext();
   const toast = useToast();
 
-  
   const firebaseConfig = {
     apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
     authDomain: "famto-aa73e.firebaseapp.com",
@@ -55,14 +54,22 @@ const Notificationlog = () => {
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
-    socket?.on("pushNotification", async (data) => {
-      await playNewNotificationSound();
-      addNotificationToTable(data);
-    });
-    socket?.on("alertNotification", async (data) => {
-      await playNewOrderNotificationSound();
-      addNotificationToTable(data);
-    });
+    // socket?.on("pushNotification", async (data) => {
+    //   await playNewNotificationSound();
+    //   addNotificationToTable(data);
+    // });
+    // socket?.on("alertNotification", async (data) => {
+    //   await playNewNotificationSound();
+    //   addNotificationToTable(data);
+    // });
+    // socket?.on("newOrderCreated", async (data) => {
+    //   await playNewOrderNotificationSound();
+    //   addNotificationToTable(data);
+    // });
+    // socket?.on("alertNotification", async (data) => {
+    //   await playNewOrderNotificationSound();
+    //   addNotificationToTable(data);
+    // });
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data && event.data.type === "NOTIFICATION_RECEIVED") {
         const payload = event.data.payload;
@@ -74,10 +81,23 @@ const Notificationlog = () => {
     onMessage(messaging, (payload) => {
       console.log("Received foreground message ", payload);
       handleNotification(payload);
+      addNotificationToTable(payload);
     });
   }, [socket]);
 
-  const addNotificationToTable = (newNotification) => {
+  // const addNotificationToTable = (newNotification) => {
+  //   setTableData((prevData) => [newNotification, ...prevData]);
+  // };
+  const addNotificationToTable = (data) => {
+    console.log("Data", data);
+    const newNotification = {
+      title: data.notification.title, // Set the title
+      description: data.notification.body, // Set the body as description
+      imageUrl: data.notification.image, // Set the image URL
+      createdAt: new Date().toISOString(),
+      orderId: data?.data?.orderId,
+    };
+
     setTableData((prevData) => [newNotification, ...prevData]);
   };
 
@@ -93,6 +113,7 @@ const Notificationlog = () => {
       );
       if (response.status === 200) {
         setTableData(response.data.data);
+        console.log(response.data.data)
         setPagination(response.data);
       }
     } catch (err) {
@@ -118,6 +139,7 @@ const Notificationlog = () => {
       );
       if (response.status === 200) {
         setTableData(response.data.data);
+        console.log(response.data.data)
         setPagination(response.data);
       }
     } catch (err) {
