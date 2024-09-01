@@ -342,15 +342,14 @@ const EditBannerModal = ({
     const file = e.target.files[0];
     setSelectedFile(file);
     setPreviewURL(URL.createObjectURL(file));
-    e.target.value = null;
+    // e.target.value = null;
   };
 
+  // useEffect(() => {
+  //   console.log("Updated selectedFile:", selectedFile);
+  //   console.log("Updated preview url:", previewURL);
+  // }, [selectedFile, previewURL]);
 
-  useEffect(() => {
-    console.log("Updated selectedFile:", selectedFile);
-    console.log("Updated preview url:", previewURL);
-  }, [selectedFile, previewURL]);
-  
   useEffect(() => {
     if (selectedFile) {
       console.log("State updated with selectedFile:", selectedFile);
@@ -359,17 +358,94 @@ const EditBannerModal = ({
       console.log("State updated with previewURL:", previewURL);
     }
   }, [selectedFile, previewURL]);
-  
-  
+
+  // const saveAction = async (e) => {
+  //   e.preventDefault();
+
+  //   // Moved inside saveAction to ensure it has the latest state
+
+  //   console.log("Selected file in saveAction:", selectedFile);
+  //   console.log("Selected url in saveAction:", previewURL);
+
+  //   // Handle the case where selectedFile isn't yet set
+  //   if (!selectedFile && !appBanner.imageUrl) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Please select an image or provide an image URL.",
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const dataToSend = new FormData();
+  //      setConfirmLoading(true);
+
+  //     dataToSend.append("name", appBanner.name);
+  //     dataToSend.append("merchantId", appBanner.merchantId);
+  //     dataToSend.append("geofenceId", appBanner.geofenceId);
+
+  //     if (selectedFile) {
+  //       console.log("Selected file",selectedFile)
+  //       dataToSend.append("bannerImage", selectedFile);
+  //     } else if (appBanner.imageUrl) {
+  //       dataToSend.append("imageUrl", appBanner.imageUrl);
+  //     }
+
+  //     const response = await axios.put(
+  //       `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
+  //       dataToSend,
+  //       {
+  //         // withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     if (response.status === 200) {
+  //       onAddAppData(response.data.data);
+  //       setAppData({
+  //         name: "",
+  //         merchantId: "",
+  //         geofenceId: "",
+  //         imageUrl: "",
+  //       });
+  //       setSelectedFile(null);
+  //       setPreviewURL(null);
+  //       handleCancel();
+  //       toast({
+  //         title: "Success",
+  //         description: "Banner updated successfully",
+  //         status: "success",
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.error("Error in updating data:", err);
+  //     toast({
+  //       title: "Error",
+  //       description: "Error in updating banner",
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setConfirmLoading(false);
+  //   }
+  // };
   const saveAction = async (e) => {
     e.preventDefault();
-  
-    // Moved inside saveAction to ensure it has the latest state
-    
+
+    // Check if the state has been updated correctly
     console.log("Selected file in saveAction:", selectedFile);
-    console.log("Selected url in saveAction:", previewURL);
-    
-    // Handle the case where selectedFile isn't yet set
+    console.log("Preview URL in saveAction:", previewURL);
+
+    // Handle the case where no image is selected or provided
     if (!selectedFile && !appBanner.imageUrl) {
       toast({
         title: "Error",
@@ -380,34 +456,33 @@ const EditBannerModal = ({
       });
       return;
     }
-  
+
     try {
       const dataToSend = new FormData();
       setConfirmLoading(true);
-  
+
       dataToSend.append("name", appBanner.name);
       dataToSend.append("merchantId", appBanner.merchantId);
       dataToSend.append("geofenceId", appBanner.geofenceId);
-  
+
+      // Append the selected file or existing image URL
       if (selectedFile) {
-        console.log("Selected file",selectedFile)
         dataToSend.append("bannerImage", selectedFile);
       } else if (appBanner.imageUrl) {
         dataToSend.append("imageUrl", appBanner.imageUrl);
       }
-  
+
       const response = await axios.put(
         `${BASE_URL}/admin/app-banner/edit-app-banner/${currentBannerEdit}`,
         dataToSend,
         {
-          // withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-  
+
       if (response.status === 200) {
         onAddAppData(response.data.data);
         setAppData({
@@ -440,7 +515,6 @@ const EditBannerModal = ({
       setConfirmLoading(false);
     }
   };
-  
 
   return (
     <Modal
@@ -504,7 +578,7 @@ const EditBannerModal = ({
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-            {!previewURL && appBanner?.imageUrl && (
+              {!previewURL && appBanner?.imageUrl && (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
                     src={appBanner?.imageUrl}
