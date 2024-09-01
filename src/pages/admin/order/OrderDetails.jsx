@@ -324,7 +324,7 @@ const OrderDetails = () => {
 
         if (response.status === 200) {
           const { data } = response.data;
-          console.log(data);
+          console.log(data.orderDetailStepper);
           setOrderDetail(data);
           setBillData(data.billDetail);
           console.log(billData);
@@ -365,7 +365,7 @@ const OrderDetails = () => {
     }
 
     let mappedSteps = [];
-    orderDetail?.stepperDetail?.forEach((item) => {
+    orderDetail?.orderDetailStepper?.map((item) => {
       const addStep = (step, label, index) => {
         if (step) {
           mappedSteps.push({
@@ -472,40 +472,76 @@ const OrderDetails = () => {
   }, [authToken]);
 
   useEffect(() => {
-    socket.on("newOrderCreated", (data) => {
-      console.log("Stepper Dataof newOrderCreated", data);
+    socket.on("newOrderCreated", ({ orderDetailStepper }) => {
+      console.log("Order created", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("orderAccepted", (data) => {
-      console.log(data);
+    socket.on("orderAccepted", ({ orderDetailStepper }) => {
+      console.log("Order accepted", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("orderRejected", (data) => {
-      console.log(data);
+    socket.on("orderRejected", ({ orderDetailStepper }) => {
+      console.log("Order reejected", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("agentPickupStarted", (data) => {
-      console.log(data);
+    socket.on("agentPickupStarted", ({ orderDetailStepper }) => {
+      console.log("Agent pickup started", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("reachedPickupLocation", (data) => {
-      console.log(data);
+    socket.on("reachedPickupLocation", ({ orderDetailStepper }) => {
+      console.log("Agent reached pickup", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("agentDeliveryStarted", (data) => {
-      console.log(data);
+    socket.on("agentDeliveryStarted", ({ orderDetailStepper }) => {
+      console.log("Agent delivery started", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("reachedDeliveryLocation", (data) => {
-      console.log(data);
+    socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
+      console.log("Agent reached delivery", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("agentOrderDetailUpdated", (data) => {
-      console.log(data);
+    socket.on("agentOrderDetailUpdated", ({ orderDetailStepper }) => {
+      console.log("Agent Order detail updated", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
-    socket.on("orderCompleted", (data) => {
-      console.log(data);
+    socket.on("orderCompleted", ({ orderDetailStepper }) => {
+      console.log("Order completed", orderDetailStepper);
+      setOrderDetail((prev) => ({
+        ...prev,
+        orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
+      }));
     });
 
     return () => {
