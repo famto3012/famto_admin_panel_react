@@ -79,7 +79,8 @@ const AddProductItemModal = ({
         ]);
 
         if (discountResponse.status === 200) {
-          setAllProductDiscount(discountResponse.data.data);
+          const filteredDiscounts = discountResponse.data.data.filter(discount => discount.productId);
+          setAllProductDiscount(filteredDiscounts);
         }
         if (allProductResponse.status === 200) {
           setAllProducts(allProductResponse.data.data);
