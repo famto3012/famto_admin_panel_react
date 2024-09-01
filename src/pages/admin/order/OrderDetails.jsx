@@ -324,13 +324,17 @@ const OrderDetails = () => {
 
         if (response.status === 200) {
           const { data } = response.data;
-          console.log(data.orderDetailStepper);
           setOrderDetail(data);
           setBillData(data.billDetail);
-          console.log(billData);
         }
       } catch (err) {
-        console.log(`Error in getting order detail: ${err}`);
+        toast({
+          title: "Error",
+          description: `Error getting order detail`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -370,9 +374,9 @@ const OrderDetails = () => {
         if (step) {
           mappedSteps.push({
             title: label,
-            description: `by ${step?.by} with Id ${
-              step?.userId || "N/A"
-            } on ${formatDate(step?.date)}, ${formatTime(step?.date)}`,
+            description: `by ${step?.by}`,
+            id: step?.userId || "N/A",
+            time: `${formatDate(step?.date)} | ${formatTime(step?.date)}`,
           });
           if (!item?.cancelled && step?.date) {
             setActiveStepIndex(index);
@@ -482,14 +486,27 @@ const OrderDetails = () => {
 
     socket.on("orderAccepted", ({ orderDetailStepper }) => {
       console.log("Order accepted", orderDetailStepper);
+      setOrderDetail((prev) => {
+        return {
+          ...prev,
+          orderDetailStepper: [
+            ...(prev.orderDetailStepper || []),
+            orderDetailStepper,
+          ],
+        };
+      });
+    });
+
+    socket.on("orderRejected", ({ orderDetailStepper }) => {
+      console.log("Order rejected", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
       }));
     });
 
-    socket.on("orderRejected", ({ orderDetailStepper }) => {
-      console.log("Order reejected", orderDetailStepper);
+    socket.on("agentOrderAccepted", ({ orderDetailStepper }) => {
+      console.log("Agent order accepted", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
@@ -548,6 +565,7 @@ const OrderDetails = () => {
       socket.off("newOrderCreated");
       socket.off("orderAccepted");
       socket.off("orderRejected");
+      socket.off("agentOrderAccepted");
       socket.off("agentPickupStarted");
       socket.off("reachedPickupLocation");
       socket.off("agentDeliveryStarted");
@@ -556,107 +574,6 @@ const OrderDetails = () => {
       socket.off("orderCompleted");
     };
   }, [socket]);
-
-  // let steps
-  // orderDetail.stepperDetail.map((item)=>{
-  //   steps = [{title: item, description: `by ${item.by} with Id ${item.userId}`}]
-  // })
-
-  // const step = [
-  //   { title: "Created", description: "by Admin ID #123" },
-  //   { title: "Assigned", description: "by Admin ID #123" },
-  //   { title: "Accepted", description: "by Agent Name" },
-  //   { title: "Pickup Started", description: "by Agent Name" },
-  //   { title: "Reached pickup location", description: "by Agent Name" },
-  //   { title: "Delivery Started", description: "by Agent Name" },
-  //   { title: "Reached delivery location", description: "by Agent Name" },
-  //   { title: "Note Added", description: "by Agent Name" },
-  //   { title: "Signature Added", description: "by Agent Name" },
-  //   { title: "Image Added", description: "by Agent Name" },
-  //   { title: "Completed", description: "by Agent Name" },
-  //   { title: "Cancelled", description: "by Agent Name" },
-  // ];
-
-  // const steps = orderDetail?.stepperDetail
-  //   ?.map((item) => {
-  // Collect the steps in the required format
-  //   return [
-  //     {
-  //       title: "Created",
-  //       description: `by ${item?.created?.by} with Id ${
-  //         item?.created?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Assigned",
-  //       description: `by ${item?.assigned?.by} with Id ${
-  //         item?.assigned?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Accepted",
-  //       description: `by ${item?.accepted?.by} with Id ${
-  //         item?.accepted?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Pickup Started",
-  //       description: `by ${item?.pickupStarted?.by} with Id ${
-  //         item?.pickupStarted?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Reached pickup location",
-  //       description: `by ${item?.reachedPickupLocation?.by} with Id ${
-  //         item?.reachedPickupLocation?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Delivery started",
-  //       description: `by ${item?.deliveryStarted?.by} with Id ${
-  //         item?.deliveryStarted?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Reached delivery location",
-  //       description: `by ${item?.reachedDeliveryLocation?.by} with Id ${
-  //         item?.reachedDeliveryLocation?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Note Added",
-  //       description: `by ${item?.noteAdded?.by} with Id ${
-  //         item?.noteAdded?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Signature Added",
-  //       description: `by ${item?.signatureAdded?.by} with Id ${
-  //         item?.signatureAdded?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Image Added",
-  //       description: `by ${item?.imageAdded?.by} with Id ${
-  //         item?.imageAdded?.userId || "N/A"
-  //       }`,
-  //     },
-  //     {
-  //       title: "Completed",
-  //       description: `by ${item?.completed?.by} with Id ${
-  //         item?.completed?.userId || "N/A"
-  //       }`,
-  //     },
-  //     item?.cancelled ?
-  //     {
-  //       title: "Cancelled",
-  //       description: `by ${item?.cancelled?.by} with Id ${
-  //         item?.cancelled?.userId || "N/A"
-  //       }`,
-  //     } : ""
-  //   ];
-  // })
-  // .flat();
 
   const downloadOrderBill = async (e) => {
     try {
@@ -691,7 +608,7 @@ const OrderDetails = () => {
       toast({
         title: "Error",
         description: `Error downloading invoice`,
-        status: "err",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
@@ -1122,8 +1039,14 @@ const OrderDetails = () => {
                     </StepIndicator>
 
                     <Box flexShrink="0">
-                      <StepTitle>{step.title}</StepTitle>
-                      <StepDescription>{step.description}</StepDescription>
+                      <StepTitle>{step?.title}</StepTitle>
+                      <div className="flex items-center gap-4">
+                        <StepDescription>{step?.description}</StepDescription>
+                        <StepDescription>#ID {step?.id}</StepDescription>
+                      </div>
+                      <StepDescription className="mt-2">
+                        {step?.time}
+                      </StepDescription>
                     </Box>
 
                     <StepSeparator />
