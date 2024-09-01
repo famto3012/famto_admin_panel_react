@@ -321,7 +321,7 @@ const Sidebar = () => {
                 <BsPersonLinesFill className="m-2 text-[20px]" />
                 Managers
               </Link>
-              <Link
+              {/* <Link
                 to="/roles"
                 className={`ps-4 side ${
                   selectedLink === "/roles" ? "selected-link" : ""
@@ -329,7 +329,7 @@ const Sidebar = () => {
               >
                 <ManageAccountsOutlinedIcon className="m-2" />
                 Roles
-              </Link>
+              </Link> */}
               <Link
                 to="/pricing"
                 className={`ps-4 side flex items-center ${

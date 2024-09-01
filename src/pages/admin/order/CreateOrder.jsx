@@ -16,6 +16,7 @@ import HomeDelivery from "../../../components/Order/HomeDelivery";
 import PickAndDrop from "../../../components/Order/PickAndDrop";
 import CustomOrder from "../../../components/Order/CustomOrder";
 import { UserContext } from "../../../context/UserContext";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -41,6 +42,7 @@ const CreateOrder = () => {
   });
 
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
 
   useEffect(() => {
     if (!token) navigate("/auth/login");
@@ -74,13 +76,15 @@ const CreateOrder = () => {
     if (query.length >= 3) {
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `${BASE_URL}/admin/customers/search?query=${query}`,
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const endPoint =
+          role === "Admin"
+            ? `${BASE_URL}/admin/customers/search?query=${query}`
+            : `${BASE_URL}/admin/customers/search-customer-of-merchant?query=${query}`;
+
+        const response = await axios.get(endPoint, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.status === 200) setCustomerResults(response.data.data);
       } catch (err) {
         toast({
@@ -136,9 +140,27 @@ const CreateOrder = () => {
 
   const selectTime = (e) => {
     const value = e.target.value;
+
+    // Parse the selected time
+    const [hours, minutes] = value.split(":").map(Number);
+
+    // Create a new Date object and set the time
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+
+    // Add one hour to the current time
+    date.setHours(date.getHours() + 1);
+
+    // Format the new time in HH:MM format
+    const newHours = String(date.getHours()).padStart(2, "0");
+    const newMinutes = String(date.getMinutes()).padStart(2, "0");
+    const newTime = `${newHours}:${newMinutes}`;
+
     setTime(value);
     setTopData((prevState) => ({
       ...prevState,
+      deliveryTime: newTime,
       ifScheduled: {
         ...prevState.ifScheduled,
         time: value,

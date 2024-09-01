@@ -350,10 +350,6 @@ const Adbanner = () => {
     setShowModalDeleteIndividual(false);
   };
 
-  // console.log("banenr details",individualBanner);
-  // console.log("currently active banner", currentIndBanner)
-  // console.log("last",currentBannerEdit)
-
   return (
     <div>
       {isLoading ? (
@@ -385,7 +381,7 @@ const Adbanner = () => {
               </h1>
               <div>
                 <button
-                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 "
+                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 mb-7"
                   onClick={showModal}
                 >
                   <PlusOutlined className="mr-2" /> Add
@@ -400,9 +396,9 @@ const Adbanner = () => {
                 />
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="overflow-x-auto p-4 w-full mt-7">
-                <thead>
+            <div className="overflow-x-auto max-h-[30rem]">
+              <table className="overflow-x-auto p-4 w-full ">
+                <thead className=" sticky top-0 left-0 z-10">
                   <tr className="p-5 w-full">
                     {[
                       "Image",
@@ -514,7 +510,7 @@ const Adbanner = () => {
               </h1>
               <div>
                 <button
-                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 "
+                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 mb-7"
                   onClick={showModalIndividual}
                 >
                   <PlusOutlined className="mr-2" /> Add
@@ -529,9 +525,9 @@ const Adbanner = () => {
                 />
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="overflow-x-auto p-4 w-full mt-7 mb-20">
-                <thead>
+            <div className="overflow-x-auto max-h-[30rem]">
+              <table className="overflow-x-auto p-4 w-full mb-20">
+                <thead className=" sticky top-0 left-0 z-10">
                   <tr className="p-5 w-full">
                     {[
                       "Image",

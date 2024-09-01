@@ -16,6 +16,7 @@ import {
 import ShowBill from "./ShowBill";
 import MapModalTwo from "./MapModalTwo";
 import NewAddressTwo from "./NewAddressTwo";
+import { useMap } from "../../context/MapContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -31,6 +32,7 @@ const CustomOrder = ({ data }) => {
     newDeliveryAddress: {},
   });
 
+  const { coordinates } = useMap();
   const { token } = useContext(UserContext);
   const toast = useToast();
 
@@ -95,19 +97,13 @@ const CustomOrder = ({ data }) => {
           file,
           "Custom-order-item-Image"
         );
-        console.log("File available at", itemImageURL);
 
-        // const reader = new FileReader();
-        // reader.onloadend = () => {
         const updatedItems = [...customOrderData.items];
         updatedItems[index] = {
           ...updatedItems[index],
           itemImageURL,
-          // preview: reader.result,
         };
         setCustomOrderData({ ...customOrderData, items: updatedItems });
-        // };
-        // reader.readAsDataURL(file);
       } catch (error) {
         console.error("Upload failed:", error);
       }
@@ -120,24 +116,26 @@ const CustomOrder = ({ data }) => {
   };
 
   const handleSelectAddressType = (type) => {
-    setSelectedAddress(type);
-    setCustomOrderData({ ...customOrderData, deliveryAddressType: type });
+    // Check if the type is already selected
+    const newSelectedAddress = selectedAddress === type ? "" : type;
+
+    setSelectedAddress(newSelectedAddress);
+    setCustomOrderData({
+      ...customOrderData,
+      deliveryAddressType: newSelectedAddress,
+    });
   };
 
   const handleSelectOtherAddress = (id) => {
     setSelectedOtherAddressId(id);
     setCustomOrderData({
       ...customOrderData,
-      customerAddressOtherAddressId: id,
+      deliveryAddressOtherAddressId: id,
     });
   };
 
   const toggleFormVisibility = () => {
     setFormVisible(!isFormVisible);
-  };
-
-  const toggleLocationMarker = () => {
-    setModalVisible((prev) => !prev);
   };
 
   const setCoordinates = ({ latitude, longitude }) => {
@@ -151,6 +149,20 @@ const CustomOrder = ({ data }) => {
         ...address,
       },
     }));
+  };
+
+  const handleCloseMap = (e) => {
+    e.preventDefault();
+
+    if (coordinates) {
+      setCustomOrderData({
+        ...customOrderData,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+      });
+    }
+
+    setModalVisible(false);
   };
 
   const createInvoice = async (e) => {
@@ -175,10 +187,6 @@ const CustomOrder = ({ data }) => {
         newCustomer: data.newCustomer,
       };
 
-      console.log("invoiceData", invoiceData);
-
-      // return;
-
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
         invoiceData,
@@ -201,7 +209,6 @@ const CustomOrder = ({ data }) => {
         });
       }
     } catch (err) {
-      console.log(`Error in creating invoice: ${err}`);
       toast({
         title: "Error",
         description: "Error in creating invoice",
@@ -235,7 +242,7 @@ const CustomOrder = ({ data }) => {
 
               <MapModal
                 isVisible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                onClose={handleCloseMap}
                 setCoordinates={setCoordinates}
                 BASE_URL={BASE_URL}
                 token={token}

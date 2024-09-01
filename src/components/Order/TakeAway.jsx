@@ -5,6 +5,7 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import { useToast } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -30,14 +31,19 @@ const TakeAway = ({ data }) => {
 
   const [paymentMode, setPaymentMode] = useState("");
 
-  const { token } = useContext(UserContext);
+  const { token, role, userId } = useContext(UserContext);
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
     }
-  }, [token]);
+
+    if (role === "Merchant") {
+      setTakeAwayData({ ...takeAwayData, merchantId: userId });
+    }
+  }, [token, role]);
 
   const handleSearchMerchant = async (e) => {
     const query = e.target.value;
@@ -102,8 +108,10 @@ const TakeAway = ({ data }) => {
   };
 
   const selectProduct = (product) => {
+    console.log(product);
+
     const existingProduct = takeAwayData.items.find(
-      (item) => item.productId === product._id
+      (item) => item.productId === product.id
     );
 
     if (existingProduct) {
@@ -111,7 +119,7 @@ const TakeAway = ({ data }) => {
       setTakeAwayData({
         ...takeAwayData,
         items: takeAwayData.items.map((item) =>
-          item.productId === product._id
+          item.productId === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         ),
@@ -124,7 +132,7 @@ const TakeAway = ({ data }) => {
           ...takeAwayData.items,
           {
             productName: product.productName,
-            productId: product._id,
+            productId: product.id,
             price: product.price,
             quantity: 1,
             variants: product.variants.map((variant) => ({
@@ -132,7 +140,7 @@ const TakeAway = ({ data }) => {
               variantTypes: variant.variantTypes.map((type) => ({
                 typeName: type.typeName,
                 price: type.price,
-                _id: type._id,
+                id: type.id,
               })),
             })),
           },
@@ -177,6 +185,8 @@ const TakeAway = ({ data }) => {
   };
 
   const handleVariantChange = (productId, variantId) => {
+    console.log(productId);
+    console.log(variantId);
     setTakeAwayData({
       ...takeAwayData,
       items: takeAwayData.items.map((item) =>
@@ -195,8 +205,13 @@ const TakeAway = ({ data }) => {
     try {
       setIsOrderLoading(true);
 
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/orders/admin/create-order`
+          : `${BASE_URL}/orders/create-order`;
+
       const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order`,
+        endPoint,
         {
           paymentMode,
           cartId: cartData.cartId,
@@ -218,6 +233,7 @@ const TakeAway = ({ data }) => {
           duration: 3000,
           isClosable: true,
         });
+        navigate("/all-orders");
       }
     } catch (err) {
       console.log(`Error in creating order: ${err}`);
@@ -235,61 +251,56 @@ const TakeAway = ({ data }) => {
 
   const createInvoice = async (e) => {
     e.preventDefault();
-
-    // Format the items to include the selected variantId and its price
-    const formattedItems = takeAwayData.items.map((item) => {
-      // Find the selected variant type for the item
-      const selectedVariant = item.variants
-        .flatMap((variant) => variant.variantTypes)
-        .find((type) => type._id === item.selectedVariantId);
-
-      console.log("selectedVariant", selectedVariant);
-
-      // Determine the price based on whether a variant is selected or not
-      const price = selectedVariant ? selectedVariant.price : item.price;
-      console.log("price", price);
-
-      return {
-        productId: item.productId,
-        quantity: item.quantity,
-        price: price,
-        variantId: item.selectedVariantId || null, // Use selectedVariantId if available
-      };
-    });
-    console.log(formattedItems);
-
-    const invoiceData = {
-      customerId: data.customerId,
-      newCustomer: data.newCustomer,
-      deliveryOption: data.deliveryOption,
-      deliveryMode: data.deliveryMode,
-      ifScheduled: {
-        startDate: data?.ifScheduled?.startDate,
-        endDate: data?.ifScheduled?.endDate,
-        time: data?.ifScheduled?.time,
-      },
-      items: formattedItems,
-      instructionToMerchant: takeAwayData.instructionToMerchant,
-      merchantId: takeAwayData.merchantId,
-    };
-
     try {
       setIsInvoiceLoading(true);
 
-      const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order-invoice`,
-        invoiceData,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // Format the items to include the selected variantId and its price
+      const formattedItems = takeAwayData.items.map((item) => {
+        // Find the selected variant type for the item
+        const selectedVariant = item.variants
+          .flatMap((variant) => variant.variantTypes)
+          .find((type) => type.id === item.selectedVariantId);
+
+        // Determine the price based on whether a variant is selected or not
+        const price = selectedVariant ? selectedVariant.price : item.price;
+
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          price: price,
+          variantId: item.selectedVariantId || null, // Use selectedVariantId if available
+        };
+      });
+
+      const invoiceData = {
+        customerId: data.customerId,
+        newCustomer: data.newCustomer,
+        deliveryOption: data.deliveryOption,
+        deliveryMode: data.deliveryMode,
+        ifScheduled: {
+          startDate: data?.ifScheduled?.startDate,
+          endDate: data?.ifScheduled?.endDate,
+          time: data?.ifScheduled?.time,
+        },
+        items: formattedItems,
+        instructionToMerchant: takeAwayData.instructionToMerchant,
+        merchantId: takeAwayData.merchantId,
+      };
+
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/orders/admin/create-order-invoice`
+          : `${BASE_URL}/orders/create-order-invoice`;
+
+      const response = await axios.post(endPoint, invoiceData, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200) {
         const { data } = response.data;
-        console.log(data);
         setCartData(data);
         toast({
           title: "Success",
@@ -317,47 +328,49 @@ const TakeAway = ({ data }) => {
     <div className="bg-white mt-5 rounded">
       <form onSubmit={createInvoice}>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center relative">
-            <label className="w-1/3 px-6" htmlFor="merchant">
-              Select Merchant
-            </label>
-            <div className="relative w-1/2">
-              <input
-                type="text"
-                name="merchantName"
-                placeholder="Search merchant"
-                className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
-                value={merchantName}
-                onChange={handleSearchMerchant}
-              />
-
-              {isMerchantLoading && (
-                <ClipLoader
-                  size={15}
-                  className="absolute top-[30%] right-[10px]"
+          {role === "Admin" && (
+            <div className="flex items-center relative">
+              <label className="w-1/3 px-6" htmlFor="merchant">
+                Select Merchant
+              </label>
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  name="merchantName"
+                  placeholder="Search merchant"
+                  className="h-10 ps-3 text-sm border-2 w-full outline-none focus:outline-none"
+                  value={merchantName}
+                  onChange={handleSearchMerchant}
                 />
-              )}
 
-              {!isMerchantLoading && (
-                <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
-              )}
+                {isMerchantLoading && (
+                  <ClipLoader
+                    size={15}
+                    className="absolute top-[30%] right-[10px]"
+                  />
+                )}
 
-              {merchantResults.length > 0 && (
-                <ul className="absolute bg-white border w-full mt-1 z-50">
-                  {merchantResults.map((result) => (
-                    <li
-                      key={result._id}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
-                      onClick={() => selectMerchant(result)}
-                    >
-                      {result.merchantName} - {result.geofence} (
-                      {result.status ? "Open" : "Closed"})
-                    </li>
-                  ))}
-                </ul>
-              )}
+                {!isMerchantLoading && (
+                  <SearchOutlined className="text-xl text-gray-500 absolute top-[30%] right-[10px]" />
+                )}
+
+                {merchantResults.length > 0 && (
+                  <ul className="absolute bg-white border w-full mt-1 z-50">
+                    {merchantResults.map((result) => (
+                      <li
+                        key={result._id}
+                        className="p-2 hover:bg-gray-200 cursor-pointer"
+                        onClick={() => selectMerchant(result)}
+                      >
+                        {result.merchantName} - {result.geofence} (
+                        {result.status ? "Open" : "Closed"})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="product">
@@ -428,7 +441,7 @@ const TakeAway = ({ data }) => {
                         >
                           {item.variants.flatMap((variant) =>
                             variant.variantTypes.map((type) => (
-                              <option key={type._id} value={type._id}>
+                              <option key={type.id} value={type.id}>
                                 {variant.variantName} - {type.typeName} - ₹
                                 {type.price}
                               </option>
@@ -459,24 +472,26 @@ const TakeAway = ({ data }) => {
             </div>
           </div>
 
-          <div className="flex items-center">
-            <label className="w-1/3 px-6" htmlFor="instructionToMerchant">
-              Instruction to Merchant
-            </label>
-            <textarea
-              name="instructionToMerchant"
-              id="instructionToMerchant"
-              placeholder="Instruction to Merchant"
-              className="h-20 text-sm ps-3 pt-2 border-2 w-1/2 outline-none focus:outline-none resize-y overflow-y-auto"
-              value={takeAwayData.instructionToMerchant}
-              onChange={(e) =>
-                setTakeAwayData({
-                  ...takeAwayData,
-                  instructionToMerchant: e.target.value,
-                })
-              }
-            />
-          </div>
+          {role === "Admin" && (
+            <div className="flex items-center">
+              <label className="w-1/3 px-6" htmlFor="instructionToMerchant">
+                Instruction to Merchant
+              </label>
+              <textarea
+                name="instructionToMerchant"
+                id="instructionToMerchant"
+                placeholder="Instruction to Merchant"
+                className="h-20 text-sm ps-3 pt-2 border-2 w-1/2 outline-none focus:outline-none resize-y overflow-y-auto"
+                value={takeAwayData.instructionToMerchant}
+                onChange={(e) =>
+                  setTakeAwayData({
+                    ...takeAwayData,
+                    instructionToMerchant: e.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
 
           <button
             type="submit"
