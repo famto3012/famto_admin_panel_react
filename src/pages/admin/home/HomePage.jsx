@@ -70,7 +70,16 @@ const HomePage = () => {
       }, 1000);
     });
 
-    socket.emit("getRealTimeDataOnRefresh", "");
+    if(role === "Admin"){
+      socket.emit("getRealTimeDataOnRefresh", "");
+    }else{
+      const data = {
+        id: userId,
+        role: role
+      }
+        socket.emit("getRealTimeDataOnRefreshMerchant", data);
+    }
+
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received:", payload);

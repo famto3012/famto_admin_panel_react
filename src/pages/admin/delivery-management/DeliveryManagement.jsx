@@ -28,6 +28,7 @@ import { UserContext } from "../../../context/UserContext";
 import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../../context/SocketContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -42,7 +43,7 @@ const DeliveryManagement = () => {
   const [agentData, setAgentData] = useState([]);
   const [allAgentData, setAllAgentData] = useState([]);
   const [geofenceAgentData, setGeofenceAgentData] = useState([]);
-
+  const { socket } = useSocket();
   const [task, setTask] = useState("Unassigned");
   const [status, setStatus] = useState("Free");
 
@@ -57,10 +58,16 @@ const DeliveryManagement = () => {
   const [assignLoading, setAssignLoading] = useState(false);
   const [mapObject, setMapObject] = useState(null);
   const [authToken, setAuthToken] = useState("");
+  const [active, setActive] = useState(0);
 
   const toast = useToast();
   const navigate = useNavigate();
   const { token } = useContext(UserContext);
+
+  const { activeStep } = useSteps({
+    index: active,
+    count: 3,
+  });
 
   useEffect(() => {
     if (!token) {
@@ -68,22 +75,23 @@ const DeliveryManagement = () => {
     }
   }, [token, navigate]);
 
-  const steps = [
-    {
-      title: "Merchant Name",
-      description: "by Admin ID #123",
-      adress: "56, Post office, Pattom, Thiruvallam Lorem Ipsum Lorem Ipsum",
-      pickup: "delivery",
-      time: "HH :MM",
-    },
-    {
-      title: "Cusotmer Name",
-      description: "by Admin ID #123",
-      adress: "PMG",
-      pickup: "delivery",
-      time: "HH :MM",
-    },
-  ];
+  useEffect(() => {
+
+    socket.on("orderAccepted", ({ orderDetailStepper }) => {
+      console.log("Order accepted", orderDetailStepper);
+      setActive(2)
+    });
+
+    socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
+      console.log("Agent reached delivery", orderDetailStepper);
+      setActive(3)
+    });
+
+    return () => {
+      socket.off("orderAccepted");
+      socket.off("reachedDeliveryLocation");
+    };
+  }, [socket]);
 
   const getAuthToken = async () => {
     try {
@@ -108,10 +116,7 @@ const DeliveryManagement = () => {
     }
   };
 
-  const { activeStep, setActiveStep } = useSteps({
-    index: 2,
-    count: steps.length,
-  });
+
 
   const handleChange = (e) => {
     setAutoAllocation((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -452,6 +457,16 @@ const DeliveryManagement = () => {
 
       if (response.status === 201) {
         setTaskData(response.data.data);
+        console.log(response.data.data);
+        response.data.data.map((data)=>{
+           if(data.orderId.orderDetailStepper.accepted){
+            setActive(2)
+           }else if(data.orderId.orderDetailStepper.reachedDeliveryLocation){
+            setActive(3)
+           }else{
+            setActive(1)
+           }
+        })
       }
     } catch (err) {
       toast({
@@ -1040,7 +1055,10 @@ const DeliveryManagement = () => {
                                             </StepTitle>
 
                                             <StepDescription className="text-sm text-gray-500">
-                                              By Admin
+                                              By  {
+                                                data?.orderId?.orderDetailStepper
+                                                  ?.accepted?.by ||" Admin"
+                                              }
                                             </StepDescription>
 
                                             <Step className="text-sm text-gray-500">
@@ -1135,7 +1153,10 @@ const DeliveryManagement = () => {
                                             </StepTitle>
 
                                             <StepDescription className="text-sm text-gray-500">
-                                              By Admin
+                                              By  {
+                                                data?.orderId?.orderDetailStepper
+                                                  ?.reachedDeliveryLocation?.by ||" Agent"
+                                              }
                                             </StepDescription>
 
                                             <Step className="text-sm text-gray-500">

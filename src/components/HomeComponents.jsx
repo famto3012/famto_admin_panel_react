@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 const HomeComponents = ({ realTimeDataCount }) => {
+  const {  role } =
+    useContext(UserContext);
   return (
     <>
       <div className="w-full">
@@ -37,7 +40,8 @@ const HomeComponents = ({ realTimeDataCount }) => {
             </div>
           </div>
         </div>
-
+      {role === "Admin" && (
+        <>
         <div className="flex mx-5 py-5  justify-between items-center bg-white mt-5 rounded-lg">
           <div className="font-bold mx-10 text-[32px] w-[30%]">Merchants</div>
 
@@ -95,6 +99,8 @@ const HomeComponents = ({ realTimeDataCount }) => {
             </div>
           </div>
         </div>
+        </>
+      )}
       </div>
     </>
   );
