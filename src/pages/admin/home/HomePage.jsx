@@ -362,7 +362,7 @@ const HomePage = () => {
               value={value}
               format="y-MM-dd"
               // minDate={new Date()}
-              maxDate={new Date(new Date().setDate(new Date().getDate() + 30))}
+              maxDate={new Date()}
             />
           </div>
 
