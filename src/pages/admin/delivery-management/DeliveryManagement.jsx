@@ -76,15 +76,14 @@ const DeliveryManagement = () => {
   }, [token, navigate]);
 
   useEffect(() => {
-
     socket.on("orderAccepted", ({ orderDetailStepper }) => {
       console.log("Order accepted", orderDetailStepper);
-      setActive(2)
+      setActive(2);
     });
 
     socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
       console.log("Agent reached delivery", orderDetailStepper);
-      setActive(3)
+      setActive(3);
     });
 
     return () => {
@@ -115,8 +114,6 @@ const DeliveryManagement = () => {
       });
     }
   };
-
-
 
   const handleChange = (e) => {
     setAutoAllocation((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -458,15 +455,17 @@ const DeliveryManagement = () => {
       if (response.status === 201) {
         setTaskData(response.data.data);
         console.log(response.data.data);
-        response.data.data.map((data)=>{
-           if(data.orderId.orderDetailStepper.accepted){
-            setActive(2)
-           }else if(data.orderId.orderDetailStepper.reachedDeliveryLocation){
-            setActive(3)
-           }else{
-            setActive(1)
-           }
-        })
+        response.data.data.map((data) => {
+          if (data?.orderId?.orderDetailStepper?.accepted) {
+            setActive(2);
+          } else if (
+            data?.orderId?.orderDetailStepper?.reachedDeliveryLocation
+          ) {
+            setActive(3);
+          } else {
+            setActive(1);
+          }
+        });
       }
     } catch (err) {
       toast({
@@ -1055,10 +1054,9 @@ const DeliveryManagement = () => {
                                             </StepTitle>
 
                                             <StepDescription className="text-sm text-gray-500">
-                                              By  {
-                                                data?.orderId?.orderDetailStepper
-                                                  ?.accepted?.by ||" Admin"
-                                              }
+                                              By{" "}
+                                              {data?.orderId?.orderDetailStepper
+                                                ?.accepted?.by || " Admin"}
                                             </StepDescription>
 
                                             <Step className="text-sm text-gray-500">
@@ -1153,10 +1151,10 @@ const DeliveryManagement = () => {
                                             </StepTitle>
 
                                             <StepDescription className="text-sm text-gray-500">
-                                              By  {
-                                                data?.orderId?.orderDetailStepper
-                                                  ?.reachedDeliveryLocation?.by ||" Agent"
-                                              }
+                                              By{" "}
+                                              {data?.orderId?.orderDetailStepper
+                                                ?.reachedDeliveryLocation?.by ||
+                                                " Agent"}
                                             </StepDescription>
 
                                             <Step className="text-sm text-gray-500">
