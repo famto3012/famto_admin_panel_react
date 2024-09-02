@@ -246,6 +246,63 @@ const OrderDetails = () => {
       }
     });
   };
+  const showStepperLocationOnMap = (
+    coordinates,
+    by,
+    Id,
+    date
+  ) => {
+    const markerProps = {
+      fitbounds: true,
+      fitboundOptions: { padding: 120, duration: 1000 },
+      width: 25,
+      height: 40,
+      clusters: true,
+      clustersOptions: { color: "blue", bgcolor: "red" },
+      offset: [0, 10],
+      draggable: true,
+    };
+
+    console.log("Adding markers...");
+    const stepperGeoData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            htmlPopup: `Id:${Id} |
+               By: ${by} |
+               date: ${date} `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+          },
+        },
+      ],
+    };
+    const mapplsObject = new mappls();
+    stepperGeoData.features.forEach(async (feature) => {
+      const { coordinates } = feature.geometry;
+      const { htmlPopup } = feature.properties;
+
+      try {
+        const houseMarker = await mapplsObject.Marker({
+          map: mapObject,
+          position: { lat: coordinates[0], lng: coordinates[1] },
+          properties: { ...markerProps, popupHtml: htmlPopup },
+        });
+        await houseMarker.setIcon(
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319321.svg?alt=media&token=f76a13db-218d-48fe-8e54-d13955daeb30"
+        );
+        await houseMarker.setPopup(htmlPopup);
+        // mapObject.setView([coordinates[0], coordinates[1]], 17);
+        console.log(`Marker added for location: ${htmlPopup}`);
+      } catch (error) {
+        console.error("Error adding marker:", error);
+      }
+    });
+  };
 
   const PolylineComponent = ({ map }) => {
     const polylineRef = useRef(null);
@@ -378,8 +435,12 @@ const OrderDetails = () => {
             id: step?.userId || "N/A",
             time: `${formatDate(step?.date)} | ${formatTime(step?.date)}`,
           });
+          const date = `${formatDate(step?.date)} | ${formatTime(step?.date)}`
           if (!item?.cancelled && step?.date) {
             setActiveStepIndex(index);
+          }
+          if(step?.location){
+            showStepperLocationOnMap(step.location, step?.by, step?.userId, date)
           }
         }
       };
