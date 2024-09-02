@@ -19,9 +19,6 @@ import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaIndianRupeeSign } from "react-icons/fa6";
-import { AiOutlineCloudUpload } from "react-icons/ai";
-import { TbArrowsSort } from "react-icons/tb";
-import { allAgentsCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -41,6 +38,7 @@ const DeliveryAgent = () => {
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
   const [isRejectLoading, SetIsRejectLoading] = useState(false);
+  const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
 
   const [isModalApproval, setIsModalApproval] = useState(false);
   const [isModalReject, setIsModalReject] = useState(false);
@@ -126,7 +124,6 @@ const DeliveryAgent = () => {
 
   const handleGeofenceFilter = async (selectedService) => {
     try {
-      console.log(token);
       setIsTableLoading(true);
       const serviceResponse = await axios.get(
         `${BASE_URL}/admin/agents/filter`,
@@ -160,7 +157,6 @@ const DeliveryAgent = () => {
 
   const handleStatusFilter = async (selectedService) => {
     try {
-      console.log(token);
       setIsTableLoading(true);
       const serviceResponse = await axios.get(
         `${BASE_URL}/admin/agents/filter`,
@@ -191,6 +187,7 @@ const DeliveryAgent = () => {
       setAgent([]);
     }
   };
+
   const handleVehicleTypeFilter = async (selectedService) => {
     try {
       console.log(token);
@@ -227,7 +224,7 @@ const DeliveryAgent = () => {
   const handleSearchChangeFilter = async (searchService) => {
     try {
       setIsTableLoading(true);
-      console.log(token);
+
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/agents/search`,
         {
@@ -379,7 +376,7 @@ const DeliveryAgent = () => {
   const showAddModal = () => setAddModalVisible(true);
   const handleModalApprove = () => setIsModalApproval(true);
   const handleModalReject = () => setIsModalReject(true);
-  const showCSVModal = () => setIsCSVModalVisible(true);
+  // const showCSVModal = () => setIsCSVModalVisible(true);
 
   const handleCancel = () => {
     setAddModalVisible(false);
@@ -413,6 +410,51 @@ const DeliveryAgent = () => {
     }
   };
 
+  const handleDownloadCSV = async (e) => {
+    try {
+      setCSVDownloadLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/agents/download-agent-csv`,
+        {
+          params: {
+            geofenceFilter,
+            statusFilter,
+            vehicleTypeFilter,
+            searchFilter,
+          },
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Create a URL for the file and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Customer_Data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while downloading CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setCSVDownloadLoading(false);
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -430,11 +472,11 @@ const DeliveryAgent = () => {
               <div className="flex space-x-2 justify-end ">
                 <button
                   className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
-                  onClick={showCSVModal}
+                  onClick={handleDownloadCSV}
                 >
                   <ArrowDownOutlined /> <span>CSV</span>
                 </button>
-                <Modal
+                {/* <Modal
                   open={isCSVModalVisible}
                   footer={null}
                   width="30rem"
@@ -466,7 +508,7 @@ const DeliveryAgent = () => {
                       </button>
                     </div>
                   </div>
-                </Modal>
+                </Modal> */}
                 <Link to="/agent-payout">
                   <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
                     <FaIndianRupeeSign /> Agent Payout
@@ -504,8 +546,10 @@ const DeliveryAgent = () => {
                   <option hidden value="">
                     Status
                   </option>
-                  <option value="open">True</option>
-                  <option value="closed">False</option>
+                  <option value="all">All</option>
+                  <option value="Free">Free</option>
+                  <option value="Busy">Busy</option>
+                  <option value="Inactive">Inactive</option>
                 </select>
 
                 <select
@@ -517,6 +561,7 @@ const DeliveryAgent = () => {
                   <option hidden value="">
                     Vehicle Type
                   </option>
+                  <option value="all">All</option>
                   <option value="Scooter">Scooter</option>
                   <option value="Bike">Bike</option>
                 </select>
@@ -530,6 +575,7 @@ const DeliveryAgent = () => {
                   <option hidden value="">
                     Geofence
                   </option>
+                  <option value="all">All</option>
                   {geofence.map((geoFence) => (
                     <option value={geoFence._id} key={geoFence._id}>
                       {geoFence.name}

@@ -24,6 +24,7 @@ const Customers = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
 
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
@@ -217,6 +218,46 @@ const Customers = () => {
     }
   };
 
+  const handleDownloadCSV = async (e) => {
+    try {
+      setCSVDownloadLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/customers/download-customer-csv`,
+        {
+          params: { geofenceId: geofenceFilter },
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Create a URL for the file and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Customer_Data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while downloading CSV file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setCSVDownloadLoading(false);
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -267,17 +308,18 @@ const Customers = () => {
                     </p>
                   </div>
                   <div>
-                    <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white cursor-pointer">
-                      <CSVLink
-                        data={customers}
-                        headers={allCustomerCSVDataHeading}
-                        filename={"All_Customer_Data.csv"}
-                      >
-                        <div className="flex gap-2 hover:text-white">
-                          <TbArrowsSort className="text-[22px]" />
-                          Download
+                    <button
+                      onClick={handleDownloadCSV}
+                      className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white cursor-pointer"
+                    >
+                      {CSVDownloadLoading ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <div className="flex items-center gap-[10px]">
+                          <ArrowDownOutlined size={10} />
+                          <span>Download CSV</span>
                         </div>
-                      </CSVLink>
+                      )}
                     </button>
                   </div>
 
