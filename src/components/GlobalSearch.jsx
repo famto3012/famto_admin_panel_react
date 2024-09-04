@@ -1,12 +1,22 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { IoMdLogOut } from "react-icons/io";
-import { CgBell } from "react-icons/cg";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { useSoundContext } from "../context/SoundContext";
+import { initializeApp } from "firebase/app";
+import { getMessaging, onMessage } from "firebase/messaging";
+import { Avatar, AvatarBadge } from "@chakra-ui/react";
+import { BellIcon } from "@chakra-ui/icons";
 
 const GlobalSearch = () => {
   const { setToken, setRole } = useContext(UserContext);
+  const {
+    playNewOrderNotificationSound,
+    playNewNotificationSound,
+    setShowBadge,
+    showBadge,
+  } = useSoundContext();
 
   const navigate = useNavigate();
 
@@ -17,9 +27,75 @@ const GlobalSearch = () => {
     navigate("/auth/login");
   };
 
+  const handleNotificationLog = () => {
+    navigate("/notification-log");
+    setShowBadge(false);
+  };
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
+    authDomain: "famto-aa73e.firebaseapp.com",
+    projectId: "famto-aa73e",
+    storageBucket: "famto-aa73e.appspot.com",
+    messagingSenderId: "773492185977",
+    appId: "1:773492185977:web:e425f759d3c13e8c2c2da8",
+    measurementId: "G-TZ0J50H36P",
+  };
+
+  const handleNotification = (payload) => {
+    if (payload.notification.title === "New Order") {
+      console.log("New order sound");
+      playNewOrderNotificationSound();
+    } else {
+      console.log("New Notification sound");
+      playNewNotificationSound();
+    }
+    // addNotificationToTable(payload.notification);
+  };
+
+  useEffect(() => {
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "NOTIFICATION_RECEIVED") {
+        const payload = event.data.payload;
+        handleNotification(payload);
+      }
+    });
+
+    // Handle messages when the app is in the foreground
+    onMessage(messaging, (payload) => {
+      console.log("Received foreground message ", payload);
+      handleNotification(payload);
+      setShowBadge(true);
+    });
+  }, []);
+
   return (
     <div className="flex items-center justify-end gap-[20px]">
-      <CgBell className="text-gray-500 text-xl" />
+      <Avatar
+        icon={
+          <BellIcon
+            color={"gray.400"}
+            boxSize="1em"
+            onClick={handleNotificationLog}
+            style={{ cursor: "pointer" }}
+          />
+        }
+        bg={"blue.30"}
+      >
+        {showBadge && (
+          <AvatarBadge
+            boxSize="0.5em"
+            bg="red.500"
+            borderColor="transparent"
+            position="absolute"
+            top="8"
+            right="4"
+            transform="translate(50%, -50%)"
+          />
+        )}
+      </Avatar>
       <div className="relative">
         <input
           type="search"

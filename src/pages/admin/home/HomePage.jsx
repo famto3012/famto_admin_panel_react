@@ -21,6 +21,7 @@ import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
 import "react-calendar/dist/Calendar.css";
 import { formatDate } from "../../../utils/formatter";
+import { useSoundContext } from "../../../context/SoundContext";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -47,6 +48,20 @@ const HomePage = () => {
     }
   };
 
+  const { playNewOrderNotificationSound, playNewNotificationSound } =
+  useSoundContext();
+
+  const handleNotification = (payload) => {
+    if (payload.notification.title === "New Order") {
+      console.log("New order sound")
+      playNewOrderNotificationSound();
+    } else {
+      console.log("New Notification sound")
+      playNewNotificationSound();
+    }
+    // addNotificationToTable(payload.notification);
+  };
+
   const { token, role, userId, setFcmToken, username } =
     useContext(UserContext);
   const toast = useToast();
@@ -71,18 +86,19 @@ const HomePage = () => {
     });
 
     if(role === "Admin"){
-      socket.emit("getRealTimeDataOnRefresh", "");
+      socket?.emit("getRealTimeDataOnRefresh", "");
     }else{
       const data = {
         id: userId,
         role: role
       }
-        socket.emit("getRealTimeDataOnRefreshMerchant", data);
+        socket?.emit("getRealTimeDataOnRefreshMerchant", data);
     }
 
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received:", payload);
+      handleNotification(payload)
       const { title, body } = payload.notification;
       if (Notification.permission === "granted") {
         new Notification(title, { body });

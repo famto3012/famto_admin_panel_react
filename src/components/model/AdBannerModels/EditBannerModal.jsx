@@ -71,9 +71,16 @@ const EditBannerModal = ({
 
   const handleSelectImage = (e) => {
     const file = e.target.files[0];
+    console.log("File", file)
     setSelectedFile(file);
     setBannerPreviewURL(URL.createObjectURL(file));
+    console.log("Banner preview url", URL.createObjectURL(file))
   };
+
+  useEffect(() => {
+    console.log("Banner preview url", bannerPreviewURL)
+    console.log("Selected File", selectedFile)
+  }, [bannerPreviewURL, selectedFile])
 
   const saveAction = async (e) => {
     e.preventDefault();
@@ -88,7 +95,7 @@ const EditBannerModal = ({
       dataToSend.append("name", appBanner.name);
       dataToSend.append("merchantId", appBanner.merchantId);
       dataToSend.append("geofenceId", appBanner.geofenceId);
-      dataToSend.append("imageUrl", appBanner.imageUrl);
+      // dataToSend.append("imageUrl", appBanner.imageUrl);
       if (selectedFile) {
         dataToSend.append("bannerImage", selectedFile);
       }
@@ -149,7 +156,7 @@ const EditBannerModal = ({
       footer={null}
       centered
     >
-      <form onSubmit={saveAction}>
+      <form onSubmit={saveAction} autoComplete="off">
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="name" className="w-1/3">
