@@ -555,59 +555,73 @@ const Orders = () => {
                   <tr
                     key={order._id}
                     className={`align-middle border-b border-gray-300 ${
-                      order.orderStatus === "Pending"
+                      order.orderStatus === "Pending" && deliveryOption
                         ? "bg-red-500 text-white"
                         : "text-black"
                     }`}
                   >
-                    <td className="p-4 underline underline-offset-2">
-                      <Link to={`/order-details/${order._id}`}>
-                        #{order._id}
-                      </Link>
+                    <td
+                      className={` ${
+                        deliveryOption && `underline underline-offset-2`
+                      } p-4`}
+                    >
+                      {deliveryOption ? (
+                        <Link to={`/order-details/${order._id}`}>
+                          #{order._id}
+                        </Link>
+                      ) : (
+                        <>#{order._id}</>
+                      )}
                     </td>
                     <td className="p-4 w-[120px]">
                       <div className="flex space-x-4 justify-center">
-                        <>
-                          {order.orderStatus === "Completed" && (
-                            <p className=" text-green-500 font-[600]">
-                              Completed
-                            </p>
-                          )}
+                        {deliveryOption && (
+                          <>
+                            {order.orderStatus === "Completed" && (
+                              <p className=" text-green-500 font-[600]">
+                                Completed
+                              </p>
+                            )}
 
-                          {order.orderStatus === "Cancelled" && (
-                            <p className=" text-red-500 font-[600]">
-                              Cancelled
-                            </p>
-                          )}
+                            {order.orderStatus === "Cancelled" && (
+                              <p className=" text-red-500 font-[600]">
+                                Cancelled
+                              </p>
+                            )}
 
-                          {order.orderStatus === "On-going" && (
-                            <p className=" text-orange-500 font-[600]">
-                              On-going
-                            </p>
-                          )}
+                            {order.orderStatus === "On-going" && (
+                              <p className=" text-orange-500 font-[600]">
+                                On-going
+                              </p>
+                            )}
 
-                          {order.orderStatus === "Pending" && (
-                            <>
-                              {orderActionLoading[order._id] ? (
-                                <Spinner size={"sm"} />
-                              ) : (
-                                <>
-                                  <CheckCircleOutlined
-                                    className="text-2xl cursor-pointer text-white"
-                                    onClick={() =>
-                                      handleConfirmOrder(order._id)
-                                    }
-                                  />
+                            {order.orderStatus === "Pending" && (
+                              <>
+                                {orderActionLoading[order._id] ? (
+                                  <Spinner size={"sm"} />
+                                ) : (
+                                  <>
+                                    <CheckCircleOutlined
+                                      className="text-2xl cursor-pointer text-white"
+                                      onClick={() =>
+                                        handleConfirmOrder(order._id)
+                                      }
+                                    />
 
-                                  <CloseCircleOutlined
-                                    className="text-2xl cursor-pointer text-white"
-                                    onClick={() => handleRejectOrder(order._id)}
-                                  />
-                                </>
-                              )}
-                            </>
-                          )}
-                        </>
+                                    <CloseCircleOutlined
+                                      className="text-2xl cursor-pointer text-white"
+                                      onClick={() =>
+                                        handleRejectOrder(order._id)
+                                      }
+                                    />
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </>
+                        )}
+
+                        {!deliveryOption && order.orderStatus}
                       </div>
                     </td>
                     <td className="py-4 w-[200px] text-center">

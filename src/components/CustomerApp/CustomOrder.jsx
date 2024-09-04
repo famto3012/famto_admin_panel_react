@@ -430,7 +430,7 @@ const CustomerOrder = () => {
       <Spin spinning={isLoading} size="large">
         <div className="grid justify-end ml-[20rem] xl:grid-cols-2 grid-cols-1">
           {banner?.map((banner) => (
-            <div className="  mt-10">
+            <div className="  mt-10" key={banner._id}>
               <Card className="max-w-[23rem]">
                 <p className="font-semibold">{banner.title}</p>
                 <p>{banner.description}</p>

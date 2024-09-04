@@ -345,10 +345,10 @@ const Commissionlog = () => {
                       >
                         <td>
                           <Link
-                            to={`/order-details/${orderId}`}
+                            to={`/order-details/${commissionlog?.orderId}`}
                             className="underline underline-offset-4 px-4"
                           >
-                            {commissionlog.orderId}
+                            {commissionlog?.orderId}
                           </Link>
                         </td>
                         <td className="px-4">{commissionlog.merchantName}</td>
