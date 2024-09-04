@@ -19,7 +19,7 @@ const Notificationlog = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { socket } = useSocket();
-  const { playNewOrderNotificationSound, playNewNotificationSound } =
+  const { playNewOrderNotificationSound, playNewNotificationSound, setShowBadge } =
     useSoundContext();
   const toast = useToast();
 
@@ -39,12 +39,15 @@ const Notificationlog = () => {
     } else if (role === "Merchant") {
       getMerchantNotificationLog(page, limit);
     }
+    setShowBadge(false)
   }, [page, limit, role]);
 
   const handleNotification = (payload) => {
     if (payload.notification.title === "New Order") {
+      console.log("New order sound")
       playNewOrderNotificationSound();
     } else {
+      console.log("New Notification sound")
       playNewNotificationSound();
     }
     // addNotificationToTable(payload.notification);
@@ -53,23 +56,6 @@ const Notificationlog = () => {
   useEffect(() => {
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
-
-    // socket?.on("pushNotification", async (data) => {
-    //   await playNewNotificationSound();
-    //   addNotificationToTable(data);
-    // });
-    // socket?.on("alertNotification", async (data) => {
-    //   await playNewNotificationSound();
-    //   addNotificationToTable(data);
-    // });
-    // socket?.on("newOrderCreated", async (data) => {
-    //   await playNewOrderNotificationSound();
-    //   addNotificationToTable(data);
-    // });
-    // socket?.on("alertNotification", async (data) => {
-    //   await playNewOrderNotificationSound();
-    //   addNotificationToTable(data);
-    // });
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data && event.data.type === "NOTIFICATION_RECEIVED") {
         const payload = event.data.payload;
@@ -80,8 +66,8 @@ const Notificationlog = () => {
     // Handle messages when the app is in the foreground
     onMessage(messaging, (payload) => {
       console.log("Received foreground message ", payload);
-      handleNotification(payload);
       addNotificationToTable(payload);
+      handleNotification(payload);
     });
   }, [socket]);
 

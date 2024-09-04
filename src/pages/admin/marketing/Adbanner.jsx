@@ -42,6 +42,8 @@ const Adbanner = () => {
   const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] =
     useState(false);
 
+    
+
   //api connections
 
   useEffect(() => {

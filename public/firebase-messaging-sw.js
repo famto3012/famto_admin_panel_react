@@ -20,10 +20,10 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve firebase messaging
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
+messaging.onBackgroundMessage((payload) => {
   const { playNewOrderNotificationSound, playNewNotificationSound } =
     useSoundContext();
-  // console.log("Received background message ", payload);
+  //console.log("Received background message ", payload);
 
   self.clients.matchAll().then((clients) => {
     clients.forEach((client) =>
@@ -34,11 +34,11 @@ messaging.onBackgroundMessage(function (payload) {
     );
   });
 
-  if (
-    payload.notification.title === "New Order" 
-  ) {
+  if (payload.notification.title === "New Order") {
+    console.log("Background Sound");
     playNewOrderNotificationSound();
   } else {
+    console.log("Background Sound");
     playNewNotificationSound();
   }
   // Customize notification here
