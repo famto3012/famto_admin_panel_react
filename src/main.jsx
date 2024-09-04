@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
+import "./App.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import UserProvider from "./context/UserContext.jsx";
 import { createTheme, ThemeProvider } from "@mui/material";

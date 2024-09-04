@@ -9,7 +9,14 @@ import { mappls } from "mappls-web-maps";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { Modal } from "antd";
-import { Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useToast,
+} from "@chakra-ui/react";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Geofence = () => {
@@ -19,30 +26,26 @@ const Geofence = () => {
   const [geofences, setGeofences] = useState([]);
   const [visibleDeleteModal, setVisibleDeleteModal] = useState({});
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const toast = useToast()
+  const toast = useToast();
 
   const [authToken, setAuthToken] = useState("");
 
+  const getAuthToken = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const getAuthToken = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 200) {
-          setAuthToken(response.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in getting auth token`);
+      if (response.status === 200) {
+        setAuthToken(response.data.data);
       }
-    };
-
-   
- 
+    } catch (err) {
+      console.log(`Error in getting auth token`);
+    }
+  };
 
   useEffect(() => {
     getAuthToken();
@@ -53,7 +56,7 @@ const Geofence = () => {
 
   useEffect(() => {
     if (geofences.length >= 0) {
-      console.log("Token", authToken)
+      console.log("Token", authToken);
       const mapProps = {
         center: [8.528818999999999, 76.94310683333333],
         traffic: true,
@@ -64,33 +67,30 @@ const Geofence = () => {
 
       console.log("Mappls", mapplsClassObject);
 
-      mapplsClassObject.initialize(
-        `${authToken}`,
-        async () => {
-          if (mapContainerRef.current) {
-            console.log("Initializing map...");
-            const map = await mapplsClassObject.Map({
-              id: "map",
-              properties: mapProps,
-            });
+      mapplsClassObject.initialize(`${authToken}`, async () => {
+        if (mapContainerRef.current) {
+          console.log("Initializing map...");
+          const map = await mapplsClassObject.Map({
+            id: "map",
+            properties: mapProps,
+          });
 
-            if (map && typeof map.on === "function") {
-              console.log("Map initialized successfully.");
-              map.on("load", async () => {
-                console.log("Map loaded.");
-                setMapObject(map);
-                setIsMapLoaded(true);
-              });
-            } else {
-              console.error(
-                "mapObject.on is not a function or mapObject is not defined"
-              );
-            }
+          if (map && typeof map.on === "function") {
+            console.log("Map initialized successfully.");
+            map.on("load", async () => {
+              console.log("Map loaded.");
+              setMapObject(map);
+              setIsMapLoaded(true);
+            });
           } else {
-            console.error("Map container not found");
+            console.error(
+              "mapObject.on is not a function or mapObject is not defined"
+            );
           }
+        } else {
+          console.error("Map container not found");
         }
-      );
+      });
     }
   }, [geofences]);
 
@@ -117,7 +117,7 @@ const Geofence = () => {
         },
       })),
     };
-    console.log("geoJSON", geoJSON)
+    console.log("geoJSON", geoJSON);
 
     useEffect(() => {
       if (geoJsonRef.current) {
@@ -135,7 +135,6 @@ const Geofence = () => {
 
   const getAllGeofence = async () => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/geofence/get-geofence`,
         {
@@ -151,8 +150,8 @@ const Geofence = () => {
     }
   };
 
-  const handleDelete = async(id)=>{
-    try{
+  const handleDelete = async (id) => {
+    try {
       const deleteResponse = await axios.delete(
         `${BASE_URL}/admin/geofence/delete-geofence/${id}`,
         {
@@ -168,10 +167,10 @@ const Geofence = () => {
           isClosable: true,
         });
       }
-    }catch(err){
+    } catch (err) {
       console.log("Error in deleting geofence: ", err.message);
     }
-  }
+  };
 
   const showModalDeleteTask = (taskId) => {
     setVisibleDeleteModal((prev) => ({ ...prev, [taskId]: true }));
@@ -208,14 +207,14 @@ const Geofence = () => {
                 className="bg-zinc-100 mt-5 flex hover:bg-teal-800 hover:text-white"
                 key={data._id}
               >
-                <div className="flex justify-evenly mx-5">
+                <div className="flex mx-5">
                   <div className="flex items-center">
                     <p
                       className="rounded-full p-4 text-white"
                       style={{ backgroundColor: data.color }}
                     ></p>
                   </div>
-                  <div>
+                  <div className="flex flex-col flex-grow">
                     <CardBody>
                       <Typography variant="h5" color="blue-gray" className="">
                         {data.name}
@@ -229,14 +228,12 @@ const Geofence = () => {
                         <MoreHorizOutlinedIcon />
                       </MenuButton>
                       <MenuList>
-                        <MenuItem>
-                          <Link
-                            className="text-black "
-                            to={`/edit-geofence?id=${data._id}`}
-                          >
-                            Edit
-                          </Link>
-                        </MenuItem>
+                        <Link
+                          className="text-black "
+                          to={`/edit-geofence?id=${data._id}`}
+                        >
+                          <MenuItem>Edit</MenuItem>
+                        </Link>
                         <MenuItem
                           className="text-black"
                           onClick={() => showModalDeleteTask(data._id)}
@@ -268,8 +265,9 @@ const Geofence = () => {
                     </button>
                     <button
                       className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                      onClick={()=>{handleDelete(data._id)
-                        showModalDeleteCancelTask(data._id)
+                      onClick={() => {
+                        handleDelete(data._id);
+                        showModalDeleteCancelTask(data._id);
                       }}
                     >
                       Delete

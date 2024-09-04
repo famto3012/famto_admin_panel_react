@@ -4,6 +4,8 @@ import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
 import { UserContext } from "./context/UserContext";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import "./fonts.css";
+import "./App.css";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));

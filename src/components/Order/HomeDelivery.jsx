@@ -274,6 +274,8 @@ const HomeDelivery = ({ data }) => {
         items: formattedItems,
       };
 
+      console.log("INVOICE DATA", invoiceData);
+
       const endPoint =
         role === "Admin"
           ? `${BASE_URL}/orders/admin/create-order-invoice`

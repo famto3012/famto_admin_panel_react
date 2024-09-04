@@ -145,11 +145,9 @@ const PromoCode = () => {
         );
       }
     } catch (err) {
-      console.error(`Error in toggling discount status: ${err.message}`);
-      // Optionally show an error toast notification
       toast({
         title: "Error",
-        description: "Failed to update Promo code status.",
+        description: "Failed to update Promo code status",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -263,8 +261,8 @@ const PromoCode = () => {
                 />
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="overflow-x-auto p-5 w-full">
+            <div className="overflow-x-auto overflow-element">
+              <table className="p-5 w-full">
                 <thead>
                   <tr className="p-10 w-full">
                     {[
@@ -293,24 +291,21 @@ const PromoCode = () => {
                 <tbody>
                   {allPromocode?.map((data, index) => (
                     <tr
-                      className="text-center bg-white w-fit px-24 h-20"
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
-                      }}
+                      className="text-center odd:bg-white w-fit px-24 h-20"
                       key={data._id}
                     >
-                      <td>{data.promoCode}</td>
-                      <td>{data.promoType}</td>
-                      <td>{data.discount}</td>
-                      <td>{data.maxDiscountValue}</td>
-                      <td>{data.minOrderAmount}</td>
-                      <td>{formatDate(data.fromDate)}</td>
-                      <td>{formatDate(data.toDate)}</td>
-                      <td>{data.description}</td>
-                      <td>{data.applicationMode}</td>
-                      <td>{data.appliedOn}</td>
-                      <td>{data.noOfUserUsed}</td>
-                      <td>
+                      <td className="px-5">{data.promoCode}</td>
+                      <td className="px-5">{data.promoType}</td>
+                      <td className="px-5">{data.discount}</td>
+                      <td className="px-5">{data.maxDiscountValue}</td>
+                      <td className="px-5">{data.minOrderAmount}</td>
+                      <td className="px-5">{formatDate(data.fromDate)}</td>
+                      <td className="px-5">{formatDate(data.toDate)}</td>
+                      <td className="px-5">{data.description}</td>
+                      <td className="px-5">{data.applicationMode}</td>
+                      <td className="px-5">{data.appliedOn}</td>
+                      <td className="px-5">{data.noOfUserUsed}</td>
+                      <td className="px-5">
                         <div className="flex gap-3 items-center">
                           <div>
                             <Switch

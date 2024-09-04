@@ -383,7 +383,7 @@ const CustomerDetails = () => {
 
           <div className="mt-10">
             <h4 className="text-gray-700 mx-11 font-bold">Address</h4>
-            <div className="flex gap-[30px] ms-11 my-5 max-w-[800px] overflow-x-auto">
+            <div className="flex gap-[30px] ms-11 my-5 max-w-[800px] overflow-x-auto overflow-element">
               <div className="min-w-[180px] px-2 group relative">
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold bg-gray-200 py-1 px-2 rounded-md">
