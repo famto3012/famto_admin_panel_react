@@ -431,7 +431,7 @@ const DeliveryManagement = () => {
             properties: { ...markerProps, popupHtml: htmlPopup },
           });
           await agentMarker.setIcon(
-            "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+            "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fgoride%20icon.svg?alt=media&token=71896ad1-d821-4ccd-996c-f3131fd09404"
           );
           await agentMarker.setPopup(htmlPopup);
         } catch (error) {
@@ -520,7 +520,7 @@ const DeliveryManagement = () => {
           properties: { ...markerProps, popupHtml: htmlPopup },
         });
         await agentMarker.setIcon(
-          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319913.svg?alt=media&token=b57902c6-aa15-45f4-a825-978dce404687"
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fshop-svgrepo-com.svg?alt=media&token=1da55e13-4b6e-477b-98ed-8024cfb89f24"
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);
@@ -573,7 +573,7 @@ const DeliveryManagement = () => {
           properties: { ...markerProps, popupHtml: htmlPopup },
         });
         await agentMarker.setIcon(
-          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/Group%20427319784.svg?alt=media&token=5c0f0c9d-fdd5-4927-8428-4a65e91825af"
+          "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fgoride%20icon.svg?alt=media&token=71896ad1-d821-4ccd-996c-f3131fd09404"
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);

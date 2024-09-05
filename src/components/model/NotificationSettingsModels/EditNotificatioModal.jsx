@@ -3,6 +3,7 @@ import { Modal, Switch } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSoundContext } from "../../../context/SoundContext";
 
 const EditNotificatioModal = ({
   isVisible,
@@ -16,6 +17,8 @@ const EditNotificatioModal = ({
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setDataLoading] = useState(false);
+  const { setNewOrder, setOrderRejected, setScheduledOrder } =
+    useSoundContext();
   const [formData, setFormData] = useState({
     event: "",
     description: "",
@@ -89,6 +92,13 @@ const EditNotificatioModal = ({
           duration: 3000,
           isClosable: true,
         });
+        if (editResponse.data.data.event === "newOrderCreated") {
+          setNewOrder(editResponse.data.data.title);
+        } else if (editResponse.data.data.event === "orderRejected") {
+          setOrderRejected(editResponse.data.data.title);
+        } else if (editResponse.data.data.event === "scheduledOrderCreated") {
+          setScheduledOrder(editResponse.data.data.title);
+        }
       }
     } catch (err) {
       console.log(`Error in fetching data:${err}`);
@@ -123,7 +133,7 @@ const EditNotificatioModal = ({
               type="text"
               id="event"
               name="event"
-              placeholder={isLoading? "Loading data..." : ""}
+              placeholder={isLoading ? "Loading data..." : ""}
               value={formData.event}
               onChange={handleInputChange}
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"

@@ -19,8 +19,14 @@ const Notificationlog = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { socket } = useSocket();
-  const { playNewOrderNotificationSound, playNewNotificationSound, setShowBadge } =
-    useSoundContext();
+  const {
+    playNewOrderNotificationSound,
+    playNewNotificationSound,
+    setShowBadge,
+    newOrder,
+    orderRejected,
+    scheduledOrder,
+  } = useSoundContext();
   const toast = useToast();
 
   const firebaseConfig = {
@@ -39,15 +45,19 @@ const Notificationlog = () => {
     } else if (role === "Merchant") {
       getMerchantNotificationLog(page, limit);
     }
-    setShowBadge(false)
+    setShowBadge(false);
   }, [page, limit, role]);
 
   const handleNotification = (payload) => {
-    if (payload.notification.title === "New Order") {
-      console.log("New order sound")
+    if (
+      payload.notification.title === newOrder ||
+      payload.notification.title === orderRejected ||
+      payload.notification.title === scheduledOrder
+    ) {
+      console.log("New order sound");
       playNewOrderNotificationSound();
     } else {
-      console.log("New Notification sound")
+      console.log("New Notification sound");
       playNewNotificationSound();
     }
     // addNotificationToTable(payload.notification);
@@ -99,7 +109,7 @@ const Notificationlog = () => {
       );
       if (response.status === 200) {
         setTableData(response.data.data);
-        console.log(response.data.data)
+        console.log(response.data.data);
         setPagination(response.data);
       }
     } catch (err) {
@@ -125,7 +135,7 @@ const Notificationlog = () => {
       );
       if (response.status === 200) {
         setTableData(response.data.data);
-        console.log(response.data.data)
+        console.log(response.data.data);
         setPagination(response.data);
       }
     } catch (err) {
@@ -192,11 +202,14 @@ const Notificationlog = () => {
                   <td className="p-2 flex items-center justify-center">
                     {table.orderId ? (
                       table.orderId
-                    ) : (
+                    ) : table.imageUrl ? (
                       <img
                         className="w-[150px] h-[80px]"
                         src={table.imageUrl}
+                        alt="Order Image"
                       />
+                    ) : (
+                      <span>-</span>
                     )}
                   </td>
                   <td className="mt-2">
