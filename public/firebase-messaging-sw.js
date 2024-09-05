@@ -34,7 +34,7 @@ messaging.onBackgroundMessage((payload) => {
     );
   });
 
-  if (payload.notification.title === "New Order") {
+  if (payload.notification.title === "New Order" || payload.notification.title === "Order Rejected") {
     console.log("Background Sound");
     playNewOrderNotificationSound();
   } else {

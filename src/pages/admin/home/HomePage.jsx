@@ -37,26 +37,35 @@ const HomePage = () => {
   const { socket } = useSocket();
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
-    if(event.target.value === "sales"){
-      setData(sales)
-    }else if(event.target.value === "merchants"){
-      setData(merchants)
-    }else if(event.target.value === "subscription"){
-      setData(subscription)
-    }else if(event.target.value === "commission"){
-      setData(commission)
+    if (event.target.value === "sales") {
+      setData(sales);
+    } else if (event.target.value === "merchants") {
+      setData(merchants);
+    } else if (event.target.value === "subscription") {
+      setData(subscription);
+    } else if (event.target.value === "commission") {
+      setData(commission);
     }
   };
 
-  const { playNewOrderNotificationSound, playNewNotificationSound } =
-  useSoundContext();
+  const {
+    playNewOrderNotificationSound,
+    playNewNotificationSound,
+    newOrder,
+    orderRejected,
+    scheduledOrder,
+  } = useSoundContext();
 
   const handleNotification = (payload) => {
-    if (payload.notification.title === "New Order") {
-      console.log("New order sound")
+    if (
+      payload.notification.title === newOrder ||
+      payload.notification.title === orderRejected ||
+      payload.notification.title === scheduledOrder
+    ) {
+      console.log("New order sound");
       playNewOrderNotificationSound();
     } else {
-      console.log("New Notification sound")
+      console.log("New Notification sound");
       playNewNotificationSound();
     }
     // addNotificationToTable(payload.notification);
@@ -85,20 +94,19 @@ const HomePage = () => {
       }, 1000);
     });
 
-    if(role === "Admin"){
+    if (role === "Admin") {
       socket?.emit("getRealTimeDataOnRefresh", "");
-    }else{
+    } else {
       const data = {
         id: userId,
-        role: role
-      }
-        socket?.emit("getRealTimeDataOnRefreshMerchant", data);
+        role: role,
+      };
+      socket?.emit("getRealTimeDataOnRefreshMerchant", data);
     }
-
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received:", payload);
-      handleNotification(payload)
+      handleNotification(payload);
       const { title, body } = payload.notification;
       if (Notification.permission === "granted") {
         new Notification(title, { body });
@@ -219,7 +227,7 @@ const HomePage = () => {
         role === "Admin"
           ? `${BASE_URL}/admin/home/home-screen-sale-data`
           : `${BASE_URL}/admin/home/home-screen-sale-data-merchant`;
-      console.log("Start", formattedStartDate, "End", formattedEndDate)
+      console.log("Start", formattedStartDate, "End", formattedEndDate);
       const response = await axios.get(endpoint, {
         params: { startDate: formattedStartDate, endDate: formattedEndDate },
         withCredentials: true,
@@ -255,12 +263,11 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-   console.log("sales", sales)
-   console.log("merchants", merchants)
-   console.log("commission", commission)
-   console.log("subscription", subscription)
-  }, [sales,merchants,commission,subscription])
-
+    console.log("sales", sales);
+    console.log("merchants", merchants);
+    console.log("commission", commission);
+    console.log("subscription", subscription);
+  }, [sales, merchants, commission, subscription]);
 
   const valueFormatter = (value) => {
     return new Intl.NumberFormat("en-IN", {
@@ -395,7 +402,9 @@ const HomePage = () => {
             <Card>
               <CardHeader pb="0">
                 <Heading as="h4" fontWeight="medium" size="md">
-                { selectedOption === "merchants" ? "Logins over time" : "Revenue over time"}
+                  {selectedOption === "merchants"
+                    ? "Logins over time"
+                    : "Revenue over time"}
                 </Heading>
               </CardHeader>
 
@@ -403,7 +412,9 @@ const HomePage = () => {
                 <LineChart
                   data={data}
                   categories={["Revenue"]}
-                  valueFormatter={selectedOption === "merchants" ? "" : valueFormatter}
+                  valueFormatter={
+                    selectedOption === "merchants" ? "" : valueFormatter
+                  }
                   yAxisWidth={80}
                   height="300px"
                   colors={["#115e59"]}

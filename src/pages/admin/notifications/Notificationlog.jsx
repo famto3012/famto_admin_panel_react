@@ -23,6 +23,9 @@ const Notificationlog = () => {
     playNewOrderNotificationSound,
     playNewNotificationSound,
     setShowBadge,
+    newOrder,
+    orderRejected,
+    scheduledOrder,
   } = useSoundContext();
   const toast = useToast();
 
@@ -46,7 +49,12 @@ const Notificationlog = () => {
   }, [page, limit, role]);
 
   const handleNotification = (payload) => {
-    if (payload.notification.title === "New Order") {
+
+    if (
+      payload.notification.title === newOrder ||
+      payload.notification.title === orderRejected ||
+      payload.notification.title === scheduledOrder
+    ) {
       console.log("New order sound");
       playNewOrderNotificationSound();
     } else {
@@ -74,9 +82,6 @@ const Notificationlog = () => {
     });
   }, [socket]);
 
-  // const addNotificationToTable = (newNotification) => {
-  //   setTableData((prevData) => [newNotification, ...prevData]);
-  // };
   const addNotificationToTable = (data) => {
     console.log("Data", data);
     const newNotification = {
@@ -195,11 +200,14 @@ const Notificationlog = () => {
                   <td className="p-2 flex items-center justify-center">
                     {table.orderId ? (
                       table.orderId
-                    ) : (
+                    ) : table.imageUrl ? (
                       <img
                         className="w-[150px] h-[80px]"
                         src={table.imageUrl}
+                        alt="Order Image"
                       />
+                    ) : (
+                      <span>-</span>
                     )}
                   </td>
                   <td className="mt-2">
