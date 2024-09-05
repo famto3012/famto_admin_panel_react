@@ -16,6 +16,9 @@ const GlobalSearch = () => {
     playNewNotificationSound,
     setShowBadge,
     showBadge,
+    newOrder,
+    orderRejected,
+    scheduledOrder,
   } = useSoundContext();
 
   const navigate = useNavigate();
@@ -43,8 +46,15 @@ const GlobalSearch = () => {
   };
 
   const handleNotification = (payload) => {
-    if (payload.notification.title === "New Order") {
+    if (
+      payload.notification.title === newOrder ||
+      payload.notification.title === orderRejected ||
+      payload.notification.title === scheduledOrder
+    ) {
       console.log("New order sound");
+      console.log("New order sound", newOrder);
+      console.log("New order sound", orderRejected);
+      console.log("New order sound", scheduledOrder);
       playNewOrderNotificationSound();
     } else {
       console.log("New Notification sound");
@@ -56,6 +66,9 @@ const GlobalSearch = () => {
   useEffect(() => {
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
+    console.log("New order sound", newOrder);
+    console.log("New order sound", orderRejected);
+    console.log("New order sound", scheduledOrder);
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data && event.data.type === "NOTIFICATION_RECEIVED") {
         const payload = event.data.payload;
