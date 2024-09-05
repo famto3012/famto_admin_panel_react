@@ -150,7 +150,6 @@ const Merchant = () => {
   useEffect(() => {
     const handleSearchMerchant = async () => {
       try {
-        setIsTableLoading(true);
         if (search.trim() !== "") {
           setIsTableLoading(true);
 

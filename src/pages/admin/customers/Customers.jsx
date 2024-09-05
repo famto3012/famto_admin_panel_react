@@ -9,9 +9,6 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import GIFLoader from "../../../components/GIFLoader";
 import { AiOutlineCloudUpload } from "react-icons/ai";
-import { TbArrowsSort } from "react-icons/tb";
-import { CSVLink } from "react-csv";
-import { allCustomerCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 import { Modal } from "antd";
 import { Spinner, useToast } from "@chakra-ui/react";
@@ -21,13 +18,13 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [allGeofence, setAllGeofence] = useState([]);
+  const [search, setSearch] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
 
   const [geofenceFilter, setGeofenceFilter] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
 
   const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
   const [selectedCSVFile, setSelectedCSVFile] = useState(null);
@@ -46,28 +43,20 @@ const Customers = () => {
       return;
     }
 
-    const fetchData = async () => {
+    const getAllGeofence = async () => {
       try {
         setIsLoading(true);
-
-        const [customersResponse, geofenceResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/customers/get-all`, {
+        const response = await axios.get(
+          `${BASE_URL}/admin/geofence/get-geofence`,
+          {
             params: { page, limit },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+          }
+        );
 
-        if (customersResponse.status === 200) {
-          setCustomers(customersResponse.data.data);
-          setPagination(customersResponse.data);
-        }
-        if (geofenceResponse.status === 200) {
-          setAllGeofence(geofenceResponse.data.geofences);
+        if (response.status === 200) {
+          setAllGeofence(response.data.geofences);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -76,11 +65,36 @@ const Customers = () => {
       }
     };
 
-    fetchData();
+    getAllCustomers();
+    getAllGeofence();
   }, [token, role, navigate, page, limit]);
 
   const showCSVModal = () => setIsCSVModalVisible(true);
   const handleCancel = () => setIsCSVModalVisible(false);
+
+  const getAllCustomers = async () => {
+    try {
+      setIsTableLoading(true);
+
+      const customersResponse = await axios.get(
+        `${BASE_URL}/admin/customers/get-all`,
+        {
+          params: { page, limit },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (customersResponse.status === 200) {
+        setCustomers(customersResponse.data.data);
+        setPagination(customersResponse.data);
+      }
+    } catch (err) {
+      console.error(`Error in fetching data: ${err}`);
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
 
   const handleFilterChange = async (filterType, value) => {
     try {
@@ -111,6 +125,55 @@ const Customers = () => {
     } finally {
       setIsTableLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const handleSearchCustomer = async () => {
+      try {
+        if (search.trim() !== "") {
+          setIsTableLoading(true);
+
+          const response = await axios.get(
+            `${BASE_URL}/admin/customers/search`,
+            {
+              params: { query: search, page, limit },
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (response.status === 200) {
+            setCustomers(response.data.data);
+            setPagination(response.data.pagination);
+          }
+        } else {
+          getAllCustomers();
+        }
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: `Error in searching customer`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
+    const timeOut = setTimeout(() => {
+      handleSearchCustomer();
+    }, 500);
+
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, [search, token, role, page, limit]);
+
+  const onSearch = (e) => {
+    let text = e.target.value;
+    setSearch(text);
   };
 
   const handlePageChange = (event, value) => {
@@ -350,14 +413,9 @@ const Customers = () => {
                 <FilterAltOutlined className="text-gray-400" />
                 <input
                   type="search"
-                  name="search"
                   placeholder="Search customer"
                   className="bg-gray-100 h-10 px-5 pr-2 rounded-full ml-4 w-72 text-sm focus:outline-none"
-                  value={searchFilter}
-                  onChange={(e) => {
-                    setSearchFilter(e.target.value);
-                    handleFilterChange("search", e.target.value);
-                  }}
+                  onChange={onSearch}
                 />
                 <button type="submit" className="absolute right-2 top-2">
                   <SearchOutlined className="text-xl text-gray-500" />

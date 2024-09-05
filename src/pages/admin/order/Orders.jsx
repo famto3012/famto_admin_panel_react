@@ -85,56 +85,63 @@ const Orders = () => {
       navigate("/auth/login");
     }
 
-    const getAllOrders = async () => {
-      try {
-        setIsTableLoading(true);
-        let endpoint;
-
-        if (role === "Admin" && deliveryOption === true) {
-          endpoint = `${BASE_URL}/orders/admin/all-orders`;
-        } else if (role === "Admin" && deliveryOption === false) {
-          endpoint = `${BASE_URL}/orders/admin/all-scheduled-orders`;
-        } else if (role === "Merchant" && deliveryOption === true) {
-          endpoint = `${BASE_URL}/orders/all-orders`;
-        } else if (role === "Merchant" && deliveryOption === false) {
-          endpoint = `${BASE_URL}/orders/all-scheduled-orders`;
-        }
-
-        const response = await axios.get(endpoint, {
-          params: { page, limit },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.status === 200) {
-          setOrders(response.data.data);
-          setPagination(response.data.pagination);
-        }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description: "An error occoured while getting all orders",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } finally {
-        setIsTableLoading(false);
-      }
-    };
-
     getAllOrders();
   }, [token, page, limit, role, deliveryOption]);
+
+  const getAllOrders = async () => {
+    try {
+      setIsTableLoading(true);
+      let endpoint;
+
+      if (role === "Admin" && deliveryOption === true) {
+        endpoint = `${BASE_URL}/orders/admin/all-orders`;
+      } else if (role === "Admin" && deliveryOption === false) {
+        endpoint = `${BASE_URL}/orders/admin/all-scheduled-orders`;
+      } else if (role === "Merchant" && deliveryOption === true) {
+        endpoint = `${BASE_URL}/orders/all-orders`;
+      } else if (role === "Merchant" && deliveryOption === false) {
+        endpoint = `${BASE_URL}/orders/all-scheduled-orders`;
+      }
+
+      const response = await axios.get(endpoint, {
+        params: { page, limit },
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        setOrders(response.data.data);
+        setPagination(response.data.pagination);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while getting all orders",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!orderStatus && !paymentMode && !deliveryMode) return;
     const filterHandler = async () => {
       try {
         setIsTableLoading(true);
-        let endpoint =
-          role === "Admin"
+
+        let endPoint;
+        if (role === "Admin") {
+          endPoint = deliveryOption
             ? `${BASE_URL}/orders/admin/filter`
-            : `${BASE_URL}/orders/filter`;
+            : `${BASE_URL}/orders/admin/filter-scheduled`;
+        } else if (role === "Merchant") {
+          endPoint = deliveryOption
+            ? `${BASE_URL}/orders/filter`
+            : `${BASE_URL}/orders/filter-scheduled`;
+        }
 
         const params = [];
         if (orderStatus) params.push(`status=${orderStatus}`);
@@ -142,10 +149,10 @@ const Orders = () => {
         if (deliveryMode) params.push(`deliveryMode=${deliveryMode}`);
 
         if (params.length > 0) {
-          endpoint += `?${params.join("&")}`;
+          endPoint += `?${params.join("&")}`;
         }
 
-        const response = await axios.get(endpoint, {
+        const response = await axios.get(endPoint, {
           params: { page, limit },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -177,12 +184,18 @@ const Orders = () => {
         if (search.trim() !== "") {
           setIsTableLoading(true);
 
-          const endpoint =
-            role === "Admin"
+          let endPoint;
+          if (role === "Admin") {
+            endPoint = deliveryOption
               ? `${BASE_URL}/orders/admin/search-order?query=${search}`
-              : `${BASE_URL}/orders/search?query=${search}`;
+              : `${BASE_URL}/orders/admin/search-scheduled-order?query=${search}`;
+          } else if (role === "Merchant") {
+            endPoint = deliveryOption
+              ? `${BASE_URL}/orders/search?query=${search}`
+              : `${BASE_URL}/orders/search-scheduled-order?query=${search}`;
+          }
 
-          const response = await axios.get(endpoint, {
+          const response = await axios.get(endPoint, {
             params: { page, limit },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -192,6 +205,8 @@ const Orders = () => {
             setOrders(response.data.data);
             setPagination(response.data.pagination);
           }
+        } else {
+          getAllOrders();
         }
       } catch (err) {
         toast({
@@ -570,7 +585,9 @@ const Orders = () => {
                           #{order._id}
                         </Link>
                       ) : (
-                        <>#{order._id}</>
+                        <Link to={`/order-details/${order._id}`}>
+                          #{order._id}
+                        </Link>
                       )}
                     </td>
                     <td className="p-4 w-[120px]">
