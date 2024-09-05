@@ -59,44 +59,34 @@ const DeliveryAgent = () => {
       return;
     }
 
-    const fetchAgent = async () => {
+    const fetchInitialData = async () => {
       try {
         setIsLoading(true);
 
-        const [
-          agentResponse,
-          geofenceResponse,
-          salaryResponse,
-          managerResponse,
-        ] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/agents/all-agents`, {
-            params: { page, limit },
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/managers`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const [geofenceResponse, salaryResponse, managerResponse] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/agent-pricing/get-all-agent-pricing`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/admin/managers`, {
+              withCredentials: true,
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
         if (salaryResponse.status === 200) {
           setSalary(salaryResponse.data.data);
         }
+
         if (managerResponse.status === 200) {
           setManager(managerResponse.data.data);
         }
-        if (agentResponse.status === 200) {
-          setAgent(agentResponse.data.data);
-          setPagination(agentResponse.data.pagination);
-        }
+
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
         }
@@ -107,11 +97,34 @@ const DeliveryAgent = () => {
       }
     };
 
-    fetchAgent();
+    fetchInitialData();
+    getAllAgents();
   }, [token, role, navigate, page, limit]);
 
-  // API function for Geofence filter
+  const getAllAgents = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/agents/all-agents`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+      if (response.status === 200) {
+        setAgent(response.data.data);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error in getting all agents",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // API function for Geofence filter
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
     setGeofenceFilter(selectedService);
@@ -217,7 +230,7 @@ const DeliveryAgent = () => {
     if (searchService !== "") {
       handleSearchChangeFilter(searchService);
     } else {
-      setAgent([]);
+      getAllAgents();
     }
   };
 
@@ -354,7 +367,7 @@ const DeliveryAgent = () => {
         );
         toast({
           title: "Success",
-          description: "Staus Updated successfully.",
+          description: "Staus Updated successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
