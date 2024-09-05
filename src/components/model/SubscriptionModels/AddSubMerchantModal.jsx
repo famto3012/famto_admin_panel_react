@@ -127,7 +127,7 @@ const AddSubMerchantModal = ({
                 Select tax
               </option>
               {tax.map((tax) => (
-                <option value={tax._id} key={tax._id}>
+                <option value={tax.taxId} key={tax.taxId}>
                   {tax.taxName}
                 </option>
               ))}

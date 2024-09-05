@@ -65,12 +65,11 @@ const EditGeofence = () => {
   const signupAction = (e) => {
     e.preventDefault();
     const location = { geofences, color };
-    console.log("Confirmed Location", location);
   };
 
   useEffect(() => {
     getAuthToken();
-    console.log("Token", authToken);
+
     const script = document.createElement("script");
     script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
     script.async = true;
@@ -86,10 +85,7 @@ const EditGeofence = () => {
       });
 
       if (map && typeof map.on === "function") {
-        console.log("Map initialized successfully.");
-
         map.on("load", () => {
-          console.log("Map loaded.");
           setMapObject(map);
           setIsMapLoaded(true);
 
@@ -100,17 +96,15 @@ const EditGeofence = () => {
             },
             function (data) {
               drawData = data;
-              console.log("Mappls Polygon Draw Data:", window.mappls);
+
               drawData.control(true);
               polyArray = drawData.data?.geometry.coordinates[0];
-              console.log("Draw Data:", data);
 
               const formattedCoordinates =
                 drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
                   lat,
                   lng,
                 ]);
-              console.log("Formatted Coordinates:", formattedCoordinates);
 
               setNewGeofence((prevState) => ({
                 ...prevState,
@@ -169,7 +163,6 @@ const EditGeofence = () => {
           return { lat, lng };
         })
         .filter((coord) => coord !== null);
-      console.log("path", pts);
 
       // Create the polygon
       const poly = window.mappls.Polygon({
@@ -188,8 +181,6 @@ const EditGeofence = () => {
         const newCoordinates = poly
           .getPath()[0]
           .map((point) => [point.lat, point.lng]);
-        // console.log("poly", poly.getPath()[0].map((point) => [point.lat, point.lng]))
-        console.log("newCoordinates", newCoordinates);
 
         setGeofences((prevState) => ({
           ...prevState,
@@ -206,7 +197,6 @@ const EditGeofence = () => {
 
   const editGeofence = async () => {
     try {
-      console.log("geofence", geofences);
       const editGeofenceResponse = await axios.put(
         `${BASE_URL}/admin/geofence/edit-geofence/${id}`,
         geofences,
@@ -224,7 +214,6 @@ const EditGeofence = () => {
         });
       }
     } catch (err) {
-      console.log("Error in updating geofence: ", err);
       toast({
         title: "Error",
         status: "error",
@@ -312,12 +301,10 @@ const EditGeofence = () => {
               </button>
               <button
                 type="submit"
-                onClick={
-                  editGeofence
-                }
+                onClick={editGeofence}
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
-                 Update
+                Update
               </button>
             </div>
           </div>

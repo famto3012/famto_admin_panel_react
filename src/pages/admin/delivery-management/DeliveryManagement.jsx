@@ -77,12 +77,10 @@ const DeliveryManagement = () => {
 
   useEffect(() => {
     socket.on("orderAccepted", ({ orderDetailStepper }) => {
-      console.log("Order accepted", orderDetailStepper);
       setActive(2);
     });
 
     socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
-      console.log("Agent reached delivery", orderDetailStepper);
       setActive(3);
     });
 
@@ -270,8 +268,6 @@ const DeliveryManagement = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 200) {
-        // const {data} = response.data;
-        console.log(response.data.data);
         setAllAgentData(response.data.data);
       }
     } catch (err) {
@@ -299,7 +295,6 @@ const DeliveryManagement = () => {
 
       if (response.status === 200) {
         setTaskData(response.data.data);
-        console.log(response.data.data);
       }
     } catch (err) {
       toast({
@@ -360,16 +355,13 @@ const DeliveryManagement = () => {
     if (allAgentData && authToken) {
       mapplsClassObject.initialize(`${authToken}`, async () => {
         if (mapContainerRef.current) {
-          console.log("Initializing map...");
           const map = await mapplsClassObject.Map({
             id: "map",
             properties: mapProps,
           });
 
           if (map && typeof map.on === "function") {
-            console.log("Map initialized successfully.");
             map.on("load", () => {
-              console.log("Map loaded.");
               setMapObject(map); // Save the map object to state
             });
           } else {
@@ -454,7 +446,7 @@ const DeliveryManagement = () => {
 
       if (response.status === 201) {
         setTaskData(response.data.data);
-        console.log(response.data.data);
+
         response.data.data.map((data) => {
           if (data?.orderId?.orderDetailStepper?.accepted) {
             setActive(2);

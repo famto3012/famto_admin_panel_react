@@ -19,18 +19,21 @@ const Notificationlog = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { socket } = useSocket();
-  const { playNewOrderNotificationSound, playNewNotificationSound, setShowBadge } =
-    useSoundContext();
+  const {
+    playNewOrderNotificationSound,
+    playNewNotificationSound,
+    setShowBadge,
+  } = useSoundContext();
   const toast = useToast();
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
-    authDomain: "famto-aa73e.firebaseapp.com",
-    projectId: "famto-aa73e",
-    storageBucket: "famto-aa73e.appspot.com",
-    messagingSenderId: "773492185977",
-    appId: "1:773492185977:web:e425f759d3c13e8c2c2da8",
-    measurementId: "G-TZ0J50H36P",
+    apiKey: import.meta.env.VITE_APP_API_KEY,
+    authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_APP_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_APP_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_APP_ID,
+    measurementId: import.meta.env.VITE_APP_MEASUREMENT_ID,
   };
 
   useEffect(() => {
@@ -39,15 +42,15 @@ const Notificationlog = () => {
     } else if (role === "Merchant") {
       getMerchantNotificationLog(page, limit);
     }
-    setShowBadge(false)
+    setShowBadge(false);
   }, [page, limit, role]);
 
   const handleNotification = (payload) => {
     if (payload.notification.title === "New Order") {
-      console.log("New order sound")
+      console.log("New order sound");
       playNewOrderNotificationSound();
     } else {
-      console.log("New Notification sound")
+      console.log("New Notification sound");
       playNewNotificationSound();
     }
     // addNotificationToTable(payload.notification);
@@ -99,7 +102,7 @@ const Notificationlog = () => {
       );
       if (response.status === 200) {
         setTableData(response.data.data);
-        console.log(response.data.data)
+        console.log(response.data.data);
         setPagination(response.data);
       }
     } catch (err) {
@@ -125,7 +128,7 @@ const Notificationlog = () => {
       );
       if (response.status === 200) {
         setTableData(response.data.data);
-        console.log(response.data.data)
+        console.log(response.data.data);
         setPagination(response.data);
       }
     } catch (err) {

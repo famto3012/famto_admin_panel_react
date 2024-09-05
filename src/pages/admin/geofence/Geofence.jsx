@@ -56,7 +56,6 @@ const Geofence = () => {
 
   useEffect(() => {
     if (geofences.length >= 0) {
-      console.log("Token", authToken);
       const mapProps = {
         center: [8.528818999999999, 76.94310683333333],
         traffic: true,
@@ -65,20 +64,15 @@ const Geofence = () => {
         clickableIcons: true,
       };
 
-      console.log("Mappls", mapplsClassObject);
-
       mapplsClassObject.initialize(`${authToken}`, async () => {
         if (mapContainerRef.current) {
-          console.log("Initializing map...");
           const map = await mapplsClassObject.Map({
             id: "map",
             properties: mapProps,
           });
 
           if (map && typeof map.on === "function") {
-            console.log("Map initialized successfully.");
             map.on("load", async () => {
-              console.log("Map loaded.");
               setMapObject(map);
               setIsMapLoaded(true);
             });
@@ -117,7 +111,6 @@ const Geofence = () => {
         },
       })),
     };
-    console.log("geoJSON", geoJSON);
 
     useEffect(() => {
       if (geoJsonRef.current) {
