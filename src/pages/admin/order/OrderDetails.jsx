@@ -26,30 +26,6 @@ import { useSocket } from "../../../context/SocketContext";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const mapplsClassObject = new mappls();
 
-// const polyCoordinates = [
-//   { lat: 8.54881, lng: 76.917378 },
-//   { lat: 8.548255, lng: 76.918937 },
-//   { lat: 8.548355, lng: 76.920218 },
-//   { lat: 8.547625, lng: 76.921741 },
-//   { lat: 8.547227, lng: 76.921869 },
-//   { lat: 8.545724, lng: 76.921746 },
-//   { lat: 8.543342, lng: 76.922764 },
-//   { lat: 8.540434, lng: 76.9244 },
-//   { lat: 8.53875, lng: 76.925722 },
-//   { lat: 8.535536, lng: 76.927088 },
-//   { lat: 8.533248, lng: 76.928814 },
-//   { lat: 8.532626, lng: 76.928964 },
-//   { lat: 8.530617, lng: 76.928856 },
-//   { lat: 8.530067, lng: 76.928985 },
-//   { lat: 8.529644, lng: 76.930363 },
-//   { lat: 8.529621, lng: 76.932304 },
-//   { lat: 8.528969, lng: 76.933257 },
-//   { lat: 8.528887, lng: 76.933811 },
-//   { lat: 8.52895, lng: 76.934542 },
-//   { lat: 8.529441, lng: 76.935897 },
-//   { lat: 8.530068, lng: 76.935844 },
-// ];
-
 const OrderDetails = () => {
   const [orderDetail, setOrderDetail] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -96,7 +72,6 @@ const OrderDetails = () => {
       draggable: true,
     };
 
-    console.log("Adding markers...");
     const agentGeoData = {
       type: "FeatureCollection",
       features: [
@@ -130,7 +105,6 @@ const OrderDetails = () => {
         );
         await agentMarker.setPopup(htmlPopup);
         mapObject.setView([coordinates[0], coordinates[1]], 17);
-        console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
@@ -182,7 +156,6 @@ const OrderDetails = () => {
           "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fshop-svgrepo-com.svg?alt=media&token=1da55e13-4b6e-477b-98ed-8024cfb89f24"
         );
         await shopMarker.setPopup(htmlPopup);
-        // mapObject.setView([coordinates[0], coordinates[1]], 17);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
@@ -206,7 +179,6 @@ const OrderDetails = () => {
       draggable: true,
     };
 
-    console.log("Adding markers...");
     const deliveryGeoData = {
       type: "FeatureCollection",
       features: [
@@ -239,19 +211,12 @@ const OrderDetails = () => {
           "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fhouse-svgrepo-com%201%201.svg?alt=media&token=3b738e30-6cf1-4f21-97d6-7f713831562f4"
         );
         await houseMarker.setPopup(htmlPopup);
-        // mapObject.setView([coordinates[0], coordinates[1]], 17);
-        console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
     });
   };
-  const showStepperLocationOnMap = (
-    coordinates,
-    by,
-    Id,
-    date
-  ) => {
+  const showStepperLocationOnMap = (coordinates, by, Id, date) => {
     const markerProps = {
       fitbounds: true,
       fitboundOptions: { padding: 120, duration: 1000 },
@@ -263,7 +228,6 @@ const OrderDetails = () => {
       draggable: true,
     };
 
-    console.log("Adding markers...");
     const stepperGeoData = {
       type: "FeatureCollection",
       features: [
@@ -296,8 +260,6 @@ const OrderDetails = () => {
           "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319321.svg?alt=media&token=f76a13db-218d-48fe-8e54-d13955daeb30"
         );
         await houseMarker.setPopup(htmlPopup);
-        // mapObject.setView([coordinates[0], coordinates[1]], 17);
-        console.log(`Marker added for location: ${htmlPopup}`);
       } catch (error) {
         console.error("Error adding marker:", error);
       }
@@ -322,7 +284,6 @@ const OrderDetails = () => {
         );
 
         if (response.status === 200) {
-          console.log("Response", response.data.routes[0].geometry);
           const coords = response.data.routes[0].geometry.coordinates.map(
             (coor) => ({
               lat: coor[1],
@@ -402,7 +363,6 @@ const OrderDetails = () => {
 
   useEffect(() => {
     if (orderDetail && mapObject) {
-      console.log("inside");
       const coordinates = orderDetail.agentLocation;
       showAgentLocationOnMap(
         coordinates,
@@ -435,12 +395,17 @@ const OrderDetails = () => {
             id: step?.userId || "N/A",
             time: `${formatDate(step?.date)} | ${formatTime(step?.date)}`,
           });
-          const date = `${formatDate(step?.date)} | ${formatTime(step?.date)}`
+          const date = `${formatDate(step?.date)} | ${formatTime(step?.date)}`;
           if (!item?.cancelled && step?.date) {
             setActiveStepIndex(index);
           }
-          if(step?.location){
-            showStepperLocationOnMap(step.location, step?.by, step?.userId, date)
+          if (step?.location) {
+            showStepperLocationOnMap(
+              step.location,
+              step?.by,
+              step?.userId,
+              date
+            );
           }
         }
       };
@@ -482,121 +447,10 @@ const OrderDetails = () => {
     setStep(mappedSteps);
   }, [mapObject, orderDetail]);
 
-  // useEffect(() => {
-  //   if (orderDetail && mapObject) {
-  //     console.log("inside");
-  //     const coordinates = orderDetail.agentLocation;
-  //     showAgentLocationOnMap(
-  //       coordinates,
-  //       orderDetail.deliveryAgentDetail.name,
-  //       orderDetail.deliveryAgentDetail._id,
-  //       orderDetail.deliveryAgentDetail.phoneNumber
-  //     );
-  //     const shopCoordinates = orderDetail.pickUpLocation;
-  //     showShopLocationOnMap(
-  //       shopCoordinates,
-  //       orderDetail.merchantDetail.name,
-  //       orderDetail.merchantDetail._id
-  //     );
-  //     const deliveryLocation = orderDetail.deliveryLocation;
-  //     showDeliveryLocationOnMap(
-  //       deliveryLocation,
-  //       orderDetail.customerDetail.name,
-  //       "",
-  //       orderDetail.customerDetail.address.phoneNumber
-  //     );
-  //   }
-
-  //   const mapSteps = (stepperData) => {
-  //     let mappedSteps = [];
-  //     if (!Array.isArray(stepperData)) {
-  //       stepperData = [stepperData];
-  //     }
-  //     stepperData?.forEach((item) => {
-  //       console.log("Item", item)
-  //       const addStep = (step, label) => {
-  //         console.log("Step", step)
-  //         if (step) {
-  //           mappedSteps?.push({
-  //             title: label,
-  //             description: `by ${step?.by}`,
-  //             id: step?.userId || "N/A",
-  //             time: `${formatDate(step?.date)} | ${formatTime(step?.date)}`,
-  //           });
-  //           if (!item?.cancelled && step?.date) {
-  //             setActiveStepIndex(mappedSteps.length - 1);
-  //           }
-  //         }
-  //       };
-
-  //       addStep(item?.created, "Created");
-  //       addStep(item?.assigned, "Assigned");
-  //       addStep(item?.accepted, "Accepted");
-  //       addStep(item?.pickupStarted, "Pickup Started");
-  //       addStep(item?.reachedPickupLocation, "Reached pickup location");
-  //       addStep(item?.deliveryStarted, "Delivery started");
-  //       addStep(item?.reachedDeliveryLocation, "Reached delivery location");
-  //       addStep(item?.noteAdded, "Note Added");
-  //       addStep(item?.signatureAdded, "Signature Added");
-  //       addStep(item?.imageAdded, "Image Added");
-
-  //       if (item?.cancelled) {
-  //         mappedSteps.push({
-  //           title: "Cancelled",
-  //           description: `by ${item?.cancelled?.by} with Id ${
-  //             item?.cancelled?.userId || "N/A"
-  //           } on ${formatDate(item?.cancelled?.date)}, ${formatTime(
-  //             item?.cancelled?.date
-  //           )}`,
-  //         });
-  //         setActiveStepIndex(mappedSteps.length - 1);
-  //       }
-  //     });
-
-  //     return mappedSteps;
-  //   };
-
-  //   // Initial mapping
-  //   const initialSteps = mapSteps(orderDetail?.orderDetailStepper || []);
-  //   setStep(initialSteps);
-
-  //   // Real-time updates
-  //   const handleSocketEvent = ({ orderDetailStepper }) => {
-  //     console.log(orderDetailStepper)
-  //     setStep((prevSteps) => {
-  //       const updatedSteps = mapSteps(orderDetailStepper);
-  //       return [...prevSteps, ...updatedSteps];
-  //     });
-  //   };
-
-  //   const events = [
-  //     "newOrderCreated",
-  //     "orderAccepted",
-  //     "orderRejected",
-  //     "agentOrderAccepted",
-  //     "agentPickupStarted",
-  //     "reachedPickupLocation",
-  //     "agentDeliveryStarted",
-  //     "reachedDeliveryLocation",
-  //     "agentOrderDetailUpdated",
-  //     "orderCompleted",
-  //   ];
-
-  //   events.forEach((event) => {
-  //     socket.on(event, handleSocketEvent);
-  //   });
-
-  //   return () => {
-  //     events.forEach((event) => {
-  //       socket.off(event, handleSocketEvent);
-  //     });
-  //   };
-  // }, [mapObject, orderDetail, socket]);
-
   useEffect(() => {
     if (activeStepIndex !== -1 && steps?.length > 0) {
       // Trigger any necessary actions after activeStepIndex is set
-      console.log(`Active step set to index ${activeStepIndex}`);
+
       setActiveStep(activeStepIndex);
     }
   }, [activeStepIndex, steps]);
@@ -608,7 +462,6 @@ const OrderDetails = () => {
 
   useEffect(() => {
     getAuthToken();
-    //  console.log("Token", authToken)
 
     const mapProps = {
       center: [8.528818999999999, 76.94310683333333],
@@ -619,109 +472,116 @@ const OrderDetails = () => {
     };
 
     if (authToken) {
-      mapplsClassObject.initialize(
-        `9a632cda78b871b3a6eb69bddc470fef`,
-        async () => {
-          if (mapContainerRef.current) {
-            console.log("Initializing map...");
-            const map = await mapplsClassObject.Map({
-              id: "map",
-              properties: mapProps,
-            });
+      mapplsClassObject.initialize(authToken, async () => {
+        if (mapContainerRef.current) {
+          const map = await mapplsClassObject.Map({
+            id: "map",
+            properties: mapProps,
+          });
 
-            if (map && typeof map.on === "function") {
-              map.on("load", () => {
-                console.log("Map loaded.");
-                setMapObject(map);
-                setIsMapLoaded(true); // Save the map object to state
-              });
-            } else {
-              console.error(
-                "mapObject.on is not a function or mapObject is not defined"
-              );
-            }
+          if (map && typeof map.on === "function") {
+            map.on("load", () => {
+              setMapObject(map);
+              setIsMapLoaded(true); // Save the map object to state
+            });
           } else {
-            console.error("Map container not found");
+            console.error(
+              "mapObject.on is not a function or mapObject is not defined"
+            );
           }
+        } else {
+          console.error("Map container not found");
         }
-      );
+      });
     }
   }, [authToken]);
 
   useEffect(() => {
     let mappedSteps = [];
     socket.on("newOrderCreated", ({ orderDetailStepper }) => {
-      console.log("Order created", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{ created: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { created: orderDetailStepper },
+        ],
       }));
       // addStep(orderDetailStepper, "Created", mappedSteps.length, );
     });
 
     socket.on("orderAccepted", ({ orderDetailStepper }) => {
-      console.log("Order accepted", orderDetailStepper);
       setOrderDetail((prev) => {
         return {
           ...prev,
           orderDetailStepper: [
             ...(prev.orderDetailStepper || []),
-           {accepted: orderDetailStepper},
+            { accepted: orderDetailStepper },
           ],
         };
       });
     });
 
     socket.on("orderRejected", ({ orderDetailStepper }) => {
-      console.log("Order rejected", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{ orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { orderDetailStepper },
+        ],
       }));
     });
 
     socket.on("agentOrderAccepted", ({ orderDetailStepper }) => {
-      console.log("Agent order accepted", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{assigned: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { assigned: orderDetailStepper },
+        ],
       }));
     });
 
     socket.on("agentPickupStarted", ({ orderDetailStepper }) => {
-      console.log("Agent pickup started", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{pickupStarted: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { pickupStarted: orderDetailStepper },
+        ],
       }));
     });
 
     socket.on("reachedPickupLocation", ({ orderDetailStepper }) => {
-      console.log("Agent reached pickup", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{reachedPickupLocation: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { reachedPickupLocation: orderDetailStepper },
+        ],
       }));
     });
 
     socket.on("agentDeliveryStarted", ({ orderDetailStepper }) => {
-      console.log("Agent delivery started", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper, {deliveryStarted: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { deliveryStarted: orderDetailStepper },
+        ],
       }));
     });
 
     socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
-      console.log("Agent reached delivery", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{reachedDeliveryLocation: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { reachedDeliveryLocation: orderDetailStepper },
+        ],
       }));
     });
 
     socket.on("agentOrderDetailUpdated", ({ orderDetailStepper }) => {
-      console.log("Agent Order detail updated", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
@@ -729,10 +589,12 @@ const OrderDetails = () => {
     });
 
     socket.on("orderCompleted", ({ orderDetailStepper }) => {
-      console.log("Order completed", orderDetailStepper);
       setOrderDetail((prev) => ({
         ...prev,
-        orderDetailStepper: [...prev.orderDetailStepper,{completed: orderDetailStepper}],
+        orderDetailStepper: [
+          ...prev.orderDetailStepper,
+          { completed: orderDetailStepper },
+        ],
       }));
     });
     setStep(mappedSteps);
@@ -754,8 +616,6 @@ const OrderDetails = () => {
   const downloadOrderBill = async (e) => {
     try {
       e.preventDefault();
-
-      console.log(orderId);
 
       const response = await axios.post(
         `${BASE_URL}/orders/download-order-bill`,

@@ -11,7 +11,6 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const PlaceSearchPlugin = ({ map }) => {
   const placeSearchRef = useRef(null);
   const markerRef = useRef(null);
- 
 
   useEffect(() => {
     if (map && placeSearchRef.current) {
@@ -25,7 +24,6 @@ const PlaceSearchPlugin = ({ map }) => {
     };
 
     const callback = (data) => {
-      console.log(data);
       if (data) {
         const dt = data[0];
         if (!dt) return false;
@@ -68,7 +66,8 @@ const PlaceSearchPlugin = ({ map }) => {
 };
 
 const MapModalTwo = ({ isVisible, onClose, authToken }) => {
-  const { mapTwo, setMapTwo, setMap, setCoordinatesTwo, setCoordinates } = useMap(); // Use the context
+  const { mapTwo, setMapTwo, setMap, setCoordinatesTwo, setCoordinates } =
+    useMap(); // Use the context
   const { token } = useContext(UserContext);
   const markerRefOne = useRef(null);
   const markerRefTwo = useRef(null);
@@ -84,7 +83,6 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
 
     // Check if the map object has a method or property to get the container
     if (mapTwo._container) {
-      console.log("Map container found");
       return mapTwo._container; // Assuming the container is stored in a property named `_container`
     } else if (typeof mapTwo.getContainer === "function") {
       return mapTwo.getContainer(); // If there's an existing getContainer method provided by the API
@@ -94,21 +92,16 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
   }
 
   const initializeMapTwo = () => {
-    console.log(mapTwo)
     if (mapTwo) {
-      console.log("Using existing map instance.");
-
       try {
         const currentContainer = getContainer(mapTwo);
-        console.log("Current container", currentContainer);
-        console.log("mapContainerRef.current", mapContainerTwoRef.current);
-        console.log("mapContainerRef.current.id", mapContainerTwoRef.current.id);
 
         if (currentContainer !== mapContainerTwoRef.current) {
-          console.log("Reattaching map to the new container.");
-          var container = document.getElementById(mapContainerTwoRef.current.id);
+          var container = document.getElementById(
+            mapContainerTwoRef.current.id
+          );
           container.parentNode.replaceChild(currentContainer, container);
-          console.log("Container removed.");
+
           // Reattach map to the correct container if it's not already attached
           //map.setContainer(currentContainer);
         }
@@ -118,7 +111,6 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
 
       setIsMapLoaded(true);
     } else {
-      console.log("here")
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
         "6fcce361-c982-481f-943f-76c303e2bf34",
@@ -173,12 +165,9 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
             },
           });
 
-          console.log("Map two initialized", newMapTwo);
-          console.log("Map initialized", newMap);
-
           if (newMapTwo && typeof newMapTwo.on === "function") {
             setMapTwo(newMapTwo); // Save the map instance in context
-            setMap(newMap)
+            setMap(newMap);
             setIsMapLoaded(true);
 
             newMapTwo.on("click", (event) => {
@@ -196,9 +185,6 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
 
               markerRefTwo.current = newMarker;
               setCoordinatesTwo({ latitude: lat, longitude: lng });
-              console.log(
-                `Marker added on MapTwo at latitude: ${lat}, longitude: ${lng}`
-              );
             });
 
             newMap.on("click", (event) => {
@@ -216,9 +202,6 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
 
               markerRefOne.current = newMarker;
               setCoordinates({ latitude: lat, longitude: lng });
-              console.log(
-                `Marker added on MapOne at latitude: ${lat}, longitude: ${lng}`
-              );
             });
           }
         }
@@ -227,8 +210,6 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
   };
 
   useEffect(() => {
-    // console.log(token)
-    // console.log(BASE_URL)
     if (isVisible) {
       const getAuthToken = async () => {
         try {
@@ -241,7 +222,6 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
 
           if (response.status === 200) {
             setMapToken(response.data.data);
-            console.log(`AUTH TOKEN: ${response.data.data}`);
           }
         } catch (err) {
           console.log(`Error in getting auth token`);
@@ -281,10 +261,10 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
       </div>
       {!isMapLoaded && (
         <>
-        <Button onClick={initializeMapTwo} className="mt-2">
-          Initialize Map
-        </Button>
-        <div id="map" className="h-[500px] relative"></div>
+          <Button onClick={initializeMapTwo} className="mt-2">
+            Initialize Map
+          </Button>
+          <div id="map" className="h-[500px] relative"></div>
         </>
       )}
     </Modal>

@@ -4,13 +4,13 @@ import { getMessaging, onMessage } from "firebase/messaging";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
-  authDomain: "famto-aa73e.firebaseapp.com",
-  projectId: "famto-aa73e",
-  storageBucket: "famto-aa73e.appspot.com",
-  messagingSenderId: "773492185977",
-  appId: "1:773492185977:web:e425f759d3c13e8c2c2da8",
-  measurementId: "G-TZ0J50H36P",
+  apiKey: import.meta.env.VITE_APP_API_KEY,
+  authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_APP_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_APP_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_APP_ID,
+  measurementId: import.meta.env.VITE_APP_MEASUREMENT_ID,
 };
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);

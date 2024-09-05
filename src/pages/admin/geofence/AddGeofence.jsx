@@ -65,13 +65,12 @@ const AddGeofence = () => {
   const signupAction = (e) => {
     e.preventDefault();
     const location = { geofences, color };
-    console.log("Confirmed Location", location);
   };
 
   useEffect(() => {
     getAuthToken();
     getAllGeofence();
-    console.log("Token", authToken);
+
     const script = document.createElement("script");
     script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
     script.async = true;
@@ -87,10 +86,7 @@ const AddGeofence = () => {
       });
 
       if (map && typeof map.on === "function") {
-        console.log("Map initialized successfully.");
-
         map.on("load", () => {
-          console.log("Map loaded.");
           setMapObject(map);
           setIsMapLoaded(true);
 
@@ -101,17 +97,15 @@ const AddGeofence = () => {
             },
             function (data) {
               drawData = data;
-              console.log("Mappls Polygon Draw Data:", window.mappls);
+
               drawData.control(true);
               polyArray = drawData.data?.geometry.coordinates[0];
-              console.log("Draw Data:", data);
 
               const formattedCoordinates =
                 drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
                   lat,
                   lng,
                 ]);
-              console.log("Formatted Coordinates:", formattedCoordinates);
 
               setNewGeofence((prevState) => ({
                 ...prevState,
@@ -149,7 +143,6 @@ const AddGeofence = () => {
         },
       })),
     };
-    console.log("geoJSON", geoJSON);
 
     useEffect(() => {
       if (geoJsonRef.current) {
@@ -184,7 +177,6 @@ const AddGeofence = () => {
         });
       }
     } catch (err) {
-      console.log("Error in adding geofence: ", err);
       toast({
         title: "Error",
         status: "error",
@@ -196,7 +188,6 @@ const AddGeofence = () => {
 
   const getAllGeofence = async () => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/geofence/get-geofence`,
         {
@@ -290,12 +281,10 @@ const AddGeofence = () => {
               </button>
               <button
                 type="submit"
-                onClick={
-                 addGeofence
-                }
+                onClick={addGeofence}
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
-                 Add
+                Add
               </button>
             </div>
           </div>
@@ -305,9 +294,9 @@ const AddGeofence = () => {
               id="map"
               className="map-container w-full h-[600px]"
             ></div>
-             {isMapLoaded && geofences.length >= 0 && (
-                <GeoJsonComponent map={mapObject} />
-              )}
+            {isMapLoaded && geofences.length >= 0 && (
+              <GeoJsonComponent map={mapObject} />
+            )}
           </div>
         </div>
       </div>

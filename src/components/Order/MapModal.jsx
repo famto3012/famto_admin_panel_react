@@ -23,7 +23,6 @@ const PlaceSearchPlugin = ({ map }) => {
     };
 
     const callback = (data) => {
-      console.log(data);
       if (data) {
         const dt = data[0];
         if (!dt) return false;
@@ -82,7 +81,6 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
     // Check if the map object has a method or property to get the container
     if (map._container) {
-      console.log("Map container found");
       return map._container; // Assuming the container is stored in a property named `_container`
     } else if (typeof map.getContainer === "function") {
       return map.getContainer(); // If there's an existing getContainer method provided by the API
@@ -93,19 +91,13 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
   const initializeMap = () => {
     if (map) {
-      console.log("Using existing map instance.");
-
       try {
         const currentContainer = getContainer(map);
-        console.log("Current container", currentContainer);
-        console.log("mapContainerRef.current", mapContainerRef.current);
-        console.log("mapContainerRef.current.id", mapContainerRef.current.id);
 
         if (currentContainer !== mapContainerRef.current) {
-          console.log("Reattaching map to the new container.");
           var container = document.getElementById(mapContainerRef.current.id);
           container.parentNode.replaceChild(currentContainer, container);
-          console.log("Container removed.");
+
           // Reattach map to the correct container if it's not already attached
           //map.setContainer(currentContainer);
         }
@@ -134,8 +126,6 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
         authToken,
         { map: true, plugins: ["search"] },
         () => {
-          console.log("Initializing new map instance.");
-
           const newMap = mapplsClassObject.Map({
             id: mapContainerRef.current.id, // Use the ref's id for initialization
             properties: {
@@ -183,17 +173,13 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
             },
           });
 
-          console.log("Map initialized", newMap);
-          console.log("Map two initialized", newMapTwo);
-
           if (newMap && typeof newMap.on === "function") {
             setMapTwo(newMapTwo);
             setMap(newMap); // Save the map instance in context
             setIsMapLoaded(true);
             if (location) {
-              console.log("true");
               const { lat, lng } = location;
-              console.log(lat, lng);
+
               newMarker = mapplsClassObject.Marker({
                 map: newMap,
                 position: { lat, lng },
@@ -216,9 +202,6 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
               markerRefTwo.current = newMarker;
               setCoordinatesTwo({ latitude: lat, longitude: lng });
-              console.log(
-                `Marker added on MapTwo at latitude: ${lat}, longitude: ${lng}`
-              );
             });
 
             newMap.on("click", (event) => {
@@ -236,10 +219,6 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
               markerRefOne.current = newMarker;
               setCoordinates({ latitude: lat, longitude: lng });
-              console.log("Coordinates clicked", lat, lng);
-              console.log(
-                `Marker added on MapOne at latitude: ${lat}, longitude: ${lng}`
-              );
             });
           }
         }
@@ -249,10 +228,8 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
   useEffect(() => {
     if (isVisible) {
-      console.log("Here");
       const getAuthToken = async () => {
         try {
-          console.log("Insode");
           const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
             withCredentials: true,
             headers: {
@@ -262,7 +239,6 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
 
           if (response.status === 200) {
             setAuthToken(response.data.data);
-            console.log(`AUTH TOKEN: ${response.data.data}`);
           }
         } catch (err) {
           console.log(`Error in getting auth token`);
