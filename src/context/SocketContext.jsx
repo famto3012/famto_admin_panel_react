@@ -6,6 +6,8 @@ import { io } from "socket.io-client";
 import Cookies from "js-cookie";
 export const SocketContext = createContext();
 
+const SOCKET_BASE_URL = import.meta.env.VITE_APP_SOCKET_BASE_URL
+
 export const useSocket = () => {
   return useContext(SocketContext);
 };
@@ -18,7 +20,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io("http://localhost:8080", {
+      const newSocket = io(SOCKET_BASE_URL, {
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,
