@@ -126,7 +126,7 @@ const HomePage = () => {
       if (permission === "granted") {
         const token = await getToken(messaging, {
           vapidKey:
-            "BCTdfiFGGBfYA5T5egVXkwTwhZp7Gxv0dYf1zfc7yHLB5Z_0JBJaGQ7fVH9_-mNgn4VMVgmJfatFDknNBseoNbE",
+            "BGgnJ6sB5-CVQCHLuNYw_MtcrUA0gJpS-MtLbpHMxAjzTEz1NegR_xyzYaLbGPGn832jFO0crtSjkspqQMcSZ28",
         });
         console.log("Token generated");
         if (token) {

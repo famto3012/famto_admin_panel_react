@@ -1,10 +1,12 @@
 // src/context/SocketContext.js
-
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 // import { UserContext } from "./UserContext";
 import Cookies from "js-cookie";
 export const SocketContext = createContext();
+const BASE_URL = import.meta.env.VITE_APP_SOCKET_URL;
+const SSL_CERT = import.meta.env.VITE_APP_SSL_CERT;
+const SSL_KEY = import.meta.env.VITE_APP_SSL_KEY;
 
 const SOCKET_BASE_URL = import.meta.env.VITE_APP_SOCKET_BASE_URL
 
