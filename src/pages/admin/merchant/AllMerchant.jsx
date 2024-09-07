@@ -437,6 +437,7 @@ const Merchant = () => {
   const showCSVModal = () => setIsCSVModalVisible(true);
 
   const handleCancel = () => {
+    setIsModalVisible(false);
     setIsConfirmModal(false);
     setIsModalReject(false);
     setIsCSVModalVisible(false);
@@ -624,7 +625,7 @@ const Merchant = () => {
                   </button>
                   <AddMerchant
                     isVisible={isModalVisible}
-                    toggleModal={toggleModal}
+                    onCancel={handleCancel}
                     BASE_URL={BASE_URL}
                     token={token}
                   />

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Modal } from "antd";
 import { useToast } from "@chakra-ui/react";
 
-const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
+const AddMerchant = ({ isVisible, onCancel, BASE_URL, token }) => {
   const [merchantData, setMerchantData] = useState({
     fullName: "",
     email: "",
@@ -45,7 +45,7 @@ const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
       );
 
       if (response.status === 201) {
-       // closeModal();
+        onCancel();
         toast({
           title: "Success",
           description: response.data.message,
@@ -79,8 +79,7 @@ const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
         open={isVisible}
         centered
         width="600px"
-        onCancel={toggleModal}
-        onOk={toggleModal}
+        onCancel={onCancel}
         footer={null}
       >
         <form onSubmit={addNewMerchant}>
@@ -118,7 +117,7 @@ const AddMerchant = ({ isVisible, toggleModal, BASE_URL, token }) => {
               <button
                 className="bg-cyan-50 py-2 px-4 rounded-md"
                 type="button"
-                onClick={toggleModal}
+                onClick={onCancel}
               >
                 Cancel
               </button>

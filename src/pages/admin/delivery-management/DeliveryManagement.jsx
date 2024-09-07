@@ -725,7 +725,7 @@ const DeliveryManagement = () => {
                           type="text"
                           name="expireTime"
                           className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
-                          value={autoAllocation.expireTime}
+                          value={autoAllocation?.expireTime}
                           onChange={handleChange}
                         />
                         <div>
@@ -744,7 +744,7 @@ const DeliveryManagement = () => {
                             value="All"
                             onChange={handleOptionChange}
                             checked={
-                              autoAllocation.autoAllocationType === "All"
+                              autoAllocation?.autoAllocationType === "All"
                             }
                             className=""
                           />
@@ -763,7 +763,7 @@ const DeliveryManagement = () => {
                             value="Nearest"
                             onChange={handleOptionChange}
                             checked={
-                              autoAllocation.autoAllocationType === "Nearest"
+                              autoAllocation?.autoAllocationType === "Nearest"
                             }
                             className=""
                           />
@@ -775,7 +775,7 @@ const DeliveryManagement = () => {
                           </label>
                         </div>
                       </div>
-                      {autoAllocation.autoAllocationType === "All" && (
+                      {autoAllocation?.autoAllocationType === "All" && (
                         <div>
                           <p className="text-gray-600 mt-5 text-[14px]">
                             Force assigns the task to Agent based on
@@ -788,7 +788,7 @@ const DeliveryManagement = () => {
                             <input
                               type="text"
                               name="maxRadius"
-                              value={autoAllocation.maxRadius}
+                              value={autoAllocation?.maxRadius}
                               className="w-2/4 border border-gray-200 rounded-lg pl-2 outline-none focus:outline-none h-9"
                               onChange={handleChange}
                             />
@@ -800,7 +800,7 @@ const DeliveryManagement = () => {
                           </div>
                         </div>
                       )}
-                      {autoAllocation.autoAllocationType === "Nearest" && (
+                      {autoAllocation?.autoAllocationType === "Nearest" && (
                         <p className="mt-5">
                           {`Sends the task request notification to the Agent
                         (maximum limit: 500 Agent) available in
@@ -818,7 +818,7 @@ const DeliveryManagement = () => {
                             type="radio"
                             name="priorityType"
                             value="Default"
-                            checked={autoAllocation.priorityType === "Default"}
+                            checked={autoAllocation?.priorityType === "Default"}
                             onChange={handleRadioChange}
                           />
                           <label className="font-semibold">Default</label>
@@ -829,7 +829,8 @@ const DeliveryManagement = () => {
                             name="priorityType"
                             value="Monthly-salaried"
                             checked={
-                              autoAllocation.priorityType === "Monthly-salaried"
+                              autoAllocation?.priorityType ===
+                              "Monthly-salaried"
                             }
                             onChange={handleRadioChange}
                           />
