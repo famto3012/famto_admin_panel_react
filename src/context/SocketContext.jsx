@@ -1,10 +1,12 @@
 // src/context/SocketContext.js
-
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 // import { UserContext } from "./UserContext";
 import Cookies from "js-cookie";
 export const SocketContext = createContext();
+const BASE_URL = import.meta.env.VITE_APP_SOCKET_URL;
+const SSL_CERT = import.meta.env.VITE_APP_SSL_CERT;
+const SSL_KEY = import.meta.env.VITE_APP_SSL_KEY;
 
 export const useSocket = () => {
   return useContext(SocketContext);
@@ -18,7 +20,10 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io("http://localhost:5000", {
+      const newSocket = io(BASE_URL, {
+        // cert: SSL_CERT,
+        // key: SSL_KEY,
+        // path: "/socket",
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,

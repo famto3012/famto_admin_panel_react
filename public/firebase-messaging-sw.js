@@ -23,7 +23,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   const { playNewOrderNotificationSound, playNewNotificationSound } =
     useSoundContext();
-  //console.log("Received background message ", payload);
+  console.log("Received background message ", payload);
 
   self.clients.matchAll().then((clients) => {
     clients.forEach((client) =>
