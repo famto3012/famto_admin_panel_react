@@ -72,10 +72,6 @@ const Products = () => {
 
     const getAllMerchants = async () => {
       try {
-        setIsCategoryListLoading(true);
-        setIsProductListLoading(true);
-        setIsProductDetailLoading(true);
-
         const response = await axios.get(
           `${BASE_URL}/merchants/admin/all-merchants`,
           {
@@ -97,7 +93,7 @@ const Products = () => {
       } catch (err) {
         toast({
           title: "Error",
-          description: "An error occoured while getting the data",
+          description: "An error occurred while getting the data: " + err,
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -129,19 +125,24 @@ const Products = () => {
 
         if (response.status === 200) {
           const { data } = response.data;
-          setAllCategories(data);
+
           if (data.length > 0) {
+            setAllCategories(data);
             setSelectedCategory({
               categoryId: data[0]?._id,
               categoryName: data[0]?.categoryName,
               categoryStatus: data[0]?.status,
             });
+          } else {
+            // Stop loading if no categories
+            setIsCategoryListLoading(false);
+            return;
           }
         }
       } catch (err) {
         toast({
           title: "Error",
-          description: "An error occoured while getting the data",
+          description: "An error occurred while getting the data",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -171,16 +172,23 @@ const Products = () => {
 
         if (response.status === 200) {
           const { data } = response.data;
-          setAllProducts(data);
-          setSelectedProduct({
-            productId: data[0]?._id,
-            productName: data[0]?.productName,
-          });
+
+          if (data.length > 0) {
+            setAllProducts(data);
+            setSelectedProduct({
+              productId: data[0]?._id,
+              productName: data[0]?.productName,
+            });
+          } else {
+            // Stop loading if no products
+            setIsProductListLoading(false);
+            return;
+          }
         }
       } catch (err) {
         toast({
           title: "Error",
-          description: "An error occoured while getting the data",
+          description: "An error occurred while getting the data",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -197,6 +205,7 @@ const Products = () => {
 
   useEffect(() => {
     const getProductDetail = async (productId) => {
+      ``;
       try {
         setIsProductDetailLoading(true);
 
@@ -207,12 +216,19 @@ const Products = () => {
 
         if (response.status === 200) {
           const { data } = response.data;
-          setProductDetail(data);
+
+          if (data) {
+            setProductDetail(data);
+          } else {
+            // Stop loading if no product details
+            setIsProductDetailLoading(false);
+            return;
+          }
         }
       } catch (err) {
         toast({
           title: "Error",
-          description: "An error occoured while getting the data",
+          description: "An error occurred while getting the data",
           status: "error",
           duration: 3000,
           isClosable: true,

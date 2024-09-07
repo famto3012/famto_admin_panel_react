@@ -1,32 +1,40 @@
 import { createContext, useEffect, useState } from "react";
-import Cookies from "js-cookie";
+import secureLocalStorage from "react-secure-storage";
 
 export const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-  const [token, setToken] = useState(Cookies.get("token") || null);
-  const [role, setRole] = useState(Cookies.get("role") || null);
-  const [username, setUsername] = useState(Cookies.get("role") || null);
-  const [userId, setUserId] = useState(Cookies.get("userId") || null);
-  const [fcmToken, setFcmToken] = useState(Cookies.get("fcmToken") || null);
+  const [token, setToken] = useState(
+    secureLocalStorage.getItem("token") || null
+  );
+  const [role, setRole] = useState(secureLocalStorage.getItem("role") || null);
+  const [username, setUsername] = useState(
+    secureLocalStorage.getItem("username") || null
+  );
+  const [userId, setUserId] = useState(
+    secureLocalStorage.getItem("userId") || null
+  );
+  const [fcmToken, setFcmToken] = useState(
+    secureLocalStorage.getItem("fcmToken") || null
+  );
   const [signUp, setSignUp] = useState({});
   const [verification, setVerification] = useState("");
 
   useEffect(() => {
     if (token && role) {
-      Cookies.set("token", token, { expires: 7 });
-      Cookies.set("role", role, { expires: 7 });
-      Cookies.set("userId", userId, { expires: 7 });
-      Cookies.set("fcmToken", fcmToken, { expires: 7 });
-      Cookies.set("username", username, { expires: 7 });
+      secureLocalStorage.setItem("token", token);
+      secureLocalStorage.setItem("role", role);
+      secureLocalStorage.setItem("userId", userId);
+      secureLocalStorage.setItem("fcmToken", fcmToken);
+      secureLocalStorage.setItem("username", username);
     } else {
-      Cookies.remove("token");
-      Cookies.remove("role");
-      Cookies.remove("username");
-      Cookies.remove("userId");
-      Cookies.remove("fcmToken");
+      secureLocalStorage.removeItem("token");
+      secureLocalStorage.removeItem("role");
+      secureLocalStorage.removeItem("userId");
+      secureLocalStorage.removeItem("fcmToken");
+      secureLocalStorage.removeItem("username");
     }
-  }, [token, role, userId, fcmToken]);
+  }, [token, role, userId, fcmToken, username]);
 
   return (
     <UserContext.Provider

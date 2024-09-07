@@ -8,6 +8,8 @@ const BASE_URL = import.meta.env.VITE_APP_SOCKET_URL;
 const SSL_CERT = import.meta.env.VITE_APP_SSL_CERT;
 const SSL_KEY = import.meta.env.VITE_APP_SSL_KEY;
 
+const SOCKET_BASE_URL = import.meta.env.VITE_APP_SOCKET_BASE_URL
+
 export const useSocket = () => {
   return useContext(SocketContext);
 };
@@ -20,10 +22,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io(BASE_URL, {
-        // cert: SSL_CERT,
-        // key: SSL_KEY,
-        // path: "/socket",
+      const newSocket = io(SOCKET_BASE_URL, {
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,

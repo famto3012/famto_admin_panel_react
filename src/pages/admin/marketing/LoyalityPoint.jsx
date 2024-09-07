@@ -13,7 +13,6 @@ import GIFLoader from "../../../components/GIFLoader";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const LoyalityPoint = () => {
-
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
@@ -108,7 +107,7 @@ const LoyalityPoint = () => {
     });
   };
 
-  // Updated status function 
+  // Updated status function
 
   const onChange = async (name, checked) => {
     setLoyaltyData({ ...loyaltyData, [name]: checked });
@@ -129,7 +128,6 @@ const LoyalityPoint = () => {
     }
   };
 
-
   return (
     <div>
       {isLoading ? (
@@ -146,7 +144,7 @@ const LoyalityPoint = () => {
               <Switch
                 onChange={(checked) => onChange("status", checked)}
                 name="status"
-                checked={loyaltyData.status}
+                checked={loyaltyData?.status || false}
               />
             </div>
             <p className="mt-5 mx-10 text-[17px] text-gray-500">
@@ -170,7 +168,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 pl-8 ml-[80px] outline-none focus:outline-none w-[25rem] "
                       type="text"
-                      value={loyaltyData.earningCriteriaRupee}
+                      value={loyaltyData?.earningCriteriaRupee}
                       id="earningCriteriaRupee"
                       name="earningCriteriaRupee"
                       onChange={handleInputChange}
@@ -184,7 +182,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-[25rem]"
                       type="text"
-                      value={loyaltyData.earningCriteriaPoint}
+                      value={loyaltyData?.earningCriteriaPoint}
                       id="earningCriteriaPoint"
                       name="earningCriteriaPoint"
                       onChange={handleInputChange}
@@ -201,7 +199,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3"
                       type="text"
-                      value={loyaltyData.minOrderAmountForEarning}
+                      value={loyaltyData?.minOrderAmountForEarning}
                       id="minOrderAmountForEarning"
                       name="minOrderAmountForEarning"
                       onChange={handleInputChange}
@@ -217,7 +215,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3 "
                       type="text"
-                      value={loyaltyData.maxEarningPoint}
+                      value={loyaltyData?.maxEarningPoint}
                       id="maxEarningPoint"
                       name="maxEarningPoint"
                       onChange={handleInputChange}
@@ -233,7 +231,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3 "
                       type="text"
-                      value={loyaltyData.expiryDuration}
+                      value={loyaltyData?.expiryDuration}
                       id="expiryDuration"
                       name="expiryDuration"
                       onChange={handleInputChange}
@@ -250,7 +248,7 @@ const LoyalityPoint = () => {
                       <input
                         className="border-2 border-gray-300 rounded p-2 ml-[85px] mr-[10px] outline-none focus:outline-none w-[25rem] "
                         type="text"
-                        value={loyaltyData.redemptionCriteriaPoint}
+                        value={loyaltyData?.redemptionCriteriaPoint}
                         id="redemptionCriteriaPoint"
                         name="redemptionCriteriaPoint"
                         onChange={handleInputChange}
@@ -262,7 +260,7 @@ const LoyalityPoint = () => {
                       <input
                         className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
                         type="text"
-                        value={loyaltyData.redemptionCriteriaRupee}
+                        value={loyaltyData?.redemptionCriteriaRupee}
                         id="redemptionCriteriaRupee"
                         name="redemptionCriteriaRupee"
                         onChange={handleInputChange}
@@ -280,7 +278,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
                       type="text"
-                      value={loyaltyData.minOrderAmountForRedemption}
+                      value={loyaltyData?.minOrderAmountForRedemption}
                       id="minOrderAmountForRedemption"
                       name="minOrderAmountForRedemption"
                       onChange={handleInputChange}
@@ -296,7 +294,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
                       type="text"
-                      value={loyaltyData.minLoyaltyPointForRedemption}
+                      value={loyaltyData?.minLoyaltyPointForRedemption}
                       id="minLoyaltyPointForRedemption"
                       name="minLoyaltyPointForRedemption"
                       onChange={handleInputChange}
@@ -312,7 +310,7 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
                       type="text"
-                      value={loyaltyData.maxRedemptionAmountPercentage}
+                      value={loyaltyData?.maxRedemptionAmountPercentage}
                       id="maxRedemptionAmountPercentage"
                       name="maxRedemptionAmountPercentage"
                       onChange={handleInputChange}
