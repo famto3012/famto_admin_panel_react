@@ -299,7 +299,7 @@ const EditBannerModal = ({
     geofenceId: "",
     imageUrl: "",
   });
-
+  let imageFile = {}
   const fileInputRef = useRef(null); // Ref to store the file
   const [bannerPreviewURL, setBannerPreviewURL] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -354,7 +354,9 @@ const EditBannerModal = ({
     if (file) {
       // fileInputRef.current = file; // Store the selected file in the ref
       setBannerPreviewURL(URL.createObjectURL(file));
+      imageFile.file = file
       console.log("File selected:", file); // Log the file
+      console.log("File selected:", imageFile); // Log the file
       // console.log("File stored in ref:", fileInputRef.current); // Log the ref value
     } else {
       console.log("No file selected.");

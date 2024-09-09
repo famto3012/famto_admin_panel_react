@@ -9,6 +9,7 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { MapProvider } from "./context/MapContext.jsx";
 import { SoundProvider } from "./context/SoundContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
+import { register } from "./serviceWorker.js";
 
 const theme = createTheme({
   typography: {
@@ -37,3 +38,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </StyledEngineProvider>
   </ThemeProvider>
 );
+
+register();
