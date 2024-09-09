@@ -79,7 +79,9 @@ const AddProductItemModal = ({
         ]);
 
         if (discountResponse.status === 200) {
-          const filteredDiscounts = discountResponse.data.data.filter(discount => discount.productId);
+          const filteredDiscounts = discountResponse.data.data.filter(
+            (discount) => discount.productId
+          );
           setAllProductDiscount(filteredDiscounts);
         }
         if (allProductResponse.status === 200) {
@@ -370,7 +372,7 @@ const AddProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="productName">
-              Product Name
+              Product Name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -383,7 +385,7 @@ const AddProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="price">
-              Price
+              Price <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -454,7 +456,7 @@ const AddProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="costPrice">
-              Cost Price
+              Cost Price <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -596,7 +598,7 @@ const AddProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="type">
-              Veg/Non-veg
+              Type <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
@@ -616,6 +618,15 @@ const AddProductItemModal = ({
               onChange={handleInputChange}
             />
             Non-veg
+            <input
+              className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
+              type="radio"
+              name="type"
+              value="Other"
+              checked={productData.type === "Other"}
+              onChange={handleInputChange}
+            />
+            Other
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="photos">

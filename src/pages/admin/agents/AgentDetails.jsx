@@ -14,6 +14,7 @@ import ImageModal from "../../../components/model/AgentModels/ImageModal";
 import BlockAgentModal from "../../../components/model/AgentModels/BlockAgentModal";
 import AgentRatingModal from "../../../components/model/AgentModels/AgentRatingModal";
 import { Switch } from "antd";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -31,6 +32,7 @@ const AgentDetails = () => {
   const { agentId } = useParams();
   const navigate = useNavigate();
   const { token, role } = useContext(UserContext);
+  const toast = useToast();
 
   useEffect(() => {
     if (!token) {
@@ -95,6 +97,7 @@ const AgentDetails = () => {
       );
 
       if (response.status === 200) {
+        setAgent({ ...agent, status: !agent.status });
         toast({
           title: "Success",
           description: "Staus Updated successfully.",
@@ -139,7 +142,11 @@ const AgentDetails = () => {
                   <BlockIcon className="w-2 h-2 text-red-600" /> Block
                 </button>
                 Status
-                <Switch className="text-teal-700 ml-2" />
+                <Switch
+                  value={agent.status}
+                  onClick={() => changeAgentStatus(agentId)}
+                  className="text-teal-700 ml-2"
+                />
               </div>
             </div>
             <div className="bg-white rounded-lg mx-5 mt-5 p-5">
@@ -161,7 +168,7 @@ const AgentDetails = () => {
                   </div>
                   <div className="flex items-center gap-3 mt-5">
                     <label className="w-2/3">Registration Status</label>
-                    <p className="">{agent.status}</p>
+                    <p className="">{agent.isApproved}</p>
                   </div>
                 </div>
                 <div>

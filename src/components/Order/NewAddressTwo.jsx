@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MapModalTwo from "./MapModalTwo";
 import { useMap } from "../../context/MapContext";
+import { useToast } from "@chakra-ui/react";
 
 const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const { coordinatesTwo } = useMap();
@@ -14,9 +15,12 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
     landmark: "",
     saveAddress: false,
   });
+  const [showButton, setShowButton] = useState(true);
 
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+
+  const toast = useToast();
 
   const handleChangeAddress = (e) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
@@ -30,6 +34,30 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!type || !fullName || !phoneNumber || !flat || !area) {
+      toast({
+        title: "Error",
+        description: "Please fill up all fields",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    if (!coordinatesTwo.latitude || !coordinatesTwo.longitude) {
+      toast({
+        title: "Error",
+        description: "Please select a location",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
     const updatedAddressData = {
       ...addressData,
       latitude: coordinatesTwo.latitude,
@@ -37,6 +65,8 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
     };
 
     onAddCustomerAddress(updatedAddressData);
+
+    setShowButton(false);
   };
 
   return (
@@ -169,15 +199,17 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
               </div>
             </div>
 
-            <div className="flex justify-end mt-5 gap-3">
-              <button
-                type="button"
-                className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
-                onClick={handleSubmit}
-              >
-                Add Address
-              </button>
-            </div>
+            {showButton && (
+              <div className="flex justify-end mt-5 gap-3">
+                <button
+                  type="button"
+                  className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
+                  onClick={handleSubmit}
+                >
+                  Add Address
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
