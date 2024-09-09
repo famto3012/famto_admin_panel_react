@@ -17,6 +17,7 @@ import PickAndDrop from "../../../components/Order/PickAndDrop";
 import CustomOrder from "../../../components/Order/CustomOrder";
 import { UserContext } from "../../../context/UserContext";
 import { useToast } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -43,6 +44,7 @@ const CreateOrder = () => {
 
   const { token, role } = useContext(UserContext);
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) navigate("/auth/login");
@@ -174,7 +176,10 @@ const CreateOrder = () => {
       <div className="w-full pl-[290px] bg-gray-100">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <ArrowBack className="ml-7" />
+            <ArrowBack
+              className="ml-7 cursor-pointer"
+              onClick={() => navigate("/all-orders")}
+            />
             <span className="text-lg font-bold ml-3">Create Order</span>
           </div>
           <nav className="p-5">

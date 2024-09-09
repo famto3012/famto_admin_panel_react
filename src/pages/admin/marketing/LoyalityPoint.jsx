@@ -165,17 +165,17 @@ const LoyalityPoint = () => {
                       Earning Criteria *
                     </label>
 
+                    <button className=" text-black rounded-md">
+                      <CurrencyRupeeOutlined />
+                    </button>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 pl-8 ml-[80px] outline-none focus:outline-none w-[25rem] "
+                      className="border-2 border-gray-300 rounded p-2 pl-8  outline-none focus:outline-none w-[25rem] "
                       type="text"
                       value={loyaltyData?.earningCriteriaRupee}
                       id="earningCriteriaRupee"
                       name="earningCriteriaRupee"
                       onChange={handleInputChange}
                     />
-                    <button className="absolute inset-y-0 left-80 ms-10 text-black rounded-md">
-                      <CurrencyRupeeOutlined />
-                    </button>
 
                     <RiEqualFill className="mx-2" />
 
@@ -237,35 +237,34 @@ const LoyalityPoint = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="flex flex-row">
-                    <div className="flex items-center relative">
-                      <label
-                        className="w-1/3 text-gray-500"
-                        htmlFor="redemptionCriteriaPoint"
-                      >
-                        Redemption Criteria *
-                      </label>
-                      <input
-                        className="border-2 border-gray-300 rounded p-2 ml-[85px] mr-[10px] outline-none focus:outline-none w-[25rem] "
-                        type="text"
-                        value={loyaltyData?.redemptionCriteriaPoint}
-                        id="redemptionCriteriaPoint"
-                        name="redemptionCriteriaPoint"
-                        onChange={handleInputChange}
-                      />
-                      points <RiEqualFill className="mx-3" />
-                      <button className="absolute inset-y-0 right-60 me-11 text-black rounded-md">
-                        <CurrencyRupeeOutlined />
-                      </button>
-                      <input
-                        className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
-                        type="text"
-                        value={loyaltyData?.redemptionCriteriaRupee}
-                        id="redemptionCriteriaRupee"
-                        name="redemptionCriteriaRupee"
-                        onChange={handleInputChange}
-                      />
-                    </div>
+
+                  <div className="flex items-center relative">
+                    <label
+                      className="w-1/3 text-gray-500"
+                      htmlFor="redemptionCriteriaPoint"
+                    >
+                      Redemption Criteria *
+                    </label>
+                    <input
+                      className="border-2 border-gray-300 rounded p-2 mr-[10px] outline-none focus:outline-none w-[25rem] "
+                      type="text"
+                      value={loyaltyData?.redemptionCriteriaPoint}
+                      id="redemptionCriteriaPoint"
+                      name="redemptionCriteriaPoint"
+                      onChange={handleInputChange}
+                    />
+                    points <RiEqualFill className="mx-3" />
+                    <button className="ms-3 text-black rounded-md">
+                      <CurrencyRupeeOutlined />
+                    </button>
+                    <input
+                      className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
+                      type="text"
+                      value={loyaltyData?.redemptionCriteriaRupee}
+                      id="redemptionCriteriaRupee"
+                      name="redemptionCriteriaRupee"
+                      onChange={handleInputChange}
+                    />
                   </div>
 
                   <div className="flex items-center">

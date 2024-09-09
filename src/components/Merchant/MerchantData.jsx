@@ -77,8 +77,8 @@ const MerchantData = ({
 
   return (
     <>
-      <div className="grid grid-cols-2 xl:grid-cols-6 gap-2">
-        <div className="flex flex-col col-span-2">
+      <div className="grid grid-cols-2 2xl:grid-cols-6 gap-2">
+        <div className="flex flex-col col-span-1 2xl:col-span-2">
           <div className="mb-4 flex items-center gap-[10px] w-[370px]">
             <label className="text-red-500 font-[600] w-1/3">ID</label>
             <input
@@ -131,7 +131,7 @@ const MerchantData = ({
           </div>
         </div>
 
-        <div className="flex flex-col col-span-2">
+        <div className="flex flex-col col-span-1 2xl:col-span-2">
           <div className="mb-4 flex items-center gap-[10px] w-[370px] ">
             <label className="block text-gray-700 w-1/3">Email</label>
             <input

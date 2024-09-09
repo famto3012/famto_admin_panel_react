@@ -113,7 +113,7 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
     } else {
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
-        "6fcce361-c982-481f-943f-76c303e2bf34",
+        authToken,
         { map: true, plugins: ["search"] },
         () => {
           console.log("Initializing new map instance.");
@@ -243,7 +243,7 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
     <Modal
       open={isVisible}
       onCancel={onClose}
-      title="Select Location"
+      title="Select Location (Mark your location in the map)"
       footer={null}
       width="50%"
       centered

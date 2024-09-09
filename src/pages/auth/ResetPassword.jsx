@@ -1,6 +1,7 @@
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -9,7 +10,15 @@ const ResetPassword = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  // Now you can get the query parameters
+  const resetToken = queryParams.get("resetToken");
+  const role = queryParams.get("role");
   const toast = useToast();
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,8 +43,16 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = axios.post(`${BASE_URL}/auth/reset-password/`, password);
-      if (response.status === 201) {
+      const response = axios.post(
+        `${BASE_URL}/auth/reset-password`,
+        { password },
+        {
+          params: { resetToken, role },
+        }
+      );
+
+      if (response.status === 200) {
+        navigate("/auth/login");
         toast({
           title: "Success",
           description: "Password Changed Succesfully.",
