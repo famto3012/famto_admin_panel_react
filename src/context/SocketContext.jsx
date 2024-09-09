@@ -11,10 +11,8 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }) => {
-  const [userId, setUserId] = useState(secureLocalStorage.getItem("userId"));
-  const [fcmToken, setFcmToken] = useState(
-    secureLocalStorage.getItem("fcmToken")
-  );
+  const [userId, setUserId] = useState(secureLocalStorage.getItem("userId") || null);
+  const [fcmToken, setFcmToken] = useState(secureLocalStorage.getItem("fcmToken") || null);
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
