@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
 
@@ -19,8 +19,6 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  // const { playNewOrderNotificationSound, playNewNotificationSound } =
-  //   useSoundContext();
   console.log("Received background message ", payload);
 
   self.clients.matchAll().then((clients) => {
@@ -32,13 +30,6 @@ messaging.onBackgroundMessage((payload) => {
     );
   });
 
-  // if (payload.notification.title === "New Order" || payload.notification.title === "Order Rejected") {
-  //   console.log("Background Sound");
-  //   playNewOrderNotificationSound();
-  // } else {
-  //   console.log("Background Sound");
-  //   playNewNotificationSound();
-  // }
   // Customize notification here
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
