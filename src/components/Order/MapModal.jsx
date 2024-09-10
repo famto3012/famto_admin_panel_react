@@ -106,20 +106,6 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
       }
 
       setIsMapLoaded(true);
-
-      // Place initial marker if location prop is provided
-      // let newMarker;
-
-      // if (location) {
-      //   console.log("true");
-      //   const { lat, lng } = location;
-      //   console.log(lat, lng);
-      //   newMarker = mapplsClassObject.Marker({
-      //     map: newMap,
-      //     position: { lat, lng },
-      //     draggable: false,
-      //   });
-      // }
     } else {
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
@@ -260,7 +246,7 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
     <Modal
       open={isVisible}
       onCancel={onClose}
-      title="Select Location"
+      title="Select Location (Mark your location in the map)"
       footer={null}
       width="50%"
       centered

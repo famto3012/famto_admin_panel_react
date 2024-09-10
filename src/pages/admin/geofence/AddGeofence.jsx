@@ -1,123 +1,184 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
-import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
-import GlobalSearch from "../../../components/GlobalSearch";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { mappls, mappls_plugin } from "mappls-web-maps";
+
+import Sidebar from "../../../components/Sidebar";
+import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
-import { useLocation } from "react-router-dom";
+
+import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import { useToast } from "@chakra-ui/react";
+
+const mapplsClassObject = new mappls();
+const mapplsPluginObject = new mappls_plugin();
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
+const PlaceSearchPlugin = ({ map }) => {
+  const placeSearchRef = useRef(null);
+  const markerRef = useRef(null);
+
+  useEffect(() => {
+    console.log("MAP", map);
+
+    if (map && placeSearchRef.current) {
+      mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+    }
+
+    const optional_config = {
+      location: [28.61, 77.23],
+      region: "IND",
+      height: 300,
+    };
+
+    const callback = (data) => {
+      if (data && data.length > 0) {
+        const dt = data[0];
+        if (!dt) return false;
+
+        const eloc = dt.eLoc;
+        const place = `${dt.placeName}`;
+
+        console.log("Search Data:", dt);
+
+        if (markerRef.current) markerRef.current.remove();
+
+        mapplsPluginObject.pinMarker(
+          {
+            map: map,
+            pin: eloc,
+            popupHtml: place,
+            popupOptions: {
+              openPopup: true,
+            },
+            zoom: 10,
+          },
+          (marker) => {
+            markerRef.current = marker;
+            markerRef.current.fitbounds();
+          }
+        );
+        markerRef.current.remove();
+      } else {
+        console.warn("No search results found", data);
+      }
+    };
+
+    placeSearchRef.current = mapplsPluginObject.search(
+      document.getElementById("auto"),
+      optional_config,
+      callback
+    );
+
+    return () => {
+      if (map && placeSearchRef.current) {
+        mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+      }
+    };
+  }, [map]);
+
+  return null;
+};
+
 const AddGeofence = () => {
-  const { token } = useContext(UserContext);
-  const [geofences, setGeofences] = useState({});
   const [newGeofence, setNewGeofence] = useState({
     name: "",
     description: "",
     color: "",
     coordinates: [],
   });
+  const [geofences, setGeofences] = useState({});
   const [color, setColor] = useState("#4931a0");
-  const mapContainerRef = useRef(null);
   const [mapObject, setMapObject] = useState(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const toast = useToast();
-  let map, drawData, geoJSON, polyArray;
-
   const [authToken, setAuthToken] = useState("");
 
-  const getAuthToken = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const mapContainerRef = useRef(null);
+  const toast = useToast();
 
-      if (response.status === 200) {
-        setAuthToken(response.data.data);
-      }
-    } catch (err) {
-      console.log(`Error in getting auth token`);
-    }
-  };
+  let drawData, geoJSON, polyArray;
 
-  const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-  };
-
-  const query = useQuery();
-  const id = query.get("id");
-
-  const handleColorChange = (event) => {
-    setColor(event.target.value);
-    setNewGeofence({ ...newGeofence, color: event.target.value });
-    setGeofences({ ...geofences, color: event.target.value });
-  };
-
-  const handleInputChange = (e) => {
-    setGeofences({ ...geofences, [e.target.name]: e.target.value });
-    setNewGeofence({ ...newGeofence, [e.target.name]: e.target.value });
-  };
-
-  const signupAction = (e) => {
-    e.preventDefault();
-    const location = { geofences, color };
-  };
+  const { token } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getAuthToken();
-    getAllGeofence();
+    const getInitialData = async () => {
+      const [authTokenResponse, allGeofenceResponse] = await Promise.all([
+        axios.get(`${BASE_URL}/token/get-auth-token`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+        axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-    const script = document.createElement("script");
-    script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
-    script.async = true;
-    document.body.appendChild(script);
+      if (authTokenResponse.status === 200) {
+        setAuthToken(authTokenResponse.data.data);
+      }
 
-    window.initMap = () => {
-      const map = new window.mappls.Map("map", {
-        center: [8.528818999999999, 76.94310683333333],
-        zoomControl: true,
-        geolocation: false,
-        fullscreenControl: false,
-        zoom: 12,
-      });
-
-      if (map && typeof map.on === "function") {
-        map.on("load", () => {
-          setMapObject(map);
-          setIsMapLoaded(true);
-
-          window.mappls.polygonDraw(
-            {
-              map: map,
-              data: geoJSON,
-            },
-            function (data) {
-              drawData = data;
-
-              drawData.control(true);
-              polyArray = drawData.data?.geometry.coordinates[0];
-
-              const formattedCoordinates =
-                drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
-                  lat,
-                  lng,
-                ]);
-
-              setNewGeofence((prevState) => ({
-                ...prevState,
-                coordinates: formattedCoordinates,
-              }));
-            }
-          );
-        });
-      } else {
-        console.error("Map container not found");
+      if (allGeofenceResponse.status === 200) {
+        setGeofences(allGeofenceResponse.data.geofences);
       }
     };
+
+    getInitialData();
+
+    if (authToken) {
+      const script = document.createElement("script");
+      script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
+      script.async = true;
+      script.onload = () => console.log("Mappls script loaded successfully.");
+      script.onerror = () => console.error("Error loading Mappls script.");
+      document.body.appendChild(script);
+
+      window.initMap = () => {
+        const map = new window.mappls.Map("map", {
+          center: [8.528818999999999, 76.94310683333333],
+          zoomControl: true,
+          geolocation: false,
+          fullscreenControl: false,
+          zoom: 12,
+        });
+
+        if (map && typeof map.on === "function") {
+          map.on("load", () => {
+            setMapObject(map);
+            setIsMapLoaded(true);
+
+            window.mappls.polygonDraw(
+              {
+                map: map,
+                data: geoJSON,
+              },
+              function (data) {
+                drawData = data;
+
+                drawData.control(true);
+                polyArray = drawData.data?.geometry.coordinates[0];
+
+                const formattedCoordinates =
+                  drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
+                    lat,
+                    lng,
+                  ]);
+
+                setNewGeofence((prevState) => ({
+                  ...prevState,
+                  coordinates: formattedCoordinates,
+                }));
+              }
+            );
+          });
+        } else {
+          console.error("Map container not found");
+        }
+      };
+    }
   }, [authToken]);
 
   const GeoJsonComponent = ({ map }) => {
@@ -158,9 +219,20 @@ const AddGeofence = () => {
     }, [map]); // Ensure this only runs when `map` or `geoJSON` change
   };
 
-  const addGeofence = async () => {
+  const handleColorChange = (event) => {
+    setColor(event.target.value);
+    setNewGeofence({ ...newGeofence, color: event.target.value });
+    setGeofences({ ...geofences, color: event.target.value });
+  };
+
+  const handleInputChange = (e) => {
+    setGeofences({ ...geofences, [e.target.name]: e.target.value });
+    setNewGeofence({ ...newGeofence, [e.target.name]: e.target.value });
+  };
+
+  const handleAddGeofence = async () => {
     try {
-      const addGeofenceResponse = await axios.post(
+      const response = await axios.post(
         `${BASE_URL}/admin/geofence/add-geofence`,
         newGeofence,
         {
@@ -168,7 +240,9 @@ const AddGeofence = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (addGeofenceResponse.status === 201) {
+
+      if (response.status === 201) {
+        navigate("/geofence");
         toast({
           title: "Success",
           status: "success",
@@ -183,23 +257,6 @@ const AddGeofence = () => {
         duration: 3000,
         isClosable: true,
       });
-    }
-  };
-
-  const getAllGeofence = async () => {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}/admin/geofence/get-geofence`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.status === 200) {
-        setGeofences(response.data.geofences);
-      }
-    } catch (err) {
-      console.log("Error in fetching geofences: ", err);
     }
   };
 
@@ -274,14 +331,14 @@ const AddGeofence = () => {
             </form>
             <div className="flex flex-row gap-2 mt-6">
               <button
-                onClick={signupAction}
+                onClick={() => navigate("/geofence")}
                 className="w-1/2 bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                onClick={addGeofence}
+                onClick={handleAddGeofence}
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 Add
@@ -293,7 +350,17 @@ const AddGeofence = () => {
               ref={mapContainerRef}
               id="map"
               className="map-container w-full h-[600px]"
-            ></div>
+            >
+              <input
+                type="text"
+                id="auto"
+                name="auto"
+                className="mt-2 ms-2 w-[300px] absolute top-0 left-0 text-[15px] p-[10px] outline-none focus:outline-none"
+                placeholder="Search places"
+                spellCheck="false"
+              />
+              {isMapLoaded && <PlaceSearchPlugin map={mapObject} />}
+            </div>
             {isMapLoaded && geofences.length >= 0 && (
               <GeoJsonComponent map={mapObject} />
             )}

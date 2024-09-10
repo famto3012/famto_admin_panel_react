@@ -67,11 +67,14 @@ const CustomOrder = ({ data }) => {
     if (itemToRemove && itemToRemove.itemImageURL) {
       try {
         await deleteFileFromFirebase(itemToRemove.itemImageURL);
-        console.log(
-          `Image deleted from Firebase: ${itemToRemove.itemImageURL}`
-        );
       } catch (error) {
-        console.error("Failed to delete image:", error);
+        toast({
+          title: "Error",
+          description: "Error in deleting item image",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     }
 
@@ -105,7 +108,13 @@ const CustomOrder = ({ data }) => {
         };
         setCustomOrderData({ ...customOrderData, items: updatedItems });
       } catch (error) {
-        console.error("Upload failed:", error);
+        toast({
+          title: "Error",
+          description: "Error in uploading image",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     }
   };
@@ -236,8 +245,14 @@ const CustomOrder = ({ data }) => {
                 onClick={() => setModalVisible(true)}
                 className="font-medium bg-teal-700 text-white w-[80%] rounded-md  py-2 flex items-center justify-center"
               >
-                Mark location
-                <LocationOnOutlinedIcon className="text-[18px] ms-2" />
+                {coordinates?.latitude && coordinates?.longitude ? (
+                  `Location selected`
+                ) : (
+                  <>
+                    Mark location
+                    <LocationOnOutlinedIcon className="text-[18px] ms-2" />
+                  </>
+                )}
               </button>
 
               <MapModal

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MapModal from "./MapModal";
 import { useMap } from "../../context/MapContext";
+import { useToast } from "@chakra-ui/react";
 
 const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const { coordinates } = useMap();
@@ -14,9 +15,12 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
     landmark: "",
     saveAddress: false,
   });
+  const [showButton, setShowButton] = useState(true);
 
   const [selectedType, setSelectedType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+
+  const toast = useToast();
 
   const handleChangeAddress = (e) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
@@ -30,6 +34,36 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (
+      !addressData.type ||
+      !addressData.fullName ||
+      !addressData.phoneNumber ||
+      !addressData.flat ||
+      !addressData.area
+    ) {
+      toast({
+        title: "Error",
+        description: "Please fill up all fields",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    if (!coordinates.latitude || !coordinates.longitude) {
+      toast({
+        title: "Error",
+        description: "Please select a location",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
     const updatedAddressData = {
       ...addressData,
       latitude: coordinates.latitude,
@@ -37,6 +71,8 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
     };
 
     onAddCustomerAddress(updatedAddressData);
+
+    setShowButton(false);
   };
 
   return (
@@ -140,7 +176,9 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
                   onClick={() => setModalVisible(true)}
                   className="font-medium bg-teal-700 text-white w-2/3 rounded-md mx-auto py-2"
                 >
-                  {`Mark location`}
+                  {coordinates?.latitude && coordinates?.longitude
+                    ? `Location selected`
+                    : `Mark location`}
                 </button>
 
                 <MapModal
@@ -169,15 +207,17 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
               </div>
             </div>
 
-            <div className="flex justify-end mt-5 gap-3">
-              <button
-                type="button"
-                className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
-                onClick={handleSubmit}
-              >
-                Add Address
-              </button>
-            </div>
+            {showButton && (
+              <div className="flex justify-end mt-5 gap-3">
+                <button
+                  type="button"
+                  className={"bg-teal-700 text-white px-4 py-2 rounded w-1/2"}
+                  onClick={handleSubmit}
+                >
+                  Add Address
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
