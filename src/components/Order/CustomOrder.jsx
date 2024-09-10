@@ -245,7 +245,7 @@ const CustomOrder = ({ data }) => {
                 onClick={() => setModalVisible(true)}
                 className="font-medium bg-teal-700 text-white w-[80%] rounded-md  py-2 flex items-center justify-center"
               >
-                {coordinates.latitude && coordinates.longitude ? (
+                {coordinates?.latitude && coordinates?.longitude ? (
                   `Location selected`
                 ) : (
                   <>

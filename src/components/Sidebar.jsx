@@ -92,7 +92,7 @@ const Sidebar = () => {
           src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fwhitelogo.svg?alt=media&token=a7436647-2de7-4fee-8e3a-5c637bd0bc61"
           alt="Logo"
         />
-        <h1 className="text-white font-poppins font-medium text-2xl">Famto</h1>
+        <h1 className="text-white font-handelGothic text-2xl">FAMTO</h1>
       </div>
       <div className="dropside ">General</div>
 

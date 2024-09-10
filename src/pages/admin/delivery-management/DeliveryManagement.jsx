@@ -76,17 +76,17 @@ const DeliveryManagement = () => {
   }, [token, navigate]);
 
   useEffect(() => {
-    socket.on("orderAccepted", ({ orderDetailStepper }) => {
+    socket?.on("orderAccepted", ({ orderDetailStepper }) => {
       setActive(2);
     });
 
-    socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
+    socket?.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
       setActive(3);
     });
 
     return () => {
-      socket.off("orderAccepted");
-      socket.off("reachedDeliveryLocation");
+      socket?.off("orderAccepted");
+      socket?.off("reachedDeliveryLocation");
     };
   }, [socket]);
 
