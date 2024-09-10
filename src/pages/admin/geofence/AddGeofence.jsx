@@ -22,6 +22,12 @@ const PlaceSearchPlugin = ({ map }) => {
   useEffect(() => {
     console.log("MAP", map);
 
+    const searchInput = document.getElementById("auto");
+    if (!searchInput) {
+      console.error("Search input element not found");
+      return;
+    }
+
     if (map && placeSearchRef.current) {
       mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
     }
@@ -66,7 +72,7 @@ const PlaceSearchPlugin = ({ map }) => {
     };
 
     placeSearchRef.current = mapplsPluginObject.search(
-      document.getElementById("auto"),
+      searchInput,
       optional_config,
       callback
     );
