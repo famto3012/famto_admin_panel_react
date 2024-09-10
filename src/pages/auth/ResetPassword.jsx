@@ -18,8 +18,8 @@ const ResetPassword = () => {
   const resetToken = queryParams.get("resetToken");
   const role = queryParams.get("role");
   const toast = useToast();
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPasswords((prevState) => ({
