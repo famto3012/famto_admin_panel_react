@@ -36,6 +36,7 @@ const Merchant = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
   const [isCSVModalVisible, setIsCSVModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isConfirmModal, setIsConfirmModal] = useState(false);
@@ -285,6 +286,7 @@ const Merchant = () => {
               : merchant
           )
         );
+        handleCancel();
 
         toast({
           title: "Success",
@@ -310,6 +312,7 @@ const Merchant = () => {
   const handleReject = async (e, merchantId) => {
     e.preventDefault();
     try {
+      setRejectLoading(true);
       const response = await axios.patch(
         `${BASE_URL}/merchants/admin/reject-merchant/${merchantId}`,
         {},
@@ -323,7 +326,7 @@ const Merchant = () => {
         setAllMerchants(
           allMerchants.filter((merchant) => merchant._id !== merchantId)
         );
-
+        handleCancel();
         toast({
           title: "Success",
           description: "Rejected Merchant Successfully",
@@ -340,6 +343,8 @@ const Merchant = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setRejectLoading(false);
     }
   };
 
@@ -532,6 +537,47 @@ const Merchant = () => {
     }
   };
 
+  const handleDownloadMerchantCSV = async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await axios.post(
+        `${BASE_URL}/merchants/admin/download-csv`,
+        {
+          params: {
+            serviceable,
+            geofence,
+            businessCategory,
+            searchFilter: search,
+          },
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Create a URL for the file and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Merchant_Data.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while downloading CSV",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -601,17 +647,14 @@ const Merchant = () => {
                     </div>
 
                     <div>
-                      <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
-                        <CSVLink
-                          data={allMerchants}
-                          headers={allMerchantCSVDataHeading}
-                          filename={"All_Merchants.csv"}
-                        >
-                          <div className="flex gap-2">
-                            <TbArrowsSort className="text-[22px]" />
-                            Download
-                          </div>
-                        </CSVLink>
+                      <button
+                        onClick={handleDownloadMerchantCSV}
+                        className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white"
+                      >
+                        <div className="flex gap-2">
+                          <TbArrowsSort className="text-[22px]" />
+                          Download
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -839,7 +882,7 @@ const Merchant = () => {
                                       }
                                     >
                                       <p className="font-semibold text-[18px] p-2">
-                                        Are you sure want to Approve ?
+                                        Are you sure want to Reject ?
                                       </p>
                                       <div className="flex justify-end mt-5 gap-6">
                                         <button
@@ -853,7 +896,9 @@ const Merchant = () => {
                                           type="submit"
                                           className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
                                         >
-                                          Reject
+                                          {rejectLoading
+                                            ? `Rejecting...`
+                                            : `Reject`}
                                         </button>
                                       </div>
                                     </form>
