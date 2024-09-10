@@ -22,7 +22,88 @@ import MerchantAvailability from "../../../components/Merchant/MerchantAvailabil
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const MerchantDetails = () => {
-  const [merchantData, setMerchantData] = useState({});
+  const [merchantData, setMerchantData] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    merchantDetail: {
+      merchantName: "",
+      // merchantImageURL: "",
+      displayAddress: "",
+      description: "",
+      geofenceId: "",
+      location: "",
+      pancardNumber: "",
+      // pancardImageURL: "",
+      GSTINNumber: "",
+      // GSTINImageURL: "",
+      FSSAINumber: "",
+      // FSSAIImageURL: "",
+      aadharNumber: "",
+      // aadharImageURL: "",
+      businessCategoryId: "",
+      merchantFoodType: "",
+      deliveryOption: "",
+      deliveryTime: "",
+      preOrderStatus: "",
+      servingArea: "",
+      servingRadius: "",
+      availability: {
+        type: "",
+        specificDays: {
+          sunday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+          monday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+          tuesday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+          wednesday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+          thursday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+          friday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+          saturday: {
+            openAllDay: false,
+            closedAllDay: false,
+            specificTime: false,
+            startTime: null,
+            endTime: null,
+          },
+        },
+      },
+    },
+  });
   const [allGeofence, setAllGeofence] = useState([]);
   const [allBusinessCategory, setBusinessCategory] = useState([]);
 

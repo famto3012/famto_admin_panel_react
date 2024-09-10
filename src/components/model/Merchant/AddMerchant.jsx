@@ -85,7 +85,7 @@ const AddMerchant = ({ isVisible, onCancel, BASE_URL, token }) => {
         <form onSubmit={addNewMerchant}>
           <div className="flex flex-col gap-4 mt-6">
             {[
-              { label: "Full Name", name: "fullName", type: "text" },
+              { label: "Full Name of owner", name: "fullName", type: "text" },
               { label: "Email", name: "email", type: "email" },
               { label: "Phone Number", name: "phoneNumber", type: "text" },
               { label: "Password", name: "password", type: "password" },

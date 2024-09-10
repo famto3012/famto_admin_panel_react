@@ -141,8 +141,8 @@ const AddAgentModal = ({
         setDriFrontPreviewURL(null);
         setRcBackPreviewURL(null);
         setRcFrontPreviewURL(null);
-        console.log("MESSAGE:", addAgentResponse.data.message);
-        const newAgent = addAgentResponse.data.data; // Assuming the new agent data is in response.data.data
+
+        const newAgent = addAgentResponse.data.data;
         onAddAgent(newAgent);
         handleCancel();
         toast({
@@ -166,9 +166,6 @@ const AddAgentModal = ({
       setConfirmLoading(false);
     }
   };
-
-  console.log("testing token", token);
-  console.log("testing url", BASE_URL);
 
   return (
     <Modal
@@ -608,14 +605,20 @@ const AddAgentModal = ({
             <label className="w-1/3 text-gray-500" htmlFor="tag">
               Tags
             </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              value={addData.tag}
-              id="tag"
+
+            <select
               name="tag"
+              id="tag"
+              value={addData.tag}
               onChange={handleInputChange}
-            />
+              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
+            >
+              <option hidden defaultValue="Select tag">
+                Select tag
+              </option>
+              <option value="Normal">Normal</option>
+              <option value="Fish & Meat">Fish & Meat</option>
+            </select>
           </div>
           <h1 className="font-semibold text-[18px]">Add Profile</h1>
           <div className=" flex items-center gap-[30px]">
