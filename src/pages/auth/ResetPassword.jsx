@@ -10,7 +10,6 @@ const ResetPassword = () => {
     confirmPassword: "",
   });
   const toast = useToast();
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPasswords((prevState) => ({
