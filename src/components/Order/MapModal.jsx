@@ -106,25 +106,10 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
       }
 
       setIsMapLoaded(true);
-
-      // Place initial marker if location prop is provided
-      // let newMarker;
-
-      // if (location) {
-      //   console.log("true");
-      //   const { lat, lng } = location;
-      //   console.log(lat, lng);
-      //   newMarker = mapplsClassObject.Marker({
-      //     map: newMap,
-      //     position: { lat, lng },
-      //     draggable: false,
-      //   });
-      // }
     } else {
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
-        // authToken,
-        "6f8ee816-8dc8-42bc-8690-58c85c12deec",
+        authToken,
         { map: true, plugins: ["search"] },
         () => {
           const newMap = mapplsClassObject.Map({
