@@ -45,7 +45,6 @@ const EditBannerModal = ({
           setAppData(data);
         }
       } catch (err) {
-        console.error(`Error in fetching data:`, err);
         toast({
           title: "Error",
           description: "Error in getting banner data",
@@ -58,7 +57,6 @@ const EditBannerModal = ({
 
     if (currentBannerEdit) {
       fetchData();
-      console.log("currentBannner",currentBannerEdit)
     }
   }, [isVisible, token]);
 
@@ -72,18 +70,10 @@ const EditBannerModal = ({
 
   const handleSelectImage = (e) => {
     const file = e.target.files[0];
-    console.log("File", file);
-    fileInputRef.current = file; // store the selected file in the ref
-    console.log("Selected File handle", fileInputRef.current); 
+    fileInputRef.current = file;
     setFileSelected(fileInputRef.current);
     setBannerPreviewURL(URL.createObjectURL(file));
-    console.log("Banner preview url", URL.createObjectURL(file));
   };
-
-  useEffect(() => {
-    console.log("Banner preview url", bannerPreviewURL)
-    console.log("Selected File", fileSelected)
-  }, [bannerPreviewURL, fileSelected])
 
   const saveAction = async (e) => {
     e.preventDefault();
@@ -93,13 +83,12 @@ const EditBannerModal = ({
 
       const dataToSend = new FormData();
       const file = fileInputRef.current;
-      console.log("SELECTED FILE", file);
 
       dataToSend.append("name", appBanner.name);
       dataToSend.append("merchantId", appBanner.merchantId);
       dataToSend.append("geofenceId", appBanner.geofenceId);
-      // dataToSend.append("imageUrl", appBanner.imageUrl);
-     
+      dataToSend.append("imageUrl", appBanner.imageUrl);
+
       if (fileSelected) {
         dataToSend.append("bannerImage", fileSelected);
       }
@@ -147,7 +136,6 @@ const EditBannerModal = ({
         duration: 3000,
         isClosable: true,
       });
-      console.log(err.message)
     } finally {
       setConfirmLoading(false);
     }
@@ -277,4 +265,3 @@ const EditBannerModal = ({
 };
 
 export default EditBannerModal;
-

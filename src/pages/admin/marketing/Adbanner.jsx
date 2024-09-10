@@ -1,19 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 import { Modal, Spin, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { useToast } from "@chakra-ui/react";
+
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
+
+import Sidebar from "../../../components/Sidebar";
 import AddBannerModal from "../../../components/model/AdBannerModels/AddBannerModal";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
 import EditBannerModal from "../../../components/model/AdBannerModels/EditBannerModal";
 import AddIndividualModal from "../../../components/model/AdBannerModels/AddIndividualModal";
 import EditIndividualModal from "../../../components/model/AdBannerModels/EditIndividualModal";
-import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -22,15 +25,10 @@ const Adbanner = () => {
   const [individualBanner, setIndividualBanner] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [allGeofence, setAllGeofence] = useState([]);
-  const { token, role } = useContext(UserContext);
-  const navigate = useNavigate();
   const [currentBanner, setCurrentBanner] = useState(null);
   const [currentBannerEdit, setCurrentEditBanner] = useState(null);
   const [currentIndBanner, setCurrentIndBanner] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const toast = useToast();
-
-  //States for Modals
 
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -42,13 +40,13 @@ const Adbanner = () => {
   const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] =
     useState(false);
 
-    
-
-  //api connections
+  const toast = useToast();
+  const navigate = useNavigate();
+  const { token, role } = useContext(UserContext);
 
   useEffect(() => {
     if (!token || role !== "Admin") {
-      navigate("auth/login");
+      navigate("/auth/login");
       return;
     }
 
@@ -90,7 +88,6 @@ const Adbanner = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  // To display recently added Banner
   const handleAddBanner = (newBanner) => {
     setBanner((prevBanners) => {
       if (Array.isArray(prevBanners)) {
@@ -111,7 +108,6 @@ const Adbanner = () => {
 
   const handleAddIndBanner = (newBanner) => {
     setIndividualBanner((indBanner) => {
-      // Ensure Individual Banner is an array before adding the new promo code
       if (Array.isArray(indBanner)) {
         return [...indBanner, newBanner];
       } else {
@@ -128,17 +124,15 @@ const Adbanner = () => {
     );
   };
 
-  // New function to remove a Banner from the banner state
   const removeBanner = (bannerId) => {
     setBanner(banner.filter((banner) => banner._id !== bannerId));
   };
 
-  // New function to handle confirm delete
   const handleConfirmDelete = () => {
     setIsShowModalDelete(false);
     setCurrentBanner(null);
   };
-  // api calling to delete App banner..
+
   const handleBannerDelete = async (currentBanner) => {
     try {
       setConfirmLoading(true);
@@ -161,19 +155,18 @@ const Adbanner = () => {
           duration: 3000,
           isClosable: true,
         });
-      } else {
-        console.error(`Unexpected status code: ${deleteResponse.status}`);
       }
     } catch (err) {
-      console.error("Error in deleting banner:", err);
+      toast({
+        title: "Error",
+        description: "Error in deleting banner",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setConfirmLoading(false);
     }
-  };
-
-  const handleConfirmIndBannerDelete = () => {
-    setShowModalDeleteIndividual(false);
-    setCurrentIndBanner(null);
   };
 
   const removeIndBanner = (currentIndBannerId) => {
@@ -183,8 +176,6 @@ const Adbanner = () => {
       )
     );
   };
-
-  //api calling to delete individual app banner..
 
   const handleIndBannerDelete = async (e, currentIndBanner) => {
     e.preventDefault();
@@ -208,11 +199,15 @@ const Adbanner = () => {
           duration: 3000,
           isClosable: true,
         });
-      } else {
-        console.error(`Unexpected status code: ${indDeleteResponse.status}`);
       }
     } catch (err) {
-      console.error(`Error in delete individual banner`, err);
+      toast({
+        title: "Error",
+        description: "Error in deleting banner",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setConfirmLoading(false);
     }
@@ -253,11 +248,9 @@ const Adbanner = () => {
         );
       }
     } catch (err) {
-      console.error(`Error in toggling discount status: ${err.message}`);
-      // Optionally show an error toast notification
       toast({
         title: "Error",
-        description: "Failed to update Banner status.",
+        description: "Failed to update Banner status",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -302,11 +295,9 @@ const Adbanner = () => {
         );
       }
     } catch (err) {
-      console.error(`Error in toggling discount status: ${err.message}`);
-      // Optionally show an error toast notification
       toast({
         title: "Error",
-        description: "Failed to update Banner status.",
+        description: "Failed to update Banner status",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -314,19 +305,12 @@ const Adbanner = () => {
     }
   };
 
-  //view Modals
-
-  const showModal = () => {
-    setAddModalVisible(true);
-  };
+  const showModal = () => setAddModalVisible(true);
+  const showModalIndividual = () => setIsModalVisibleIndividual(true);
 
   const showModalEdit = (bannerId) => {
     setCurrentEditBanner(bannerId);
     setEditModalVisible(true);
-  };
-
-  const showModalIndividual = () => {
-    setIsModalVisibleIndividual(true);
   };
 
   const showModalIndividualEdit = (bannerEditId) => {
@@ -342,6 +326,11 @@ const Adbanner = () => {
   const showModalDeleteIndividual = (currentIndBannerId) => {
     setCurrentIndBanner(currentIndBannerId);
     setShowModalDeleteIndividual(true);
+  };
+
+  const handleConfirmIndBannerDelete = () => {
+    setShowModalDeleteIndividual(false);
+    setCurrentIndBanner(null);
   };
 
   const handleCancel = () => {
