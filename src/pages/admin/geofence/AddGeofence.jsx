@@ -15,67 +15,97 @@ const mapplsPluginObject = new mappls_plugin();
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
+// const PlaceSearchPlugin = ({ map }) => {
+//   const placeSearchRef = useRef(null);
+//   const markerRef = useRef(null);
+
+//   useEffect(() => {
+//     console.log("MAP", map);
+
+//     const searchInput = document.getElementById("auto");
+//     if (!searchInput) {
+//       console.error("Search input element not found");
+//       return;
+//     }
+
+//     if (map && placeSearchRef.current) {
+//       mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+//     }
+
+//     const optional_config = {
+//       location: [28.61, 77.23],
+//       region: "IND",
+//       height: 300,
+//     };
+
+//     const callback = (data) => {
+//       if (data && data.length > 0) {
+//         const dt = data[0];
+//         if (!dt) return false;
+
+//         const eloc = dt.eLoc;
+//         const place = `${dt.placeName}`;
+
+//         console.log("Search Data:", dt);
+
+//         if (markerRef.current) markerRef.current.remove();
+
+//         mapplsPluginObject.pinMarker(
+//           {
+//             map: map,
+//             pin: eloc,
+//             popupHtml: place,
+//             popupOptions: {
+//               openPopup: true,
+//             },
+//             zoom: 10,
+//           },
+//           (marker) => {
+//             markerRef.current = marker;
+//             markerRef.current.fitbounds();
+//           }
+//         );
+//         markerRef.current.remove();
+//       } else {
+//         console.warn("No search results found", data);
+//       }
+//     };
+
+//     placeSearchRef.current = new mapplsPluginObject.search(
+//       searchInput,
+//       optional_config,
+//       callback
+//     );
+
+//     return () => {
+//       if (map && placeSearchRef.current) {
+//         mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+//       }
+//     };
+//   }, [map]);
+
+//   return null;
+// };
 const PlaceSearchPlugin = ({ map }) => {
   const placeSearchRef = useRef(null);
-  const markerRef = useRef(null);
 
   useEffect(() => {
-    console.log("MAP", map);
-
-    const searchInput = document.getElementById("auto");
-    if (!searchInput) {
-      console.error("Search input element not found");
-      return;
-    }
-
     if (map && placeSearchRef.current) {
       mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
     }
-
-    const optional_config = {
+    var optional_config = {
       location: [28.61, 77.23],
       region: "IND",
       height: 300,
     };
-
-    const callback = (data) => {
-      if (data && data.length > 0) {
-        const dt = data[0];
-        if (!dt) return false;
-
-        const eloc = dt.eLoc;
-        const place = `${dt.placeName}`;
-
-        console.log("Search Data:", dt);
-
-        if (markerRef.current) markerRef.current.remove();
-
-        mapplsPluginObject.pinMarker(
-          {
-            map: map,
-            pin: eloc,
-            popupHtml: place,
-            popupOptions: {
-              openPopup: true,
-            },
-            zoom: 10,
-          },
-          (marker) => {
-            markerRef.current = marker;
-            markerRef.current.fitbounds();
-          }
-        );
-        markerRef.current.remove();
-      } else {
-        console.warn("No search results found", data);
-      }
-    };
-
     placeSearchRef.current = mapplsPluginObject.search(
-      searchInput,
+      document.getElementById("auto"),
       optional_config,
       callback
     );
+   const callback = (data) => {
+      console.log(data); /* get search data in console */
+    };
 
     return () => {
       if (map && placeSearchRef.current) {
@@ -83,8 +113,6 @@ const PlaceSearchPlugin = ({ map }) => {
       }
     };
   }, [map]);
-
-  return null;
 };
 
 const AddGeofence = () => {
