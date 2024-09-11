@@ -11,13 +11,17 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }) => {
-  const [userId, setUserId] = useState(secureLocalStorage.getItem("userId") || null);
-  const [fcmToken, setFcmToken] = useState(secureLocalStorage.getItem("fcmToken") || null);
+  const [userId, setUserId] = useState(
+    secureLocalStorage.getItem("userId") || null
+  );
+  const [fcmToken, setFcmToken] = useState(
+    secureLocalStorage.getItem("fcmToken") || null
+  );
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io("/", {
+      const newSocket = io("https://api.famto.in", {
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,
@@ -28,7 +32,10 @@ export const SocketProvider = ({ children }) => {
         reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
+        pingInterval: 10000,
+        pingTimeout: 10000,
       });
+
       setSocket(newSocket);
 
       newSocket.on("connect", () => {
