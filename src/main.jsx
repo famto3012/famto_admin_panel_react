@@ -22,7 +22,7 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider theme={theme}>
     <StyledEngineProvider injectFirst>
-      <ChakraProvider>
+      <ChakraProvider >
         <SocketProvider>
           <SoundProvider>
             <MapProvider>
