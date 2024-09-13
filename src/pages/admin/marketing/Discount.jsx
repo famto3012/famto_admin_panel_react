@@ -503,7 +503,7 @@ const Discount = () => {
                         {formatTime(merchantDiscounts.validTo)}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-100">
-                        {merchantDiscounts.geofence}
+                        {merchantDiscounts.geofenceId.name}
                       </td>
                       <td className="py-5 px-4 border-b border-gray-100">
                         <div className="flex gap-4">
@@ -663,7 +663,7 @@ const Discount = () => {
                           {formatTime(table.validTo)}
                         </td>
                         <td className="py-2 px-4 border-b border-gray-100">
-                          {table.geofence}
+                          {table.geofenceId.name}
                         </td>
                         <td className="py-5 px-4 border-b  border-gray-100">
                           <div className="flex gap-4">
