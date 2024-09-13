@@ -3,8 +3,16 @@ import { useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 
-const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
+const BlockAgentModal = ({
+  isVisible,
+  onCancel,
+  BASE_URL,
+  token,
+  agentId,
+  onBlock,
+}) => {
   const [reason, setReason] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
@@ -12,6 +20,20 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
     e.preventDefault();
 
     try {
+      setIsLoading(true);
+
+      if (!reason) {
+        toast({
+          title: "Error",
+          description: `Please provide a reason`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+
+        return;
+      }
+
       const response = await axios.patch(
         `${BASE_URL}/admin/agents/block-agent/${agentId}`,
         { reason },
@@ -24,7 +46,9 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
       );
 
       if (response.status === 200) {
+        setReason("");
         onCancel();
+        onBlock();
         toast({
           title: "Success",
           description: `Agent blocked successfully`,
@@ -41,6 +65,8 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,7 +81,7 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
     >
       <div className="flex mt-5 gap-4">
         <label className="w-1/3 mt-2" htmlFor="reason">
-          reason
+          Reason
         </label>
         <input
           className="border-2 border-gray-100 rounded p-2 w-full  focus:outline-none"
@@ -66,7 +92,7 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
           onChange={(e) => setReason(e.target.value)}
         />
       </div>
-      <div className="flex justify-end gap-4 mt-6">
+      <div className="flex justify-end gap-4 mt-5">
         <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
           Cancel
         </button>
@@ -75,7 +101,7 @@ const BlockAgentModal = ({ isVisible, onCancel, BASE_URL, token, agentId }) => {
           type="submit"
           onClick={handleBlockAgent}
         >
-          Confirm
+          {isLoading ? `Saving...` : `Save`}
         </button>
       </div>
     </Modal>

@@ -85,6 +85,10 @@ const AgentDetails = () => {
     setImageModalUrl("");
   };
 
+  const handleMarkBlocked = () => {
+    setAgent({ ...agent, isBlocked: true });
+  };
+
   const changeAgentStatus = async (agentId) => {
     try {
       const response = await axios.patch(
@@ -135,12 +139,14 @@ const AgentDetails = () => {
                 Agent ID <span className="text-red-600">#{agent._id}</span>
               </Link>
               <div className="flex items-center">
-                <button
-                  className="bg-yellow-100 py-2 px-5 p-1 mr-5 rounded-xl flex items-center gap-3"
-                  onClick={toggleBlockModal}
-                >
-                  <BlockIcon className="w-2 h-2 text-red-600" /> Block
-                </button>
+                {!agent.isBlocked && (
+                  <button
+                    className="bg-yellow-100 py-2 px-5 p-1 mr-5 rounded-xl flex items-center gap-3"
+                    onClick={toggleBlockModal}
+                  >
+                    <BlockIcon className=" text-red-600" /> Block
+                  </button>
+                )}
                 Status
                 <Switch
                   value={agent.status}
@@ -472,6 +478,7 @@ const AgentDetails = () => {
               BASE_URL={BASE_URL}
               token={token}
               agentId={agentId}
+              onBlock={handleMarkBlocked}
             />
 
             {/* Image Modal */}

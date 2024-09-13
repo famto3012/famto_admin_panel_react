@@ -18,6 +18,7 @@ import MerchantData from "../../../components/Merchant/MerchantData";
 import MerchantDocuments from "../../../components/Merchant/MerchantDocuments";
 import ConfigureMerchant from "../../../components/Merchant/ConfigureMerchant";
 import MerchantAvailability from "../../../components/Merchant/MerchantAvailability";
+import BlockMerchantModel from "../../../components/model/Merchant/BlockMerchantModel";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -26,12 +27,14 @@ const MerchantDetails = () => {
   const [allGeofence, setAllGeofence] = useState([]);
   const [allBusinessCategory, setBusinessCategory] = useState([]);
 
+  const [showBlock, setShowBlock] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { token, role } = useContext(UserContext);
   const { merchantId } = useParams();
   const toast = useToast();
+  const { token, role } = useContext(UserContext);
 
   useEffect(() => {
     if (!token) {
@@ -111,6 +114,12 @@ const MerchantDetails = () => {
     }
   }, [merchantId, token, role]);
 
+  const toggleBlock = () => setShowBlock(!showBlock);
+
+  const handleMarkBlocked = () => {
+    setMerchantData({ ...merchantData, isBlocked: true });
+  };
+
   // Callback function to handle changes from the child component
   const handleMerchantDataChange = (updatedData) => {
     setMerchantData((prevData) => ({
@@ -146,13 +155,23 @@ const MerchantDetails = () => {
         });
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Error in changing merchant status",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      if (err.response && err.response.data && err.response.data.message) {
+        toast({
+          title: "Error",
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: `An error occoured, Please try again later`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     }
   };
 
@@ -231,10 +250,23 @@ const MerchantDetails = () => {
         <div className="flex justify-between my-[15px] mt-8 mb-8">
           <h3 className="font-[600] text-[18px] ms-3">Merchant name</h3>
           <div>
-            {role === "Admin" && (
-              <Link className="bg-yellow-100 py-2 px-5 mr-5 rounded-xl ">
-                <BlockIcon className="h-5 w-5 text-red-600" /> Block
-              </Link>
+            {role === "Admin" && !merchantData.isBlocked && (
+              <>
+                <Link
+                  onClick={toggleBlock}
+                  className="bg-yellow-100 py-2 px-5 mr-5 rounded-xl "
+                >
+                  <BlockIcon className="h-5 w-5 text-red-600" /> Block
+                </Link>
+                <BlockMerchantModel
+                  isVisible={showBlock}
+                  onCancel={toggleBlock}
+                  BASE_URL={BASE_URL}
+                  token={token}
+                  merchantId={merchantId}
+                  onBlock={handleMarkBlocked}
+                />
+              </>
             )}
             Status
             <Switch

@@ -172,6 +172,10 @@ const CustomerDetails = () => {
     }));
   };
 
+  const handleMarkBlocked = () => {
+    setCustomer({ ...customer, isBlocked: true });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -227,12 +231,14 @@ const CustomerDetails = () => {
           <h1 className="text-lg font-bold">
             Customer ID <span className="text-red-600">#{customer._id}</span>
           </h1>
-          <button
-            className="bg-yellow-100 text-black rounded-md  px-3 py-1 font-semibold flex items-center"
-            onClick={toggleBlockModal}
-          >
-            <BlockIcon className=" text-red-600 mr-2" /> Block
-          </button>
+          {!customer.isBlocked && (
+            <button
+              className="bg-yellow-100 text-black rounded-md  px-3 py-1 font-semibold flex items-center"
+              onClick={toggleBlockModal}
+            >
+              <BlockIcon className=" text-red-600 mr-2" /> Block
+            </button>
+          )}
         </div>
 
         <div className="bg-white mx-7 py-4 mt-5 ">
@@ -629,11 +635,12 @@ const CustomerDetails = () => {
 
       {/* Block Modal */}
       <BlockCustomerModal
-        isOpen={showBlockModal}
-        onClose={handleCancelModal}
+        isVisible={showBlockModal}
+        onCancel={handleCancelModal}
         BASE_URL={BASE_URL}
         token={token}
         customerId={customerId}
+        onBlock={handleMarkBlocked}
       />
 
       {/* Customer Rating Modal */}
