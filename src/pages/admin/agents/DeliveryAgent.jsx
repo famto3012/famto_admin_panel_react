@@ -157,7 +157,6 @@ const DeliveryAgent = () => {
   };
 
   // API function for Status filter
-
   const onStatusChange = (e) => {
     const selectedService = e.target.value;
     setStatusFilter(selectedService);
@@ -190,7 +189,6 @@ const DeliveryAgent = () => {
   };
 
   // API function for vehicle type Filter
-
   const onVehicleTypeChange = (e) => {
     const selectedService = e.target.value;
     setFilterVehicleType(selectedService);
@@ -664,7 +662,10 @@ const DeliveryAgent = () => {
                         className="align-middle even:bg-gray-200 text-center"
                       >
                         <td className="p-4 text-center">
-                          <Link to={`/agent-details/${agent._id}`}>
+                          <Link
+                            to={`/agent-details/${agent._id}`}
+                            className="underline underline-offset-2"
+                          >
                             {agent._id}
                           </Link>
                         </td>

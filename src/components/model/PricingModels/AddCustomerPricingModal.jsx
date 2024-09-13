@@ -11,12 +11,11 @@ const AddCustomerPricingModal = ({
   BASE_URL,
   onAddRule,
   business,
-}) => { 
-
+}) => {
   const toast = useToast();
-  const [confirmLoading,setConfirmLoading]= useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [customerPricing, setCustomerPricing] = useState({
-    vehicleType:null,
+    vehicleType: null,
     ruleName: "",
     baseFare: "",
     baseDistance: "",
@@ -33,23 +32,18 @@ const AddCustomerPricingModal = ({
   const handleRadioChange = (e) => {
     const { value } = e.target;
     setCustomerPricing({ ...customerPricing, deliveryMode: value });
-    console.log(value);
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerPricing({ ...customerPricing, [name]: value });
   };
-  useEffect (() =>{
-    console.log(business)
-  }
-  )
-  
 
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      console.log(customerPricing);
-      setConfirmLoading(true)
+      console.log("customerPricing", customerPricing);
+
+      setConfirmLoading(true);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/customer-pricing/add-customer-pricing`,
         customerPricing,
@@ -70,7 +64,6 @@ const AddCustomerPricingModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in fetching data:${err}`);
       toast({
         title: "Error",
         description: "There was an error occured.",
@@ -79,7 +72,7 @@ const AddCustomerPricingModal = ({
         isClosable: true,
       });
     } finally {
-      setConfirmLoading(false)
+      setConfirmLoading(false);
     }
   };
 
@@ -273,10 +266,13 @@ const AddCustomerPricingModal = ({
           </div>
           {customerPricing.deliveryMode === "Home Delivery" && (
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="businessCategoryId"></label>
+              <label
+                className="w-1/3 text-gray-500"
+                htmlFor="businessCategoryId"
+              ></label>
               <select
                 name="businessCategoryId"
-                value={customerPricing.businessCategoryId || ""}
+                value={customerPricing?.businessCategoryId}
                 onChange={handleInputChange}
                 className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               >
@@ -348,7 +344,7 @@ const AddCustomerPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-           {confirmLoading ? "Adding..." : "Add"}
+            {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

@@ -1,11 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
-import {
-  ArrowDownOutlined,
-  PlusOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { ArrowDownOutlined, PlusOutlined } from "@ant-design/icons";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { Switch } from "antd";
@@ -128,13 +124,14 @@ const Products = () => {
 
           if (data.length > 0) {
             setAllCategories(data);
+
             setSelectedCategory({
               categoryId: data[0]?._id,
               categoryName: data[0]?.categoryName,
               categoryStatus: data[0]?.status,
             });
           } else {
-            // Stop loading if no categories
+            setAllCategories([]);
             setIsCategoryListLoading(false);
             return;
           }
@@ -180,8 +177,10 @@ const Products = () => {
               productName: data[0]?.productName,
             });
           } else {
-            // Stop loading if no products
             setIsProductListLoading(false);
+            setAllProducts([]);
+            setSelectedProduct(null);
+            setProductDetail(null);
             return;
           }
         }
@@ -205,7 +204,6 @@ const Products = () => {
 
   useEffect(() => {
     const getProductDetail = async (productId) => {
-      ``;
       try {
         setIsProductDetailLoading(true);
 
@@ -220,7 +218,7 @@ const Products = () => {
           if (data) {
             setProductDetail(data);
           } else {
-            // Stop loading if no product details
+            setProductDetail(null);
             setIsProductDetailLoading(false);
             return;
           }
@@ -240,6 +238,8 @@ const Products = () => {
 
     if (selectedProduct?.productId) {
       getProductDetail(selectedProduct.productId);
+    } else {
+      setProductDetail(null);
     }
   }, [selectedProduct, token]);
 
@@ -343,10 +343,23 @@ const Products = () => {
       );
 
       if (response.status === 200) {
+        const updatedStatus = !selectedCategory.categoryStatus;
+
+        // Update selected category status
         setSelectedCategory({
           ...selectedCategory,
-          categoryStatus: !selectedCategory.categoryStatus,
+          categoryStatus: updatedStatus,
         });
+
+        // Update allCategories array with the new status
+        setAllCategories((prevCategories) =>
+          prevCategories.map((category) =>
+            category._id === selectedCategory.categoryId
+              ? { ...category, status: updatedStatus }
+              : category
+          )
+        );
+
         toast({
           title: "Success",
           description: response.data.message,
@@ -541,7 +554,7 @@ const Products = () => {
   return (
     <>
       <Sidebar />
-      <div className="pl-[300px] bg-gray-100">
+      <div className="pl-[300px] bg-gray-100 h-screen">
         <nav className="p-5">
           <GlobalSearch />
         </nav>
@@ -660,9 +673,9 @@ const Products = () => {
               <div className="flex gap-5 items-center">
                 Disabled{" "}
                 <Switch
-                  value={selectedCategory.categoryStatus}
+                  value={selectedCategory?.categoryStatus || false}
                   onClick={handleChangeCategoryStatus}
-                />{" "}
+                />
                 Enable
                 <button
                   className="bg-blue-50 p-2 flex items-center px-5 rounded-lg"
@@ -763,13 +776,15 @@ const Products = () => {
                 )}
 
                 {!isProductDetailLoading &&
-                  Object.keys(productDetail).length === 0 && (
+                  (!productDetail ||
+                    Object.keys(productDetail).length === 0) && (
                     <div className="flex justify-center items-center h-[50%]">
                       <p>No Data available</p>
                     </div>
                   )}
 
                 {!isProductDetailLoading &&
+                  productDetail &&
                   Object.keys(productDetail).length > 0 && (
                     <>
                       <div className="p-5 flex justify-between">

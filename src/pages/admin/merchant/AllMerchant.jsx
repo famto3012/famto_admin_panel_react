@@ -255,13 +255,23 @@ const Merchant = () => {
         });
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description: `Error in changing merchant status`,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      if (err.response && err.response.data && err.response.data.message) {
+        toast({
+          title: "Error",
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: `An error occoured, Please try again later`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     }
   };
 

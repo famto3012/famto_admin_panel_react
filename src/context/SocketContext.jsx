@@ -1,8 +1,5 @@
-// src/context/SocketContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
-// import { UserContext } from "./UserContext";
-import Cookies from "js-cookie";
 import secureLocalStorage from "react-secure-storage";
 export const SocketContext = createContext();
 

@@ -3,12 +3,12 @@ import { Modal } from "antd";
 import axios from "axios";
 import { useState } from "react";
 
-const BlockCustomerModal = ({
+const BlockMerchantModel = ({
   isVisible,
   onCancel,
   BASE_URL,
   token,
-  customerId,
+  merchantId,
   onBlock,
 }) => {
   const [reason, setReason] = useState("");
@@ -16,7 +16,7 @@ const BlockCustomerModal = ({
 
   const toast = useToast();
 
-  const handleBlockCustomer = async (e) => {
+  const handleBlockMerchant = async (e) => {
     e.preventDefault();
 
     try {
@@ -34,9 +34,9 @@ const BlockCustomerModal = ({
         return;
       }
 
-      const response = await axios.patch(
-        `${BASE_URL}/admin/customers/block-customer/${customerId}`,
-        { reason },
+      const response = await axios.put(
+        `${BASE_URL}/merchants/admin/block-merchant/${merchantId}`,
+        { reasonForBlocking: reason },
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -48,7 +48,7 @@ const BlockCustomerModal = ({
         onCancel();
         toast({
           title: "Success",
-          description: `Customer blocked successfully`,
+          description: `Merchant blocked successfully`,
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -57,7 +57,7 @@ const BlockCustomerModal = ({
     } catch (err) {
       toast({
         title: "Error",
-        description: `An error occoured, Please try again later ${err}`,
+        description: `An error occoured, Please try again later`,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -75,7 +75,7 @@ const BlockCustomerModal = ({
       footer={null}
       centered
     >
-      <form onSubmit={handleBlockCustomer}>
+      <form onSubmit={handleBlockMerchant}>
         <div className="flex items-center mt-10">
           <label htmlFor="reason" className="w-1/3 text-gray-500">
             Reason
@@ -109,4 +109,4 @@ const BlockCustomerModal = ({
   );
 };
 
-export default BlockCustomerModal;
+export default BlockMerchantModel;
