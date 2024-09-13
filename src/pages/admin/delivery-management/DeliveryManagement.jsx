@@ -29,6 +29,7 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../../context/SocketContext";
+import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -59,6 +60,7 @@ const DeliveryManagement = () => {
   const [mapObject, setMapObject] = useState(null);
   const [authToken, setAuthToken] = useState("");
   const [active, setActive] = useState(0);
+  const [value, setValue] = useState([new Date(), new Date()]);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -676,6 +678,33 @@ const DeliveryManagement = () => {
     }
   };
 
+  const selectDateRange = async (value) => {
+    setValue(value);
+    const formattedStartDate = formatDate(value[0]);
+    const formattedEndDate = formatDate(value[1]);
+    try {
+      console.log("Start", formattedStartDate, "End", formattedEndDate);
+      const response = await axios.get(`${BASE_URL}/admin/delivery-management/task-date`, {
+        params: { startDate: formattedStartDate, endDate: formattedEndDate },
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        console.log(response.data)
+        setTaskData(response.data)
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while filtering the orders",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <>
       <SidebarDelivery />
@@ -690,10 +719,14 @@ const DeliveryManagement = () => {
           </p>
           <div className="bg-white rounded-lg flex justify-between p-5 mt-5 ">
             <div>
-              <select className="bg-blue-50 p-2 rounded-md" name="day">
-                <option>Today</option>
-                <option>Tomorrow</option>
-              </select>
+            <DateRangePicker
+              onChange={selectDateRange}
+              name="date"
+              value={value}
+              format="y-MM-dd"
+              // minDate={new Date()}
+              maxDate={new Date()}
+            />
               <select className="bg-blue-50 p-2 ml-5 rounded-md" name="agent">
                 <option>All Agents</option>
                 <option>Agents</option>

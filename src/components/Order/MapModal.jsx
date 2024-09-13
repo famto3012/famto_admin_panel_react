@@ -47,7 +47,6 @@ const PlaceSearchPlugin = ({ map }) => {
         markerRef.current.remove();
       }
     };
-
     placeSearchRef.current = mapplsPluginObject.search(
       document.getElementById("auto"),
       optional_config,
