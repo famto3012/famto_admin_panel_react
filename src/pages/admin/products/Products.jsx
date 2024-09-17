@@ -131,7 +131,12 @@ const Products = () => {
               categoryStatus: data[0]?.status,
             });
           } else {
+            console.log("HERE");
             setAllCategories([]);
+            setSelectedCategory(null);
+            setAllProducts([]);
+            setSelectedProduct(null);
+            setProductDetail(null);
             setIsCategoryListLoading(false);
             return;
           }
@@ -150,6 +155,7 @@ const Products = () => {
     };
 
     if (selectedMerchant) {
+      console.log("Finding Categories");
       getAllCategories(selectedMerchant);
     }
   }, [selectedMerchant, token]);
@@ -667,7 +673,7 @@ const Products = () => {
           <div className="w-4/5 bg-white rounded-md m-5 ml-2">
             <div className="border-b-2 flex justify-between p-5">
               <h1 className="font-semibold flex ml-3 items-center text-[18px] capitalize">
-                {selectedCategory.categoryName}
+                {selectedCategory?.categoryName}
               </h1>
 
               <div className="flex gap-5 items-center">
@@ -689,7 +695,7 @@ const Products = () => {
                   token={token}
                   role={role}
                   BASE_URL={BASE_URL}
-                  categoryId={selectedCategory.categoryId}
+                  categoryId={selectedCategory?.categoryId}
                   merchantId={selectedMerchant}
                 />
                 <button
@@ -706,8 +712,8 @@ const Products = () => {
                   token={token}
                   role={role}
                   merchantId={selectedMerchant}
-                  categoryName={selectedCategory.categoryName}
-                  categoryId={selectedCategory.categoryId}
+                  categoryName={selectedCategory?.categoryName}
+                  categoryId={selectedCategory?.categoryId}
                   onDeleteCategory={filterDeletedCategory}
                 />
               </div>
@@ -725,22 +731,22 @@ const Products = () => {
                   {!isProductListLoading &&
                     allProducts?.map((product, index) => (
                       <h6
-                        key={product._id}
+                        key={product?._id}
                         draggable
                         onDragStart={() => (dragProduct.current = index)}
                         onDragEnter={() => (dragOverProduct.current = index)}
                         onDragEnd={handleReorderProduct}
                         onDragOver={(e) => e.preventDefault()}
                         onClick={() =>
-                          selectProduct(product._id, product.productName)
+                          selectProduct(product?._id, product?.productName)
                         }
                         className={`${
-                          selectedProduct.productName === product.productName
+                          selectedProduct?.productName === product?.productName
                             ? "bg-gray-200"
                             : ""
                         } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400]`}
                       >
-                        {product.productName}
+                        {product?.productName}
                       </h6>
                     ))}
                 </div>
@@ -762,7 +768,7 @@ const Products = () => {
                     BASE_URL={BASE_URL}
                     token={token}
                     role={role}
-                    categoryId={selectedCategory.categoryId}
+                    categoryId={selectedCategory?.categoryId}
                     merchantId={selectedMerchant}
                     onAddProduct={handleAddProduct}
                   />
@@ -777,7 +783,7 @@ const Products = () => {
 
                 {!isProductDetailLoading &&
                   (!productDetail ||
-                    Object.keys(productDetail).length === 0) && (
+                    Object?.keys(productDetail)?.length === 0) && (
                     <div className="flex justify-center items-center h-[50%]">
                       <p>No Data available</p>
                     </div>
@@ -785,23 +791,23 @@ const Products = () => {
 
                 {!isProductDetailLoading &&
                   productDetail &&
-                  Object.keys(productDetail).length > 0 && (
+                  Object?.keys(productDetail)?.length > 0 && (
                     <>
                       <div className="p-5 flex justify-between">
                         <div className="flex w-2/3 gap-3">
                           <figure className="h-[90px] w-[90px] ">
                             <img
-                              src={productDetail.productImageURL}
+                              src={productDetail?.productImageURL}
                               alt=""
                               className="w-full h-full object-cover rounded-md"
                             />
                           </figure>
                           <div>
                             <p className="font-semibold">
-                              {productDetail.productName}
+                              {productDetail?.productName}
                             </p>
                             <p className="text-teal-800 font-bold">
-                              ₹ {productDetail.price}
+                              ₹ {productDetail?.price}
                             </p>
                           </div>
                         </div>
@@ -818,8 +824,8 @@ const Products = () => {
                             allCategories={allCategories}
                             BASE_URL={BASE_URL}
                             token={token}
-                            categoryId={selectedCategory.categoryId}
-                            productId={selectedProduct.productId}
+                            categoryId={selectedCategory?.categoryId}
+                            productId={selectedProduct?.productId}
                             onChangeCategory={filterChangedProduct}
                           />
                         </div>
@@ -829,7 +835,7 @@ const Products = () => {
                         <div className="flex gap-5 items-center">
                           Inventory
                           <Switch
-                            value={productDetail.inventory}
+                            value={productDetail?.inventory}
                             onClick={handleChangeProductStatus}
                           />
                           <button
@@ -845,8 +851,8 @@ const Products = () => {
                             token={token}
                             role={role}
                             merchantId={selectedMerchant}
-                            productId={selectedProduct.productId}
-                            categoryId={selectedCategory.categoryId}
+                            productId={selectedProduct?.productId}
+                            categoryId={selectedCategory?.categoryId}
                           />
                           <button
                             className="bg-red-100 p-2 flex items-center rounded-lg px-3"
@@ -860,8 +866,8 @@ const Products = () => {
                             onCancel={handleCancel}
                             token={token}
                             BASE_URL={BASE_URL}
-                            productName={selectedProduct.productName}
-                            productId={selectedProduct.productId}
+                            productName={selectedProduct?.productName}
+                            productId={selectedProduct?.productId}
                             onDeleteProduct={filterDeletedProduct}
                           />
                         </div>

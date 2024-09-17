@@ -28,7 +28,6 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
     <>
       <div className="mb-4 flex flex-col gap-[10px]">
         <h3 className="text-gray-700 font-bold mb-2">Configuration</h3>
-
         <div className="mb-4 flex w-[800px]">
           <label className="block mt-3 text-gray-700 w-2/5">
             Business category
@@ -50,55 +49,63 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
           </select>
         </div>
 
-        <div className="mb-4 flex w-[800px]">
-          <label className="block text-gray-700 w-2/5">
-            If restaurant, then
-          </label>
+        {detail?.merchantDetail?.businessCategoryId ===
+          "66e1d938b94cc5e6ad6cb1e0" && (
+          <>
+            <div className="mb-4 flex w-[800px]">
+              <label className="block text-gray-700 w-2/5">
+                If restaurant, then
+              </label>
 
-          <div className="flex items-center gap-[4rem]">
-            <label className="mr-4 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="merchantFoodType"
-                  value="Veg"
-                  checked={detail?.merchantDetail?.merchantFoodType === "Veg"}
-                  onChange={handleInputChange}
-                  className=" text-teal-600 focus:ring-teal-500"
-                />
-                <span>Veg</span>
+              <div className="flex items-center gap-[4rem]">
+                <label className="mr-4 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="merchantFoodType"
+                      value="Veg"
+                      checked={
+                        detail?.merchantDetail?.merchantFoodType === "Veg"
+                      }
+                      onChange={handleInputChange}
+                      className=" text-teal-600 focus:ring-teal-500"
+                    />
+                    <span>Veg</span>
+                  </div>
+                </label>
+
+                <label className="mr-4 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="merchantFoodType"
+                      value="Non-veg"
+                      checked={
+                        detail?.merchantDetail?.merchantFoodType === "Non-veg"
+                      }
+                      onChange={handleInputChange}
+                      className="  text-teal-600 focus:ring-teal-500"
+                    />
+                    <span>Non-Veg</span>
+                  </div>
+                </label>
+                <label className="mr-4 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="merchantFoodType"
+                    value="Both"
+                    checked={
+                      detail?.merchantDetail?.merchantFoodType === "Both"
+                    }
+                    onChange={handleInputChange}
+                    className="mr-2 text-teal-600 focus:ring-teal-500"
+                  />{" "}
+                  Both
+                </label>
               </div>
-            </label>
-
-            <label className="mr-4 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="merchantFoodType"
-                  value="Non-veg"
-                  checked={
-                    detail?.merchantDetail?.merchantFoodType === "Non-veg"
-                  }
-                  onChange={handleInputChange}
-                  className="  text-teal-600 focus:ring-teal-500"
-                />
-                <span>Non-Veg</span>
-              </div>
-            </label>
-            <label className="mr-4 cursor-pointer">
-              <input
-                type="radio"
-                name="merchantFoodType"
-                value="Both"
-                checked={detail?.merchantDetail?.merchantFoodType === "Both"}
-                onChange={handleInputChange}
-                className="mr-2 text-teal-600 focus:ring-teal-500"
-              />{" "}
-              Both
-            </label>
-          </div>
-        </div>
-
+            </div>
+          </>
+        )}
         <div className="mb-4 flex w-[800px]">
           <label className="block text-gray-700 w-2/5">Delivery option</label>
           <div className="flex items-center gap-[4rem]">
@@ -137,7 +144,6 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
             </label>
           </div>
         </div>
-
         <div className="mb-4 flex items-start w-[800px]">
           <label className="block text-gray-700 w-2/5">
             Select Delivery time
@@ -151,7 +157,6 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
             placeholder="Time (in minutes)"
           />
         </div>
-
         <div className="mb-4 flex w-[800px]">
           <span className="w-2/5"></span>
           <p className="text-gray-500 w-2/5 text-sm mt-2">
@@ -160,7 +165,6 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
             will enter his/her own delivery time.
           </p>
         </div>
-
         <div className="mb-4 flex w-[800px]">
           <label className="block w-2/5 text-gray-700">
             Pre Order Sales Status

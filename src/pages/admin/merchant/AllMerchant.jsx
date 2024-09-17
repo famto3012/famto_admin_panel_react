@@ -553,6 +553,7 @@ const Merchant = () => {
 
       const response = await axios.post(
         `${BASE_URL}/merchants/admin/download-csv`,
+        {},
         {
           params: {
             serviceable,
