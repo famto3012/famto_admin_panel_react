@@ -20,15 +20,6 @@ const PlaceSearchPlugin = ({ map }) => {
   const markerRef = useRef(null);
 
   useEffect(() => {
-    console.log("MAP", map);
-
-    const searchInput = document.getElementById("auto");
-    console.log(placeSearchRef.current)
-    if (!searchInput) {
-      console.error("Search input element not found");
-      return;
-    }
-
     if (map && placeSearchRef.current) {
       mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
     }
@@ -40,17 +31,12 @@ const PlaceSearchPlugin = ({ map }) => {
     };
 
     const callback = (data) => {
-      if (data && data.length > 0) {
+      if (data) {
         const dt = data[0];
         if (!dt) return false;
-
         const eloc = dt.eLoc;
         const place = `${dt.placeName}`;
-
-        console.log("Search Data:", dt);
-
         if (markerRef.current) markerRef.current.remove();
-
         mapplsPluginObject.pinMarker(
           {
             map: map,
@@ -61,17 +47,15 @@ const PlaceSearchPlugin = ({ map }) => {
             },
             zoom: 10,
           },
-          (marker) => {
-            markerRef.current = marker;
+          (data) => {
+            markerRef.current = data;
             markerRef.current.fitbounds();
           }
         );
         markerRef.current.remove();
-      } else {
-        console.warn("No search results found", data);
       }
     };
-    placeSearchRef.current = new mapplsPluginObject.search(
+    placeSearchRef.current = mapplsPluginObject.search(
       document.getElementById("auto"),
       optional_config,
       callback
@@ -363,7 +347,6 @@ const AddGeofence = () => {
                 name="auto"
                 className="mt-2 ms-2 w-[300px] absolute top-0 left-0 text-[15px] p-[10px] outline-none focus:outline-none"
                 placeholder="Search places"
-                
                 spellCheck="false"
               />
               {isMapLoaded && <PlaceSearchPlugin map={mapObject} />}
