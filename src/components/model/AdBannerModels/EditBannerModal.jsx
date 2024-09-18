@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
 import { useToast } from "@chakra-ui/react";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
+import { app } from "../../../firebase";
 
 const EditBannerModal = ({
   isVisible,
@@ -29,6 +36,11 @@ const EditBannerModal = ({
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageFileUrl, setImageFileUrl] = useState(null);
+  const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
+  const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [imageFileUploading, setImageFileUploading] = useState(false);
 
   const toast = useToast();
 
@@ -40,12 +52,62 @@ const EditBannerModal = ({
     }));
   };
 
-  const handleAppBannerImageChange = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setNotificationFile(file);
-      setNotificationPreviewURL(URL.createObjectURL(file));
+      setImageFile(file);
+      setImageFileUrl(URL.createObjectURL(file));
     }
+  };
+  useEffect(() => {
+    if (imageFile) {
+      uploadImage();
+    }
+  }, [imageFile]);
+
+  const uploadImage = async () => {
+    // service firebase.storage {
+    //   match /b/{bucket}/o {
+    //     match /{allPaths=**} {
+    //       allow read;
+    //       allow write: if
+    //       request.resource.size < 2 * 1024 * 1024 &&
+    //       request.resource.contentType.matches('image/.*')
+    //     }
+    //   }
+    // }
+    setImageFileUploading(true);
+    setImageFileUploadError(null);
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + imageFile.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+        setImageFileUploadProgress(progress.toFixed(0));
+      },
+      (error) => {
+        setImageFileUploadError(
+          'Could not upload image (File must be less than 2MB)'
+        );
+        setImageFileUploadProgress(null);
+        setImageFile(null);
+        setImageFileUrl(null);
+        setImageFileUploading(false);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log(downloadURL)
+          setNotificationFile(downloadURL);
+          setNotificationPreviewURL(downloadURL);
+          setImageFileUploading(false);
+        });
+      }
+    );
   };
 
   const saveAction = async (e) => {
@@ -59,6 +121,7 @@ const EditBannerModal = ({
       appBannerDataToSend.append("merchantId", appBanner.merchantId);
       appBannerDataToSend.append("geofenceId", appBanner.geofenceId);
       if (notificationFile) {
+        console.log(notificationFile)
         appBannerDataToSend.append("appBannerImage", notificationFile);
       }
 
@@ -115,7 +178,7 @@ const EditBannerModal = ({
 
   return (
     <Modal
-      title="Add App Ad Banner"
+      title="Edit Ad Banner"
       open={isVisible}
       onCancel={handleCancel}
       footer={null}
@@ -216,7 +279,7 @@ const EditBannerModal = ({
                 name="appBannerImage"
                 id="appBannerImage"
                 className="hidden"
-                onChange={handleAppBannerImageChange}
+                onChange={handleImageChange}
               />
               <label htmlFor="appBannerImage" className="cursor-pointer">
                 <MdCameraAlt

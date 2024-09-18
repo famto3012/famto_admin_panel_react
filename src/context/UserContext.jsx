@@ -21,6 +21,23 @@ const UserProvider = ({ children }) => {
   const [verification, setVerification] = useState("");
 
   useEffect(() => {
+    const storedToken = secureLocalStorage.getItem("token");
+    const storedRole = secureLocalStorage.getItem("role");
+    const storedUsername = secureLocalStorage.getItem("username");
+    const storedUserId = secureLocalStorage.getItem("userId");
+    const storedFcmToken = secureLocalStorage.getItem("fcmToken");
+  
+    if (storedToken && storedRole) {
+      setToken(storedToken);
+      setRole(storedRole);
+      setUsername(storedUsername);
+      setUserId(storedUserId);
+      setFcmToken(storedFcmToken);
+    }
+  }, []);
+  
+
+  useEffect(() => {
     if (token && role) {
       secureLocalStorage.setItem("token", token);
       secureLocalStorage.setItem("role", role);

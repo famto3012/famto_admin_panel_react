@@ -28,4 +28,4 @@ onMessage(messaging, (payload) => {
   }
 });
 
-export { messaging, storage, auth };
+export { messaging, storage, auth, app };
