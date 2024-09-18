@@ -17,7 +17,7 @@ const ShowBill = ({ data }) => {
 
   const toast = useToast();
   const navigate = useNavigate();
-  const { token } = useContext(UserContext);
+  const { token, role } = useContext(UserContext);
 
   useEffect(() => {
     setCartData(data);
@@ -82,8 +82,13 @@ const ShowBill = ({ data }) => {
 
       setIsOrderLoading(true);
 
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/orders/admin/create-order`
+          : `${BASE_URL}/orders/create-order`;
+
       const response = await axios.post(
-        `${BASE_URL}/orders/admin/create-order`,
+        endPoint,
         {
           paymentMode,
           cartId: cartData.cartId,
@@ -110,7 +115,7 @@ const ShowBill = ({ data }) => {
     } catch (err) {
       toast({
         title: "Error",
-        description: "Error in creating invoice",
+        description: "Error in creating order" + err,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -190,7 +195,7 @@ const ShowBill = ({ data }) => {
                     </td>
                   </tr>
                   <tr key={data.index} className="text-left align-middle">
-                    <td className="p-4">GST (Inclusive of all Taxes)</td>
+                    <td className="p-4">Taxes & Fees</td>
                     <td className="p-4">
                       {cartData?.billDetail?.taxAmount || 0}
                     </td>

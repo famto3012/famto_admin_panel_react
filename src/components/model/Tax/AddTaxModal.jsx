@@ -18,7 +18,7 @@ const AddTaxModal = ({
     taxName: "",
     tax: "",
     taxType: "",
-    assignToBusinessCategory: "",
+    assignToBusinessCategory: null,
     geofences: [],
   });
 

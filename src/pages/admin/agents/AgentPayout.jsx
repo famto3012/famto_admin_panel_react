@@ -12,29 +12,39 @@ import GIFLoader from "../../../components/GIFLoader";
 import { CSVLink } from "react-csv";
 import { agentPayoutCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
+import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const AgentPayout = () => {
   const [allPayout, setAllPayout] = useState([]);
+
   const [paymentStatus, setPaymentStatus] = useState("");
   const [selectedAgent, setSelectedAgent] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedGeofence, setSelectedGeofence] = useState("");
+
+  const [selectedPayout, setSelectedPayout] = useState(null);
+
   const [allAgents, setAllAgents] = useState([]);
   const [allGeofence, setAllGeofence] = useState([]);
-  const { token } = useContext(UserContext);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isCSVLoading, setIsCSVLoading] = useState(false);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedPayout, setSelectedPayout] = useState(null);
-  const dateInputRef = useRef(null);
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(1);
+  const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
+
+  const dateInputRef = useRef(null);
+
+  const { token } = useContext(UserContext);
+  const toast = useToast();
 
   useEffect(() => {
     fetchFilteredData();
@@ -205,6 +215,7 @@ const AgentPayout = () => {
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
+    console.log(e.target.value);
   };
 
   const handleGeofenceChange = (e) => {
@@ -232,6 +243,53 @@ const AgentPayout = () => {
     }
   };
 
+  const handleDownloadPaymentCSV = async (e) => {
+    try {
+      e.preventDefault();
+
+      setIsCSVLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/admin/agents/download-payment-csv`,
+        {},
+        {
+          params: {
+            paymentStatus,
+            agent: selectedAgent,
+            search: searchFilter,
+            date: selectedDate,
+            geofence: selectedGeofence,
+          },
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Create a URL for the file and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Agent_Payout_Data.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `An error occoured while downloading CSV ${err}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsCSVLoading(false);
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -245,15 +303,13 @@ const AgentPayout = () => {
             </nav>
             <div className="flex items-center justify-between mx-8 mt-5">
               <h1 className="text-lg font-bold">Delivery Agents Payout</h1>
-              <CSVLink
-                data={allPayout}
-                headers={agentPayoutCSVDataHeading}
-                filename="Agent-Payout.csv"
+
+              <button
+                onClick={handleDownloadPaymentCSV}
+                className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
               >
-                <button className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2">
-                  <ArrowDownOutlined /> <span>CSV</span>
-                </button>
-              </CSVLink>
+                <ArrowDownOutlined /> <span>CSV</span>
+              </button>
             </div>
             <div className="flex items-center bg-white p-5 mx-5 rounded-lg justify-between mt-[20px] px-[30px]">
               <div className="flex items-center gap-[20px]">
@@ -266,6 +322,7 @@ const AgentPayout = () => {
                   <option defaultValue="" hidden>
                     Payment Status
                   </option>
+                  <option value="all">All</option>
                   <option value="true">Paid</option>
                   <option value="false">Unpaid</option>
                 </select>
@@ -275,7 +332,7 @@ const AgentPayout = () => {
                   value={selectedAgent}
                   onChange={handleAgentChange}
                 >
-                  <option defaultValue={"All"} hidden>
+                  <option defaultValue="All agents" hidden>
                     All agents
                   </option>
                   <option value="All">All</option>
@@ -291,7 +348,7 @@ const AgentPayout = () => {
                   value={selectedGeofence}
                   onChange={handleGeofenceChange}
                 >
-                  <option defaultValue="Geofence" hidden>
+                  <option value="Geofence" hidden>
                     Geofence
                   </option>
                   <option value="All">All</option>
@@ -351,6 +408,7 @@ const AgentPayout = () => {
                       "Login Hours",
                       "CIH",
                       "Total Earnings",
+                      "Calculated Earning",
                       "Status Approval",
                     ].map((header, index) => (
                       <th
@@ -384,7 +442,7 @@ const AgentPayout = () => {
                   {!isTableLoading &&
                     allPayout.map((payout) => (
                       <tr
-                        key={payout._id}
+                        key={payout?._id}
                         className="align-middle even:bg-gray-200 text-center h-20"
                       >
                         <td>
@@ -392,20 +450,21 @@ const AgentPayout = () => {
                             to={`/all-agents`}
                             className="underline underline-offset-4"
                           >
-                            {payout._id}
+                            {payout?._id}
                           </Link>
                         </td>
-                        <td>{payout.fullName}</td>
-                        <td>{payout.phoneNumber}</td>
-                        <td>{payout.workedDate}</td>
-                        <td>{payout.orders}</td>
-                        <td>{payout.cancelledOrders}</td>
-                        <td>{payout.totalDistance}</td>
-                        <td>{payout.loginHours}</td>
-                        <td>{payout.cashInHand}</td>
-                        <td>{payout.totalEarnings}</td>
+                        <td>{payout?.fullName}</td>
+                        <td>{payout?.phoneNumber}</td>
+                        <td>{payout?.workedDate}</td>
+                        <td>{payout?.orders}</td>
+                        <td>{payout?.cancelledOrders}</td>
+                        <td>{payout?.totalDistance}</td>
+                        <td>{payout?.loginHours}</td>
+                        <td>{payout?.cashInHand}</td>
+                        <td>{payout?.totalEarnings}</td>
+                        <td>{payout?.calculatedPayment}</td>
                         <td>
-                          {payout.paymentSettled === true ? (
+                          {payout?.paymentSettled === true ? (
                             <span className="text-green-500">Approved</span>
                           ) : (
                             <button onClick={() => showModalApprove(payout)}>

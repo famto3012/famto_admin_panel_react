@@ -19,11 +19,12 @@ const EditSubCustomerModal = ({
     name: "",
     amount: "",
     duration: "",
-    taxId: "",
+    taxId: null,
     noOfOrder: "",
     renewalReminder: "",
     description: "",
   });
+
   useEffect(() => {
     console.log(currentEditCustomer);
     if (!token) {
@@ -32,7 +33,6 @@ const EditSubCustomerModal = ({
     }
 
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const [addResponse] = await Promise.all([
           axios.get(
@@ -50,8 +50,6 @@ const EditSubCustomerModal = ({
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -63,8 +61,10 @@ const EditSubCustomerModal = ({
   const handleInputChange = (e) => {
     setCustomerData({ ...customerData, [e.target.name]: e.target.value });
   };
-  const signupAction = async (e) => {
+
+  const editSubPlanHandler = async (e) => {
     e.preventDefault();
+
     try {
       setIsLoading(true);
       const updateResponse = await axios.put(
@@ -77,6 +77,7 @@ const EditSubCustomerModal = ({
       );
       if (updateResponse.status === 200) {
         handleCancel();
+
         toast({
           title: "Success",
           description: "Customer Subscription Updated successfully.",
@@ -84,7 +85,6 @@ const EditSubCustomerModal = ({
           duration: 3000,
           isClosable: true,
         });
-        console.log("edited data", customerData);
       }
     } catch (err) {
       toast({
@@ -94,9 +94,9 @@ const EditSubCustomerModal = ({
         duration: 3000,
         isClosable: true,
       });
-      console.log(`Error in fetching data:${err}`);
+    } finally {
+      setIsLoading(false);
     }
-    console.log("Customerdata", customerData);
   };
   return (
     <Modal
@@ -107,11 +107,14 @@ const EditSubCustomerModal = ({
       onCancel={handleCancel}
       footer={null}
     >
-      <form onSubmit={signupAction} className="max-h-[30rem] overflow-auto">
+      <form
+        onSubmit={editSubPlanHandler}
+        className="max-h-[30rem] overflow-auto"
+      >
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="Name">
-              Name
+              Plan name
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -124,7 +127,7 @@ const EditSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="amount">
-              Amount
+              Plan amount
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -150,7 +153,7 @@ const EditSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="taxId">
-              Tax Id
+              Tax name
             </label>
             <select
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -161,7 +164,7 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             >
               {tax.map((tax) => (
-                <option value={tax._id} key={tax._id}>
+                <option value={tax.taxId} key={tax.taxId}>
                   {tax.taxName}
                 </option>
               ))}
@@ -212,14 +215,13 @@ const EditSubCustomerModal = ({
               onClick={handleCancel}
               type="submit"
             >
-              {" "}
               Cancel
             </button>
             <button
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
               type="submit"
             >
-              Add
+              {isLoading ? `Saving...` : `Save`}
             </button>
           </div>
         </div>

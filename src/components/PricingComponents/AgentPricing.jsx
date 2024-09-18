@@ -300,24 +300,26 @@ const AgentPricing = () => {
       </div>
 
       <div className="overflow-auto w-full max-h-[30rem]">
-        <table className="w-full mt-[20px]">
-          <thead className="sticky top-0 left-0">
+        <table className="w-full mt-[20px] ">
+          <thead className="sticky top-0 bg-teal-700 text-white">
             <tr>
               {[
                 "Rule Name",
                 "Base Fare",
-                "Base Distance Fare",
-                "Extra Fare per Day",
                 "Base Distance Fare per Km",
                 "Waiting Fare",
                 "Waiting Time",
                 "Purchase Fare per hour",
+                "Minimum login Hrs",
+                "Minimum order number",
+                "Fare after min login Hrs",
+                "Fare after min order",
                 "Geofence",
                 "Status",
               ].map((header, index) => (
                 <th
                   key={index}
-                  className="bg-teal-700 text-center text-white  px-2 py-4  border-r-2 border-[#eee]/50"
+                  className="text-center px-2 py-4 border-r-2 border-[#eee]/50 "
                 >
                   {header}
                 </th>
@@ -327,7 +329,7 @@ const AgentPricing = () => {
           <tbody>
             {isLoading && (
               <tr>
-                <td colSpan={10} className="text-center h-20">
+                <td colSpan={12} className="text-center h-20">
                   Loading Data...
                 </td>
               </tr>
@@ -335,10 +337,8 @@ const AgentPricing = () => {
 
             {!isLoading && agentpricing?.length === 0 && (
               <tr>
-                <td colSpan={10}>
-                  <p className="flex items-center justify-center h-20">
-                    No data available
-                  </p>
+                <td colSpan={12}>
+                  <p className="text-center h-20">No data available</p>
                 </td>
               </tr>
             )}
@@ -347,18 +347,42 @@ const AgentPricing = () => {
               agentpricing.map((agentpricing) => (
                 <tr
                   key={agentpricing._id}
-                  className="align-middle even:bg-gray-200 last:border-2 text-center p-4"
+                  className="even:bg-gray-200 border-t border-[#eee]"
                 >
-                  <td className="p-4">{agentpricing.ruleName}</td>
-                  <td className="p-4">{agentpricing.baseFare}</td>
-                  <td className="p-4">{agentpricing.baseDistanceFare}</td>
-                  <td className="p-4">{agentpricing.extraFarePerDay}</td>
-                  <td className="p-4">{agentpricing.baseDistanceFarePerKM}</td>
-                  <td className="p-4">{agentpricing.waitingFare}</td>
-                  <td className="p-4 px-2">{agentpricing.waitingTime}</td>
-                  <td className="p-4">{agentpricing.purchaseFarePerHour}</td>
-                  <td className="p-4">{agentpricing?.geofenceId?.name}</td>
-                  <td className="p-4">
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.ruleName}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.baseFare}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.baseDistanceFarePerKM}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.waitingFare}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.waitingTime}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.purchaseFarePerHour}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.minLoginHours}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.minOrderNumber}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.fareAfterMinLoginHours}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing.fareAfterMinOrderNumber}
+                  </td>
+                  <td className="text-center px-2 py-4">
+                    {agentpricing?.geofenceId?.name}
+                  </td>
+                  <td className="p-4 w">
                     <div className="flex justify-center items-center gap-3">
                       <div>
                         <Switch

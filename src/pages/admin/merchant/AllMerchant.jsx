@@ -699,8 +699,8 @@ const Merchant = () => {
                     Serviceable
                   </option>
                   <option value="All">All</option>
-                  <option value="open">Open</option>
-                  <option value="closed">Closed</option>
+                  <option value="true">Open</option>
+                  <option value="false">Closed</option>
                 </select>
 
                 <select
@@ -816,7 +816,7 @@ const Merchant = () => {
                         <td className="p-4">{data.merchantName}</td>
                         <td className="p-4">{data.phoneNumber}</td>
                         <td className="p-4">{data.averageRating}</td>
-                        <td className="p-4">{data.isApproved}</td>
+                        <td className="p-4">{data.subscriptionStatus}</td>
                         <td className="p-4 capitalize">
                           {data.isServiceableToday}
                         </td>
@@ -824,9 +824,7 @@ const Merchant = () => {
 
                         <td className="p-4">
                           <Switch
-                            value={
-                              data?.isServiceableToday === "open" ? true : false
-                            }
+                            value={data?.status}
                             onChange={() => handleToggle(data._id)}
                           />
                         </td>

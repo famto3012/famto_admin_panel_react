@@ -27,7 +27,7 @@ const AddCustomerPricingModal = ({
     purchaseFarePerHour: "",
     geofenceId: "",
     deliveryMode: "Home Delivery",
-    businessCategoryId: "",
+    businessCategoryId: null,
   });
   const handleRadioChange = (e) => {
     const { value } = e.target;
@@ -89,7 +89,7 @@ const AddCustomerPricingModal = ({
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
-              Rule Name
+              Rule Name <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -103,7 +103,7 @@ const AddCustomerPricingModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseFare">
-              Base Fare
+              Base Fare <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -117,7 +117,7 @@ const AddCustomerPricingModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseDistance">
-              Base Distance
+              Base Distance <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -134,7 +134,7 @@ const AddCustomerPricingModal = ({
               className="w-1/3 text-gray-500"
               htmlFor="fareAfterBaseDistance"
             >
-              Fare After Distance
+              Fare After Distance <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -224,7 +224,9 @@ const AddCustomerPricingModal = ({
           </div>
 
           <div className="flex items-center mt-1">
-            <label className="w-1/3 text-gray-500">Select Delivery Mode</label>
+            <label className="w-1/3 text-gray-500">
+              Select Delivery Mode <span className="text-red-500">*</span>
+            </label>
             <div className="flex items-center space-x-2 gap-2 w-2/3">
               <input
                 type="radio"
@@ -313,7 +315,7 @@ const AddCustomerPricingModal = ({
           )}
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofence">
-              Geofence
+              Geofence <span className="text-red-500">*</span>
             </label>
             <select
               name="geofenceId"

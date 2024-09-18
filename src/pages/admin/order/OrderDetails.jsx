@@ -1022,7 +1022,7 @@ const OrderDetails = () => {
               <p>{orderDetail?.billDetail?.subTotal}</p>
             </div>
             <div className="flex justify-between mx-5 m-3">
-              <label>GST (inclusive of all taxes)</label>
+              <label>Taxes & Fees</label>
               <p>{orderDetail?.billDetail?.taxAmount}</p>
             </div>
           </div>
