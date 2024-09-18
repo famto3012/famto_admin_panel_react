@@ -156,7 +156,7 @@ const DeliveryManagement = () => {
   };
 
   const selectChange = (e) => {
-    const selectedTask = e.target.value;
+    const selectedTask = e.target.value ;
     setTask(selectedTask);
     if (selectedTask !== "") {
       handleTaskFilter(selectedTask);
@@ -179,7 +179,8 @@ const DeliveryManagement = () => {
   const showOkModal = () => setIsModalVisible(false);
   const showModalCancel = () => setIsModalVisible(false);
 
-  const showModalTask = (taskId) => {
+  const showModalTask = async(taskId) => {
+  await  fetchAgentUsingGeofence(taskId, false)
     setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
   };
 
@@ -342,6 +343,7 @@ const DeliveryManagement = () => {
   useEffect(() => {
     getAuthToken();
     handleStatusFilter("Free");
+    handleTaskFilter("Unassigned");
     handleGetAllAgent();
     getAutoAllocation();
 

@@ -85,9 +85,9 @@ const EditIndividualModal = ({
       IndBannerDataToSend.append("name", individualdata.name);
       IndBannerDataToSend.append("merchantId", individualdata.merchantId);
       IndBannerDataToSend.append("geofenceId", individualdata.geofence);
-
+      console.log("Adfile", adFile)
       if (adFile) {
-        IndBannerDataToSend.append("imageUrl", adFile);
+        IndBannerDataToSend.append("bannerImage", adFile);
       }
 
       const IndBannerResponse = await axios.put(
