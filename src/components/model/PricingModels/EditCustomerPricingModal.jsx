@@ -16,7 +16,7 @@ const EditCustomerPricingModal = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [customerPricing, setCustomerPricing] = useState({
     vehicleType: "",
     ruleName: "",
@@ -31,7 +31,7 @@ const EditCustomerPricingModal = ({
     addedTip: "",
     geofenceId: "",
     deliveryMode: "Home Delivery",
-    businessCategoryId: "",
+    businessCategoryId: null,
   });
 
   useEffect(() => {
@@ -41,7 +41,6 @@ const EditCustomerPricingModal = ({
     }
 
     const fetchData = async () => {
-      
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/customer-pricing/${currentEdit}`, {
@@ -62,8 +61,8 @@ const EditCustomerPricingModal = ({
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } 
-        };
+      }
+    };
 
     if (currentEdit) {
       fetchData();
@@ -135,7 +134,7 @@ const EditCustomerPricingModal = ({
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
-              Rule Name
+              Rule Name <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -149,7 +148,7 @@ const EditCustomerPricingModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseFare">
-              Base Fare
+              Base Fare <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -163,7 +162,7 @@ const EditCustomerPricingModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseDistance">
-              Base Distance
+              Base Distance <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -180,7 +179,7 @@ const EditCustomerPricingModal = ({
               className="w-1/3 text-gray-500"
               htmlFor="fareAfterBaseDistance"
             >
-              Fare After Distance
+              Fare After Distance <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -270,7 +269,9 @@ const EditCustomerPricingModal = ({
           </div>
 
           <div className="flex items-center mt-1">
-            <label className="w-1/3 text-gray-500">Select Delivery Mode</label>
+            <label className="w-1/3 text-gray-500">
+              Select Delivery Mode <span className="text-red-500">*</span>
+            </label>
             <div className="flex items-center space-x-2 gap-2 w-2/3">
               <input
                 type="radio"
@@ -312,7 +313,10 @@ const EditCustomerPricingModal = ({
           </div>
           {customerPricing.deliveryMode === "Home Delivery" && (
             <div className="flex items-center">
-              <label className="w-1/3 text-gray-500" htmlFor="businessCategoryId"></label>
+              <label
+                className="w-1/3 text-gray-500"
+                htmlFor="businessCategoryId"
+              ></label>
               <select
                 name="businessCategoryId"
                 value={customerPricing.businessCategoryId}
@@ -356,7 +360,7 @@ const EditCustomerPricingModal = ({
           )}
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofence">
-              Geofence
+              Geofence <span className="text-red-500">*</span>
             </label>
             <select
               name="geofenceId"

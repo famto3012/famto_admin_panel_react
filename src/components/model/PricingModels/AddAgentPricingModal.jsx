@@ -12,16 +12,18 @@ const AddAgentPricingModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
-  const [confirmLoading,setConfirmLoading]= useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [agentPricing, setAgentPricing] = useState({
     ruleName: "",
     baseFare: "",
-    baseDistanceFare: "",
-    extraFarePerDay: "",
     baseDistanceFarePerKM: "",
-    waitingTime: "",
     waitingFare: "",
+    waitingTime: "",
     purchaseFarePerHour: "",
+    minLoginHours: "",
+    minOrderNumber: "",
+    fareAfterMinLoginHours: "",
+    fareAfterMinOrderNumber: "",
     geofenceId: "",
   });
   const handleInputChange = (e) => {
@@ -31,8 +33,8 @@ const AddAgentPricingModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      setConfirmLoading(true)
-      console.log("agentpricing", agentPricing);
+      setConfirmLoading(true);
+
       const addResponse = await axios.post(
         `${BASE_URL}/admin/agent-pricing/add-agent-pricing`,
         agentPricing,
@@ -47,7 +49,7 @@ const AddAgentPricingModal = ({
       if (addResponse.status === 201) {
         handleCancel();
         onAddRule(addResponse.data.data);
-        console.log("adddata", addResponse.data.message);
+
         toast({
           title: "Success",
           description: "Agent Pricng Created successfully.",
@@ -57,7 +59,6 @@ const AddAgentPricingModal = ({
         });
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
       toast({
         title: "Error",
         description: "There was an error occured",
@@ -65,10 +66,9 @@ const AddAgentPricingModal = ({
         duration: 3000,
         isClosable: true,
       });
-    }finally{
-      setConfirmLoading(false)
+    } finally {
+      setConfirmLoading(false);
     }
-    console.log(agentPricing);
   };
 
   return (
@@ -83,7 +83,7 @@ const AddAgentPricingModal = ({
         <div className="flex flex-col max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
-              Rule Name
+              Rule Name <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -95,9 +95,10 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseFare">
-              Base Fare
+              Base Fare <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -109,40 +110,13 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="baseDistanceFare">
-              Base Distance Fare
-            </label>
-            <input
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              type="text"
-              placeholder="Base Distance"
-              value={agentPricing.baseDistanceFare}
-              id="baseDistanceFare"
-              name="baseDistanceFare"
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="extraFarePerDay">
-              Extra Fare Day
-            </label>
-            <input
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              type="text"
-              placeholder="Extra Fare Day"
-              value={agentPricing.extraFarePerDay}
-              id="extraFarePerDay"
-              name="extraFarePerDay"
-              onChange={handleInputChange}
-            />
-          </div>
+
           <div className="flex items-center">
             <label
               className="w-1/3 text-gray-500"
               htmlFor="baseDistanceFarePerKM"
             >
-              Base Distance Km
+              Base Distance fare per KM <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -154,6 +128,7 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
               Waiting Time (minutes)
@@ -168,6 +143,7 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="waitingFare">
               Waiting Fare
@@ -182,6 +158,7 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label
               className="w-1/3 text-gray-500"
@@ -199,9 +176,78 @@ const AddAgentPricingModal = ({
               onChange={handleInputChange}
             />
           </div>
+
+          <div className="flex items-center">
+            <label
+              className="w-1/3 text-gray-500"
+              htmlFor="purchaseFarePerHour"
+            >
+              Minimum login hours <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              type="text"
+              placeholder="Purchase Fare Hour"
+              value={agentPricing.minLoginHours}
+              name="minLoginHours"
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="flex items-center">
+            <label
+              className="w-1/3 text-gray-500"
+              htmlFor="purchaseFarePerHour"
+            >
+              Minimum order number <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              type="text"
+              placeholder="Purchase Fare Hour"
+              value={agentPricing.minOrderNumber}
+              name="minOrderNumber"
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="flex items-center">
+            <label
+              className="w-1/3 text-gray-500"
+              htmlFor="purchaseFarePerHour"
+            >
+              Fare after minimum login hours
+            </label>
+            <input
+              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              type="text"
+              placeholder="Purchase Fare Hour"
+              value={agentPricing.fareAfterMinLoginHours}
+              name="fareAfterMinLoginHours"
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="flex items-center">
+            <label
+              className="w-1/3 text-gray-500"
+              htmlFor="purchaseFarePerHour"
+            >
+              Fare after minimum order number
+            </label>
+            <input
+              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              type="text"
+              placeholder="Purchase Fare Hour"
+              value={agentPricing.fareAfterMinOrderNumber}
+              name="fareAfterMinOrderNumber"
+              onChange={handleInputChange}
+            />
+          </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofence">
-              Geofence
+              Geofence <span className="text-red-500">*</span>
             </label>
             <select
               name="geofenceId"
@@ -220,6 +266,7 @@ const AddAgentPricingModal = ({
             </select>
           </div>
         </div>
+
         <div className="flex justify-end gap-4 mt-6">
           <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
             Cancel
@@ -228,7 +275,7 @@ const AddAgentPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-           {confirmLoading ? "Adding..." : "Add"}
+            {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

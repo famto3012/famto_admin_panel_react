@@ -101,10 +101,9 @@ const SubscriptionComponent = () => {
 
         if (taxResponse.status === 200) {
           setTax(taxResponse.data.data);
-          console.log("All tax", taxResponse.data.data);
         }
       } catch (err) {
-        console.log(`Error in getting all customer subscriptions: ${err}`);
+        console.log(`Error in getting all tax: ${err}`);
       }
     };
 
@@ -300,7 +299,6 @@ const SubscriptionComponent = () => {
             });
           }
         } catch (err) {
-          console.error("Error verifying payment:", err);
           toast({
             title: "Error",
             description: "Error in verifying payment",
@@ -397,16 +395,16 @@ const SubscriptionComponent = () => {
         </h1>
 
         <div className="bg-white mx-5 p-5 rounded-lg my-5">
-          <div className="flex w-2/3 justify-between">
+          {/* <div className="flex w-2/3 justify-between">
             <p>
               Enable this toggle to transfer Subscription on the basis of
               delivery methods.
             </p>
             <Switch />
-          </div>
+          </div> */}
 
           {role === "Admin" && (
-            <div className="flex items-center mt-10">
+            <div className="flex items-center ">
               <label className="w-1/3">Merchant Subscription Setup</label>
               <button
                 className="bg-zinc-200 p-2 rounded-lg w-1/3"
@@ -442,7 +440,7 @@ const SubscriptionComponent = () => {
                       <p>{subscriptions.duration}</p>
                       <p>{subscriptions.renewalReminder}</p>
                     </div>
-                    <p className="m-3">{subscriptions.taxId}</p>
+                    <p className="m-3">{subscriptions.taxId.taxName}</p>
                     <p className="m-3">{subscriptions.description}</p>
                     <div className="mb-5 flex">
                       <button
@@ -550,16 +548,18 @@ const SubscriptionComponent = () => {
             Customers
           </h1>
           <div className=" mx-5 p-5 rounded-lg mt-5">
-            <div className="flex w-2/3 justify-between mt-5">
+            {/* <div className="flex w-2/3 justify-between mt-5">
               <p>
                 Enable this toggle to transfer Subscription on the basis of
                 delivery methods.
               </p>
               <Switch />
-            </div>
+            </div> */}
 
-            <div className="flex item-center mt-10">
-              <label className="w-1/3">Customer Subscription Setup</label>
+            <div className="flex flex-row item-center bg-white p-3 rounded-md">
+              <label className="w-1/3 flex items-center">
+                Customer Subscription Setup
+              </label>
               <button
                 className="bg-zinc-200 p-2 rounded-lg w-1/3"
                 onClick={showModalAddCustomer}
@@ -611,8 +611,10 @@ const SubscriptionComponent = () => {
                       </div>
 
                       <p className="">
-                        Tax ID:{" "}
-                        <span className="font-[700]">{subscription.taxId}</span>
+                        Tax name:{" "}
+                        <span className="font-[700]">
+                          {subscription?.taxId?.taxName || "-"}
+                        </span>
                       </p>
 
                       <p className="">

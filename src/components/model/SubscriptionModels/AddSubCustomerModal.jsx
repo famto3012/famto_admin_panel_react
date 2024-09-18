@@ -15,16 +15,22 @@ const AddSubCustomerModal = ({
     name: "",
     amount: "",
     duration: "",
-    taxId: "",
+    taxId: null,
     renewalReminder: "",
     description: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleInputChange = (e) => {
     setCustomerData({ ...customerData, [e.target.name]: e.target.value });
   };
-  const signupAction = async (e) => {
+
+  const addSubPlanHandler = async (e) => {
     e.preventDefault();
+
     try {
+      setIsLoading(true);
+
       const addResponse = await axios.post(
         `${BASE_URL}/admin/subscription/add-customer-subscription`,
         customerData,
@@ -48,33 +54,35 @@ const AddSubCustomerModal = ({
         });
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
       toast({
         title: "Error",
-        description: "There was an error occured",
+        description: "There was an error occured" + err,
         status: "error",
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log("Customer Data: ", customerData);
   };
 
   return (
     <Modal
-      title="Add Custoemer Subscription Plan"
+      title="Add Customer Subscription Plan"
       width="700px"
       centered
       open={isVisible}
       onCancel={handleCancel}
       footer={null}
     >
-      <form onSubmit={signupAction} className="max-h-[30rem] overflow-auto">
+      <form
+        onSubmit={addSubPlanHandler}
+        className="max-h-[30rem] overflow-auto"
+      >
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="Name">
-              Name
+              Plan name
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -87,7 +95,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="amount">
-              Amount
+              Plan amount
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -113,7 +121,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="taxId">
-              Tax Id
+              Tax name
             </label>
             <select
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -127,7 +135,7 @@ const AddSubCustomerModal = ({
                 Select tax
               </option>
               {tax.map((tax) => (
-                <option value={tax._id} key={tax._id}>
+                <option value={tax.taxId} key={tax.taxId}>
                   {tax.taxName}
                 </option>
               ))}
@@ -185,7 +193,7 @@ const AddSubCustomerModal = ({
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
               type="submit"
             >
-              Add
+              {isLoading ? `Adding...` : `Add`}
             </button>
           </div>
         </div>
