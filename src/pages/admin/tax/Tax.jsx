@@ -211,7 +211,7 @@ const Tax = () => {
           </p>
           <div className="w-full">
             <table className="bg-white mt-[45px] text-center w-full">
-              <thead className=" sticky top-0 left-0">
+              <thead className=" sticky top-0 left-0 z-20">
                 <tr>
                   {[
                     // "Tax Id",
@@ -271,7 +271,7 @@ const Tax = () => {
                       <td className="py-5 px-4">
                         <div className="flex justify-center items-center gap-3">
                           <Switch
-                            className="text-teal-700 mt-2"
+                            className="text-teal-700 mt-2 z-10"
                             checked={tax.status}
                             onChange={() => handleToggle(tax.taxId)}
                           />

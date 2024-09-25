@@ -387,6 +387,25 @@ const SubscriptionComponent = () => {
     setIsModalVisibleCustomerEdit(false);
   };
 
+  const handleUpdateSubscription = (data) => {
+    setSubscriptionCustomer((prev) =>
+      prev.map((subscription) =>
+        subscription._id === data._id
+          ? {
+              ...subscription,
+              description: data.description,
+              duration: data.duration,
+              name: data.name,
+              noOfOrder: data.noOfOrder,
+              renewalReminder: data.renewalReminder,
+              taxId: data?.taxId || null,
+              title: data?.title,
+            }
+          : subscription
+      )
+    );
+  };
+
   return (
     <>
       <div className="pl-[300px] bg-gray-200 ">
@@ -440,7 +459,7 @@ const SubscriptionComponent = () => {
                       <p>{subscriptions.duration}</p>
                       <p>{subscriptions.renewalReminder}</p>
                     </div>
-                    <p className="m-3">{subscriptions.taxId.taxName}</p>
+                    <p className="m-3">{subscriptions?.taxId?.taxName}</p>
                     <p className="m-3">{subscriptions.description}</p>
                     <div className="mb-5 flex">
                       <button
@@ -642,6 +661,7 @@ const SubscriptionComponent = () => {
                           token={token}
                           tax={tax}
                           BASE_URL={BASE_URL}
+                          onEditSubscription={handleUpdateSubscription}
                         />
                         <button
                           className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"

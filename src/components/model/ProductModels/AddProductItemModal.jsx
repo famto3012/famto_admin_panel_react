@@ -156,6 +156,8 @@ const AddProductItemModal = ({
     try {
       setIsLoading(true);
 
+      console.log(productData);
+
       const dataToSend = new FormData();
 
       Object.keys(productData).forEach((key) => {

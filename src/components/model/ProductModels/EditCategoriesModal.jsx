@@ -102,7 +102,7 @@ const EditCategoriesModal = ({
       const endPoint =
         role === "Admin"
           ? `${BASE_URL}/categories/admin/edit-category/${merchantId}/${categoryId}`
-          : `${BASE_URL}/categories/edit-category/${categoryId}`;
+          : `${BASE_URL}/categories/${categoryId}`;
 
       await axios.put(endPoint, formData, {
         headers: {
@@ -218,20 +218,18 @@ const EditCategoriesModal = ({
           <div className="flex items-center">
             <label className=" w-1/3">Photos</label>
             <div className="flex items-center gap-[30px]">
-              {!previewURL && categoryData?.categoryImageURL && (
+              {previewURL ? (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
-                    src={categoryData.categoryImageURL}
+                    src={previewURL}
                     alt={categoryData.categoryName}
                     className="w-full rounded h-full object-cover"
                   />
                 </figure>
-              )}
-
-              {previewURL && (
+              ) : (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
-                    src={previewURL}
+                    src={categoryData.categoryImageURL}
                     alt={categoryData.categoryName}
                     className="w-full rounded h-full object-cover"
                   />

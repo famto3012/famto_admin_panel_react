@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import { Modal, Spin, Switch } from "antd";
+import { Modal, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useToast } from "@chakra-ui/react";
 
@@ -13,7 +13,6 @@ import Sidebar from "../../../components/Sidebar";
 import AddBannerModal from "../../../components/model/AdBannerModels/AddBannerModal";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
-import GIFLoader from "../../../components/GIFLoader";
 import EditBannerModal from "../../../components/model/AdBannerModels/EditBannerModal";
 import AddIndividualModal from "../../../components/model/AdBannerModels/AddIndividualModal";
 import EditIndividualModal from "../../../components/model/AdBannerModels/EditIndividualModal";
@@ -21,24 +20,24 @@ import EditIndividualModal from "../../../components/model/AdBannerModels/EditIn
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Adbanner = () => {
-  const [banner, setBanner] = useState([]);
+  const [allBanner, setAllBanner] = useState([]);
   const [individualBanner, setIndividualBanner] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [allGeofence, setAllGeofence] = useState([]);
+
   const [currentBanner, setCurrentBanner] = useState(null);
-  const [currentBannerEdit, setCurrentEditBanner] = useState(null);
   const [currentIndBanner, setCurrentIndBanner] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const [addModalVisible, setAddModalVisible] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [isModalVisibleIndividual, setIsModalVisibleIndividual] =
-    useState(false);
-  const [isModalVisibleIndividualEdit, setIsModalVisibleIndividualEdit] =
-    useState(false);
-  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-  const [isShowModalDeleteIndividual, setShowModalDeleteIndividual] =
-    useState(false);
+  const [modals, setModals] = useState({
+    addBanner: false,
+    editBanner: false,
+    addIndividual: false,
+    editIndividual: false,
+    deleteBanner: false,
+    deleteIndividual: false,
+  });
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -57,29 +56,21 @@ const Adbanner = () => {
         const [bannerResponse, individualBannerResponse, geofenceResponse] =
           await Promise.all([
             axios.get(`${BASE_URL}/admin/app-banner/get-app-banner`, {
-              withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }),
             axios.get(`${BASE_URL}/admin/banner/get-banner`, {
-              withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }),
             axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-              withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);
-        if (bannerResponse.status === 200) {
-          setBanner(bannerResponse.data.data);
-        }
-        if (individualBannerResponse.status === 200) {
-          setIndividualBanner(individualBannerResponse.data.data);
-        }
-        if (geofenceResponse.status === 200) {
-          setAllGeofence(geofenceResponse.data.geofences);
-        }
+
+        setAllBanner(bannerResponse.data.data || []);
+        setIndividualBanner(individualBannerResponse.data.data || []);
+        setAllGeofence(geofenceResponse.data.geofences || []);
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        console.error("Error in fetching data:", err);
       } finally {
         setIsLoading(false);
       }
@@ -88,161 +79,107 @@ const Adbanner = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  const handleAddBanner = (newBanner) => {
-    setBanner((prevBanners) => {
-      if (Array.isArray(prevBanners)) {
-        return [...prevBanners, newBanner];
-      } else {
-        [newBanner];
-      }
-    });
+  const toggleModal = (modalName, value = true) => {
+    setModals((prev) => ({ ...prev, [modalName]: value }));
   };
 
-  const handleEditNewBanner = (updatedBanner) => {
-    setBanner((prevBanners) =>
-      prevBanners.map((banner) =>
-        banner?._id === updatedBanner?._id ? updatedBanner : banner
-      )
+  const handleAddBanner = useCallback((newBanner) => {
+    setAllBanner((prevBanners) => [...prevBanners, newBanner]);
+  }, []);
+
+  const handleEditBanner = useCallback((data) => {
+    setAllBanner((prev) =>
+      prev.map((banner) => (banner?._id === data?._id ? data : banner))
     );
-  };
+  }, []);
 
-  const handleAddIndBanner = (newBanner) => {
-    setIndividualBanner((indBanner) => {
-      if (Array.isArray(indBanner)) {
-        return [...indBanner, newBanner];
-      } else {
-        return [newBanner];
-      }
-    });
-  };
+  const handleAddIndividualBanner = useCallback((newBanner) => {
+    setIndividualBanner((prevBanners) => [...prevBanners, newBanner]);
+  }, []);
 
-  const onEditIndBanner = (updatedIndBanner) => {
-    setIndividualBanner((prevIndBanners) =>
-      prevIndBanners.map((indBanner) =>
-        indBanner?._id === updatedIndBanner?._id ? updatedIndBanner : indBanner
-      )
+  const handleEditIndividualBanner = useCallback((data) => {
+    setIndividualBanner((prev) =>
+      prev.map((banner) => (banner?._id === data?._id ? data : banner))
     );
-  };
+  }, []);
 
-  const removeBanner = (bannerId) => {
-    setBanner(banner.filter((banner) => banner._id !== bannerId));
-  };
+  const removeBanner = useCallback((bannerId) => {
+    setAllBanner((prev) => prev.filter((banner) => banner._id !== bannerId));
+  }, []);
 
-  const handleConfirmDelete = () => {
-    setIsShowModalDelete(false);
-    setCurrentBanner(null);
-  };
+  const removeIndBanner = useCallback((bannerId) => {
+    setIndividualBanner((prev) =>
+      prev.filter((banner) => banner._id !== bannerId)
+    );
+  }, []);
 
-  const handleBannerDelete = async (currentBanner) => {
+  const handleDelete = async (bannerId, isIndividual = false) => {
     try {
       setConfirmLoading(true);
 
-      const deleteResponse = await axios.delete(
-        `${BASE_URL}/admin/app-banner/delete-app-banner/${currentBanner}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const url = isIndividual
+        ? `${BASE_URL}/admin/banner/delete-banner/${bannerId}`
+        : `${BASE_URL}/admin/app-banner/delete-app-banner/${bannerId}`;
+
+      const deleteResponse = await axios.delete(url, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (deleteResponse.status === 200) {
-        removeBanner(currentBanner);
-        handleConfirmDelete();
+        isIndividual ? removeIndBanner(bannerId) : removeBanner(bannerId);
+        toggleModal(isIndividual ? "deleteIndividual" : "deleteBanner", false);
         toast({
           title: "Success",
-          description: "The Banner Deleted Successfully.",
+          description: "Banner deleted successfully.",
           status: "success",
           duration: 3000,
-          isClosable: true,
         });
       }
     } catch (err) {
       toast({
         title: "Error",
-        description: "Error in deleting banner",
+        description: "Error deleting banner: " + err,
         status: "error",
         duration: 3000,
-        isClosable: true,
       });
     } finally {
       setConfirmLoading(false);
     }
   };
 
-  const removeIndBanner = (currentIndBannerId) => {
-    setIndividualBanner(
-      individualBanner.filter(
-        (individualBanner) => individualBanner._id !== currentIndBannerId
-      )
-    );
-  };
-
-  const handleIndBannerDelete = async (e, currentIndBanner) => {
-    e.preventDefault();
+  const handleToggle = async (BannerId, isIndividual = false) => {
     try {
-      setConfirmLoading(true);
+      const banners = isIndividual ? individualBanner : allBanner;
+      const statusToUpdate = banners.find((d) => d._id === BannerId);
 
-      const indDeleteResponse = await axios.delete(
-        `${BASE_URL}/admin/banner/delete-banner/${currentIndBanner}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (indDeleteResponse.status === 200) {
-        removeIndBanner(currentIndBanner);
-        handleConfirmIndBannerDelete();
-        toast({
-          title: "Success",
-          description: "The Banner Deleted Successfully.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Error in deleting banner",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setConfirmLoading(false);
-    }
-  };
-
-  const handleToggle = async (BannerId) => {
-    try {
-      const statusToUpdate = banner.find((d) => d._id === BannerId);
       if (statusToUpdate) {
         const updatedStatus = !statusToUpdate.status;
+        const url = isIndividual
+          ? `${BASE_URL}/admin/banner/banner-status/${BannerId}`
+          : `${BASE_URL}/admin/app-banner/app-banner-status/${BannerId}`;
 
         await axios.put(
-          `${BASE_URL}/admin/app-banner/app-banner-status/${BannerId}`,
-          {
-            ...statusToUpdate,
-            status: updatedStatus,
-          },
+          url,
+          { ...statusToUpdate, status: updatedStatus },
           {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
         toast({
           title: "Success",
-          description: "Banner Status Updated Successfully.",
+          description: "Banner status updated successfully.",
           status: "success",
           duration: 3000,
-          isClosable: true,
         });
 
-        // Update the state with the new status
-        setBanner((prevBanner) =>
-          prevBanner.map((banner) =>
+        const updateState = isIndividual ? setIndividualBanner : setAllBanner;
+        updateState((prev) =>
+          prev.map((banner) =>
             banner._id === BannerId
-              ? { ...banner, status: !banner.status }
+              ? { ...banner, status: updatedStatus }
               : banner
           )
         );
@@ -250,387 +187,299 @@ const Adbanner = () => {
     } catch (err) {
       toast({
         title: "Error",
-        description: "Failed to update Banner status",
+        description: "Failed to update banner status",
         status: "error",
         duration: 3000,
-        isClosable: true,
       });
     }
-  };
-
-  const handleIndToggle = async (IndBannerId) => {
-    try {
-      const statusToUpdate = individualBanner.find(
-        (d) => d._id === IndBannerId
-      );
-      if (statusToUpdate) {
-        const updatedStatus = !statusToUpdate.status;
-
-        await axios.put(
-          `${BASE_URL}/admin/banner/banner-status/${IndBannerId}`,
-          {
-            ...statusToUpdate,
-            status: updatedStatus,
-          },
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        toast({
-          title: "Success",
-          description: "Banner Status Updated Successfully.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-
-        // Update the state with the new status
-        setIndividualBanner((prevBanner) =>
-          prevBanner.map((individualBanner) =>
-            individualBanner._id === IndBannerId
-              ? { ...individualBanner, status: !individualBanner.status }
-              : individualBanner
-          )
-        );
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to update Banner status",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const showModal = () => setAddModalVisible(true);
-  const showModalIndividual = () => setIsModalVisibleIndividual(true);
-
-  const showModalEdit = (bannerId) => {
-    setCurrentEditBanner(bannerId);
-    setEditModalVisible(true);
-  };
-
-  const showModalIndividualEdit = (bannerEditId) => {
-    setCurrentIndBanner(bannerEditId);
-    setIsModalVisibleIndividualEdit(true);
-  };
-
-  const showModalDelete = (bannerId) => {
-    setCurrentBanner(bannerId);
-    setIsShowModalDelete(true);
-  };
-
-  const showModalDeleteIndividual = (currentIndBannerId) => {
-    setCurrentIndBanner(currentIndBannerId);
-    setShowModalDeleteIndividual(true);
-  };
-
-  const handleConfirmIndBannerDelete = () => {
-    setShowModalDeleteIndividual(false);
-    setCurrentIndBanner(null);
-  };
-
-  const handleCancel = () => {
-    setAddModalVisible(false);
-    setEditModalVisible(false);
-    setIsModalVisibleIndividual(false);
-    setIsModalVisibleIndividualEdit(false);
-    setShowModalDeleteIndividual(false);
   };
 
   return (
-    <div>
-      {isLoading ? (
-        <GIFLoader />
-      ) : (
-        <>
-          <Sidebar />
-          <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
-            <nav className="p-5">
-              <GlobalSearch />
-            </nav>
-            <div className="flex items-center justify-between mx-10 mt-5">
-              <h1 className="text-lg font-bold outline-none focus:outline-none">
-                Ad Banner
-              </h1>
-              <Switch />
-            </div>
-            <p className="mt-5 mx-10 text-[15px] text-gray-500">
-              The purpose of a promotional banner is to promote a store. It can
-              be used to display offers new{" "}
-              <span className="flex justify-start">
-                {" "}
-                available items or discounts etc{" "}
-              </span>
-            </p>
-            <div className="flex items-center justify-between mx-10 mt-5">
-              <h1 className="text-lg font-bold outline-none focus:outline-none">
-                App Ad Banner
-              </h1>
-              <div>
-                <button
-                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 mb-7"
-                  onClick={showModal}
-                >
-                  <PlusOutlined className="mr-2" /> Add
-                </button>
-                <AddBannerModal
-                  isVisible={addModalVisible}
-                  handleCancel={handleCancel}
-                  BASE_URL={BASE_URL}
-                  token={token}
-                  onAddBanner={handleAddBanner}
-                  allGeofence={allGeofence}
-                />
-              </div>
-            </div>
-            <div className="overflow-x-auto max-h-[30rem]">
-              <table className="overflow-x-auto p-4 w-full ">
-                <thead className=" sticky top-0 left-0 z-10">
-                  <tr className="p-5 w-full">
-                    {[
-                      "Image",
-                      "Name",
-                      "Merchant ID",
-                      "Geofence",
-                      "Status",
-                      "Actions",
-                    ].map((headers) => (
-                      <th
-                        key={headers}
-                        className="bg-teal-800 text-white h-[70px] mt-10 px-5 text-center whitespace-nowrap"
-                      >
-                        {headers}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {banner?.map((bannerData, index) => (
-                    <tr
-                      className="text-center bg-white h-20"
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
-                      }}
-                      key={bannerData._id}
-                    >
-                      {/* className="w-[120px] px-5" */}
-                      <td className=" flex items-center justify-center p-3">
-                        <figure className="h-[70px] w-[100px]">
-                          <img
-                            src={bannerData.imageUrl}
-                            className="w-full h-full object-contain"
-                          />
-                        </figure>
-                      </td>
-                      <td>{bannerData.name}</td>
-                      <td>{bannerData.merchantId}</td>
-                      <td>{bannerData?.geofenceId?.name}</td>
-                      <td>
-                        <Switch
-                          checked={bannerData.status}
-                          onChange={() => handleToggle(bannerData._id)}
-                        />
-                      </td>
-                      <td>
-                        <div className="flex justify-center items-center gap-3">
-                          <button onClick={() => showModalEdit(bannerData._id)}>
-                            <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                          </button>
-                          <EditBannerModal
-                            isVisible={editModalVisible}
-                            handleCancel={handleCancel}
-                            BASE_URL={BASE_URL}
-                            token={token}
-                            banner={banner}
-                            currentBannerEdit={currentBannerEdit}
-                            allGeofence={allGeofence}
-                            onAddAppData={handleEditNewBanner}
-                          />
+    <>
+      <Sidebar />
+      <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
+        <nav className="p-5">
+          <GlobalSearch />
+        </nav>
+        <div className="flex items-center justify-between mx-10 mt-5">
+          <h1 className="text-lg font-bold outline-none focus:outline-none">
+            Ad Banner
+          </h1>
+        </div>
+        <p className="mt-5 mx-10 text-[15px] text-gray-500">
+          The purpose of a promotional banner is to promote a store. It can be
+          used to display offers new
+          <span className="flex justify-start">
+            available items or discounts etc
+          </span>
+        </p>
 
-                          <button>
-                            <RiDeleteBinLine
-                              className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
-                              onClick={() => showModalDelete(bannerData._id)}
-                            />
-                          </button>
-                          <Modal
-                            // onOk={showModalDeleteOk}
-                            onCancel={handleCancel}
-                            footer={null}
-                            open={isShowModalDelete}
-                            centered
-                          >
-                            <p className="font-semibold text-[18px] mb-5">
-                              <Spin spinning={confirmLoading}>
-                                <p>Are you sure you want to delete this tax?</p>
-                              </Spin>
-                            </p>
-                            <div className="flex justify-end">
-                              <button
-                                className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                                onClick={handleConfirmDelete}
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                                onClick={() =>
-                                  handleBannerDelete(currentBanner)
-                                }
-                              >
-                                {" "}
-                                Delete
-                              </button>
-                            </div>
-                          </Modal>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        {/* Banner */}
+        <div className="flex items-center justify-between mx-10 mt-5">
+          <h1 className="text-lg font-bold outline-none focus:outline-none">
+            App Ad Banner
+          </h1>
+          <div>
+            <button
+              className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 mb-7"
+              onClick={() => toggleModal("addBanner")}
+            >
+              <PlusOutlined className="mr-2" /> Add
+            </button>
+            <AddBannerModal
+              isVisible={modals.addBanner}
+              onCancel={() => toggleModal("addBanner", false)}
+              BASE_URL={BASE_URL}
+              token={token}
+              onAddBanner={handleAddBanner}
+              allGeofence={allGeofence}
+            />
+          </div>
+        </div>
 
-            <div className="flex items-center justify-between mx-10 mt-10">
-              <h1 className="text-lg font-bold outline-none focus:outline-none">
-                Individual Merchant Ad Banner
-              </h1>
-              <div>
-                <button
-                  className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 mb-7"
-                  onClick={showModalIndividual}
+        <div className="overflow-x-auto max-h-[30rem]">
+          <table className="overflow-x-auto p-4 w-full ">
+            <thead className=" sticky top-0 left-0 z-10">
+              <tr className="p-5 w-full">
+                {[
+                  "Image",
+                  "Name",
+                  "Merchant ID",
+                  "Geofence",
+                  "Status",
+                  "Actions",
+                ].map((headers) => (
+                  <th
+                    key={headers}
+                    className="bg-teal-800 text-white h-[70px] mt-10 px-5 text-center whitespace-nowrap"
+                  >
+                    {headers}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {allBanner?.map((bannerData) => (
+                <tr
+                  className="text-center bg-white h-20 even:bg-[#e9e9e9]"
+                  key={bannerData._id}
                 >
-                  <PlusOutlined className="mr-2" /> Add
-                </button>
-                <AddIndividualModal
-                  isVisible={isModalVisibleIndividual}
-                  handleCancel={handleCancel}
-                  BASE_URL={BASE_URL}
-                  token={token}
-                  allGeofence={allGeofence}
-                  onAddIndBanner={handleAddIndBanner}
-                />
-              </div>
-            </div>
-            <div className="overflow-x-auto max-h-[30rem]">
-              <table className="overflow-x-auto p-4 w-full mb-20">
-                <thead className=" sticky top-0 left-0 z-10">
-                  <tr className="p-5 w-full">
-                    {[
-                      "Image",
-                      "Name",
-                      "Merchant ID",
-                      "Geofence",
-                      "Status",
-                      "Actions",
-                    ].map((headers) => (
-                      <th
-                        key={headers}
-                        className="bg-teal-800 text-white h-[70px] mt-10 px-5 text-center whitespace-nowrap"
+                  <td className=" flex items-center justify-center p-3">
+                    <figure className="h-[70px] w-[100px]">
+                      <img
+                        src={bannerData.imageUrl}
+                        className="w-full h-full object-contain"
+                      />
+                    </figure>
+                  </td>
+                  <td>{bannerData.name}</td>
+                  <td>{bannerData.merchantId}</td>
+                  <td>{bannerData?.geofenceId?.name}</td>
+                  <td>
+                    <Switch
+                      checked={bannerData.status}
+                      onChange={() => handleToggle(bannerData._id, true)}
+                    />
+                  </td>
+                  <td>
+                    <div className="flex justify-center items-center gap-3">
+                      <button
+                        onClick={() => {
+                          setCurrentBanner(bannerData._id);
+                          toggleModal("editBanner", true);
+                        }}
                       >
-                        {headers}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {individualBanner?.map((individualBanner, index) => (
-                    <tr
-                      className="text-center bg-white h-20"
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
-                      }}
-                      key={individualBanner._id}
-                    >
-                      <td className=" flex items-center justify-center p-3">
-                        <figure className="h-[70px] w-[100px]">
-                          <img
-                            src={individualBanner.imageUrl}
-                            className="w-full h-full object-contain"
-                          />
-                        </figure>
-                      </td>
-                      <td>{individualBanner.name}</td>
-                      <td>{individualBanner.merchantId}</td>
-                      <td>{individualBanner.geofenceId}</td>
-                      <td>
-                        {" "}
-                        <Switch
-                          checked={individualBanner?.status}
-                          onChange={() => handleIndToggle(individualBanner._id)}
+                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                      </button>
+                      <EditBannerModal
+                        isVisible={modals.editBanner}
+                        onCancel={() => toggleModal("editBanner", false)}
+                        allGeofence={allGeofence}
+                        selectedBanner={currentBanner}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                        onEditBanner={handleEditBanner}
+                      />
+
+                      <button>
+                        <RiDeleteBinLine
+                          className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
+                          onClick={() => {
+                            setCurrentBanner(bannerData._id);
+                            toggleModal("deleteBanner", true);
+                          }}
                         />
-                      </td>
-                      <td>
-                        <div className="flex justify-center items-center gap-3">
+                      </button>
+                      <Modal
+                        open={modals.deleteBanner}
+                        onCancel={() => toggleModal("deleteBanner", false)}
+                        footer={null}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure you want to delete this tax?
+                        </p>
+                        <div className="flex justify-end">
                           <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={() => {
+                              currentBanner(null);
+                              toggleModal("deleteBanner", false);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                            onClick={() => handleDelete(currentBanner)}
+                          >
+                            {confirmLoading ? `Deleting...` : `Delete`}
+                          </button>
+                        </div>
+                      </Modal>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Individual Banner */}
+        <div className="flex items-center justify-between mx-10 mt-10">
+          <h1 className="text-lg font-bold outline-none focus:outline-none">
+            Individual Merchant Ad Banner
+          </h1>
+          <div>
+            <button
+              className="bg-teal-800 text-white rounded-md flex items-center px-9 py-2 mb-7"
+              onClick={() => toggleModal("addIndividual")}
+            >
+              <PlusOutlined className="mr-2" /> Add
+            </button>
+            <AddIndividualModal
+              isVisible={modals.addIndividual}
+              onCancel={() => toggleModal("addIndividual", false)}
+              BASE_URL={BASE_URL}
+              token={token}
+              allGeofence={allGeofence}
+              onAddIndBanner={handleAddIndividualBanner}
+            />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto max-h-[30rem]">
+          <table className="overflow-x-auto p-4 w-full mb-20">
+            <thead className=" sticky top-0 left-0 z-10">
+              <tr className="p-5 w-full">
+                {[
+                  "Image",
+                  "Name",
+                  "Merchant ID",
+                  "Geofence",
+                  "Status",
+                  "Actions",
+                ].map((headers) => (
+                  <th
+                    key={headers}
+                    className="bg-teal-800 text-white h-[70px] mt-10 px-5 text-center whitespace-nowrap"
+                  >
+                    {headers}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {individualBanner?.map((individualBanner, index) => (
+                <tr
+                  className="text-center bg-white h-20 even:bg-[#e9e9e9]"
+                  key={individualBanner._id}
+                >
+                  <td className=" flex items-center justify-center p-3">
+                    <figure className="h-[70px] w-[100px]">
+                      <img
+                        src={individualBanner.imageUrl}
+                        className="w-full h-full object-contain"
+                      />
+                    </figure>
+                  </td>
+                  <td>{individualBanner.name}</td>
+                  <td>{individualBanner.merchantId}</td>
+                  <td>{individualBanner.geofenceId}</td>
+                  <td>
+                    <Switch
+                      checked={individualBanner?.status}
+                      onChange={() => handleToggle(individualBanner._id, true)}
+                    />
+                  </td>
+                  <td>
+                    <div className="flex justify-center items-center gap-3">
+                      <button
+                        onClick={() => {
+                          setCurrentIndBanner(individualBanner._id);
+                          toggleModal("editIndividual", true);
+                        }}
+                      >
+                        <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                      </button>
+
+                      <EditIndividualModal
+                        isVisible={modals.editIndividual}
+                        onCancel={() => toggleModal("editIndividual", false)}
+                        allGeofence={allGeofence}
+                        selectedIndividualBanner={currentIndBanner}
+                        token={token}
+                        BASE_URL={BASE_URL}
+                        onEditIndBanner={handleEditIndividualBanner}
+                      />
+                      <button>
+                        <RiDeleteBinLine
+                          className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
+                          onClick={() => {
+                            setCurrentIndBanner(individualBanner._id);
+                            toggleModal("deleteIndividual", true);
+                          }}
+                        />
+                      </button>
+                      <Modal
+                        onCancel={() => toggleModal("deleteIndividual", false)}
+                        footer={null}
+                        open={modals.deleteIndividual}
+                        centered
+                      >
+                        <p className="font-semibold text-[18px] mb-5">
+                          Are you sure you want to delete this tax?
+                        </p>
+
+                        <div className="flex justify-end">
+                          <button
+                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                            onClick={() => {
+                              setCurrentIndBanner(null);
+                              toggleModal("deleteIndividual", false);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
                             onClick={() =>
-                              showModalIndividualEdit(individualBanner._id)
+                              handleIndBannerDelete(currentIndBanner)
                             }
                           >
-                            <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                            Delete
                           </button>
-
-                          <EditIndividualModal
-                            isVisible={isModalVisibleIndividualEdit}
-                            handleCancel={handleCancel}
-                            BASE_URL={BASE_URL}
-                            currentIndBanner={currentIndBanner}
-                            token={token}
-                            onEditIndBanner={onEditIndBanner}
-                            allGeofence={allGeofence}
-                          />
-                          <button>
-                            <RiDeleteBinLine
-                              className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
-                              onClick={() =>
-                                showModalDeleteIndividual(individualBanner._id)
-                              }
-                            />
-                          </button>
-                          <Modal
-                            onCancel={handleCancel}
-                            footer={null}
-                            open={isShowModalDeleteIndividual}
-                            centered
-                          >
-                            <p className="font-semibold text-[18px] mb-5">
-                              <Spin spinning={confirmLoading}>
-                                <p>Are you sure you want to delete this tax?</p>
-                              </Spin>
-                            </p>
-                            <div className="flex justify-end">
-                              <button
-                                className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                                onClick={handleConfirmIndBannerDelete}
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                                onClick={(e) =>
-                                  handleIndBannerDelete(e, currentIndBanner)
-                                }
-                              >
-                                {" "}
-                                Delete
-                              </button>
-                            </div>
-                          </Modal>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+                      </Modal>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   );
 };
 

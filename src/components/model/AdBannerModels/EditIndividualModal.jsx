@@ -1,98 +1,96 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const EditIndividualModal = ({
   isVisible,
+  onCancel,
+  allGeofence,
+  selectedIndividualBanner,
   token,
   BASE_URL,
-  currentIndBanner,
-  handleCancel,
-  allGeofence,
   onEditIndBanner,
 }) => {
-  const [individualdata, setIndividualData] = useState({
-    name: "",
-    merchantId: "",
-    geofence: "",
-    imageUrl: "",
-  });
-
-  const [errors, setErrors] = useState({
+  const [bannerData, setBannerData] = useState({
     name: "",
     merchantId: "",
     geofenceId: "",
-    appBannerImage: "",
+    imageUrl: "",
   });
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [adFile, setAdFile] = useState(null);
-  const [adPreviewURL, setAdPreviewURL] = useState(null);
 
   const toast = useToast();
 
   useEffect(() => {
-    const getData = async () => {
-      setConfirmLoading(true);
+    if (!selectedIndividualBanner) return;
+
+    const fetchBanner = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}/admin/banner/get-banner/${currentIndBanner}`,
+          `${BASE_URL}/admin/banner/get-banner/${selectedIndividualBanner}`,
           {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
-
         if (response.status === 200) {
-          const data = response.data.data;
-          setIndividualData({
-            name: data.name,
-            merchantId: data.merchantId,
-            geofence: data.geofenceId,
-            bannerImage: data.imageUrl,
-          });
-          setAdPreviewURL(data.imageUrl); // Set the initial preview URL
+          setBannerData(response.data.data);
         }
       } catch (err) {
-        console.error(`Error fetching data: ${err.message}`);
-      } finally {
-        setConfirmLoading(false);
+        console.error(err);
       }
     };
 
-    if (currentIndBanner) {
-      getData();
-    }
-  }, [currentIndBanner, token, BASE_URL]);
+    fetchBanner();
+  }, [selectedIndividualBanner]);
 
-  const handleInputChangeIndividual = (e) => {
-    setIndividualData({
-      ...individualdata,
-      [e.target.name]: e.target.value,
-    });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBannerData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const formSubmit = async (e) => {
+  const handleSelectImage = (e) => {
     e.preventDefault();
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setPreviewURL(URL.createObjectURL(file));
+  };
 
+  const handleEditBanner = async (e) => {
     try {
+      e.preventDefault();
+
       setIsLoading(true);
 
-      const IndBannerDataToSend = new FormData();
-      IndBannerDataToSend.append("name", individualdata.name);
-      IndBannerDataToSend.append("merchantId", individualdata.merchantId);
-      IndBannerDataToSend.append("geofenceId", individualdata.geofence);
-      console.log("Adfile", adFile)
-      if (adFile) {
-        IndBannerDataToSend.append("bannerImage", adFile);
+      const formData = new FormData();
+
+      formData.append("name", bannerData.name);
+      formData.append("merchantId", bannerData.merchantId);
+      formData.append("geofenceId", bannerData.geofenceId);
+
+      if (selectedFile) {
+        formData.append("bannerImage", selectedFile);
       }
 
-      const IndBannerResponse = await axios.put(
-        `${BASE_URL}/admin/banner/edit-banner/${currentIndBanner}`,
-        IndBannerDataToSend,
+      // console.log("FormData contents:");
+      // for (let pair of formData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
+
+      const response = await axios.put(
+        `${BASE_URL}/admin/banner/edit-banner/${selectedBanner}`,
+        formData,
         {
           withCredentials: true,
           headers: {
@@ -102,61 +100,47 @@ const EditIndividualModal = ({
         }
       );
 
-      if (IndBannerResponse.status === 200) {
-        setAdFile(null);
-        setAdPreviewURL(null);
-        handleCancel();
-        onEditIndBanner(IndBannerResponse.data.banner);
+      if (response.status === 200) {
+        onEditIndBanner(response.data.data);
+        setBannerData({
+          name: "",
+          merchantId: "",
+          geofenceId: "",
+          imageUrl: "",
+        });
+        setSelectedFile(null);
+        setPreviewURL(null);
+        onCancel();
         toast({
           title: "Success",
-          description: "The banner was updated successfully.",
-          status: "success",
+          description: "Banner updated successfully",
           duration: 3000,
           isClosable: true,
+          status: "success",
         });
       }
     } catch (err) {
-      console.error(`Error updating banner: ${err.message}`);
-
-      if (err.response && err.response.data && err.response.data.errors) {
-        const { errors } = err.response.data;
-        setErrors({
-          name: errors.name || "",
-          merchantId: errors.merchantId || "",
-          geofenceId: errors.geofenceId || "",
-          appBannerImage: errors.appBannerImage || "",
-        });
-      }
-
       toast({
         title: "Error",
-        description: "There was an error updating the banner.",
-        status: "error",
+        description: "Error in updating banner",
         duration: 3000,
         isClosable: true,
+        status: "error",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleAdImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAdFile(file);
-      setAdPreviewURL(URL.createObjectURL(file));
-    }
-  };
-
   return (
     <Modal
-      title="Edit Individual Merchant Ad Banner"
+      title="Edit Banner"
       open={isVisible}
-      onCancel={handleCancel}
+      onCancel={onCancel}
       footer={null}
       centered
     >
-      <form onSubmit={formSubmit}>
+      <form onSubmit={handleEditBanner}>
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="name" className="w-1/3">
@@ -167,12 +151,12 @@ const EditIndividualModal = ({
               placeholder="Name"
               id="name"
               name="name"
-              value={individualdata.name}
-              onChange={handleInputChangeIndividual}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              value={bannerData.name}
+              onChange={handleInputChange}
+              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
             />
-            {errors.name && <span className="text-red-500">{errors.name}</span>}
           </div>
+
           <div className="flex items-center">
             <label htmlFor="merchantId" className="w-1/3">
               Merchant ID
@@ -182,25 +166,23 @@ const EditIndividualModal = ({
               placeholder="Merchant ID"
               id="merchantId"
               name="merchantId"
-              value={individualdata.merchantId}
-              onChange={handleInputChangeIndividual}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              value={bannerData.merchantId}
+              onChange={handleInputChange}
+              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
             />
-            {errors.merchantId && (
-              <span className="text-red-500">{errors.merchantId}</span>
-            )}
           </div>
+
           <div className="flex items-center">
-            <label htmlFor="geofence" className="w-1/3">
+            <label htmlFor="geofenceId" className="w-1/3">
               Geofence
             </label>
             <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="geofence"
-              value={individualdata.geofence}
-              onChange={handleInputChangeIndividual}
+              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
+              name="geofenceId"
+              value={bannerData.geofenceId}
+              onChange={handleInputChange}
             >
-              <option value="" disabled hidden>
+              <option value="Select geofence" hidden>
                 Select geofence
               </option>
               {allGeofence.map((geofence) => (
@@ -209,38 +191,27 @@ const EditIndividualModal = ({
                 </option>
               ))}
             </select>
-            {errors.geofenceId && (
-              <span className="text-red-500">{errors.geofenceId}</span>
-            )}
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              {adPreviewURL ? (
-                <figure className="mt-3 h-16 w-16 rounded-md relative">
-                  <img
-                    src={adPreviewURL}
-                    alt="profile"
-                    className="w-full rounded h-full object-cover"
-                  />
-                </figure>
-              ) : individualdata?.imageUrl ? (
-                <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md">
-                  <img
-                    src={individualdata?.imageUrl}
-                    className="w-full rounded h-full object-cover"
-                  />
-                </div>
-              ) : null}
+              <figure className="mt-3 h-16 w-16 rounded-md relative">
+                <img
+                  src={previewURL || bannerData?.imageUrl}
+                  alt="profile"
+                  className="w-full rounded h-full object-cover"
+                />
+              </figure>
 
               <input
                 type="file"
-                name="adImage"
-                id="adImage"
+                name="bannerImage"
+                id="bannerImage"
                 className="hidden"
-                onChange={handleAdImageChange}
+                onChange={handleSelectImage}
               />
-              <label htmlFor="adImage" className="cursor-pointer">
+              <label htmlFor="bannerImage" className="cursor-pointer">
                 <MdCameraAlt
                   className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
                   size={30}
@@ -248,25 +219,22 @@ const EditIndividualModal = ({
               </label>
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-end gap-4 mt-6">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md"
-              type="button"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-            <button
-              className={`bg-teal-700 text-white py-2 px-4 rounded-md ${
-                isLoading ? "opacity-50" : ""
-              }`}
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving..." : "Save"}
-            </button>
-          </div>
+        <div className="flex justify-end gap-4 mt-6">
+          <button
+            className="bg-cyan-50 py-2 px-4 rounded-md"
+            type="button"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+          <button
+            className="bg-teal-700 text-white py-2 px-4 rounded-md"
+            type="submit"
+          >
+            {isLoading ? "Saving..." : "Save"}
+          </button>
         </div>
       </form>
     </Modal>

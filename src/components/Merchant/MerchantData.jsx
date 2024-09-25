@@ -46,6 +46,10 @@ const MerchantData = ({
     });
   }, [coordinates]);
 
+  useEffect(() => {
+    console.log(detail);
+  }, [detail]);
+
   const handleSelectImage = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -290,16 +294,17 @@ const MerchantData = ({
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
           <label className=" text-gray-700 text-[16px] w-1/3">Pricing</label>
-          {/* <input
-            disabled
-            type="text"
-            name="pricing"
-            placeholder="Pricing"
-            value={detail?.merchantDetail?.pricing}
-            className="w-2/3 bg-transparent rounded-md p-2 "
-          /> */}
 
-          <p>{detail}</p>
+          {detail?.merchantDetail?.pricing ? (
+            <p className="w-2/3 bg-transparent rounded-md p-2 text-left">
+              {detail?.merchantDetail?.pricing?.modelType} |
+              {detail?.merchantDetail?.pricing?.detail?.type === "Percentage"
+                ? `${detail?.merchantDetail?.pricing?.detail?.value} %`
+                : `${detail?.merchantDetail?.pricing?.detail?.value}`}
+            </p>
+          ) : (
+            <p>-</p>
+          )}
         </div>
 
         <div className="mb-[20px] flex items-center justify-start gap-[30px]">
