@@ -65,6 +65,7 @@ const MerchantDetails = () => {
           ]);
 
         if (merchantResponse.status === 200) {
+          console.log(merchantResponse.data.data);
           setMerchantData(merchantResponse.data.data);
         }
         if (geofenceResponse.status === 200) {

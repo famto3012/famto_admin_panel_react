@@ -11,6 +11,7 @@ const EditSubCustomerModal = ({
   BASE_URL,
   tax,
   currentEditCustomer,
+  onEditSubscription,
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ const EditSubCustomerModal = ({
       );
       if (updateResponse.status === 200) {
         handleCancel();
-
+        onEditSubscription(updateResponse.data.data);
         toast({
           title: "Success",
           description: "Customer Subscription Updated successfully.",
@@ -163,6 +164,7 @@ const EditSubCustomerModal = ({
               name="taxId"
               onChange={handleInputChange}
             >
+              <option defaultValue={null}>Select tax</option>
               {tax.map((tax) => (
                 <option value={tax.taxId} key={tax.taxId}>
                   {tax.taxName}

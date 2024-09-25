@@ -147,7 +147,11 @@ const EditProductItemModal = ({
   }));
 
   const handleInputChange = (e) => {
-    setProductData({ ...productData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProductData({
+      ...productData,
+      [name]: value,
+    });
   };
 
   const handleSelectImage = (e) => {
@@ -168,14 +172,17 @@ const EditProductItemModal = ({
     e.preventDefault();
     try {
       setIsLoading(true);
+
+      console.log(productData);
+
       const dataToSend = new FormData();
 
       Object.keys(productData).forEach((key) => {
         if (Array.isArray(productData[key])) {
           productData[key].forEach((item) => {
-            dataToSend.append(key, item);
+            dataToSend.append(`${key}[]`, item);
           });
-        } else {
+        } else if (productData[key]) {
           dataToSend.append(key, productData[key]);
         }
       });
@@ -183,6 +190,10 @@ const EditProductItemModal = ({
 
       if (selectedFile) {
         dataToSend.append("productImage", selectedFile);
+      }
+
+      for (const [key, value] of dataToSend.entries()) {
+        console.log(key, value);
       }
 
       const response = await axios.put(
@@ -205,16 +216,16 @@ const EditProductItemModal = ({
           maxQuantityPerOrder: "",
           costPrice: "",
           sku: "",
-          discountId: "",
-          oftenBoughtTogetherId: [],
           preparationTime: "",
-          searchTags: [],
           description: "",
           longDescription: "",
           type: "",
           availableQuantity: "",
           alert: "",
           productImageURL: "",
+          discountId: "",
+          oftenBoughtTogetherId: [],
+          searchTags: [],
         });
         setSelectedFile(null);
         setPreviewURL(null);

@@ -241,6 +241,7 @@ const Merchant = () => {
                   ...merchant,
                   isServiceableToday:
                     merchant.isServiceableToday === "open" ? "closed" : "open",
+                  status: !merchant.status,
                 }
               : merchant
           )

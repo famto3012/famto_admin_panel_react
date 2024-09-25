@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
-import { useToast } from "@chakra-ui/react";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const AddIndividualModal = ({
   isVisible,
-  handleCancel,
+  onCancel,
   token,
   allGeofence,
   BASE_URL,
@@ -16,75 +16,82 @@ const AddIndividualModal = ({
     name: "",
     merchantId: "",
     geofenceId: "",
-    bannerImage: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const toast = useToast();
 
-  const handleInputChangeIndividual = (e) => {
-    setBannerData({ ...bannerData, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBannerData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const handleAdImageChange = (e) => {
+  const handleSelectImage = (e) => {
+    e.preventDefault();
     const file = e.target.files[0];
-    console.log(file);
     setSelectedFile(file);
     setPreviewURL(URL.createObjectURL(file));
   };
 
-  const handleAddIndividualBanner = async (e) => {
-    e.preventDefault();
-
+  const handleAddBanner = async (e) => {
     try {
+      e.preventDefault();
+
       setIsLoading(true);
 
-      const dataToSend = new FormData();
-      dataToSend.append("name", bannerData.name);
-      dataToSend.append("merchantId", bannerData.merchantId);
-      dataToSend.append("geofenceId", bannerData.geofenceId);
+      const formData = new FormData();
+
+      formData.append("name", bannerData.name);
+      formData.append("merchantId", bannerData.merchantId);
+      formData.append("geofenceId", bannerData.geofenceId);
 
       if (selectedFile) {
-        dataToSend.append("bannerImage", selectedFile);
+        formData.append("bannerImage", selectedFile);
       }
 
-      const IndBannerResponse = await axios.post(
+      const response = await axios.post(
         `${BASE_URL}/admin/banner/add-banner`,
-        dataToSend,
+        formData,
         {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
           },
         }
       );
 
-      if (IndBannerResponse.status === 201) {
-        onAddIndBanner(IndBannerResponse.data.data);
+      if (response.status === 201) {
+        onAddIndBanner(response.data.data);
+        setBannerData({
+          name: "",
+          merchantId: "",
+          geofenceId: "",
+        });
         setSelectedFile(null);
         setPreviewURL(null);
-        handleCancel();
+        onCancel();
         toast({
           title: "Success",
-          description: "The banner was created successfully.",
-          status: "success",
+          description: "Banner added successfully",
           duration: 3000,
           isClosable: true,
+          status: "success",
         });
       }
     } catch (err) {
-      console.error(`Error in fetch data: ${err.message}`);
-
       toast({
         title: "Error",
-        description: "There was an error creating the banner.",
-        status: "error",
+        description: "Error in adding banner",
         duration: 3000,
         isClosable: true,
+        status: "error",
       });
     } finally {
       setIsLoading(false);
@@ -93,13 +100,13 @@ const AddIndividualModal = ({
 
   return (
     <Modal
-      title="Individual Merchant Ad Banner"
+      title="Add Banner"
       open={isVisible}
-      centered
-      onCancel={handleCancel}
+      onCancel={onCancel}
       footer={null}
+      centered
     >
-      <form onSubmit={handleAddIndividualBanner}>
+      <form onSubmit={handleAddBanner}>
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="name" className="w-1/3">
@@ -111,35 +118,37 @@ const AddIndividualModal = ({
               id="name"
               name="name"
               value={bannerData.name}
-              onChange={handleInputChangeIndividual}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              onChange={handleInputChange}
+              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
             />
           </div>
+
           <div className="flex items-center">
             <label htmlFor="merchantId" className="w-1/3">
               Merchant ID
             </label>
             <input
-              type="id"
+              type="text"
               placeholder="Merchant ID"
               id="merchantId"
               name="merchantId"
               value={bannerData.merchantId}
-              onChange={handleInputChangeIndividual}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              onChange={handleInputChange}
+              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
             />
           </div>
+
           <div className="flex items-center">
             <label htmlFor="geofenceId" className="w-1/3">
               Geofence
             </label>
             <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
               value={bannerData.geofenceId}
-              onChange={handleInputChangeIndividual}
+              onChange={handleInputChange}
             >
-              <option defaultValue={"Select geofence"} hidden>
+              <option value="Select geofence" hidden>
                 Select geofence
               </option>
               {allGeofence.map((geofence) => (
@@ -149,12 +158,14 @@ const AddIndividualModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex items-center">
-            <label className=" w-1/3">Banner Image (390px x 400px)</label>
+            <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
               {!previewURL && (
-                <div className="bg-cyan-50 shadow-md  mt-3 h-16 w-16 rounded-md" />
+                <div className="bg-cyan-50 shadow-md mt-3 h-16 w-16 rounded-md" />
               )}
+
               {previewURL && (
                 <figure className="mt-3 h-16 w-16 rounded-md relative">
                   <img
@@ -164,14 +175,15 @@ const AddIndividualModal = ({
                   />
                 </figure>
               )}
+
               <input
                 type="file"
-                name="adImage"
-                id="adImage"
+                name="bannerImage"
+                id="bannerImage"
                 className="hidden"
-                onChange={handleAdImageChange}
+                onChange={handleSelectImage}
               />
-              <label htmlFor="adImage" className="cursor-pointer">
+              <label htmlFor="bannerImage" className="cursor-pointer">
                 <MdCameraAlt
                   className="bg-teal-800 text-[30px] text-white p-4 h-16 w-16 mt-3 rounded-md"
                   size={30}
@@ -185,14 +197,13 @@ const AddIndividualModal = ({
           <button
             className="bg-cyan-50 py-2 px-4 rounded-md"
             type="button"
-            onClick={handleCancel}
+            onClick={onCancel}
           >
             Cancel
           </button>
           <button
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
-            disabled={isLoading}
           >
             {isLoading ? "Saving..." : "Save"}
           </button>
