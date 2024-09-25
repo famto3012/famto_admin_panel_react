@@ -15,6 +15,7 @@ import { Pagination } from "@mui/material";
 import { formatDate } from "../../../utils/formatter";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { useSocket } from "../../../context/SocketContext";
+import { Modal } from "antd";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -23,8 +24,10 @@ const Orders = () => {
   const [deliveryOption, setDeliveryOption] = useState(true);
 
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
   const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
   const [orderActionLoading, setOrderActionLoading] = useState({});
+  const [isModalReject, setIsModalReject] = useState(false);
 
   const [orderStatus, setOrderStatus] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
@@ -43,6 +46,11 @@ const Orders = () => {
   const onSearch = (e) => {
     let text = e.target.value;
     setSearch(text);
+  };
+
+  const showModalReject = () => setIsModalReject(true);
+  const handleCancel = () => {
+    setIsModalReject(false);
   };
 
   useEffect(() => {
@@ -111,6 +119,7 @@ const Orders = () => {
 
       if (response.status === 200) {
         setOrders(response.data.data);
+        console.log("Order", response.data.data);
         setPagination(response.data.pagination);
       }
     } catch (err) {
@@ -282,6 +291,7 @@ const Orders = () => {
         ...prevLoading,
         [orderId]: true,
       }));
+      setRejectLoading(true);
 
       const endpoint =
         role === "Admin"
@@ -305,6 +315,8 @@ const Orders = () => {
               : order
           )
         );
+        setRejectLoading(false);
+        setIsModalReject(false);
       }
     } catch (err) {
       toast({
@@ -387,6 +399,76 @@ const Orders = () => {
     }
   };
 
+  const handleMarkAsReady = async (orderId) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/orders/mark-as-ready/${orderId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setOrders((prevOrders) => 
+          prevOrders.map((order) => 
+            order._id === orderId ? { ...order, isReady: true } : order
+          )
+        );
+        toast({
+          title: "Success",
+          description: "Order marked as ready.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleMarkOrderCompleted = async (orderId) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/orders/mark-as-completed/${orderId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setOrders((prevOrders) => 
+          prevOrders.map((order) => 
+            order._id === orderId ? { ...order, orderStatus: "Completed" } : order
+          )
+        );
+        toast({
+          title: "Success",
+          description: "Order marked as collected by customer.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <>
       <Sidebar />
@@ -395,8 +477,8 @@ const Orders = () => {
           <GlobalSearch />
         </nav>
 
-        <div className="flex justify-between items-center px-[30px]">
-          <div className=" border-2 border-black rounded-full">
+        <div className="flex justify-between items-center px-[30px] ">
+          <div className="relative w-64 border-2 border-black rounded-full ">
             <label
               htmlFor="Toggle"
               className="inline-flex items-center p-1 outline-2 outline-gray-500 rounded-3xl border-gray-700 bg-gray-100 cursor-pointer"
@@ -409,14 +491,14 @@ const Orders = () => {
                 onChange={handleToggle}
               />
               <span
-                className={`px-4 py-2 rounded-3xl ${
+                className={`px-4 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
                   deliveryOption ? "bg-teal-800 text-white" : "bg-gray-100"
                 }`}
               >
                 Orders
               </span>
               <span
-                className={`px-4 py-2 rounded-3xl ${
+                className={`px-4 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
                   deliveryOption ? "bg-gray-100" : "bg-teal-800 text-white"
                 }`}
               >
@@ -605,11 +687,55 @@ const Orders = () => {
                                 Cancelled
                               </p>
                             )}
+                            {order?.orderStatus === "On-going" && (
+                              <>
+                                {order?.deliveryMode === "Take Away" && (
+                                  <>
+                                    {order?.isReady === false ? (
+                                      <button
+                                        className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                        onClick={() =>
+                                          handleMarkAsReady(order._id)
+                                        }
+                                      >
+                                        Mark As Ready
+                                      </button>
+                                    ) : (
+                                      <button className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                      onClick={() =>
+                                        handleMarkOrderCompleted(order._id)
+                                      }>
+                                        Collected by customer
+                                      </button>
+                                    )}
+                                  </>
+                                )}
 
-                            {order.orderStatus === "On-going" && (
-                              <p className=" text-orange-500 font-[600]">
-                                On-going
-                              </p>
+                                {order?.deliveryMode === "Home Delivery" && (
+                                  <>
+                                    {order?.isReady === false ? (
+                                      <button
+                                        className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                        onClick={() =>
+                                          handleMarkAsReady(order._id)
+                                        }
+                                      >
+                                        Mark As Ready
+                                      </button>
+                                    ) : (
+                                      <p className="text-orange-500 font-[600]">
+                                        On-going
+                                      </p>
+                                    )}
+                                  </>
+                                )}
+                                {order?.deliveryMode !== "Take Away" &&
+                                  order?.deliveryMode !== "Home Delivery" && (
+                                    <p className="text-orange-500 font-[600]">
+                                      On-going
+                                    </p>
+                                  )}
+                              </>
                             )}
 
                             {order.orderStatus === "Pending" && (
@@ -624,13 +750,42 @@ const Orders = () => {
                                         handleConfirmOrder(order._id)
                                       }
                                     />
-
                                     <CloseCircleOutlined
                                       className="text-2xl cursor-pointer text-white"
-                                      onClick={() =>
-                                        handleRejectOrder(order._id)
-                                      }
+                                      onClick={showModalReject}
                                     />
+                                    <Modal
+                                      open={isModalReject}
+                                      onCancel={handleCancel}
+                                      centered
+                                      footer={null}
+                                    >
+                                      <form>
+                                        <p className="font-semibold text-[18px] p-2">
+                                          Are you sure want to Reject ?
+                                        </p>
+                                        <div className="flex justify-end mt-5 gap-6">
+                                          <button
+                                            type="button"
+                                            className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                                            onClick={handleCancel}
+                                          >
+                                            Cancel
+                                          </button>
+                                          <button
+                                            type="submit"
+                                            className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                                            onClick={() =>
+                                              handleRejectOrder(order._id)
+                                            }
+                                          >
+                                            {rejectLoading
+                                              ? `Rejecting...`
+                                              : `Reject`}
+                                          </button>
+                                        </div>
+                                      </form>
+                                    </Modal>
                                   </>
                                 )}
                               </>

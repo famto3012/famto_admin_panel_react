@@ -440,8 +440,8 @@ const SubscriptionComponent = () => {
                       <p>{subscriptions.duration}</p>
                       <p>{subscriptions.renewalReminder}</p>
                     </div>
-                    <p className="m-3">{subscriptions.taxId.taxName}</p>
-                    <p className="m-3">{subscriptions.description}</p>
+                    <p className="m-3">{subscriptions?.taxId?.taxName}</p>
+                    <p className="m-3">{subscriptions?.description}</p>
                     <div className="mb-5 flex">
                       <button
                         className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 mx-3 mt-5"

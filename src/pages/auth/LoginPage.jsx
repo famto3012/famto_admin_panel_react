@@ -21,7 +21,7 @@ const LoginPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const { token, setToken, setRole, setUserId } = useContext(UserContext);
+  const { token, setToken, setRole, setUserId, setUsername } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -43,12 +43,12 @@ const LoginPage = () => {
       const response = await axios.post(`${BASE_URL}/auth/sign-in`, loginData);
 
       if (response.status === 200) {
-        const { token, role, _id } = response.data;
+        const { token, role, _id, fullName } = response.data;
 
         setToken(token);
         setRole(role);
         setUserId(_id);
-
+        setUsername(fullName)
         navigate("/home");
       }
     } catch (err) {

@@ -356,7 +356,7 @@ const Adbanner = () => {
               <h1 className="text-lg font-bold outline-none focus:outline-none">
                 Ad Banner
               </h1>
-              <Switch />
+              {/* <Switch /> */}
             </div>
             <p className="mt-5 mx-10 text-[15px] text-gray-500">
               The purpose of a promotional banner is to promote a store. It can
