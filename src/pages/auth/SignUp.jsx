@@ -73,7 +73,7 @@ const Signup = () => {
 
     try {
       setIsButtonDisabled(true);
-
+      console.log(auth)
       const confirmation = await signInWithPhoneNumber(
         auth,
         signUpData.phoneNumber,

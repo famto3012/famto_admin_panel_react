@@ -154,7 +154,7 @@ const Agentapp = () => {
               <p className="text-gray-500 ">
                 Note: The purpose is to wish or design the splash page. The
                 format can image or gif{" "}
-                <span className="flex justtify-start">
+                <span className="flex justify-start">
                   {" "}
                   Note: Design according to aspect ratio{" "}
                 </span>
@@ -317,12 +317,12 @@ const Agentapp = () => {
             <Switch />
           </div>
         </div> */}
-            <div className="flex justify-end gap-4 mt-14  mx-10">
-              <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
+            <div className="flex justify-end gap-4 mt-14 px-10 bg-gray-100">
+              <button className="bg-cyan-50 py-2 px-4 rounded-md my-10" type="button">
                 Cancel
               </button>
               <button
-                className="bg-teal-800 text-white py-2 px-4 rounded-md "
+                className="bg-teal-800 text-white py-2 px-4 rounded-md my-10"
                 type="submit"
                 onClick={submitAction}
               >

@@ -205,7 +205,7 @@ const MerchantDetails = () => {
         }
       }
 
-      // Assuming merchantData is your data object that you want to send
+      // Assuming merchantData is your data object that you want to send k
       appendFormData(merchantData);
 
       const endpoint =

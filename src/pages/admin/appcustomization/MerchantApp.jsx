@@ -320,12 +320,12 @@ const MerchantApp = () => {
           </div>
         </div> */}
 
-            <div className="flex justify-end gap-4 mt-16 mx-10">
-              <button className="bg-cyan-50 py-2 px-4 rounded-md" type="button">
+            <div className="flex justify-end gap-4 mt-16 px-10 bg-gray-100">
+              <button className="bg-cyan-50 py-2 px-4 rounded-md my-10" type="button">
                 Cancel
               </button>
               <button
-                className="bg-teal-700 text-white py-2 px-4 rounded-md"
+                className="bg-teal-700 text-white py-2 px-4 rounded-md my-10"
                 type="submit"
                 onClick={submitAction}
               >

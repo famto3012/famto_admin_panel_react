@@ -372,7 +372,7 @@ const HomePage = () => {
                 onChange={handleOptionChange}
                 checked={selectedOption === "commission"}
               />
-              <label htmlFor="commission">Commission (in)</label>
+              <label htmlFor="commission">Commission (in ₹)</label>
               {role === "Admin" && (
                 <>
                   <input
@@ -383,7 +383,7 @@ const HomePage = () => {
                     onChange={handleOptionChange}
                     checked={selectedOption === "subscription"}
                   />
-                  <label htmlFor="subscription">Subscription (in)</label>
+                  <label htmlFor="subscription">Subscription (in ₹)</label>
                 </>
               )}
             </div>

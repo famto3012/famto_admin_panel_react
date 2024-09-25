@@ -415,7 +415,7 @@ const Discount = () => {
                 />
               )}
 
-              <Switch />
+              {/* <Switch /> */}
             </div>
             <div className="flex justify-between mt-5 mx-5">
               <h1 className="font-bold text-[20px]">Discount</h1>
