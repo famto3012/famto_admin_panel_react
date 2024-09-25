@@ -57,6 +57,14 @@ const AddNotificationModal = ({
       name: "Scheduled order created",
       value: "scheduledOrderCreated",
     },
+    {
+      name: "Order ready (Agent)",
+      value: "orderReadyAgent",
+    },
+    {
+      name: "Order ready (Customer)",
+      value: "orderReadyCustomer",
+    },
   ];
 
   const handleInputChange = (e) => {

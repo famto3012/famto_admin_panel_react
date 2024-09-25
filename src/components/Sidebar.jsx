@@ -89,10 +89,11 @@ const Sidebar = () => {
     <div className="fixed w-[300px] h-full bg-gradient-to-b from-[#00CED1] to-[#00696B] font-poppins overflow-y-auto pb-[50px] z-20 overflow-element">
       <div className="flex gap-3 ml-[10px] mt-[30px]">
         <img
-          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fwhitelogo.svg?alt=media&token=a7436647-2de7-4fee-8e3a-5c637bd0bc61"
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FAsset%205.svg?alt=media&token=017cbae8-518a-47bc-bab3-3bc4cfb0dbed"
           alt="Logo"
+          className="w-[140px]"
         />
-        <h1 className="text-white font-handelGothic text-2xl">FAMTO</h1>
+        {/* <h1 className="text-white font-handelGothic text-2xl">FAMTO</h1> */}
       </div>
       <div className="dropside ">General</div>
 
