@@ -82,7 +82,7 @@ const LoginPage = () => {
         <div className="min-w-screen bg-white w-full md:w-[450px]  lg:h-auto rounded-tl-[100px]  shadow-lg md:rounded-2xl lg:rounded-2xl md:border-2 md:border-teal-700 p-5 lg:p-14">
           <div className="text-center ">
             <img
-              src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Ffamto-black-logo.svg?alt=media&token=75721109-473f-4428-8a39-3a1181454297"
+              src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2FNew%20logo%20(25).svg?alt=media&token=2a2625e5-884d-4241-8bef-ac2c767389ba"
               alt="Logo"
               className="mx-auto hidden lg:flex h-20 w-20"
             />

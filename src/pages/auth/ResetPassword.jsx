@@ -92,7 +92,7 @@ const ResetPassword = () => {
         <div className="min-w-screen bg-gray-100 h-auto w-[400px] rounded-2xl border-2 border-teal-700 p-10">
           <div className="text-center mt-5 ">
             <img
-              src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Ffamto-black-logo.svg?alt=media&token=75721109-473f-4428-8a39-3a1181454297"
+              src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2FNew%20logo%20(25).svg?alt=media&token=2a2625e5-884d-4241-8bef-ac2c767389ba"
               alt="Logo"
               className="mx-auto flex h-20 w-20"
             />

@@ -1,7 +1,7 @@
 // src/context/SoundContext.js
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-import Cookies from "js-cookie";
+import secureLocalStorage from "react-secure-storage";
 
 const SoundContext = createContext();
 
@@ -28,7 +28,7 @@ export const SoundProvider = ({ children }) => {
   const [orderRejected, setOrderRejected] = useState("");
   const [scheduledOrder, setScheduledOrder] = useState("");
   const [notification, setNotification] = useState([]);
-  const [token, setToken] = useState(Cookies.get("token") || null);
+  const [token, setToken] = useState(secureLocalStorage.getItem("token") || null);
 
   useEffect(() => {
     console.log(token);

@@ -58,8 +58,8 @@ const Success = () => {
       <div className="w-1/2 flex justify-center items-center">
         <div className="border-2 border-teal-700 p-10 rounded-xl bg-white w-[400px]">
           <img
-            className="flex mx-auto m-8"
-            src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Ffamto-black-logo.svg?alt=media&token=75721109-473f-4428-8a39-3a1181454297"
+            className="mx-auto hidden lg:flex mb-5 h-20 w-20"
+            src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2FNew%20logo%20(25).svg?alt=media&token=2a2625e5-884d-4241-8bef-ac2c767389ba"
           />
           <div className="flex justify-center item-center">
             <CheckCircleOutlined className="text-[60px] text-teal-700" />
