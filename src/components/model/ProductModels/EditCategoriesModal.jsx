@@ -133,7 +133,7 @@ const EditCategoriesModal = ({
 
   return (
     <Modal
-      title="Edit Business Category"
+      title="Edit Product Category"
       width="500px"
       onCancel={handleCancel}
       centered
