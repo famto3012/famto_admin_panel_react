@@ -76,14 +76,16 @@ const Customers = () => {
     try {
       setIsTableLoading(true);
 
-      const customersResponse = await axios.get(
-        `${BASE_URL}/admin/customers/get-all`,
-        {
-          params: { page, limit },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/customers/get-all`
+          : `${BASE_URL}/admin/customers/customer-of-merchant`;
+
+      const customersResponse = await axios.get(endPoint, {
+        params: { page, limit },
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (customersResponse.status === 200) {
         setCustomers(customersResponse.data.data);
@@ -96,36 +98,37 @@ const Customers = () => {
     }
   };
 
-  const handleFilterChange = async (filterType, value) => {
-    try {
-      setIsTableLoading(true);
+  // TODO: Complete filter and search for merchant
+  useEffect(() => {
+    const handleFilterChange = async (e) => {
+      try {
+        e.preventDefault();
+        setIsTableLoading(true);
 
-      const params =
-        filterType === "geofence"
-          ? { filter: value, page, limit }
-          : { query: value, page, limit };
+        const endPoint =
+          role === "Admin"
+            ? `${BASE_URL}/admin/customers`
+            : `${BASE_URL}/admin/customers/filter-customer-of-merchant`;
 
-      const response = await axios.get(
-        `${BASE_URL}/admin/customers${
-          filterType === "geofence" ? "" : "/search"
-        }`,
-        {
-          params,
+        const response = await axios.get(endPoint, {
+          params: { filter: geofenceFilter, page, limit },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        });
 
-      if (response.status === 200) {
-        setCustomers(response.data.data);
-        setPagination(response.data.pagination);
+        if (response.status === 200) {
+          setCustomers(response.data.data);
+          setPagination(response.data.pagination);
+        }
+      } catch (err) {
+        console.log(`Error in fetching customers: ${err}`);
+      } finally {
+        setIsTableLoading(false);
       }
-    } catch (err) {
-      console.log(`Error in fetching customers: ${err}`);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+    };
+
+    handleFilterChange();
+  }, [geofenceFilter]);
 
   useEffect(() => {
     const handleSearchCustomer = async () => {
@@ -152,7 +155,7 @@ const Customers = () => {
       } catch (err) {
         toast({
           title: "Error",
-          description: `Error in searching customer`,
+          description: `Error in searching customer, ${err}`,
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -399,7 +402,6 @@ const Customers = () => {
                 className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none"
                 onChange={(e) => {
                   setGeofenceFilter(e.target.value);
-                  handleFilterChange("geofence", e.target.value);
                 }}
               >
                 <option defaultValue="all">All</option>
