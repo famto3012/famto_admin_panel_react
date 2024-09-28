@@ -68,6 +68,7 @@ const Subscriptioncustomer = () => {
         }
         if (allmerchantResponse.status === 200) {
           setMerchants(allmerchantResponse.data.data);
+          console.log(allmerchantResponse.data.data)
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -303,17 +304,22 @@ const Subscriptioncustomer = () => {
         setMerchantlog((prev) =>
           prev.map((merchant) =>
             merchant._id === id
-              ? { ...merchantlog, status: "Paid" }
-              : merchantlog
+              ? { ...merchant, paymentStatus: "Paid" }
+              : merchant
           )
         );
-        console.log(response.data.status);
+        console.log(response.data);
       } else {
         console.log(`Unexpected response status: ${response.status}`);
       }
     } catch (err) {
       console.error(`Error in handleApprove: ${err.message}`);
     }
+  };
+
+
+  const handleBackClick = () => {
+    navigate(-1); // This will navigate to the previous page
   };
 
   return (
@@ -326,7 +332,7 @@ const Subscriptioncustomer = () => {
           <div className="pl-[290px] bg-gray-100">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <ArrowBack className="ml-7" />{" "}
+                <ArrowBack className="ml-7" onClick={handleBackClick} />{" "}
                 <span className="text-lg font-semibold ml-3">
                   Subscription log
                 </span>
@@ -433,11 +439,11 @@ const Subscriptioncustomer = () => {
                       onChange={onMerchantChange}
                     >
                       <option hidden value="">
-                        MerchantName
+                        Merchant Name
                       </option>
                       {merchant.map((merchant) => (
                         <option value={merchant._id} key={merchant._id}>
-                          {merchant._id}
+                          {merchant.merchantName}
                         </option>
                       ))}
                     </select>
