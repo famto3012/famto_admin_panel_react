@@ -19,7 +19,7 @@ const MerchantSub = () => {
         className="bg-cyan-100 px-2 py-2 rounded-lg outline-none focus:outline-none "
       >
         <option hidden value="">
-          MerchantName
+          Merchant Name
         </option>
         <option value="customer" className="bg-white">
           option1
