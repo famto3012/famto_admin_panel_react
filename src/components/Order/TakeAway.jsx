@@ -287,6 +287,8 @@ const TakeAway = ({ data }) => {
         merchantId: takeAwayData.merchantId,
       };
 
+      console.log(invoiceData.items);
+
       const endPoint =
         role === "Admin"
           ? `${BASE_URL}/orders/admin/create-order-invoice`
