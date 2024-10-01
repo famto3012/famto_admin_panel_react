@@ -410,8 +410,8 @@ const Orders = () => {
         }
       );
       if (response.status === 200) {
-        setOrders((prevOrders) => 
-          prevOrders.map((order) => 
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
             order._id === orderId ? { ...order, isReady: true } : order
           )
         );
@@ -445,9 +445,11 @@ const Orders = () => {
         }
       );
       if (response.status === 200) {
-        setOrders((prevOrders) => 
-          prevOrders.map((order) => 
-            order._id === orderId ? { ...order, orderStatus: "Completed" } : order
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId
+              ? { ...order, orderStatus: "Completed" }
+              : order
           )
         );
         toast({
@@ -701,10 +703,12 @@ const Orders = () => {
                                         Mark As Ready
                                       </button>
                                     ) : (
-                                      <button className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
-                                      onClick={() =>
-                                        handleMarkOrderCompleted(order._id)
-                                      }>
+                                      <button
+                                        className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                        onClick={() =>
+                                          handleMarkOrderCompleted(order._id)
+                                        }
+                                      >
                                         Collected by customer
                                       </button>
                                     )}

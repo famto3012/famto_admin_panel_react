@@ -18,7 +18,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io("https://api.famto.in", {
+      const newSocket = io("http://localhost:8080", {
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,

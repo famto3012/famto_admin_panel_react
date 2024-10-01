@@ -20,7 +20,10 @@ const EditCategoriesModal = ({
     type: "",
     categoryImageURL: "",
   });
-  const [allBusinessCategory, setAllBusinessCategory] = useState([]);
+
+  const [availableBusinessCategory, setAvailableBusinessCategory] = useState(
+    []
+  );
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,15 +40,12 @@ const EditCategoriesModal = ({
           : `${BASE_URL}/categories/${categoryId}`;
 
       const [businessCategoryResponse, categoryResponse] = await Promise.all([
-        axios.get(
-          `${BASE_URL}/admin/business-categories/get-all-business-category`,
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        ),
+        axios.get(`${BASE_URL}/categories/${merchantId}/business-categories`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
         axios.get(getCategoryEndPoint, {
           withCredentials: true,
           headers: {
@@ -55,7 +55,7 @@ const EditCategoriesModal = ({
       ]);
 
       if (businessCategoryResponse.status === 200) {
-        setAllBusinessCategory(businessCategoryResponse.data.data);
+        setAvailableBusinessCategory(businessCategoryResponse.data.data);
       }
 
       if (categoryResponse.status === 200) {
@@ -152,7 +152,7 @@ const EditCategoriesModal = ({
               onChange={handleInputChange}
               className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
             >
-              {allBusinessCategory.map((business) => (
+              {availableBusinessCategory.map((business) => (
                 <option key={business._id} value={business._id}>
                   {business.title}
                 </option>
