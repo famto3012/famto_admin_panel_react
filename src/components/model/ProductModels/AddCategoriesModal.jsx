@@ -5,7 +5,6 @@ import axios from "axios";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { UserContext } from "../../../context/UserContext";
-import { useNavigate } from "react-router-dom";
 
 const AddCategoriesModal = ({
   isVisible,
@@ -24,7 +23,9 @@ const AddCategoriesModal = ({
     merchantId: "",
   });
 
-  const [allBusinessCategory, setAllBusinessCategory] = useState([]);
+  const [availableBusinessCategory, setAvailableBusinessCategory] = useState(
+    []
+  );
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
 
@@ -34,14 +35,15 @@ const AddCategoriesModal = ({
   const [isUploadLoading, setIsUploadLoading] = useState(false);
 
   const toast = useToast();
-  const navigate = useNavigate();
   const { userId } = useContext(UserContext);
 
   useEffect(() => {
     const getAllBusinessCategories = async () => {
       try {
+        const userIdToSend = role === "Admin" ? merchantId : userId;
+
         const response = await axios.get(
-          `${BASE_URL}/admin/business-categories/get-all-business-category`,
+          `${BASE_URL}/categories/${userIdToSend}/business-categories`,
           {
             withCredentials: true,
             headers: {
@@ -51,7 +53,7 @@ const AddCategoriesModal = ({
         );
 
         if (response.status === 200) {
-          setAllBusinessCategory(response.data.data);
+          setAvailableBusinessCategory(response.data.data);
         }
       } catch (err) {
         console.log(`Error in getting all business categories: ${err}`);
@@ -59,7 +61,7 @@ const AddCategoriesModal = ({
     };
 
     getAllBusinessCategories();
-  }, []);
+  }, [merchantId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -241,6 +243,7 @@ const AddCategoriesModal = ({
             <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
               Business Category
             </label>
+
             <select
               name="businessCategoryId"
               value={categoryData.businessCategoryId}
@@ -250,7 +253,7 @@ const AddCategoriesModal = ({
               <option defaultValue={"Select business category"} hidden>
                 Select business category
               </option>
-              {allBusinessCategory?.map((category) => (
+              {availableBusinessCategory?.map((category) => (
                 <option key={category._id} value={category._id}>
                   {category.title}
                 </option>

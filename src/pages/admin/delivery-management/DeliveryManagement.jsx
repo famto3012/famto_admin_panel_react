@@ -156,7 +156,7 @@ const DeliveryManagement = () => {
   };
 
   const selectChange = (e) => {
-    const selectedTask = e.target.value ;
+    const selectedTask = e.target.value;
     setTask(selectedTask);
     if (selectedTask !== "") {
       handleTaskFilter(selectedTask);
@@ -179,8 +179,8 @@ const DeliveryManagement = () => {
   const showOkModal = () => setIsModalVisible(false);
   const showModalCancel = () => setIsModalVisible(false);
 
-  const showModalTask = async(taskId) => {
-  await  fetchAgentUsingGeofence(taskId, false)
+  const showModalTask = async (taskId) => {
+    await fetchAgentUsingGeofence(taskId, false);
     setVisibleTaskModal((prev) => ({ ...prev, [taskId]: true }));
   };
 
@@ -602,6 +602,7 @@ const DeliveryManagement = () => {
 
       if (response.status === 200) {
         setGeofenceAgentData(response.data.data);
+        console.log("DATA", response.data.data);
       }
     } catch (err) {
       toast({
@@ -686,15 +687,18 @@ const DeliveryManagement = () => {
     const formattedEndDate = formatDate(value[1]);
     try {
       console.log("Start", formattedStartDate, "End", formattedEndDate);
-      const response = await axios.get(`${BASE_URL}/admin/delivery-management/task-date`, {
-        params: { startDate: formattedStartDate, endDate: formattedEndDate },
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${BASE_URL}/admin/delivery-management/task-date`,
+        {
+          params: { startDate: formattedStartDate, endDate: formattedEndDate },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.status === 200) {
-        console.log(response.data)
-        setTaskData(response.data)
+        console.log(response.data);
+        setTaskData(response.data);
       }
     } catch (err) {
       toast({
@@ -721,14 +725,14 @@ const DeliveryManagement = () => {
           </p>
           <div className="bg-white rounded-lg flex justify-between p-5 mt-5 ">
             <div>
-            <DateRangePicker
-              onChange={selectDateRange}
-              name="date"
-              value={value}
-              format="y-MM-dd"
-              // minDate={new Date()}
-              maxDate={new Date()}
-            />
+              <DateRangePicker
+                onChange={selectDateRange}
+                name="date"
+                value={value}
+                format="y-MM-dd"
+                // minDate={new Date()}
+                maxDate={new Date()}
+              />
               <select className="bg-blue-50 p-2 ml-5 rounded-md" name="agent">
                 <option>All Agents</option>
                 <option>Agents</option>
@@ -1317,21 +1321,16 @@ const DeliveryManagement = () => {
                                           >
                                             <div className="justify-between items-center w-[300px]">
                                               <div className="flex-1 flex justify-between">
-                                                <span className="font-semibold">
+                                                <div className="font-semibold flex items-center gap-3">
                                                   {data?._id}
                                                   {data?.workStructure ===
-                                                  "Fish & Meat" ? (
-                                                    <Badge
-                                                      bg="red?.500"
-                                                      className="w-[15px] h-[14px] ml-3"
-                                                    ></Badge>
-                                                  ) : (
-                                                    ""
+                                                    "Fish & Meat" && (
+                                                    <div className="w-[10px] h-[10px] rounded-full bg-red-600"></div>
                                                   )}
-                                                </span>
+                                                </div>
                                                 <span
                                                   className={
-                                                    data?.status === "Active"
+                                                    data?.status === "Free"
                                                       ? "text-green-400 font-semibold"
                                                       : data?.status ===
                                                         "Inactive"

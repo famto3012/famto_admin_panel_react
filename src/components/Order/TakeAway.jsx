@@ -21,7 +21,9 @@ const TakeAway = ({ data }) => {
 
   const [merchantName, setMerchantName] = useState("");
   const [productName, setProductName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [merchantResults, setMerchantResults] = useState([]);
+  const [businessCategories, setbusinessCategories] = useState([]);
   const [productResults, setProductResults] = useState([]);
 
   const [isMerchantLoading, setIsMerchantLoading] = useState(false);
@@ -85,7 +87,7 @@ const TakeAway = ({ data }) => {
 
       try {
         const response = await axios.get(
-          `${BASE_URL}/customers/search-products/${takeAwayData.merchantId}?query=${query}`,
+          `${BASE_URL}/customers/search-products/${takeAwayData.merchantId}/${selectedCategory}?query=${query}`,
           {
             withCredentials: true,
             headers: {
@@ -155,6 +157,7 @@ const TakeAway = ({ data }) => {
   const selectMerchant = (merchant) => {
     setTakeAwayData({ ...takeAwayData, merchantId: merchant._id });
     setMerchantName(merchant.merchantName);
+    setbusinessCategories(merchant.businessCategory);
     setMerchantResults([]);
   };
 
@@ -273,6 +276,7 @@ const TakeAway = ({ data }) => {
       });
 
       const invoiceData = {
+        selectedBusinessCategory: selectedCategory,
         customerId: data.customerId,
         newCustomer: data.newCustomer,
         deliveryOption: data.deliveryOption,
@@ -365,7 +369,7 @@ const TakeAway = ({ data }) => {
                         onClick={() => selectMerchant(result)}
                       >
                         {result.merchantName} - {result.geofence} (
-                        {result.status ? "Open" : "Closed"})
+                        {result.isServiceableToday})
                       </li>
                     ))}
                   </ul>
@@ -373,6 +377,28 @@ const TakeAway = ({ data }) => {
               </div>
             </div>
           )}
+
+          <div className="flex items-center relative">
+            <label className="w-1/3 px-6 invisible"></label>
+            <div className="w-1/2 flex items-center gap-5 overflow-x-auto">
+              {businessCategories?.map((category) => (
+                <button
+                  key={category._id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedCategory(category._id);
+                  }}
+                  className={`${
+                    selectedCategory === category._id
+                      ? `bg-gray-200`
+                      : `bg-gray-100`
+                  }  border  p-2 rounded-sm`}
+                >
+                  {category.title}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="product">
@@ -404,7 +430,7 @@ const TakeAway = ({ data }) => {
                 <ul className="absolute bg-white border w-full mt-1 z-50">
                   {productResults.map((result) => (
                     <li
-                      key={result._id}
+                      key={result.id}
                       className="p-2 hover:bg-gray-200 cursor-pointer"
                       onClick={() => selectProduct(result)}
                     >
