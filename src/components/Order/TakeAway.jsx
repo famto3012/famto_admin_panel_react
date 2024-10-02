@@ -44,8 +44,29 @@ const TakeAway = ({ data }) => {
 
     if (role === "Merchant") {
       setTakeAwayData({ ...takeAwayData, merchantId: userId });
+      getAvailableBusinessCategory();
     }
   }, [token, role]);
+
+  const getAvailableBusinessCategory = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/orders/available-business-categories`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setbusinessCategories(response.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in getting business categories: ${err}`);
+    }
+  };
 
   const handleSearchMerchant = async (e) => {
     const query = e.target.value;
@@ -390,9 +411,9 @@ const TakeAway = ({ data }) => {
                   }}
                   className={`${
                     selectedCategory === category._id
-                      ? `bg-gray-200`
+                      ? `bg-gray-300`
                       : `bg-gray-100`
-                  }  border  p-2 rounded-sm`}
+                  }  border border-gray-300  p-2 rounded-sm`}
                 >
                   {category.title}
                 </button>
