@@ -49,8 +49,29 @@ const HomeDelivery = ({ data }) => {
     setAllCustomerAddress(data.customerAddress);
     if (role === "Merchant") {
       setHomeDeliveryData({ ...homeDeliveryData, merchantId: userId });
+      getAvailableBusinessCategory();
     }
   }, [data, role]);
+
+  const getAvailableBusinessCategory = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/orders/available-business-categories`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setbusinessCategories(response.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in getting business categories: ${err}`);
+    }
+  };
 
   const handleInputChange = (e) => {
     setHomeDeliveryData({
