@@ -35,11 +35,11 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
           field === "specificTime"
             ? detail?.merchantDetail?.availability?.specificDays?.[day]
                 ?.startTime
-            : "",
+            : null,
         endTime:
           field === "specificTime"
             ? detail?.merchantDetail?.availability?.specificDays?.[day]?.endTime
-            : "",
+            : null,
       },
     };
 

@@ -1,4 +1,6 @@
 import { Switch } from "antd";
+import { useEffect } from "react";
+import Select from "react-select";
 
 const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   const handleInputChange = (e) => {
@@ -9,6 +11,21 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
       merchantDetail: {
         ...detail.merchantDetail,
         [name]: value,
+      },
+    });
+  };
+
+  useEffect(() => {
+    console.log(detail);
+  }, [detail]);
+
+  const handleSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions.map((option) => option.value);
+    onDataChange({
+      ...detail,
+      merchantDetail: {
+        ...detail.merchantDetail,
+        businessCategoryId: selectedValues,
       },
     });
   };
@@ -24,6 +41,11 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
     });
   };
 
+  const businessCategoryOptions = allBusinessCategory?.map((category) => ({
+    label: category.title,
+    value: category._id,
+  }));
+
   return (
     <>
       <div className="mb-4 flex flex-col gap-[10px]">
@@ -33,7 +55,21 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
           <label className="block mt-3 text-gray-700 w-2/5">
             Business category
           </label>
-          <select
+
+          <Select
+            className="mt-2 p-2 w-3/5 rounded-md outline-none focus:outline-none"
+            value={businessCategoryOptions?.filter((option) =>
+              detail?.merchantDetail?.businessCategoryId?.includes(option.value)
+            )}
+            isMulti={true}
+            isSearchable={true}
+            onChange={handleSelectChange}
+            options={businessCategoryOptions}
+            placeholder="Select business category"
+            isClearable={true}
+          />
+
+          {/* <select
             name="businessCategoryId"
             value={detail?.merchantDetail?.businessCategoryId}
             onChange={handleInputChange}
@@ -47,7 +83,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
                 {category.title}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
 
         <div className="mb-4 flex w-[800px]">

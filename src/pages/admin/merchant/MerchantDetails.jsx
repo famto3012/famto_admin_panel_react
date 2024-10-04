@@ -19,6 +19,7 @@ import MerchantDocuments from "../../../components/Merchant/MerchantDocuments";
 import ConfigureMerchant from "../../../components/Merchant/ConfigureMerchant";
 import MerchantAvailability from "../../../components/Merchant/MerchantAvailability";
 import BlockMerchantModel from "../../../components/model/Merchant/BlockMerchantModel";
+import DeleteMerchant from "../../../components/model/Merchant/DeleteMerchant";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -28,6 +29,7 @@ const MerchantDetails = () => {
   const [allBusinessCategory, setBusinessCategory] = useState([]);
 
   const [showBlock, setShowBlock] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -116,6 +118,7 @@ const MerchantDetails = () => {
   }, [merchantId, token, role]);
 
   const toggleBlock = () => setShowBlock(!showBlock);
+  const toggleDeleteModal = () => setShowDelete(!showDelete);
 
   const handleMarkBlocked = () => {
     setMerchantData({ ...merchantData, isBlocked: true });
@@ -210,6 +213,7 @@ const MerchantDetails = () => {
       appendFormData(merchantData);
       console.log("merchantData", merchantData)
       console.log("Edit",formData)
+
       const endpoint =
         role === "Admin"
           ? `${BASE_URL}/merchants/admin/update-merchant-details/${merchantId}`
@@ -256,7 +260,7 @@ const MerchantDetails = () => {
               <>
                 <Link
                   onClick={toggleBlock}
-                  className="bg-yellow-100 py-2 px-5 mr-5 rounded-xl "
+                  className="bg-yellow-100 py-2 px-5 mr-3 rounded-xl "
                 >
                   <BlockIcon className="h-5 w-5 text-red-600" /> Block
                 </Link>
@@ -267,6 +271,21 @@ const MerchantDetails = () => {
                   token={token}
                   merchantId={merchantId}
                   onBlock={handleMarkBlocked}
+                />
+
+                <button
+                  onClick={toggleDeleteModal}
+                  className="bg-red-500 text-white rounded-md p-2 me-3"
+                >
+                  Delete
+                </button>
+
+                <DeleteMerchant
+                  isVisible={showDelete}
+                  onCancel={toggleDeleteModal}
+                  BASE_URL={BASE_URL}
+                  token={token}
+                  merchantId={merchantId}
                 />
               </>
             )}

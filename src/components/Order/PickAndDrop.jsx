@@ -40,12 +40,8 @@ const PickAndDrop = ({ data }) => {
   const [selectedVehicle, setSelectedVehicle] = useState("");
 
   const [selectedPickUpAddress, setSelectedPickUpAddress] = useState("");
-  const [selectedPickOtherAddressId, setSelectedPickOtherAddressId] =
-    useState("");
 
   const [selectedDeliveryAddress, setSelectedDeliveryAddress] = useState("");
-  const [selectedDeliveryOtherAddressId, setSelectedDeliveryOtherAddressId] =
-    useState("");
 
   const [isNewPickupAddressVisible, setIsNewPickupAddressVisible] =
     useState(false);
@@ -254,13 +250,14 @@ const PickAndDrop = ({ data }) => {
                             name="otherAddress"
                             value={otherAddr.id}
                             checked={
-                              selectedPickOtherAddressId === otherAddr.id
+                              pickAndDropData.pickUpAddressOtherAddressId ===
+                              otherAddr.id
                             }
                             onChange={() => {
-                              setSelectedPickOtherAddressId(otherAddr.id);
+                              // setSelectedPickOtherAddressId(otherAddr.id);
                               setPickAndDropData({
                                 ...pickAndDropData,
-                                selectedPickOtherAddressId: otherAddr.id,
+                                pickUpAddressOtherAddressId: otherAddr.id,
                               });
                             }}
                           />
@@ -515,10 +512,11 @@ const PickAndDrop = ({ data }) => {
                             name="otherAddress"
                             value={otherAddr.id}
                             checked={
-                              selectedDeliveryOtherAddressId === otherAddr.id
+                              pickAndDropData.deliveryAddressOtherAddressId ===
+                              otherAddr.id
                             }
                             onChange={() => {
-                              setSelectedDeliveryOtherAddressId(otherAddr.id);
+                              // setSelectedDeliveryOtherAddressId(otherAddr.id);
                               setPickAndDropData({
                                 ...pickAndDropData,
                                 deliveryAddressOtherAddressId: otherAddr.id,

@@ -28,7 +28,9 @@ const HomeDelivery = ({ data }) => {
 
   const [merchantName, setMerchantName] = useState("");
   const [productName, setProductName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [merchantResults, setMerchantResults] = useState([]);
+  const [businessCategories, setbusinessCategories] = useState([]);
   const [allCustomerAddress, setAllCustomerAddress] = useState();
   const [productResults, setProductResults] = useState([]);
 
@@ -47,8 +49,29 @@ const HomeDelivery = ({ data }) => {
     setAllCustomerAddress(data.customerAddress);
     if (role === "Merchant") {
       setHomeDeliveryData({ ...homeDeliveryData, merchantId: userId });
+      getAvailableBusinessCategory();
     }
   }, [data, role]);
+
+  const getAvailableBusinessCategory = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/orders/available-business-categories`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setbusinessCategories(response.data.data);
+      }
+    } catch (err) {
+      console.log(`Error in getting business categories: ${err}`);
+    }
+  };
 
   const handleInputChange = (e) => {
     setHomeDeliveryData({
@@ -104,7 +127,7 @@ const HomeDelivery = ({ data }) => {
 
       try {
         const response = await axios.get(
-          `${BASE_URL}/customers/search-products/${homeDeliveryData.merchantId}?query=${query}`,
+          `${BASE_URL}/customers/search-products/${homeDeliveryData.merchantId}/${selectedCategory}?query=${query}`,
           {
             withCredentials: true,
             headers: {
@@ -174,6 +197,7 @@ const HomeDelivery = ({ data }) => {
   const selectMerchant = (merchant) => {
     setHomeDeliveryData({ ...homeDeliveryData, merchantId: merchant._id });
     setMerchantName(merchant.merchantName);
+    setbusinessCategories(merchant.businessCategory);
     setMerchantResults([]);
     setAllCustomerAddress(data?.customerAddress);
   };
@@ -264,6 +288,7 @@ const HomeDelivery = ({ data }) => {
 
       const invoiceData = {
         ...homeDeliveryData,
+        selectedBusinessCategory: selectedCategory,
         ifScheduled: {
           startDate: data?.ifScheduled?.startDate,
           endDate: data?.ifScheduled?.endDate,
@@ -376,6 +401,28 @@ const HomeDelivery = ({ data }) => {
               </div>
             </div>
           )}
+
+          <div className="flex items-center relative">
+            <label className="w-1/3 px-6 invisible"></label>
+            <div className="w-1/2 flex items-center gap-5 overflow-x-auto">
+              {businessCategories?.map((category) => (
+                <button
+                  key={category._id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedCategory(category._id);
+                  }}
+                  className={`${
+                    selectedCategory === category._id
+                      ? `bg-gray-200`
+                      : `bg-gray-100`
+                  }  border  p-2 rounded-sm`}
+                >
+                  {category.title}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="flex items-center relative">
             <label className="w-1/3 px-6" htmlFor="product">
