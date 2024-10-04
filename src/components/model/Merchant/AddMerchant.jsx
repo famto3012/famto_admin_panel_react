@@ -3,7 +3,13 @@ import axios from "axios";
 import { Modal } from "antd";
 import { useToast } from "@chakra-ui/react";
 
-const AddMerchant = ({ isVisible, onCancel, BASE_URL, token }) => {
+const AddMerchant = ({
+  isVisible,
+  onCancel,
+  BASE_URL,
+  token,
+  onAddMerchant,
+}) => {
   const [merchantData, setMerchantData] = useState({
     fullName: "",
     email: "",
@@ -45,6 +51,7 @@ const AddMerchant = ({ isVisible, onCancel, BASE_URL, token }) => {
       );
 
       if (response.status === 201) {
+        onAddMerchant(response.data.data);
         onCancel();
         toast({
           title: "Success",
