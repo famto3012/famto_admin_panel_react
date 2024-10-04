@@ -393,19 +393,19 @@ const Adbanner = () => {
               {individualBanner?.map((individualBanner, index) => (
                 <tr
                   className="text-center bg-white h-20 even:bg-[#e9e9e9]"
-                  key={individualBanner._id}
+                  key={individualBanner?._id}
                 >
                   <td className=" flex items-center justify-center p-3">
                     <figure className="h-[70px] w-[100px]">
                       <img
-                        src={individualBanner.imageUrl}
+                        src={individualBanner?.imageUrl}
                         className="w-full h-full object-contain"
                       />
                     </figure>
                   </td>
-                  <td>{individualBanner.name}</td>
-                  <td>{individualBanner.merchantId}</td>
-                  <td>{individualBanner.geofenceId}</td>
+                  <td>{individualBanner?.name}</td>
+                  <td>{individualBanner?.merchantId}</td>
+                  <td>{individualBanner?.geofenceId}</td>
                   <td>
                     <Switch
                       checked={individualBanner?.status}

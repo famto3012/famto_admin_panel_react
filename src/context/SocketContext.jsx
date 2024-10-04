@@ -15,7 +15,8 @@ export const SocketProvider = ({ children }) => {
     secureLocalStorage.getItem("fcmToken") || null
   );
   const [socket, setSocket] = useState(null);
-
+  // https://api.famto.in
+  // http://localhost:8080
   useEffect(() => {
     if (userId && fcmToken) {
       const newSocket = io("http://localhost:8080", {

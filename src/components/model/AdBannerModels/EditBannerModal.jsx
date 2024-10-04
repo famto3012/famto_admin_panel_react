@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
 import { useToast } from "@chakra-ui/react";
+import CropImage from "../../CropImage";
 
 const EditBannerModal = ({
   isVisible,
@@ -22,6 +23,12 @@ const EditBannerModal = ({
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null)
+  const [croppedFile, setCroppedFile] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,22 +66,32 @@ const EditBannerModal = ({
     }));
   };
 
-  const handleSelectImage = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
 
-    if (file) {
-      console.log("Selected file:", file); // Debugging
-      setSelectedFile(file);
-      setPreviewURL(URL.createObjectURL(file));
-      console.log("Preview URL:", URL.createObjectURL(file)); // Debugging
+
+  
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0])
     }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile); 
+    setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
   };
 
-  // useEffect(() => {
-  //   setPreviewURL(URL.createObjectURL(file));
-  //   console.log("Preview URL:", URL.createObjectURL(file)); // Debugging
-  // }, [selectedFile]);
+  const handleModalClose = () => {
+    setSelectedFile(null); // Reset the selected file to allow new selection
+  };
 
   const handleEditBanner = async (e) => {
     e.preventDefault();
@@ -86,8 +103,10 @@ const EditBannerModal = ({
     formData.append("name", bannerData.name);
     formData.append("merchantId", bannerData.merchantId);
     formData.append("geofenceId", bannerData.geofenceId);
-    if (selectedFile) {
-      formData.append("bannerImage", selectedFile);
+    console.log("Cropped file",croppedFile)
+    if (croppedFile) {
+      console.log("Cropped file",croppedFile)
+      formData.append("bannerImage", croppedFile);
     }
 
     console.log("FormData contents:");
@@ -204,20 +223,38 @@ const EditBannerModal = ({
           <div className="flex items-center">
             <label className="w-1/3">Banner Image (390px x 400px)</label>
             <div className="flex items-center gap-[30px]">
-              <figure className="mt-3 h-16 w-16 rounded-md relative">
+            {!croppedFile && (
                 <img
-                  src={previewURL || bannerData?.imageUrl}
+                  src={bannerData?.imageUrl}
                   alt="Banner preview"
-                  className="w-full rounded h-full object-cover"
+                  className="w-[175px] rounded h-[80px] object-cover"
                 />
-              </figure>
-
+              )}
+              {croppedFile && (
+                <>
+                  <div>
+                    <img
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
+                      style={{
+                        border: "1px solid white",
+                        borderRadius: "5px",
+                        objectFit: "contain",
+                        width: "175px",
+                        height: "175px",
+                        marginTop: "14px",
+                      }}
+                    />
+                  </div>
+                </>
+              )}
               <input
                 type="file"
                 name="bannerImage"
                 id="bannerImage"
                 className="hidden"
-                onChange={handleSelectImage}
+                accept="image/*"
+                onChange={onSelectFile}
               />
               <label htmlFor="bannerImage" className="cursor-pointer">
                 <MdCameraAlt
@@ -225,6 +262,14 @@ const EditBannerModal = ({
                   size={30}
                 />
               </label>
+              {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={16 / 9} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
             </div>
           </div>
         </div>
