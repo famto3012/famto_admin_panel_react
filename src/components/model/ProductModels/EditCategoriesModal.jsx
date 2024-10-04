@@ -1,8 +1,9 @@
 import { Modal } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import CropImage from "../../CropImage";
 
 const EditCategoriesModal = ({
   isVisible,
@@ -24,6 +25,12 @@ const EditCategoriesModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null)
+  const [croppedFile, setCroppedFile] = useState(null);
 
   const toast = useToast();
 
@@ -74,12 +81,6 @@ const EditCategoriesModal = ({
     }));
   };
 
-  const handleSelectImage = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setPreviewURL(URL.createObjectURL(file));
-    e.target.value = null;
-  };
 
   const submitCategory = async (e) => {
     try {
@@ -94,11 +95,10 @@ const EditCategoriesModal = ({
       formData.append("categoryImageURL", categoryData.categoryImageURL);
       formData.append("type", categoryData.type);
       formData.append("merchantId", merchantId);
-
-      if (selectedFile) {
-        formData.append("categoryImage", selectedFile);
+     
+      if (croppedFile) {
+        formData.append("categoryImage", croppedFile);
       }
-
       const endPoint =
         role === "Admin"
           ? `${BASE_URL}/categories/admin/edit-category/${merchantId}/${categoryId}`
@@ -130,6 +130,31 @@ const EditCategoriesModal = ({
       setIsLoading(false);
     }
   };
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0])
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile); 
+    setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    setSelectedFile(null); // Reset the selected file to allow new selection
+  };
+
+
 
   return (
     <Modal
@@ -218,30 +243,37 @@ const EditCategoriesModal = ({
           <div className="flex items-center">
             <label className=" w-1/3">Photos</label>
             <div className="flex items-center gap-[30px]">
-              {previewURL ? (
-                <figure className="mt-3 h-16 w-16 rounded-md relative">
-                  <img
-                    src={previewURL}
-                    alt={categoryData.categoryName}
-                    className="w-full rounded h-full object-cover"
-                  />
-                </figure>
-              ) : (
-                <figure className="mt-3 h-16 w-16 rounded-md relative">
-                  <img
-                    src={categoryData.categoryImageURL}
-                    alt={categoryData.categoryName}
-                    className="w-full rounded h-full object-cover"
-                  />
-                </figure>
+            {!croppedFile && (
+                <img
+                  className="h-[65px] w-[65px] bg-gray-200 rounded-md mt-[15px]"
+                  src={categoryData.categoryImageURL}
+                />
               )}
-
+            {!!croppedFile && (
+                <>
+                  <div>
+                    <img
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
+                      style={{
+                        border: "1px solid white",
+                        borderRadius: "5px",
+                        objectFit: "contain",
+                        width: "65px",
+                        height: "65px",
+                        marginTop: "15px",
+                      }}
+                    />
+                  </div>
+                </>
+              )}
               <input
                 type="file"
                 name="selectImage"
                 id="selectImage"
                 className="hidden"
-                onChange={handleSelectImage}
+                accept="image/*"
+                onChange={onSelectFile}
               />
               <label htmlFor="selectImage" className="cursor-pointer">
                 <MdCameraAlt
@@ -249,6 +281,14 @@ const EditCategoriesModal = ({
                   size={30}
                 />
               </label>
+              {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-4 mt-6">

@@ -208,6 +208,7 @@ const MerchantDetails = () => {
 
       // Assuming merchantData is your data object that you want to send k
       appendFormData(merchantData);
+      console.log("merchantData", merchantData)
       console.log("Edit",formData)
       const endpoint =
         role === "Admin"

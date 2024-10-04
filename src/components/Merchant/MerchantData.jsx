@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RatingModal from "../model/Merchant/RatingModal";
 import EditMerchant from "../model/Merchant/EditMerchant";
 import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
@@ -6,6 +6,7 @@ import MapModal from "../Order/MapModal";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import ImageModal from "../model/AgentModels/ImageModal";
 import { useMap } from "../../context/MapContext";
+import CropImage from "../CropImage";
 
 const MerchantData = ({
   detail,
@@ -21,6 +22,13 @@ const MerchantData = ({
   const [showMapModal, setShowMapModal] = useState(false);
 
   const [previewURL, setPreviewURL] = useState("");
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null)
+  const [croppedFile, setCroppedFile] = useState(null);
+
 
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState("");
@@ -50,12 +58,12 @@ const MerchantData = ({
     console.log(detail);
   }, [detail]);
 
-  const handleSelectImage = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setPreviewURL(URL.createObjectURL(file));
-    onDataChange({ merchantImage: file });
-  };
+  // const handleSelectImage = (e) => {
+  //   e.preventDefault();
+  //   const file = e.target.files[0];
+  //   setPreviewURL(URL.createObjectURL(file));
+  //   onDataChange({ merchantImage: file });
+  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -77,6 +85,31 @@ const MerchantData = ({
   const handleCloseImageModal = () => {
     setIsImageModalVisible(false);
     setImageModalUrl("");
+  };
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(file);
+      setImg(file)
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile); 
+    // setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+    onDataChange({ merchantImage: croppedFile});
+  };
+
+  const handleModalClose = () => {
+    // setSelectedFile(null); // Reset the selected file to allow new selection
   };
 
   return (
@@ -114,7 +147,7 @@ const MerchantData = ({
               type="text"
               name="displayAddress"
               className="merchantDetail-input"
-              placeholder="Merchant Adress"
+              placeholder="Merchant Address"
               spellCheck={false}
               value={detail?.merchantDetail?.displayAddress}
               onChange={handleInputChange}
@@ -194,13 +227,13 @@ const MerchantData = ({
             </div>
           )}
 
-          {previewURL && (
+          {croppedFile && (
             <figure
-              onClick={() => handleImageClick(previewURL)}
+              onClick={() => handleImageClick(URL.createObjectURL(croppedFile))}
               className="w-20 h-20 rounded relative"
             >
               <img
-                src={previewURL}
+                src={URL.createObjectURL(croppedFile)}
                 alt="profile"
                 className="w-full h-full rounded object-cover"
               />
@@ -216,7 +249,7 @@ const MerchantData = ({
             </figure>
           )}
 
-          {!previewURL && detail?.merchantDetail?.merchantImageURL && (
+          {!croppedFile && detail?.merchantDetail?.merchantImageURL && (
             <figure
               onClick={() =>
                 handleImageClick(detail?.merchantDetail?.merchantImageURL)
@@ -245,8 +278,17 @@ const MerchantData = ({
             name="merchantImage"
             id="merchantImage"
             className="hidden"
-            onChange={handleSelectImage}
+            accept="image/*"
+            onChange={onSelectFile}
           />
+            {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
         </div>
 
         <button

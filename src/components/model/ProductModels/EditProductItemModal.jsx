@@ -5,6 +5,31 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  // convertToPixelCrop,
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { useDebounceEffect } from "../../../utils/useDebounceEffect";
+import { canvasPreview } from "../../../utils/CanvasPreview";
+import CropImage from "../../CropImage";
+
+function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: "%",
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight
+    ),
+    mediaWidth,
+    mediaHeight
+  );
+}
 
 const EditProductItemModal = ({
   isVisible,
@@ -39,6 +64,12 @@ const EditProductItemModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [img, setImg] = useState(null)
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [croppedFile, setCroppedFile] = useState(null);
 
   const [tagValue, setTagValue] = useState("");
   const inputRef = useRef(null);
@@ -154,12 +185,6 @@ const EditProductItemModal = ({
     });
   };
 
-  const handleSelectImage = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setPreviewURL(URL.createObjectURL(file));
-  };
 
   const handleSelectProduct = (selectedOptions) => {
     setProductData({
@@ -188,8 +213,8 @@ const EditProductItemModal = ({
       });
       dataToSend.append("categoryId", categoryId);
 
-      if (selectedFile) {
-        dataToSend.append("productImage", selectedFile);
+      if (croppedFile) {
+        dataToSend.append("productImage", croppedFile);
       }
 
       for (const [key, value] of dataToSend.entries()) {
@@ -250,6 +275,29 @@ const EditProductItemModal = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0])
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile); 
+    setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    setSelectedFile(null); // Reset the selected file to allow new selection
   };
 
   return (
@@ -521,37 +569,52 @@ const EditProductItemModal = ({
             </label>
 
             <div className=" flex items-center gap-[30px]">
-              {!previewURL && productData?.productImageURL && (
-                <figure className=" mt-5 h-16 w-16 rounded-md relative">
-                  <img
-                    src={productData.productImageURL}
-                    alt={productData.productName}
-                    className="w-full rounded h-full object-cover "
-                  />
-                </figure>
+              {!croppedFile && (
+                <img
+                  className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[20px]"
+                  src={productData.productImageURL}
+                />
               )}
-              {previewURL && (
-                <figure className=" mt-5 h-16 w-16 rounded-md relative">
-                  <img
-                    src={previewURL}
-                    alt={productData.productName}
-                    className="w-full rounded h-full object-cover "
-                  />
-                </figure>
+              {!!croppedFile && (
+                <>
+                  <div>
+                    <img
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
+                      style={{
+                        border: "1px solid white",
+                        borderRadius: "5px",
+                        objectFit: "contain",
+                        width: "66px",
+                        height: "66px",
+                        marginTop: "20px",
+                      }}
+                    />
+                  </div>
+                </>
               )}
               <input
                 type="file"
                 name="agentImage"
                 id="agentImage"
                 className="hidden"
-                onChange={handleSelectImage}
+                accept="image/*"
+                onChange={onSelectFile}
               />
               <label htmlFor="agentImage" className="cursor-pointer ">
                 <MdCameraAlt
                   className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
                   size={30}
-                />
+                /> 
               </label>
+              {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
             </div>
           </div>
 
