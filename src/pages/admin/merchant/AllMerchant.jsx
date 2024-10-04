@@ -590,6 +590,10 @@ const Merchant = () => {
     }
   };
 
+  const handleAddMerchant = (data) => {
+    setAllMerchants((prev) => [data, ...prev]);
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -683,6 +687,7 @@ const Merchant = () => {
                     onCancel={handleCancel}
                     BASE_URL={BASE_URL}
                     token={token}
+                    onAddMerchant={handleAddMerchant}
                   />
                 </div>
               </div>
