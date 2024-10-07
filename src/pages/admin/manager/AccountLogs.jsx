@@ -12,6 +12,8 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 import GIFLoader from "../../../components/GIFLoader";
 import { CSVLink } from "react-csv";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
+import { accountLogsOptions } from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -33,7 +35,7 @@ const AccountLogs = () => {
       return;
     }
     // Fetch merchant details on initial render
-    handleRoleFilter("Merchant");
+    handleRoleFilter();
   }, []);
 
   const handleChange = (e) => {
@@ -52,21 +54,25 @@ const AccountLogs = () => {
     }
   };
 
-  const handleRoleFilter = async (selectedType) => {
+  useEffect(() => {
+    handleRoleFilter();
+  }, [roleFilter]);
+
+  const handleRoleFilter = async () => {
     try {
       setIsTableLoading(true);
 
-      console.log(token);
-      const roleResponse = await axios.get(
+      const response = await axios.get(
         `${BASE_URL}/admin/account-log/search-role`,
         {
-          params: { role: selectedType },
+          params: { role: roleFilter },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (roleResponse.status === 200) {
-        setType(roleResponse.data.data);
+
+      if (response.status === 200) {
+        setType(response.data.data);
       }
     } catch (err) {
       console.log(`Error in fetching notification`, err);
@@ -211,24 +217,27 @@ const AccountLogs = () => {
             </div>
             <div className="bg-white p-5 mx-5 mb-5 mt-5 rounded-lg flex justify-between">
               <div className="flex gap-10">
-                <select
-                  name="AccountType"
-                  value={roleFilter}
-                  className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
-                  onChange={onRoleChange}
-                >
-                  <option value="Agent">Agent</option>
-                  <option defaultValue="Merchant">Merchant</option>
-                  <option value="Customer">Customer</option>
-                </select>
-                <select
-                  name="Status"
-                  value={""}
-                  className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
-                  onChange={handleChange}
-                >
-                  <option value="block">Blocked</option>
-                </select>
+                <Select
+                  options={accountLogsOptions}
+                  value={accountLogsOptions.find(
+                    (option) => option.value === roleFilter
+                  )}
+                  onChange={(option) => setRoleFilter(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Geofence"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
               </div>
               <div className="flex gap-4">
                 <input

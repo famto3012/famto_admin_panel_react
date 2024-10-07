@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { ArrowBack, FilterAltOutlined } from "@mui/icons-material";
@@ -6,10 +6,12 @@ import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Modal } from "antd";
-import { FaCalendar } from "react-icons/fa6";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaCalendarAlt } from "react-icons/fa";
+import Select from "react-select";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const Subscriptioncustomer = () => {
   const [customerlog, setCustomerlog] = useState([]);
   const [merchantlog, setMerchantlog] = useState([]);
@@ -55,7 +57,7 @@ const Subscriptioncustomer = () => {
                 headers: { Authorization: `Bearer ${token}` },
               }
             ),
-            axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
+            axios.get(`${BASE_URL}/merchants/admin/all-merchant-drop-down`, {
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
             }),
@@ -68,7 +70,6 @@ const Subscriptioncustomer = () => {
         }
         if (allmerchantResponse.status === 200) {
           setMerchants(allmerchantResponse.data.data);
-          console.log(allmerchantResponse.data.data)
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -80,12 +81,16 @@ const Subscriptioncustomer = () => {
     fetchData();
   }, [token, role, navigate]);
 
+  const merchantOptions = merchant?.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
+
   const handleToggle = () => {
     setIsSubscription(!isSubscription);
   };
 
   // API function for search in Customer Subscription log
-
   const onSearchCustomerChange = (e) => {
     const searchService = e.target.value;
     setSearchCustomer(searchService);
@@ -120,7 +125,6 @@ const Subscriptioncustomer = () => {
   };
 
   // API function for date change in Customer Subscriptionlog
-
   const onDateCustomerChange = (e) => {
     const searchDate = e.target.value;
     setDateCustomerFilter(searchDate);
@@ -158,19 +162,16 @@ const Subscriptioncustomer = () => {
 
   // Function to trigger the date input click
   const openCustomerDatePicker = () => {
-    console.log("clicked");
     if (dateCustomerInput.current) {
       dateCustomerInput.current.showPicker();
     }
   };
 
   // API function for Merchant Filter in Merchant Subscription log
-
-  const onMerchantChange = (e) => {
-    const searchMerchant = e.target.value;
-    setMerchantFilter(searchMerchant);
-    if (searchMerchant !== "") {
-      handleMerchantChangeFilter(searchMerchant);
+  const onMerchantChange = (merchant) => {
+    setMerchantFilter(merchant.label);
+    if (merchant.value !== "") {
+      handleMerchantChangeFilter(merchant.value);
     } else {
       setMerchantlog([]);
     }
@@ -197,7 +198,6 @@ const Subscriptioncustomer = () => {
   };
 
   // API function for date in Merchant Subscription log
-
   const onDateMerchantChange = (e) => {
     const searchDate = e.target.value;
     setDateMerchantFilter(searchDate);
@@ -239,7 +239,6 @@ const Subscriptioncustomer = () => {
   };
 
   // API function for search in Merchant Subscription log
-
   const onSearchMerchantChange = (e) => {
     const searchService = e.target.value;
     setSearchMerchant(searchService);
@@ -274,7 +273,6 @@ const Subscriptioncustomer = () => {
   };
 
   // Modal Function
-
   const showModal = (id) => {
     setCurrentId(id);
     console.log(id);
@@ -286,7 +284,6 @@ const Subscriptioncustomer = () => {
   };
 
   const handleChange = async (id) => {
-    console.log("id", id);
     try {
       const response = await axios.put(
         `${BASE_URL}/admin/subscription-payment/merchant-subscription-status-update/${id}`,
@@ -317,9 +314,8 @@ const Subscriptioncustomer = () => {
     }
   };
 
-
   const handleBackClick = () => {
-    navigate(-1); // This will navigate to the previous page
+    navigate(-1);
   };
 
   return (
@@ -332,7 +328,7 @@ const Subscriptioncustomer = () => {
           <div className="pl-[290px] bg-gray-100">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <ArrowBack className="ml-7" onClick={handleBackClick} />{" "}
+                <ArrowBack className="ml-7" onClick={handleBackClick} />
                 <span className="text-lg font-semibold ml-3">
                   Subscription log
                 </span>
@@ -431,30 +427,27 @@ const Subscriptioncustomer = () => {
                   </div>
                 ) : (
                   <div className="flex gap-7">
-                    <select
-                      name="type"
-                      defaultValue=""
-                      className="bg-cyan-100 px-2 py-2 rounded-lg outline-none focus:outline-none "
-                      value={merchantFilter}
-                      onChange={onMerchantChange}
-                    >
-                      <option hidden value="">
-                        Merchant Name
-                      </option>
-                      {merchant.map((merchant) => (
-                        <option value={merchant._id} key={merchant._id}>
-                          {merchant.merchantName}
-                        </option>
-                      ))}
-                    </select>
+                    <Select
+                      className="w-[200px] px-2 py-2 rounded-lg outline-none focus:outline-none "
+                      value={merchantOptions.find(
+                        (option) => option.value === merchantFilter
+                      )}
+                      isMulti={false}
+                      isSearchable={true}
+                      onChange={(option) => onMerchantChange(option)}
+                      options={merchantOptions}
+                      placeholder="Select Merchant"
+                      isClearable={false}
+                    />
+
                     <div className="flex items-center">
                       <input
                         type="date"
                         name="date"
-                        ref={dateMerchantInput} // Attach the ref to the input
+                        ref={dateMerchantInput}
                         value={dateMerchantFilter}
                         onChange={onDateMerchantChange}
-                        className="hidden top-80" // Keep the input hidden
+                        className="hidden top-80"
                         style={{ right: "40px", top: "200px" }}
                       />
                       <button
@@ -464,9 +457,11 @@ const Subscriptioncustomer = () => {
                         <FaCalendarAlt className="text-gray-400 text-xl" />
                       </button>
                     </div>
+
                     <div className="flex items-center">
                       <FilterAltOutlined className="text-gray-400 " />
                     </div>
+
                     <div className="relative flex justify-end">
                       <input
                         type="search"

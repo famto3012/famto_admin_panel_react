@@ -14,81 +14,61 @@ const itemTypes = [
   "Others",
 ];
 
-const allCustomerCSVDataHeading = [
-  { label: "ID", key: "_id" },
-  { label: "Name", key: "fullName" },
-  { label: "Email", key: "email" },
-  { label: "Phone Number", key: "phoneNumber" },
-  { label: "Last Platform Used", key: "lastPlatformUsed" },
-  { label: "Registration Date", key: "registrationDate" },
-  { label: "Rating", key: "averageRating" },
+const orderStatusOption = [
+  { value: "all", label: "All" },
+  { value: "Pending", label: "Pending" },
+  { value: "On-going", label: "On-going" },
+  { value: "Completed", label: "Completed" },
+  { value: "Cancelled", label: "Cancelled" },
 ];
 
-const allOrdersCSVDataHeading = [
-  { label: "Order ID", key: "_id" },
-  { label: "Order Status", key: "orderStatus" },
-  { label: "Merchant Name", key: "merchantName" },
-  { label: "Customer Name", key: "customerName" },
-  { label: "Delivery Mode", key: "deliveryMode" },
-  { label: "Order Date", key: "orderDate" },
-  { label: "Order Time", key: "orderTime" },
-  { label: "Delivery Date", key: "deliveryDate " },
-  { label: "Delivery Time", key: "deliveryTime" },
-  { label: "Payment Method", key: "paymentMethod" },
-  { label: "Delivery Option", key: "deliveryOption" },
-  { label: "Amount", key: "amount" },
+const paymentModeOption = [
+  { value: "all", label: "All" },
+  { value: "Cash-on-delivery", label: "Cash on delivery" },
+  { value: "Online-payment", label: "Online payment" },
+  { value: "Famto-cash", label: "Famto cash" },
 ];
 
-const orderBillCSVDatHeading = [
-  { label: "Item Total", key: "itemTotal" },
-  { label: "Delivery charges", key: "deliveryCharge" },
-  { label: "Added Tip", key: "addedTip" },
-  { label: "Discount", key: "discountedAmount" },
-  { label: "Sub Total", key: "subTotal" },
-  { label: "GST", key: "taxAmount" },
-  { label: "Grand Total", key: "grandTotal" },
+const deliveryModeOption = [
+  { value: "all", label: "All" },
+  { value: "Home Delivery", label: "Home Delivery" },
+  { value: "Take Away", label: "Take Away" },
+  { value: "Pick and Drop", label: "Pick and Drop" },
+  { value: "Custom Order", label: "Custom Order" },
 ];
 
-const agentPayoutCSVDataHeading = [
-  { label: "Agent ID", key: "_id" },
-  { label: "Name", key: "fullName" },
-  { label: "Phone", key: "phoneNumber" },
-  { label: "Worked Date", key: "workedDate" },
-  { label: "Orders", key: "orders" },
-  { label: "Cancelled orders", key: "cancelledOrders" },
-  { label: "Total distance", key: "totalDistance" },
-  { label: "Login Hours", key: "loginHours" },
-  { label: "Cash in hand", key: "cashInHand" },
-  { label: "Total Earnings", key: "totalEarnings" },
-  { label: "Status Approval", key: "paymentSettled" },
+const serviceableOptions = [
+  { value: "all", label: "All" },
+  { value: "true", label: "Open" },
+  { value: "false", label: "Closed" },
 ];
 
-const allMerchantCSVDataHeading = [
-  { label: "Merchant ID", key: "_id" },
-  { label: "Merchant Name", key: "merchantName" },
-  { label: "Phone Number", key: "phoneNumber" },
-  { label: "Average Rating", key: "averageRating" },
-  { label: "Approved", key: "isApproved" },
-  { label: "Serviceable Today", key: "isServiceableToday" },
-  { label: "Geofence", key: "geofence" },
+const agentStatusOptions = [
+  { value: "all", label: "All" },
+  { value: "Free", label: "Free" },
+  { value: "Busy", label: "Busy" },
+  { value: "Inactive", label: "Inactive" },
 ];
 
-const allAgentsCSVDataHeading = [
-  { label: "AgentID", key: "_id" },
-  { label: "FullName", key: "fullName" },
-  { label: "Email", key: "email" },
-  { label: "Phone", key: "phoneNumber" },
-  { label: "Manager", key: "manager" },
-  { label: "Geofence", key: "geofence" },
-  { label: "Online Status", key: "status" },
+const agentVehicleOptions = [
+  { value: "all", label: "All" },
+  { value: "Bike", label: "Bike" },
+  { value: "Scooter", label: "Scooter" },
+];
+
+const accountLogsOptions = [
+  { value: "Agent", label: "Agent" },
+  { value: "Merchant", label: "Merchant" },
+  { value: "Customer", label: "Customer" },
 ];
 
 export {
   itemTypes,
-  allCustomerCSVDataHeading,
-  allOrdersCSVDataHeading,
-  orderBillCSVDatHeading,
-  agentPayoutCSVDataHeading,
-  allMerchantCSVDataHeading,
-  allAgentsCSVDataHeading,
+  orderStatusOption,
+  paymentModeOption,
+  deliveryModeOption,
+  serviceableOptions,
+  agentStatusOptions,
+  agentVehicleOptions,
+  accountLogsOptions,
 };

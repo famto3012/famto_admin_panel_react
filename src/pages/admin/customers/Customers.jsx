@@ -12,6 +12,7 @@ import { AiOutlineCloudUpload } from "react-icons/ai";
 import { Pagination } from "@mui/material";
 import { Modal } from "antd";
 import { Spinner, useToast } from "@chakra-ui/react";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -100,9 +101,10 @@ const Customers = () => {
 
   // TODO: Complete filter and search for merchant
   useEffect(() => {
-    const handleFilterChange = async (e) => {
+    const handleFilterChange = async () => {
       try {
-        e.preventDefault();
+        // e.preventDefault();
+
         setIsTableLoading(true);
 
         const endPoint =
@@ -178,6 +180,14 @@ const Customers = () => {
     let text = e.target.value;
     setSearch(text);
   };
+
+  const geofenceOptions = [
+    { label: "All", value: "all" },
+    ...allGeofence.map((geofence) => ({
+      label: geofence.name,
+      value: geofence._id,
+    })),
+  ];
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -396,21 +406,28 @@ const Customers = () => {
               </Modal>
             </div>
             <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
-              <select
-                name="type"
-                value={geofenceFilter}
-                className="bg-blue-50 px-4 outline-none rounded-lg focus:outline-none"
-                onChange={(e) => {
-                  setGeofenceFilter(e.target.value);
+              <Select
+                options={geofenceOptions}
+                value={geofenceOptions.find(
+                  (option) => option.value === geofenceFilter
+                )}
+                onChange={(option) => setGeofenceFilter(option.value)}
+                className=" bg-cyan-50 min-w-[10rem]"
+                placeholder="Geofence"
+                isSearchable={false}
+                isMulti={false}
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
                 }}
-              >
-                <option defaultValue="all">All</option>
-                {allGeofence.map((geoFence) => (
-                  <option value={geoFence._id} key={geoFence._id}>
-                    {geoFence.name}
-                  </option>
-                ))}
-              </select>
+              />
+
               <div className="relative">
                 <FilterAltOutlined className="text-gray-400" />
                 <input

@@ -9,7 +9,6 @@ import { AiOutlineCloudUpload } from "react-icons/ai";
 import "react-image-crop/dist/ReactCrop.css";
 import CropImage from "../../CropImage";
 
-
 const AddProductItemModal = ({
   isVisible,
   handleCancel,
@@ -53,7 +52,7 @@ const AddProductItemModal = ({
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
 
   const toast = useToast();
   const animatedComponents = makeAnimated();
@@ -334,13 +333,13 @@ const AddProductItemModal = ({
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0])
+      setImg(e.target.files[0]);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
-    setSelectedFile(croppedFile)// Get the cropped image file
+    setCroppedFile(croppedFile);
+    setSelectedFile(croppedFile); // Get the cropped image file
     console.log("Cropped image file:", croppedFile);
   };
 

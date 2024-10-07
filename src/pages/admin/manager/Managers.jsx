@@ -11,6 +11,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import GIFLoader from "../../../components/GIFLoader";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -63,9 +64,16 @@ const Managers = () => {
       setIsLoading(false);
     }
   };
-  
-  // API function for geofence
 
+  const geofenceOptions = [
+    { label: "All", value: "all" },
+    ...geofence.map((geofence) => ({
+      label: geofence.name,
+      value: geofence._id,
+    })),
+  ];
+
+  // API function for geofence
   const onGeofenceChange = (e) => {
     const selectedService = e.target.value;
     setGeofenceFilter(selectedService);
@@ -97,9 +105,7 @@ const Managers = () => {
     }
   };
 
-
   //API function for search
-
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -132,7 +138,6 @@ const Managers = () => {
   };
 
   // Modal function for Delete
-
   const showModalDelete = (managerId) => {
     setCurrentManager(managerId);
 
@@ -185,159 +190,169 @@ const Managers = () => {
 
   return (
     <div>
-    {isLoading ? (
-      <GIFLoader />
-    ) : (
+      {isLoading ? (
+        <GIFLoader />
+      ) : (
+        <>
+          <Sidebar />
+          <div className="pl-[300px] bg-gray-100 h-screen w-screen">
+            <nav className="p-7">
+              <GlobalSearch />
+            </nav>
 
-    <>
-      <Sidebar />
-      <div className="pl-[300px] bg-gray-100 h-screen w-screen">
-        <nav className="p-7">
-          <GlobalSearch />
-        </nav>
+            <div className="flex justify-between mt-5 px-5">
+              <h1 className="font-bold text-[20px]"> Managers</h1>
+              <Link to="/add-manager">
+                <button className="bg-teal-800 rounded-md py-2 px-5 text-white">
+                  <PlusOutlined className="mr-2" />
+                  Add Manager
+                </button>
+              </Link>
+            </div>
 
-        <div className="flex justify-between mt-5 px-5">
-          <h1 className="font-bold text-[20px]"> Managers</h1>
-          <Link to="/add-manager">
-            <button className="bg-teal-800 rounded-md py-2 px-5 text-white">
-              <PlusOutlined className="mr-2" />
-              Add Manager
-            </button>
-          </Link>
-        </div>
+            <div className="bg-white p-5 mx-5 mb-5 mt-5 rounded-lg flex justify-between">
+              <div className="flex gap-10">
+                <Select
+                  options={geofenceOptions}
+                  value={geofenceOptions.find(
+                    (option) => option.value === geofenceFilter
+                  )}
+                  onChange={(option) => setGeofenceFilter(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Geofence"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
+              </div>
 
-        <div className="bg-white p-5 mx-5 mb-5 mt-5 rounded-lg flex justify-between">
-          <div className="flex gap-10">
-            <select
-              name="type"
-              value={geofenceFilter}
-              className="bg-blue-50 p-2 rounded-md outline-none focus:outline-none"
-              onChange={onGeofenceChange}
-            >
-              <option hidden value="">
-                Geofence
-              </option>
-              <option value="All">All</option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="flex gap-4">
+                <p className="mt-2">
+                  <FilterAltOutlinedIcon className="text-gray-500" />
+                </p>
+                <input
+                  type="search"
+                  name="search"
+                  placeholder="Search Manager Name"
+                  className="bg-gray-100 h-10 px-3 rounded-full text-sm outline-none focus:outline-none"
+                  value={searchFilter}
+                  onChange={onSearchChange}
+                />
+              </div>
+            </div>
 
-          <div className="flex gap-4">
-            <p className="mt-2">
-              <FilterAltOutlinedIcon className="text-gray-500" />
-            </p>
-            <input
-              type="search"
-              name="search"
-              placeholder="Search Manager Name"
-              className="bg-gray-100 h-10 px-3 rounded-full text-sm outline-none focus:outline-none"
-              value={searchFilter}
-              onChange={onSearchChange}
-            />
-          </div>
-        </div>
-
-        <div className="mb-24 overflow-auto">
-          <table className="w-full">
-            <thead>
-              <tr>
-                {[
-                  "Id",
-                  "Name",
-                  "Email",
-                  "Phone",
-                  "Role",
-                  "Geofence",
-                  "Action",
-                ].map((header) => (
-                  <th
-                    key={header}
-                    className="bg-teal-800 text-white h-[70px] text-center"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isTableLoading && (
-                <tr>
-                  <td colSpan={7} className="text-center">
-                    Loading Data...
-                  </td>
-                </tr>
-              )}
-
-              {!isTableLoading && allManagers.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="text-center py-[20px] bg-gray-200">
-                    No Data Available...
-                  </td>
-                </tr>
-              )}
-
-              {!isTableLoading &&
-                allManagers?.map((manager) => (
-                  <tr key={manager._id} className="text-center bg-white h-20">
-                    <td>{manager._id}</td>
-                    <td>{manager.name}</td>
-                    <td>{manager.email}</td>
-                    <td>{manager.phoneNumber}</td>
-                    <td>{manager.role}</td>
-                    <td>{manager?.geofenceId?.name || "N/A"}</td>
-                    <td>
-                      <div className="flex  justify-center gap-3">
-                        <button>
-                          <Link to={`/update-manager/${manager._id}`}>
-                            <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
-                          </Link>
-                        </button>
-                        <button
-                          className="outline-none focus:outline-none"
-                          onClick={() => showModalDelete(manager._id)}
-                        >
-                          <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
-                        </button>
-                        <Modal
-                          onCancel={handleCancel}
-                          footer={null}
-                          open={isShowModalDelete}
-                          centered
-                        >
-                          <p className="font-semibold text-[18px] mb-5">
-                            <Spin spinning={confirmLoading}>
-                              Are you sure want to delete?
-                            </Spin>
-                          </p>
-                          <div className="flex justify-end">
-                            <button
-                              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                              onClick={handleCancel}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                              onClick={() => handleDelete(currentManager)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </Modal>
-                      </div>
-                    </td>
+            <div className="mb-24 overflow-auto">
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    {[
+                      "Id",
+                      "Name",
+                      "Email",
+                      "Phone",
+                      "Role",
+                      "Geofence",
+                      "Action",
+                    ].map((header) => (
+                      <th
+                        key={header}
+                        className="bg-teal-800 text-white h-[70px] text-center"
+                      >
+                        {header}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-    )}
+                </thead>
+                <tbody>
+                  {isTableLoading && (
+                    <tr>
+                      <td colSpan={7} className="text-center">
+                        Loading Data...
+                      </td>
+                    </tr>
+                  )}
+
+                  {!isTableLoading && allManagers.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="text-center py-[20px] bg-gray-200"
+                      >
+                        No Data Available...
+                      </td>
+                    </tr>
+                  )}
+
+                  {!isTableLoading &&
+                    allManagers?.map((manager) => (
+                      <tr
+                        key={manager._id}
+                        className="text-center bg-white h-20"
+                      >
+                        <td>{manager._id}</td>
+                        <td>{manager.name}</td>
+                        <td>{manager.email}</td>
+                        <td>{manager.phoneNumber}</td>
+                        <td>{manager.role}</td>
+                        <td>{manager?.geofenceId?.name || "N/A"}</td>
+                        <td>
+                          <div className="flex  justify-center gap-3">
+                            <button>
+                              <Link to={`/update-manager/${manager._id}`}>
+                                <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
+                              </Link>
+                            </button>
+                            <button
+                              className="outline-none focus:outline-none"
+                              onClick={() => showModalDelete(manager._id)}
+                            >
+                              <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
+                            </button>
+                            <Modal
+                              onCancel={handleCancel}
+                              footer={null}
+                              open={isShowModalDelete}
+                              centered
+                            >
+                              <p className="font-semibold text-[18px] mb-5">
+                                <Spin spinning={confirmLoading}>
+                                  Are you sure want to delete?
+                                </Spin>
+                              </p>
+                              <div className="flex justify-end">
+                                <button
+                                  className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+                                  onClick={handleCancel}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+                                  onClick={() => handleDelete(currentManager)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </Modal>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
