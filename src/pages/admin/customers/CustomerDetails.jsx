@@ -1,4 +1,3 @@
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import React, { useContext, useEffect, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import BlockIcon from "@mui/icons-material/Block";
@@ -35,7 +34,14 @@ const CustomerDetails = () => {
 
   const [showSaveButton, setShowSaveButton] = useState(false);
 
-  const [addressToEdit, setAddressToEdit] = useState({});
+  const [addressToEdit, setAddressToEdit] = useState({
+    fullName: "",
+    phoneNumber: "",
+    flat: "",
+    area: "",
+    landmark: "",
+    coordinates: [],
+  });
   const [selectedAddress, setSelectedAddress] = useState({
     type: "",
     addressId: "",

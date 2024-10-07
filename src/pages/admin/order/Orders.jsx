@@ -12,10 +12,15 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { Pagination } from "@mui/material";
-import { formatDate } from "../../../utils/formatter";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { useSocket } from "../../../context/SocketContext";
 import { Modal } from "antd";
+import Select from "react-select";
+import {
+  orderStatusOption,
+  paymentModeOption,
+  deliveryModeOption,
+} from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -238,6 +243,15 @@ const Orders = () => {
       clearTimeout(timeOut);
     };
   }, [search, token, role, page, limit]);
+
+  // Filter options based on role
+  const filteredOptions =
+    role === "Merchant"
+      ? deliveryModeOption.filter(
+          (option) =>
+            option.value !== "Pick and Drop" && option.value !== "Custom Order"
+        )
+      : deliveryModeOption;
 
   const handleConfirmOrder = async (orderId) => {
     try {
@@ -536,59 +550,71 @@ const Orders = () => {
 
         <div className="flex items-center bg-white p-3 mx-5 rounded-lg justify-between mt-[20px] px-[30px]">
           <div className="flex items-center gap-[20px]">
-            <select
-              id="orderStatus"
-              name="orderStatus"
-              className="bg-blue-50 text-gray-900 text-sm rounded-lg focus:outline-none outline-none block w-full p-2.5"
-              value={orderStatus}
-              onChange={(e) => setOrderStatus(e.target.value)}
-            >
-              <option defaultValue={"Order status"} hidden>
-                Order Status
-              </option>
-              <option value="All">All</option>
-              <option value="Pending">Pending</option>
-              <option value="On-going">On-going</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-
-            <select
-              id="paymentMode"
-              name="paymentMode"
-              className="bg-blue-50 text-gray-900 text-sm rounded-lg focus:outline-none outline-none block w-fit p-2.5"
-              value={paymentMode}
-              onChange={(e) => setPaymentMode(e.target.value)}
-            >
-              <option defaultValue={"Payment mode"} hidden>
-                Payment Mode
-              </option>
-              <option value="All">All</option>
-              <option value="Cash-on-delivery">Cash on delivery</option>
-              <option value="Online-payment">Online payment</option>
-              <option value="Famto-cash">Famto cash</option>
-            </select>
-
-            <select
-              id="deliveryMode"
-              name="deliveryMode"
-              className="bg-blue-50 w-fit text-gray-900 text-sm rounded-lg focus:outline-none outline-none block p-2.5"
-              value={deliveryMode}
-              onChange={(e) => setDeliveryMode(e.target.value)}
-            >
-              <option defaultValue={"Delivery mode"} hidden>
-                Delivery Mode
-              </option>
-              <option value="All">All</option>
-              <option value="Home Delivery">Home Delivery</option>
-              <option value="Take Away">Take Away</option>
-              {role === "Admin" && (
-                <>
-                  <option value="Pick and Drop">Pick and Drop</option>
-                  <option value="Custom Order">Custom Order</option>
-                </>
+            <Select
+              options={orderStatusOption}
+              value={orderStatusOption.find(
+                (option) => option.value === orderStatus
               )}
-            </select>
+              onChange={(option) => setOrderStatus(option.value)}
+              className=" bg-cyan-50 min-w-[10rem]"
+              placeholder="Order status"
+              isSearchable={false}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
+
+            <Select
+              options={paymentModeOption}
+              value={paymentModeOption.find(
+                (option) => option.value === paymentMode
+              )}
+              onChange={(option) => setPaymentMode(option.value)}
+              className=" bg-cyan-50 min-w-[10rem]"
+              placeholder="Payment mode"
+              isSearchable={false}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
+
+            <Select
+              options={filteredOptions}
+              value={filteredOptions.find(
+                (option) => option.value === deliveryMode
+              )}
+              onChange={(option) => setDeliveryMode(option.value)}
+              className=" bg-cyan-50 min-w-[10rem]"
+              placeholder="Delivery mode"
+              isSearchable={false}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
 
           <div className="flex items-center gap-[20px]">

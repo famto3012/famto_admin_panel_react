@@ -13,13 +13,13 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
 import axios from "axios";
-import { CSVLink } from "react-csv";
 import AddMerchant from "../../../components/model/Merchant/AddMerchant";
 import { Spinner, useToast } from "@chakra-ui/react";
-import { allMerchantCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { TbArrowsSort } from "react-icons/tb";
+import Select from "react-select";
+import { serviceableOptions } from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -217,6 +217,22 @@ const Merchant = () => {
       });
     }
   };
+
+  const geofenceOptions = [
+    { label: "All", value: "all" },
+    ...allGeofences.map((geofence) => ({
+      label: geofence.name,
+      value: geofence._id,
+    })),
+  ];
+
+  const businessCategoryOptions = [
+    { label: "All", value: "all" },
+    ...allBusinessCategories.map((category) => ({
+      label: category.title,
+      value: category._id,
+    })),
+  ];
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -695,53 +711,71 @@ const Merchant = () => {
 
             <div className="flex items-center bg-white p-5 mx-5 rounded-lg justify-between mt-[20px] px-[30px]">
               <div className="flex items-center gap-[20px]">
-                <select
-                  className="bg-blue-50 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
-                  name="serviceable"
-                  value={serviceable}
-                  onChange={(e) => setServiceable(e.target.value)}
-                >
-                  <option defaultValue={"Serviceable"} hidden>
-                    Serviceable
-                  </option>
-                  <option value="All">All</option>
-                  <option value="true">Open</option>
-                  <option value="false">Closed</option>
-                </select>
+                <Select
+                  options={serviceableOptions}
+                  value={serviceableOptions.find(
+                    (option) => option.value === serviceable
+                  )}
+                  onChange={(option) => setServiceable(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Status"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
 
-                <select
-                  className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
-                  name="geofence"
-                  value={geofence}
-                  onChange={(e) => setGeofence(e.target.value)}
-                >
-                  <option defaultValue={"Geofence"} hidden>
-                    Geofence
-                  </option>
-                  <option value="All">All</option>
-                  {allGeofences.map((geofence) => (
-                    <option value={geofence._id} key={geofence._id}>
-                      {geofence.name}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  options={geofenceOptions}
+                  value={geofenceOptions.find(
+                    (option) => option.value === geofence
+                  )}
+                  onChange={(option) => setGeofence(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Geofence"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
 
-                <select
-                  className="bg-blue-50 w-full text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
-                  name="businessCategory"
-                  value={businessCategory}
-                  onChange={(e) => setBusinessCategory(e.target.value)}
-                >
-                  <option defaultValue={"Business category"} hidden>
-                    Business category
-                  </option>
-                  <option value="All">All</option>
-                  {allBusinessCategories.map((category) => (
-                    <option key={category._id} value={category._id}>
-                      {category.title}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  options={businessCategoryOptions}
+                  value={businessCategoryOptions.find(
+                    (option) => option.value === businessCategory
+                  )}
+                  onChange={(option) => setBusinessCategory(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Business category"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
               </div>
 
               <div className="flex items-center gap-[30px]">

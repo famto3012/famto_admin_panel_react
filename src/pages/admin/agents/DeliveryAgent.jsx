@@ -15,11 +15,15 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
-import { CSVLink } from "react-csv";
 import AddAgentModal from "../../../components/model/AgentModels/AddAgentModal";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { Pagination } from "@mui/material";
+import Select from "react-select";
+import {
+  agentStatusOptions,
+  agentVehicleOptions,
+} from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -31,7 +35,7 @@ const DeliveryAgent = () => {
 
   const [geofenceFilter, setGeofenceFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [vehicleTypeFilter, setFilterVehicleType] = useState("");
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -124,102 +128,40 @@ const DeliveryAgent = () => {
     }
   };
 
-  // API function for Geofence filter
-  const onGeofenceChange = (e) => {
-    const selectedService = e.target.value;
-    setGeofenceFilter(selectedService);
-    if (selectedService !== "") {
-      handleGeofenceFilter(selectedService);
-    } else {
-      setAgent([]);
-    }
-  };
+  const geofenceOptions = [
+    { label: "All", value: "all" },
+    ...geofence.map((geofence) => ({
+      label: geofence.name,
+      value: geofence._id,
+    })),
+  ];
 
-  const handleGeofenceFilter = async (selectedService) => {
-    try {
-      setIsTableLoading(true);
-      const serviceResponse = await axios.get(
-        `${BASE_URL}/admin/agents/filter`,
-        {
-          params: { geofence: selectedService },
+  useEffect(() => {
+    const handleGeofenceFilter = async () => {
+      try {
+        setIsTableLoading(true);
+        const response = await axios.get(`${BASE_URL}/admin/agents/filter`, {
+          params: {
+            geofence: geofenceFilter,
+            status: statusFilter,
+            vehicleType: vehicleTypeFilter,
+          },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          setAgent(response.data.data);
         }
-      );
-      if (serviceResponse.status === 200) {
-        setAgent(serviceResponse.data.data);
+      } catch (err) {
+        console.log(`Error in fetching agent`, err);
+      } finally {
+        setIsTableLoading(false);
       }
-    } catch (err) {
-      console.log(`Error in fetching agent`, err);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+    };
 
-  // API function for Status filter
-  const onStatusChange = (e) => {
-    const selectedService = e.target.value;
-    setStatusFilter(selectedService);
-    if (selectedService !== "") {
-      handleStatusFilter(selectedService);
-    } else {
-      setAgent([]);
-    }
-  };
-
-  const handleStatusFilter = async (selectedService) => {
-    try {
-      setIsTableLoading(true);
-      const serviceResponse = await axios.get(
-        `${BASE_URL}/admin/agents/filter`,
-        {
-          params: { status: selectedService },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (serviceResponse.status === 200) {
-        setAgent(serviceResponse.data.data);
-      }
-    } catch (err) {
-      console.log(`Error in fetching agent`, err);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
-
-  // API function for vehicle type Filter
-  const onVehicleTypeChange = (e) => {
-    const selectedService = e.target.value;
-    setFilterVehicleType(selectedService);
-    if (selectedService !== "") {
-      handleVehicleTypeFilter(selectedService);
-    } else {
-      setAgent([]);
-    }
-  };
-
-  const handleVehicleTypeFilter = async (selectedService) => {
-    try {
-      console.log(token);
-      setIsTableLoading(true);
-      const serviceResponse = await axios.get(
-        `${BASE_URL}/admin/agents/filter`,
-        {
-          params: { vehicleType: selectedService },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (serviceResponse.status === 200) {
-        setAgent(serviceResponse.data.data);
-      }
-    } catch (err) {
-      console.log(`Error in fetching agent`, err);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+    handleGeofenceFilter();
+  }, [geofenceFilter, statusFilter, vehicleTypeFilter]);
 
   // API function for search
   const onSearchChange = (e) => {
@@ -548,51 +490,71 @@ const DeliveryAgent = () => {
 
             <div className="flex items-center justify-between mt-10 px-[10px] bg-white  p-5 rounded-lg">
               <div className="flex items-center justify-evenly gap-3 bg-white  rounded-lg p-6">
-                <select
-                  id="status"
-                  className="bg-blue-50  text-gray-900 text-sm rounded-lg focus:outline-none outline-none block w-full p-2.5 px-4"
-                  value={statusFilter}
-                  onChange={onStatusChange}
-                >
-                  <option hidden value="">
-                    Status
-                  </option>
-                  <option value="all">All</option>
-                  <option value="Free">Free</option>
-                  <option value="Busy">Busy</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
+                <Select
+                  options={agentStatusOptions}
+                  value={agentStatusOptions.find(
+                    (option) => option.value === statusFilter
+                  )}
+                  onChange={(option) => setStatusFilter(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Status"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
 
-                <select
-                  id="vehicleType"
-                  className="bg-blue-50 w-32 text-gray-900 text-sm rounded-lg focus:outline-none outline-none block p-2.5"
-                  value={vehicleTypeFilter}
-                  onChange={onVehicleTypeChange}
-                >
-                  <option hidden value="">
-                    Vehicle Type
-                  </option>
-                  <option value="all">All</option>
-                  <option value="Scooter">Scooter</option>
-                  <option value="Bike">Bike</option>
-                </select>
+                <Select
+                  options={agentVehicleOptions}
+                  value={agentVehicleOptions.find(
+                    (option) => option.value === vehicleTypeFilter
+                  )}
+                  onChange={(option) => setVehicleTypeFilter(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Vehicle type"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
 
-                <select
-                  name="type"
-                  value={geofenceFilter}
-                  className="bg-blue-50 p-2 outline-none rounded-lg focus:outline-none"
-                  onChange={onGeofenceChange}
-                >
-                  <option hidden value="">
-                    Geofence
-                  </option>
-                  <option value="all">All</option>
-                  {geofence.map((geoFence) => (
-                    <option value={geoFence._id} key={geoFence._id}>
-                      {geoFence.name}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  options={geofenceOptions}
+                  value={geofenceOptions.find(
+                    (option) => option.value === geofenceFilter
+                  )}
+                  onChange={(option) => setGeofenceFilter(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Geofence"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
               </div>
 
               <div className="flex items-center gap-[30px]">

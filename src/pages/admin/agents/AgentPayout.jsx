@@ -9,8 +9,6 @@ import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
-import { CSVLink } from "react-csv";
-import { agentPayoutCSVDataHeading } from "../../../utils/DefaultData";
 import { Pagination } from "@mui/material";
 import { useToast } from "@chakra-ui/react";
 

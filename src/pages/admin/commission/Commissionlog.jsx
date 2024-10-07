@@ -6,9 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { Modal } from "antd";
-import { FaCalendar } from "react-icons/fa6";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaCalendarAlt } from "react-icons/fa";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -40,15 +40,17 @@ const Commissionlog = () => {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
+          axios.get(`${BASE_URL}/merchants/admin/all-merchant-drop-down`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
+
         if (commissionResponse.status === 200) {
           setCommissionlog(commissionResponse.data.data.commissionLogs);
           console.log(commissionResponse.data.data);
         }
+
         if (merchantResponse.status === 200) {
           setMerchants(merchantResponse.data.data);
           console.log(merchantResponse.data.data);
@@ -63,8 +65,12 @@ const Commissionlog = () => {
     fetchData();
   }, [token, role, navigate]);
 
-  // API function search
+  const merchantOptions = merchant?.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
 
+  // API function search
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -99,7 +105,6 @@ const Commissionlog = () => {
   };
 
   // API function for date change
-
   const onDateChange = (e) => {
     const searchDate = e.target.value;
     setDateFilter(searchDate);
@@ -136,28 +141,24 @@ const Commissionlog = () => {
 
   // Function to trigger the date input click
   const openDatePicker = () => {
-    console.log("clicked");
     if (dateInputRef.current) {
       dateInputRef.current.showPicker();
     }
   };
 
   // API Function  for Merchant Filter
-
-  const onMerchantChange = (e) => {
-    const searchMerchant = e.target.value;
-    setMerchantFilter(searchMerchant);
-    if (searchMerchant !== "") {
-      handleMerchantChangeFilter(searchMerchant);
+  const onMerchantChange = (merchant) => {
+    setMerchantFilter(merchant.label);
+    if (merchant.value !== "") {
+      handleMerchantChangeFilter(merchant.value);
     } else {
-      setCommissionlog([]);
+      setMerchantlog([]);
     }
   };
 
   const handleMerchantChangeFilter = async (searchMerchant) => {
     try {
       setIsTableLoading(true);
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/commission/commission-log/${searchMerchant}`,
         {
@@ -176,19 +177,14 @@ const Commissionlog = () => {
   };
 
   // Modal Function
-
   const showModal = (id) => {
     setCurrentId(id);
-    console.log(id);
     setIsModalVisible(true);
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+  const handleCancel = () => setIsModalVisible(false);
 
   const handleChange = async (id) => {
-    console.log("id", id);
     try {
       const response = await axios.put(
         `${BASE_URL}/admin/commission/commission-log/${id}`,
@@ -210,7 +206,6 @@ const Commissionlog = () => {
               : commissionlog
           )
         );
-        console.log(response.data.status);
       } else {
         console.log(`Unexpected response status: ${response.status}`);
       }
@@ -218,6 +213,7 @@ const Commissionlog = () => {
       console.error(`Error in handleApprove: ${err.message}`);
     }
   };
+
   return (
     <div>
       {isLoading ? (
@@ -252,30 +248,27 @@ const Commissionlog = () => {
               </div>
             </div>
             <div className="mx-11 rounded-lg mt-5 flex justify-between">
-              <select
-                name="type"
-                defaultValue=""
-                className="bg-cyan-100 px-4 outline-none rounded-lg focus:outline-none mr-6"
-                onChange={onMerchantChange}
-                value={merchantFilter}
-              >
-                <option hidden value="">
-                  All Merchants
-                </option>
-                {merchant.map((merchant) => (
-                  <option value={merchant._id} key={merchant._id}>
-                    {merchant._id}
-                  </option>
-                ))}
-              </select>
+              <Select
+                className="w-[200px] px-2 py-2 rounded-lg outline-none focus:outline-none "
+                value={merchantOptions.find(
+                  (option) => option.value === merchantFilter
+                )}
+                isMulti={false}
+                isSearchable={true}
+                onChange={(option) => onMerchantChange(option)}
+                options={merchantOptions}
+                placeholder="Select Merchant"
+                isClearable={true}
+              />
+
               <div className="flex items-center ">
                 <input
                   type="date"
                   name="date"
-                  ref={dateInputRef} // Attach the ref to the input
+                  ref={dateInputRef}
                   value={dateFilter}
                   onChange={onDateChange}
-                  className="hidden top-80" // Keep the input hidden
+                  className="hidden top-80"
                   style={{ right: "40px", top: "200px" }}
                 />
                 <button
