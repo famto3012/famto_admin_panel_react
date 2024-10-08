@@ -1,13 +1,16 @@
-import React from "react";
+import { useContext } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import CommissionComponent from "../../../components/CommissionComponent";
 import SubscriptionComponent from "../../../components/SubscriptionComponent";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
 
 const Commission = () => {
   const [isCommission, setIsCommission] = useState(false);
+
+  const { role } = useContext(UserContext);
 
   const handleToggle = () => {
     setIsCommission(!isCommission);
@@ -53,17 +56,19 @@ const Commission = () => {
             </label>
           </div>
 
-          <div>
-            {isCommission ? (
-              <button className="bg-teal-800 p-3 rounded-xl text-white ">
-                <Link to="/view-commission"> View Commision log</Link>
-              </button>
-            ) : (
-              <button className="bg-teal-800 p-3 rounded-xl text-white ">
-                <Link to="/view-subscription">View Subscription log</Link>
-              </button>
-            )}
-          </div>
+          {role === "Admin" && (
+            <div>
+              {isCommission ? (
+                <button className="bg-teal-800 p-3 rounded-xl text-white ">
+                  <Link to="/view-commission"> View Commision log</Link>
+                </button>
+              ) : (
+                <button className="bg-teal-800 p-3 rounded-xl text-white ">
+                  <Link to="/view-subscription">View Subscription log</Link>
+                </button>
+              )}
+            </div>
+          )}
         </div>
         {isCommission ? <CommissionComponent /> : <SubscriptionComponent />}
       </div>

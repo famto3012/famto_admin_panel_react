@@ -29,7 +29,7 @@ const Discount = () => {
   const [currentProductDelete, setCurrentProductDelete] = useState(null);
   const [geofence, setGeofence] = useState([]);
   const [discount, setDiscount] = useState([]);
-  const { token, role } = useContext(UserContext);
+  const { token, role, userId } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
@@ -46,48 +46,48 @@ const Discount = () => {
 
   const navigate = useNavigate();
 
-  // API for fetch Merchant data
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
     }
 
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
+    getAllGeofence();
 
-        const [response, geofenceResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/merchants/admin/all-merchants`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        if (response.status === 200) {
-          const merchants = response.data.data;
-          setMerchant(merchants);
-          // Set the first merchant as selected by default if selectedMerchant is null
-          if (!selectedMerchant && merchants.length > 0) {
-            setSelectedMerchant(merchants[0]._id);
-          }
-        }
-
-        if (geofenceResponse.status === 200) {
-          setGeofence(geofenceResponse.data.geofences);
-        }
-      } catch (err) {
-        console.error(`Error in fetching data ${err.message}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
+    if (role === "Admin") getAllMerchants();
   }, [token, role]);
+
+  const getAllMerchants = async () => {
+    const response = await axios.get(
+      `${BASE_URL}/merchants/admin/all-merchants`,
+      {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (response.status === 200) {
+      const { data } = response.data;
+      setMerchant(data);
+
+      if (!selectedMerchant && data.length > 0) {
+        setSelectedMerchant(data[0]._id);
+      }
+    }
+  };
+
+  const getAllGeofence = async () => {
+    const response = await axios.get(
+      `${BASE_URL}/admin/geofence/get-geofence`,
+      {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (response.status === 200) {
+      setGeofence(response.data.geofences);
+    }
+  };
 
   const merchantOptions = merchant.map((merchant) => ({
     label: merchant.merchantName,
@@ -95,12 +95,16 @@ const Discount = () => {
   }));
 
   useEffect(() => {
+    const merchantId = role === "Admin" ? selectedMerchant : userId;
+
+    console.log("MERCHANT ID", merchantId);
+
     const fetchDiscount = async () => {
       try {
         setIsTableLoading(true);
 
         const response = await axios.get(
-          `${BASE_URL}/merchant/shop-discount/get-merchant-discount-admin/${selectedMerchant}`,
+          `${BASE_URL}/merchant/shop-discount/get-merchant-discount-admin/${merchantId}`,
           {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -108,7 +112,6 @@ const Discount = () => {
         );
         if (response.status === 200) {
           setDiscount(response.data.data);
-          console.log(response.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching discount ${err.message}`);
@@ -121,8 +124,6 @@ const Discount = () => {
       fetchDiscount();
     }
   }, [selectedMerchant, token, role]);
-
-  // Delete Current Discount...
 
   const removeDiscount = (currentDiscountDelete) => {
     setDiscount(
@@ -319,7 +320,6 @@ const Discount = () => {
     });
   };
 
-  // Function to update the discount in the list
   const handleEditDiscount = (updatedDiscount) => {
     setDiscount((prevDiscounts) =>
       prevDiscounts.map((discount) =>
@@ -381,7 +381,6 @@ const Discount = () => {
     setIsShowModalDelete2(true);
   };
 
-  // Filter discounts based on the presence of a productId
   const merchantDiscounts = discount.filter((item) => !item.productId);
   const productDiscounts = discount.filter((item) => item.productId);
 
@@ -524,7 +523,6 @@ const Discount = () => {
                             <EditDiscountModal
                               isVisible={isModalVisibleEdit}
                               token={token}
-                              merchant={merchant}
                               geofence={geofence}
                               currentDiscount={currentDiscount}
                               BASE_URL={BASE_URL}

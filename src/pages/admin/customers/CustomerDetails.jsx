@@ -186,7 +186,6 @@ const CustomerDetails = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      console.log(customer);
 
       const response = await axios.put(
         `${BASE_URL}/admin/customers/edit-customer/${customerId}`,
@@ -211,7 +210,6 @@ const CustomerDetails = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in editing customer: ${err}`);
       toast({
         title: "Error",
         description: `Error in updating customer`,
@@ -255,7 +253,7 @@ const CustomerDetails = () => {
                   <div className="p-3 flex flex-col w-full gap-3">
                     <div className="flex items-center ">
                       <label htmlFor="fullName" className="w-1/3 text-sm">
-                        Full name
+                        Full name <span className="text-red-600">*</span>
                       </label>
                       <input
                         type="text"
@@ -271,7 +269,7 @@ const CustomerDetails = () => {
 
                     <div className="flex items-center">
                       <label htmlFor="email" className="w-1/3 text-sm">
-                        Email
+                        Email <span className="text-red-600">*</span>
                       </label>
                       <input
                         type="email"
@@ -287,7 +285,7 @@ const CustomerDetails = () => {
 
                     <div className="flex items-center">
                       <label htmlFor="phone" className="w-1/3 text-sm">
-                        Phone
+                        Phone <span className="text-red-600">*</span>
                       </label>
                       <input
                         type="text"
@@ -492,11 +490,10 @@ const CustomerDetails = () => {
         </div>
 
         {showSaveButton && (
-          <div className="flex justify-end gap-4 mt-5 mx-10">
+          <div className="flex justify-end gap-4 mt-5 mx-7">
             <button
               className="bg-cyan-100 py-2 px-4 rounded-md"
               type="button"
-              // onClick={handleCancelModal}
               onClick={handleCancelEditClick}
             >
               Cancel
@@ -511,9 +508,9 @@ const CustomerDetails = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between mx-11 mt-10">
+        <div className="flex items-center justify-between ms-11 me-7 mt-10">
           <h1 className="text-md font-semibold">Wallet</h1>
-          <div className="flex space-x-2 justify-end ">
+          <div className="flex gap-[30px] justify-end ">
             <button
               className="bg-red-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
               onClick={toggleDeductMoney}

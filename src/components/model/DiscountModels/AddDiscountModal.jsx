@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Modal, Switch } from "antd";
+import { useContext, useEffect, useState } from "react";
+import { Modal } from "antd";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import { UserContext } from "../../../context/UserContext";
+import Select from "react-select";
 
 const AddDiscountModal = ({
   isVisible,
-  selectedMerchant,
   token,
   merchant,
   BASE_URL,
@@ -13,8 +14,10 @@ const AddDiscountModal = ({
   onDiscountAdd,
   handleCancel,
 }) => {
+  const { role, userId } = useContext(UserContext);
+
   const [merchantDiscount, setMerchantDiscount] = useState({
-    merchantId: "",
+    merchantId: role === "Admin" ? "" : userId,
     discountName: "",
     maxCheckoutValue: "",
     maxDiscountValue: "",
@@ -26,26 +29,45 @@ const AddDiscountModal = ({
     geofenceId: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+
   const toast = useToast();
 
-  // API for add discount..
+  const merchantOptions = merchant?.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
 
-  const handleDiscountSubmit = async (e) => {
+  const handleInputChange = (e) => {
+    setMerchantDiscount({
+      ...merchantDiscount,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleMerchantChange = (option) => {
+    setMerchantDiscount({
+      ...merchantDiscount,
+      merchantId: option.value ? option.value : "",
+    });
+  };
+
+  const handleAddDiscount = async (e) => {
     e.preventDefault();
 
     try {
       setIsLoading(true);
 
-      const response = await axios.post(
-        `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`,
-        merchantDiscount,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/shop-discount/add-merchant-discount-admin`
+          : ` ${BASE_URL}/merchant/shop-discount/add-merchant-discount`;
+
+      const response = await axios.post(endPoint, merchantDiscount, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.status === 201) {
         handleCancel();
         onDiscountAdd(response.data.data);
@@ -54,7 +76,7 @@ const AddDiscountModal = ({
           description: "Successfully added Merchant Discount",
           status: "success",
           isClosable: true,
-          duration: 3000,   
+          duration: 3000,
         });
       }
     } catch (err) {
@@ -72,60 +94,53 @@ const AddDiscountModal = ({
     }
   };
 
-  const handleDiscount = (e) => {
-    setMerchantDiscount({
-      ...merchantDiscount,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-
-  console.log("merchant Discount", merchantDiscount);
-
   return (
     <Modal
       title="Add Discount"
       width="700px"
       open={isVisible}
-      // onOk={handleOk}
       centered
       onCancel={handleCancel}
-      footer={null} // Custom footer to include form buttons
+      footer={null}
     >
       <form>
-        <div className="flex flex-col  gap-4 max-h-[30rem] overflow-auto justify-between">
+        <div className="flex flex-col gap-4 pt-[30px] max-h-[30rem] overflow-auto justify-between">
+          {role === "Admin" && (
+            <div className="flex gap-4 ">
+              <label className="w-1/2 text-gray-500">
+                Assign Merchant <span className="text-red-600">*</span>
+              </label>
+
+              <Select
+                className="rounded w-2/3 outline-none focus:outline-none"
+                value={merchantOptions.find(
+                  (option) => option.value === setMerchantDiscount.merchantId
+                )}
+                isMulti={false}
+                isSearchable={true}
+                onChange={handleMerchantChange}
+                options={merchantOptions}
+                placeholder="Select Merchant"
+                isClearable={false}
+              />
+            </div>
+          )}
+
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Assign Merchant</label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="merchantId"
-              id="merchantId"
-              value={merchantDiscount.merchantId}
-              onChange={handleDiscount}
-            >
-              <option hidden defaultValue="Select Merchant">
-                Select Merchant
-              </option>
-              {merchant.map((data) => (
-                <option value={data._id} key={data._id}>
-                  {data.merchantName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex  gap-4">
-            <label className="w-1/2 text-gray-500">Discount Name</label>
+            <label className="w-1/2 text-gray-500">
+              Discount Name <span className="text-red-600">*</span>
+            </label>
             <input
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="discountName"
               value={merchantDiscount.discountName}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
-              Maximum checkout value (₹)
+              Maximum checkout value (₹) <span className="text-red-600">*</span>
             </label>
 
             <input
@@ -133,29 +148,33 @@ const AddDiscountModal = ({
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="maxCheckoutValue"
               value={merchantDiscount.maxCheckoutValue}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Max Amount</label>
+            <label className="w-1/2 text-gray-500">
+              Max Amount <span className="text-red-600">*</span>
+            </label>
 
             <input
               type="number"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="maxDiscountValue"
               value={merchantDiscount.maxDiscountValue}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Discount</label>
+            <label className="w-1/2 text-gray-500">
+              Discount <span className="text-red-600">*</span>
+            </label>
             <input
               type="radio"
               className="border-2 -ml-14 border-gray-300 rounded outline-none focus:outline-none"
               name="discountType"
               value="Flat-discount"
               checked={merchantDiscount.discountType === "Flat-discount"}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
             Fixed-discount
             <input
@@ -164,7 +183,7 @@ const AddDiscountModal = ({
               name="discountType"
               value="Percentage-discount"
               checked={merchantDiscount.discountType === "Percentage-discount"}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
             Percentage-discount
           </div>
@@ -174,12 +193,13 @@ const AddDiscountModal = ({
               className="border-2 border-gray-300 rounded p-2 w-[360px] outline-none focus:outline-none"
               name="discountValue"
               value={merchantDiscount.discountValue}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
-              Description Maximum 150 Characters
+              Description Maximum 150 Characters{" "}
+              <span className="text-red-600">*</span>
             </label>
 
             <input
@@ -188,36 +208,42 @@ const AddDiscountModal = ({
               name="description"
               maxLength={150}
               value={merchantDiscount.description}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">From</label>
+            <label className="w-1/2 text-gray-500">
+              From <span className="text-red-600">*</span>
+            </label>
             <input
               type="date"
               name="validFrom"
               value={merchantDiscount.validFrom}
               className="border-2 border-gray-300 rounded outline-none focus:outline-none p-2 w-2/3"
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">To</label>
+            <label className="w-1/2 text-gray-500">
+              To <span className="text-red-600">*</span>
+            </label>
             <input
               type="date"
               name="validTo"
               className="border-2 border-gray-300 rounded outline-none focus:outline-none p-2 w-2/3"
               value={merchantDiscount.validTo}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">geoFence</label>
+            <label className="w-1/2 text-gray-500">
+              GeoFence <span className="text-red-600">*</span>
+            </label>
             <select
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               name="geofenceId"
               value={merchantDiscount.geofenceId}
-              onChange={handleDiscount}
+              onChange={handleInputChange}
             >
               <option defaultValue={"select geofence"} hidden>
                 Select Geofence
@@ -240,7 +266,7 @@ const AddDiscountModal = ({
             </button>
             <button
               className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-              onClick={handleDiscountSubmit}
+              onClick={handleAddDiscount}
               type="submit"
             >
               {isLoading ? "Adding..." : "Add"}

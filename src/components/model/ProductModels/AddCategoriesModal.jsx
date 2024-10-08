@@ -34,7 +34,7 @@ const AddCategoriesModal = ({
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
 
   const [selectedCSVFile, setSelectedCSVFile] = useState(null);
@@ -238,20 +238,19 @@ const AddCategoriesModal = ({
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0])
+      setImg(e.target.files[0]);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
-    setSelectedFile(croppedFile)// Get the cropped image file
+    setCroppedFile(croppedFile);
+    setSelectedFile(croppedFile); // Get the cropped image file
     console.log("Cropped image file:", croppedFile);
   };
 
   const handleModalClose = () => {
     setSelectedFile(null); // Reset the selected file to allow new selection
   };
-
 
   return (
     <Modal
@@ -266,7 +265,7 @@ const AddCategoriesModal = ({
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
-              Business Category
+              Business Category <span className="text-red-600">*</span>
             </label>
 
             <select
@@ -288,7 +287,7 @@ const AddCategoriesModal = ({
 
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="categoryName">
-              Category Name
+              Category Name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -315,7 +314,9 @@ const AddCategoriesModal = ({
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3 text-gray-500">Veg/Non-veg</label>
+            <label className="w-1/3 text-gray-500">
+              Type <span className="text-red-600">*</span>
+            </label>
             <div>
               <input
                 type="radio"
@@ -354,7 +355,7 @@ const AddCategoriesModal = ({
           <div className="flex items-center">
             <label className=" w-1/3">Photos</label>
             <div className="flex items-center gap-[30px]">
-            {!croppedFile && (
+              {!croppedFile && (
                 <div className="h-[65px] w-[65px] bg-gray-200 rounded-md mt-[15px]"></div>
               )}
               {!!croppedFile && (
@@ -375,7 +376,7 @@ const AddCategoriesModal = ({
                   </div>
                 </>
               )}
-                <input
+              <input
                 type="file"
                 name="adImage"
                 id="adImage"

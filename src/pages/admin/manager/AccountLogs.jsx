@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { DownloadOutlined, SearchOutlined } from "@ant-design/icons";
 import Sidebar from "../../../components/Sidebar";
@@ -14,49 +14,64 @@ import { CSVLink } from "react-csv";
 import { useToast } from "@chakra-ui/react";
 import Select from "react-select";
 import { accountLogsOptions } from "../../../utils/DefaultData";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const AccountLogs = () => {
   const [type, setType] = useState([]);
-  const [roleFilter, setRoleFilter] = useState("Merchant");
-  const toast = useToast();
-  const [dateFilter, setDateFilter] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
-  const { role, token } = useContext(UserContext);
+
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  const [roleFilter, setRole] = useState("Agent");
+  const [search, setSearch] = useState("");
+  const [date, setDate] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+
+  const { role, token } = useContext(UserContext);
+
   const navigate = useNavigate();
-  const dateInputRef = useRef(null); // Create a ref for the date input
+  const toast = useToast();
+  const buttonRef = useRef(null);
 
   useEffect(() => {
     if (!token || role !== "Admin") {
       navigate("/auth/login");
       return;
     }
-    // Fetch merchant details on initial render
+
+    // Fetch blocked merchants on initial render
     handleRoleFilter();
   }, []);
-
-  const handleChange = (e) => {
-    e.preventDefault();
-    setType((prevType) => ({ ...prevType, [e.target.name]: e.target.value }));
-    console.log(type);
-  };
-
-  const onRoleChange = (e) => {
-    const selectedType = e.target.value;
-    setRoleFilter(selectedType);
-    if (selectedType !== "") {
-      handleRoleFilter(selectedType);
-    } else {
-      setType([]);
-    }
-  };
 
   useEffect(() => {
     handleRoleFilter();
   }, [roleFilter]);
+
+  useEffect(() => {
+    const handleDateChangeFilter = async () => {
+      try {
+        const dateResponse = await axios.get(
+          `${BASE_URL}/admin/account-log/search-date`,
+          {
+            params: { date },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (dateResponse.status === 200) {
+          setType(dateResponse.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in fetching data`, err);
+      }
+    };
+
+    handleDateChangeFilter();
+  }, [date]);
 
   const handleRoleFilter = async () => {
     try {
@@ -81,10 +96,9 @@ const AccountLogs = () => {
     }
   };
 
-  // API to search user using name
   const onSearchChange = (e) => {
     const searchService = e.target.value;
-    setSearchFilter(searchService);
+    setSearch(searchService);
     if (searchService !== "") {
       handleSearchChangeFilter(searchService);
     } else {
@@ -94,7 +108,6 @@ const AccountLogs = () => {
 
   const handleSearchChangeFilter = async (searchService) => {
     try {
-      console.log(token);
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/account-log/search`,
         {
@@ -141,47 +154,16 @@ const AccountLogs = () => {
     }
   };
 
-  // API for filter using date.
-  const onDateChange = (e) => {
-    const searchDate = e.target.value;
-    setDateFilter(searchDate);
-    if (searchDate !== "") {
-      handleDateChangeFilter(searchDate);
-    } else {
-      setType([]);
-    }
-    console.log(searchDate);
-  };
-
-  const handleDateChangeFilter = async (searchDate) => {
-    try {
-      console.log(token);
-      const dateResponse = await axios.get(
-        `${BASE_URL}/admin/account-log/search-date`,
-        {
-          params: { date: searchDate },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (dateResponse.status === 200) {
-        setType(dateResponse.data.data);
-      }
-    } catch (err) {
-      console.log(`Error in fetching data`, err);
-    }
-  };
-
-  // Function to trigger the date input click
   const openDatePicker = () => {
-    console.log("clicked");
-    if (dateInputRef.current) {
-      dateInputRef.current.showPicker(); // Open the date picker using showPicker()
-    }
+    setIsPickerOpen(true);
+  };
+
+  const handleDateChange = (date) => {
+    setDate(date);
+    setIsPickerOpen(false); // Close the picker after selecting a date
   };
 
   // CSV Data
-
   const csvData = [
     { label: "USERID", key: "_id" },
     { label: "USERNAME", key: "fullName" },
@@ -222,7 +204,7 @@ const AccountLogs = () => {
                   value={accountLogsOptions.find(
                     (option) => option.value === roleFilter
                   )}
-                  onChange={(option) => setRoleFilter(option.value)}
+                  onChange={(option) => setRole(option.value)}
                   className=" bg-cyan-50 min-w-[10rem]"
                   placeholder="Geofence"
                   isSearchable={false}
@@ -240,21 +222,33 @@ const AccountLogs = () => {
                 />
               </div>
               <div className="flex gap-4">
-                <input
-                  type="date"
-                  name="date"
-                  ref={dateInputRef} // Attach the ref to the input
-                  value={dateFilter}
-                  onChange={onDateChange}
-                  className="hidden top-80" // Keep the input hidden
-                  style={{ right: "40px", top: "200px" }}
-                />
-                <button
-                  onClick={openDatePicker}
-                  className="flex items-center justify-center"
-                >
-                  <FaCalendarAlt className="text-gray-400 text-xl" />
-                </button>
+                <div className="relative flex items-center">
+                  <button
+                    ref={buttonRef}
+                    onClick={openDatePicker}
+                    className="flex items-center justify-center"
+                  >
+                    <FaCalendarAlt className="text-gray-400 text-xl" />
+                  </button>
+
+                  {isPickerOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: buttonRef.current?.offsetHeight + 5,
+                        left: 0,
+                        zIndex: 50,
+                      }}
+                    >
+                      <DatePicker
+                        selected={date}
+                        onChange={handleDateChange}
+                        inline
+                        maxDate={new Date()}
+                      />
+                    </div>
+                  )}
+                </div>
                 <p className="mt-2">
                   <FilterAltOutlinedIcon className="text-gray-400" />
                 </p>
@@ -262,7 +256,7 @@ const AccountLogs = () => {
                   type="search"
                   name="search"
                   placeholder="Search user name"
-                  value={searchFilter}
+                  value={search}
                   onChange={onSearchChange}
                   className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
                 />

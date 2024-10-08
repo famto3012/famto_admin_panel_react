@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Select from "react-select";
+
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const EditSubCustomerModal = ({
   isVisible,
@@ -13,9 +14,6 @@ const EditSubCustomerModal = ({
   currentEditCustomer,
   onEditSubscription,
 }) => {
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const [customerData, setCustomerData] = useState({
     name: "",
     amount: "",
@@ -25,14 +23,11 @@ const EditSubCustomerModal = ({
     renewalReminder: "",
     description: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
 
   useEffect(() => {
-    console.log(currentEditCustomer);
-    if (!token) {
-      navigate("/auth/login");
-      return;
-    }
-
     const fetchData = async () => {
       try {
         const [addResponse] = await Promise.all([
@@ -44,26 +39,43 @@ const EditSubCustomerModal = ({
             }
           ),
         ]);
+
         if (addResponse.status === 200) {
-          console.log("data in response is", addResponse.data.data);
           setCustomerData(addResponse.data.data);
-          console.log(addResponse.data.message);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
+        toast({
+          title: "Error",
+          description: "Error in getting customer subscription",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     };
 
     if (currentEditCustomer) {
       fetchData();
     }
-  }, [token, navigate, currentEditCustomer, BASE_URL]);
+  }, [token, currentEditCustomer]);
 
   const handleInputChange = (e) => {
     setCustomerData({ ...customerData, [e.target.name]: e.target.value });
   };
 
-  const editSubPlanHandler = async (e) => {
+  const taxOptions = tax.map((tax) => ({
+    label: tax.taxName,
+    value: tax.taxId,
+  }));
+
+  const handleTaxChange = (selectedOption) => {
+    setCustomerData((prevData) => ({
+      ...prevData,
+      taxId: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
+  const handleEditSubscription = async (e) => {
     e.preventDefault();
 
     try {
@@ -90,7 +102,7 @@ const EditSubCustomerModal = ({
     } catch (err) {
       toast({
         title: "Error",
-        description: "There was an error occured.",
+        description: "Error in updating subscription plan",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -109,13 +121,13 @@ const EditSubCustomerModal = ({
       footer={null}
     >
       <form
-        onSubmit={editSubPlanHandler}
+        onSubmit={handleEditSubscription}
         className="max-h-[30rem] overflow-auto"
       >
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="Name">
-              Plan name
+              Plan name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -126,9 +138,10 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="amount">
-              Plan amount
+              Plan amount <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -139,9 +152,10 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="duration">
-              Duration (In Days)
+              Duration (In Days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -152,29 +166,30 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="taxId">
               Tax name
             </label>
-            <select
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              value={customerData.taxId}
-              id="taxId"
-              name="taxId"
-              onChange={handleInputChange}
-            >
-              <option defaultValue={null}>Select tax</option>
-              {tax.map((tax) => (
-                <option value={tax.taxId} key={tax.taxId}>
-                  {tax.taxName}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              className="rounded w-2/3 focus:outline-none"
+              value={
+                taxOptions.find(
+                  (option) => option.value === customerData.taxId
+                ) || null
+              } // Ensure null when no option matches
+              isSearchable={true}
+              onChange={handleTaxChange}
+              options={taxOptions}
+              placeholder="Select Tax"
+              isClearable={true} // Allow clearing the selection
+            />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="renewalReminder">
-              Renewal Reminder (In days)
+              Renewal Reminder (In days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -185,9 +200,10 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="noOfOrder">
-              No of Orders
+              No of Orders <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -198,9 +214,10 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
-              Description
+              Description <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -211,6 +228,7 @@ const EditSubCustomerModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex justify-end mt-5 gap-4">
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"

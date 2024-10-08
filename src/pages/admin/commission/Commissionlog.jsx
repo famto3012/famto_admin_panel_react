@@ -9,21 +9,30 @@ import { Modal } from "antd";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaCalendarAlt } from "react-icons/fa";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Commissionlog = () => {
   const [commissionlog, setCommissionlog] = useState([]);
-  const [searchFilter, setSearchFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-  const [merchantFilter, setMerchantFilter] = useState("");
   const [merchant, setMerchants] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const [searchFilter, setSearchFilter] = useState("");
+  const [merchantFilter, setMerchantFilter] = useState("");
+
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
   const [currentId, setCurrentId] = useState(null);
-  const navigate = useNavigate();
-  const dateInputRef = useRef(null);
+
+  const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const navigate = useNavigate();
+  const buttonRef = useRef(null);
   const { token, role } = useContext(UserContext);
 
   useEffect(() => {
@@ -70,7 +79,6 @@ const Commissionlog = () => {
     value: merchant._id,
   }));
 
-  // API function search
   const onSearchChange = (e) => {
     const searchService = e.target.value;
     setSearchFilter(searchService);
@@ -104,47 +112,32 @@ const Commissionlog = () => {
     }
   };
 
-  // API function for date change
-  const onDateChange = (e) => {
-    const searchDate = e.target.value;
-    setDateFilter(searchDate);
-    if (searchDate !== "") {
-      handleDateChangeFilter(searchDate);
-    } else {
-      setCommissionlog([]);
-    }
-    console.log(searchDate);
-  };
+  useEffect(() => {
+    const handleDateChangeFilter = async () => {
+      try {
+        setIsTableLoading(true);
 
-  const handleDateChangeFilter = async (searchDate) => {
-    try {
-      setIsTableLoading(true);
-      console.log(token);
-      const dateResponse = await axios.get(
-        `${BASE_URL}/admin/commission/commission-log-date`,
-        {
-          params: { date: searchDate },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
+        const dateResponse = await axios.get(
+          `${BASE_URL}/admin/commission/commission-log-date`,
+          {
+            params: { date: selectedDate },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (dateResponse.status === 200) {
+          setCommissionlog(dateResponse.data.data);
         }
-      );
-      if (dateResponse.status === 200) {
-        setCommissionlog(dateResponse.data.data);
+      } catch (err) {
+        console.log(`Error in fetching data`, err);
+      } finally {
+        setIsTableLoading(false);
       }
-    } catch (err) {
-      console.log(`Error in fetching data`, err);
-      setCommissionlog([]);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+    };
 
-  // Function to trigger the date input click
-  const openDatePicker = () => {
-    if (dateInputRef.current) {
-      dateInputRef.current.showPicker();
-    }
-  };
+    handleDateChangeFilter();
+  }, [selectedDate]);
 
   // API Function  for Merchant Filter
   const onMerchantChange = (merchant) => {
@@ -214,6 +207,15 @@ const Commissionlog = () => {
     }
   };
 
+  const openDatePicker = () => {
+    setIsPickerOpen(true);
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setIsPickerOpen(false);
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -224,7 +226,10 @@ const Commissionlog = () => {
           <div className="w-full h-screen pl-[290px] bg-gray-100">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <ArrowBack className="ml-7" />{" "}
+                <ArrowBack
+                  className="ml-7 cursor-pointer"
+                  onClick={() => navigate("/commission")}
+                />
                 <span className="text-lg font-semibold ml-3">
                   Commission log
                 </span>
@@ -262,22 +267,36 @@ const Commissionlog = () => {
               />
 
               <div className="flex items-center ">
-                <input
-                  type="date"
-                  name="date"
-                  ref={dateInputRef}
-                  value={dateFilter}
-                  onChange={onDateChange}
-                  className="hidden top-80"
-                  style={{ right: "40px", top: "200px" }}
-                />
-                <button
-                  onClick={openDatePicker}
-                  className="flex items-center justify-center"
-                >
-                  <FaCalendarAlt className="text-gray-400 text-xl" />
-                </button>
+                <div className="relative flex items-center">
+                  <button
+                    ref={buttonRef}
+                    onClick={openDatePicker}
+                    className="flex items-center justify-center"
+                  >
+                    <FaCalendarAlt className="text-gray-400 text-xl" />
+                  </button>
+
+                  {isPickerOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: buttonRef.current?.offsetHeight + 5,
+                        left: 0,
+                        zIndex: 50,
+                      }}
+                    >
+                      <DatePicker
+                        selected={selectedDate}
+                        onChange={handleDateChange}
+                        inline
+                        maxDate={new Date()}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <FilterAltOutlined className="text-gray-400 mx-7" />
+
                 <input
                   type="search"
                   name="search"

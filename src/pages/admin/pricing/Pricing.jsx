@@ -15,7 +15,7 @@ const Pricing = () => {
         </nav>
         <h1 className="mx-9  text-xl font-bold">Pricing</h1>
         <AgentPricing />
-        <MerchantPricing />
+        {/* <MerchantPricing /> */}
         <CustomerPricing />
       </div>
     </>

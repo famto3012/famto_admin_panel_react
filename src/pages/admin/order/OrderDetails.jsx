@@ -498,7 +498,7 @@ const OrderDetails = () => {
 
   useEffect(() => {
     let mappedSteps = [];
-    socket.on("newOrderCreated", ({ orderDetailStepper }) => {
+    socket?.on("newOrderCreated", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -509,7 +509,7 @@ const OrderDetails = () => {
       // addStep(orderDetailStepper, "Created", mappedSteps.length, );
     });
 
-    socket.on("orderAccepted", ({ orderDetailStepper }) => {
+    socket?.on("orderAccepted", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => {
         return {
           ...prev,
@@ -521,7 +521,7 @@ const OrderDetails = () => {
       });
     });
 
-    socket.on("orderRejected", ({ orderDetailStepper }) => {
+    socket?.on("orderRejected", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -531,7 +531,7 @@ const OrderDetails = () => {
       }));
     });
 
-    socket.on("agentOrderAccepted", ({ orderDetailStepper }) => {
+    socket?.on("agentOrderAccepted", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -541,7 +541,7 @@ const OrderDetails = () => {
       }));
     });
 
-    socket.on("agentPickupStarted", ({ orderDetailStepper }) => {
+    socket?.on("agentPickupStarted", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -551,7 +551,7 @@ const OrderDetails = () => {
       }));
     });
 
-    socket.on("reachedPickupLocation", ({ orderDetailStepper }) => {
+    socket?.on("reachedPickupLocation", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -561,7 +561,7 @@ const OrderDetails = () => {
       }));
     });
 
-    socket.on("agentDeliveryStarted", ({ orderDetailStepper }) => {
+    socket?.on("agentDeliveryStarted", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -571,7 +571,7 @@ const OrderDetails = () => {
       }));
     });
 
-    socket.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
+    socket?.on("reachedDeliveryLocation", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -581,14 +581,14 @@ const OrderDetails = () => {
       }));
     });
 
-    socket.on("agentOrderDetailUpdated", ({ orderDetailStepper }) => {
+    socket?.on("agentOrderDetailUpdated", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [...prev.orderDetailStepper, orderDetailStepper],
       }));
     });
 
-    socket.on("orderCompleted", ({ orderDetailStepper }) => {
+    socket?.on("orderCompleted", ({ orderDetailStepper }) => {
       setOrderDetail((prev) => ({
         ...prev,
         orderDetailStepper: [
@@ -600,16 +600,16 @@ const OrderDetails = () => {
     setStep(mappedSteps);
 
     return () => {
-      socket.off("newOrderCreated");
-      socket.off("orderAccepted");
-      socket.off("orderRejected");
-      socket.off("agentOrderAccepted");
-      socket.off("agentPickupStarted");
-      socket.off("reachedPickupLocation");
-      socket.off("agentDeliveryStarted");
-      socket.off("reachedDeliveryLocation");
-      socket.off("agentOrderDetailUpdated");
-      socket.off("orderCompleted");
+      socket?.off("newOrderCreated");
+      socket?.off("orderAccepted");
+      socket?.off("orderRejected");
+      socket?.off("agentOrderAccepted");
+      socket?.off("agentPickupStarted");
+      socket?.off("reachedPickupLocation");
+      socket?.off("agentDeliveryStarted");
+      socket?.off("reachedDeliveryLocation");
+      socket?.off("agentOrderDetailUpdated");
+      socket?.off("orderCompleted");
     };
   }, [socket]);
 
@@ -705,7 +705,7 @@ const OrderDetails = () => {
               <p>{orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}</p>
             </div>
             <div className="flex justify-between">
-              <label>order Time</label>
+              <label>Order Time</label>
               <p>{orderDetail.orderTime}</p>
             </div>
             <div className="flex justify-between">

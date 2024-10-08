@@ -848,7 +848,7 @@ const DeliveryManagement = () => {
                         the task, it remains unassigned.`}
                         </p>
                       )}
-                      <div className="grid">
+                      {/* <div className="grid">
                         <label className="text-[18px] mt-3 font-semibold">
                           Prioritize
                         </label>
@@ -877,7 +877,7 @@ const DeliveryManagement = () => {
                             Monthly salaried employees{" "}
                           </label>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="flex gap-4 mt-5">
                         <button
                           onClick={showModalCancel}

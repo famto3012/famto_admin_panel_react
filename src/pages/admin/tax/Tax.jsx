@@ -19,6 +19,7 @@ const Tax = () => {
   const [allTax, setAllTax] = useState([]);
   const [allGeofence, setAllGeofence] = useState([]);
   const [allBusinessCategory, setBusinessCategory] = useState([]);
+
   const { token, role } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ const Tax = () => {
 
         if (businessCategoryResponse.status === 200) {
           setBusinessCategory(businessCategoryResponse.data.data);
+          console.log(businessCategoryResponse.data.data);
         }
       } catch (err) {
         toast({

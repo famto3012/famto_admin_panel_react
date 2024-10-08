@@ -21,25 +21,13 @@ const EditTaxModal = ({
     taxName: "",
     tax: "",
     taxType: "",
-    assignToBusinessCategory: "",
+    assignToBusinessCategory: null,
     geofences: [],
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
   const animatedComponents = makeAnimated();
-
-  const handleSelectGeofence = (selectedOptions) => {
-    setEditTaxData({
-      ...editTaxData,
-      geofences: selectedOptions.map((option) => option.value),
-    });
-  };
-
-  const geofenceOptions = allGeofence.map((geofence) => ({
-    label: geofence.name,
-    value: geofence._id,
-  }));
 
   useEffect(() => {
     const getTaxData = async () => {
@@ -62,11 +50,35 @@ const EditTaxModal = ({
     getTaxData();
   }, [taxId]);
 
+  const geofenceOptions = allGeofence.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const categoryOptions = allBusinessCategory?.map((category) => ({
+    label: category.title,
+    value: category._id,
+  }));
+
+  const handleSelectGeofence = (selectedOptions) => {
+    setEditTaxData({
+      ...editTaxData,
+      geofences: selectedOptions.map((option) => option.value),
+    });
+  };
+
+  const handleSelectCategory = (option) => {
+    setEditTaxData({
+      ...editTaxData,
+      assignToBusinessCategory: option ? option.value : null,
+    });
+  };
+
   const handleInputChange = (e) => {
     setEditTaxData({ ...editTaxData, [e.target.name]: e.target.value });
   };
 
-  const submitAction = async (e) => {
+  const handleUpdateTax = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
@@ -121,7 +133,7 @@ const EditTaxModal = ({
       footer={null}
       centered
     >
-      <form onSubmit={submitAction}>
+      <form onSubmit={handleUpdateTax}>
         <div className="flex flex-col gap-4 justify-between">
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">Tax Name</label>
@@ -188,18 +200,20 @@ const EditTaxModal = ({
             <label className="w-1/2 text-gray-500">
               Assign to business category
             </label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="assignToBusinessCategory"
-              value={editTaxData.assignToBusinessCategory}
-              onChange={handleInputChange}
-            >
-              {allBusinessCategory.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={categoryOptions.find(
+                (option) =>
+                  option.value === editTaxData.assignToBusinessCategory
+              )}
+              isMulti={false}
+              isClearable={true}
+              isSearchable={true}
+              onChange={handleSelectCategory}
+              options={categoryOptions}
+              placeholder="Select Business category"
+            />
           </div>
 
           <div className="flex justify-end gap-4">

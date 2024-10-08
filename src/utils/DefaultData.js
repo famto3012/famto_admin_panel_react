@@ -62,6 +62,12 @@ const accountLogsOptions = [
   { value: "Customer", label: "Customer" },
 ];
 
+const payoutPaymentStatus = [
+  { value: "all", label: "All" },
+  { value: "true", label: "Paid" },
+  { value: "false", label: "Un-paid" },
+];
+
 export {
   itemTypes,
   orderStatusOption,
@@ -71,4 +77,5 @@ export {
   agentStatusOptions,
   agentVehicleOptions,
   accountLogsOptions,
+  payoutPaymentStatus,
 };

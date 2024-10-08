@@ -181,7 +181,7 @@ const AddAgentModal = ({
         <div className="flex flex-col gap-4 mt-5 max-h-[30rem] overflow-auto">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="fullName">
-              Full Name
+              Full Name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -194,7 +194,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="phoneNumber">
-              Phone Number
+              Phone Number <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -207,7 +207,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="email">
-              Email
+              Email <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -223,7 +223,7 @@ const AddAgentModal = ({
             <div className="w-3/4">
               <div className="flex items-center ">
                 <label className="w-1/3 text-gray-500" htmlFor="licensePlate">
-                  License Plate
+                  License Plate <span className="text-red-600">*</span>
                 </label>
                 <input
                   className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
@@ -236,7 +236,7 @@ const AddAgentModal = ({
               </div>
               <div className="flex mt-5 items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="model">
-                  Vehicle Model
+                  Vehicle Model <span className="text-red-600">*</span>
                 </label>
                 <input
                   className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
@@ -249,7 +249,7 @@ const AddAgentModal = ({
               </div>
               <div className="flex mt-5 gap-4">
                 <label className="w-1/3 text-gray-500 " htmlFor="type">
-                  Vehicle Type
+                  Vehicle Type <span className="text-red-600">*</span>
                 </label>
                 <select
                   className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-10 focus:outline-none"
@@ -326,7 +326,7 @@ const AddAgentModal = ({
           <h1 className="font-semibold text-[18px]">Bank Details</h1>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="accountHolderName">
-              Account Holder Name
+              Account Holder Name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -339,7 +339,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="accountNumber">
-              Account Number
+              Account Number <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -353,7 +353,7 @@ const AddAgentModal = ({
 
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="IFSCCode">
-              IFSC Code
+              IFSC Code <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -366,7 +366,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="UPIId">
-              UPI ID
+              UPI ID <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -381,7 +381,7 @@ const AddAgentModal = ({
           <div className="flex">
             <div className="flex items-center w-3/4">
               <label className="w-1/3 text-gray-500" htmlFor="aadharNumber">
-                Aadhar Number
+                Aadhar Number <span className="text-red-600">*</span>
               </label>
               <input
                 className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
@@ -463,7 +463,7 @@ const AddAgentModal = ({
                 className="w-1/3 text-gray-500"
                 htmlFor="drivingLicenseNumber"
               >
-                Driving License Number
+                Driving License Number <span className="text-red-600">*</span>
               </label>
               <input
                 className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
@@ -561,7 +561,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="salaryStructureId">
-              Salary Structure
+              Salary Structure <span className="text-red-600">*</span>
             </label>
             <select
               name="salaryStructureId"
@@ -582,7 +582,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="geofenceId">
-              Geofence
+              Geofence <span className="text-red-600">*</span>
             </label>
             <select
               name="geofenceId"
@@ -603,7 +603,7 @@ const AddAgentModal = ({
           </div>
           <div className="flex items-center mt-5">
             <label className="w-1/3 text-gray-500" htmlFor="tag">
-              Tags
+              Tags <span className="text-red-600">*</span>
             </label>
 
             <select
@@ -653,7 +653,7 @@ const AddAgentModal = ({
 
           <div className="flex gap-14 ml-8 text-gray-500">
             <p>1.PNG</p>
-            <p>Photo</p>
+            <p>Photo</p> <span className="text-red-600">*</span>
           </div>
           <div className="flex justify-end gap-4 mt-6">
             <button

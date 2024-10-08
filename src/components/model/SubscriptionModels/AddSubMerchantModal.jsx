@@ -1,7 +1,9 @@
+import { useState } from "react";
+import axios from "axios";
+import Select from "react-select";
+
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
-import axios from "axios";
-import React, { useState } from "react";
 
 const AddSubMerchantModal = ({
   isVisible,
@@ -10,7 +12,6 @@ const AddSubMerchantModal = ({
   tax,
   BASE_URL,
 }) => {
-  const toast = useToast();
   const [merchantData, setMerchantData] = useState({
     name: "",
     amount: "",
@@ -19,12 +20,29 @@ const AddSubMerchantModal = ({
     renewalReminder: "",
     description: "",
   });
+
+  const toast = useToast();
+
   const handleInputChange = (e) => {
     setMerchantData({ ...merchantData, [e.target.name]: e.target.value });
   };
+
+  const handleTaxChange = (selectedOption) => {
+    setMerchantData((prevData) => ({
+      ...prevData,
+      taxId: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
+  const taxOptions = tax.map((tax) => ({
+    label: tax.taxName,
+    value: tax.taxId,
+  }));
+
   const signupAction = async (e) => {
-    e.preventDefault();
     try {
+      e.preventDefault();
+
       const addResponse = await axios.post(
         `${BASE_URL}/admin/subscription/add-merchant-subscription`,
         merchantData,
@@ -38,7 +56,6 @@ const AddSubMerchantModal = ({
 
       if (addResponse.status === 201) {
         handleCancel();
-        console.log("adddata", addResponse.data.message);
         toast({
           title: "Success",
           description: "Agent Pricng Created successfully.",
@@ -48,7 +65,6 @@ const AddSubMerchantModal = ({
         });
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
       toast({
         title: "Error",
         description: "There was an error occured",
@@ -57,8 +73,6 @@ const AddSubMerchantModal = ({
         isClosable: true,
       });
     }
-
-    console.log("Merchant Data: ", merchantData);
   };
 
   return (
@@ -74,7 +88,7 @@ const AddSubMerchantModal = ({
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="Name">
-              Name
+              Plan name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -85,9 +99,10 @@ const AddSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="amount">
-              Amount
+              Amount <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -98,9 +113,10 @@ const AddSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="duration">
-              Duration (In Days)
+              Duration (In Days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -111,31 +127,30 @@ const AddSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="taxId">
-              Tax Id
+              Tax Id <span className="text-red-600">*</span>
             </label>
-            <select
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              value={merchantData.taxId}
-              id="taxId"
-              name="taxId"
-              onChange={handleInputChange}
-            >
-              <option hidden defaultValue="Select tax">
-                Select tax
-              </option>
-              {tax.map((tax) => (
-                <option value={tax.taxId} key={tax.taxId}>
-                  {tax.taxName}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              className="rounded w-2/3 focus:outline-none"
+              value={
+                taxOptions.find(
+                  (option) => option.value === merchantData.taxId
+                ) || null
+              } // Ensure null when no option matches
+              isSearchable={true}
+              onChange={handleTaxChange}
+              options={taxOptions}
+              placeholder="Select Tax"
+              isClearable={true} // Allow clearing the selection
+            />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="renewalReminder">
-              Renewal Reminder (In days)
+              Renewal Reminder (In days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -146,9 +161,10 @@ const AddSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
-              Description
+              Description <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -159,13 +175,13 @@ const AddSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex justify-end mt-10  gap-4">
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
               onClick={handleCancel}
               type="submit"
             >
-              {" "}
               Cancel
             </button>
             <button

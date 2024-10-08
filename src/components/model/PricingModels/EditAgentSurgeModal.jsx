@@ -1,8 +1,8 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Select from "react-select";
 
 const EditAgentSurgeModal = ({
   isVisible,
@@ -13,9 +13,6 @@ const EditAgentSurgeModal = ({
   onEditSurge,
   currentEdit,
 }) => {
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [confirmLoading,setConfirmLoading] = useState(false)
   const [agentsurge, setAgentSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -24,12 +21,12 @@ const EditAgentSurgeModal = ({
     waitingTime: "",
     geofenceId: "",
   });
-  useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-      return;
-    }
 
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const toast = useToast();
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [addResponse] = await Promise.all([
@@ -38,6 +35,7 @@ const EditAgentSurgeModal = ({
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
+
         if (addResponse.status === 200) {
           console.log("data in response is", addResponse.data.data);
           const customGeofenceId = addResponse.data.data.geofenceId._id;
@@ -47,7 +45,6 @@ const EditAgentSurgeModal = ({
           };
 
           setAgentSurge(updatedData);
-          console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -57,16 +54,29 @@ const EditAgentSurgeModal = ({
     if (currentEdit) {
       fetchData();
     }
-  }, [token, navigate, currentEdit, BASE_URL]);
+  }, [token, currentEdit]);
+
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const handleSelectGeofence = (option) => {
+    setAgentSurge({
+      ...agentsurge,
+      geofenceId: option ? option.value : "",
+    });
+  };
 
   const inputChange = (e) => {
     setAgentSurge({ ...agentsurge, [e.target.name]: e.target.value });
   };
-  const formSubmit = async (e) => {
+
+  const handleEditSurge = async (e) => {
     e.preventDefault();
     try {
-     setConfirmLoading(true);
-      console.log("agentsurge", agentsurge);
+      setConfirmLoading(true);
+
       const editResponse = await axios.put(
         `${BASE_URL}/admin/agent-surge/edit-agent-surge/${currentEdit}`,
         agentsurge,
@@ -88,7 +98,6 @@ const EditAgentSurgeModal = ({
           duration: 3000,
           isClosable: true,
         });
-        console.log(editResponse.data.message);
       }
     } catch (err) {
       toast({
@@ -98,12 +107,11 @@ const EditAgentSurgeModal = ({
         duration: 3000,
         isClosable: true,
       });
-      console.log(`Error in fetching data:${err}`);
     } finally {
       setConfirmLoading(false);
     }
-    console.log(agentsurge);
   };
+
   return (
     <Modal
       title="Edit Agent Surge"
@@ -112,11 +120,11 @@ const EditAgentSurgeModal = ({
       onCancel={handleCancel}
       footer={null}
     >
-      <form onSubmit={formSubmit}>
+      <form onSubmit={handleEditSurge}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
-              Rule Name
+              Rule Name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -128,9 +136,10 @@ const EditAgentSurgeModal = ({
               onChange={inputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseFare">
-              Base Fare
+              Base Fare <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -142,9 +151,10 @@ const EditAgentSurgeModal = ({
               onChange={inputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseDistance">
-              Base Distance
+              Base Distance <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -156,6 +166,7 @@ const EditAgentSurgeModal = ({
               onChange={inputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="waitingFare">
               Waiting Fare
@@ -170,6 +181,7 @@ const EditAgentSurgeModal = ({
               onChange={inputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="waitingTime">
               Waiting Time (minutes)
@@ -184,27 +196,38 @@ const EditAgentSurgeModal = ({
               onChange={inputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
-              Geofence
+              Geofence <span className="text-red-600">*</span>
             </label>
-            <select
-              name="geofenceId"
-              value={agentsurge.geofenceId}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              onChange={inputChange}
-            >
-              <option hidden value="">
-                Geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={geofenceOptions.find(
+                (option) => option.value === agentsurge.geofenceId
+              )}
+              isMulti={false}
+              isClearable={true}
+              isSearchable={true}
+              onChange={handleSelectGeofence}
+              options={geofenceOptions}
+              placeholder="Select geofence"
+              menuPortalTarget={document.body}
+              menuPlacement="auto"
+              menuPosition="fixed"
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                menu: (provided) => ({
+                  ...provided,
+                  maxHeight: "300px",
+                  overflowY: "auto",
+                }),
+              }}
+            />
           </div>
         </div>
+
         <div className="flex justify-end gap-4 mt-6">
           <button
             className="bg-cyan-50 py-2 px-4 rounded-md"
@@ -217,7 +240,7 @@ const EditAgentSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-          {confirmLoading ? "Saving..." : "Save"}
+            {confirmLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>
