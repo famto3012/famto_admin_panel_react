@@ -143,7 +143,7 @@ const AddNotificationModal = ({
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="event" className="w-1/3 text-gray-500">
-              Event
+              Event<span className="text-red-500 ms-2">*</span>
             </label>
 
             <Select
@@ -158,11 +158,12 @@ const AddNotificationModal = ({
               options={eventOptions}
               placeholder="Select event name"
               isClearable={false}
+              required
             />
           </div>
           <div className="flex items-center">
             <label htmlFor="event" className="w-1/3 text-gray-500">
-              Title
+              Title<span className="text-red-500 ms-2">*</span>
             </label>
             <input
               type="text"
@@ -175,7 +176,7 @@ const AddNotificationModal = ({
           </div>
           <div className="flex items-center mt-4">
             <label htmlFor="description" className="text-gray-500 w-1/3">
-              Description (This note will be shown in notification)
+              Description (This note will be shown in notification)<span className="text-red-500 ms-2">*</span>
             </label>
             <input
               type="text"

@@ -232,7 +232,7 @@ const PromoCode = () => {
 
               <div className="mx-5 flex justify-between">
                 <h1 className="font-bold text-[20px]">Promo codes</h1>
-                <Switch checked={status} onChange={toggleChange} />
+                {/* <Switch checked={status} onChange={toggleChange} /> */}
               </div>
 
               <div className="m-5 text-gray-500">

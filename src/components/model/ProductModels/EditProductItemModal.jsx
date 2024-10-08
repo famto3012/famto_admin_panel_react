@@ -11,25 +11,7 @@ import ReactCrop, {
   // convertToPixelCrop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { useDebounceEffect } from "../../../utils/useDebounceEffect";
-import { canvasPreview } from "../../../utils/CanvasPreview";
 import CropImage from "../../CropImage";
-
-function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: "%",
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight
-    ),
-    mediaWidth,
-    mediaHeight
-  );
-}
 
 const EditProductItemModal = ({
   isVisible,

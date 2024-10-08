@@ -128,6 +128,38 @@ const Referral = () => {
     console.log(formData);
   };
 
+  const handleReferralStatusChange = async()=>{
+    try {
+      const editResponse = await axios.put(
+        `${BASE_URL}/referrals/edit-referral-status`,
+       {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (editResponse.status === 200) {
+        console.log(editResponse.data.message);
+        toast({
+          title: "Success",
+          description: editResponse.data.message,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(`Error in fetch data:${err}`);
+      toast({
+        title: "Error",
+        description: "There was an error occured",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
+
   return (
     <div>
       {isLoading ? (
@@ -142,10 +174,11 @@ const Referral = () => {
 
             <div className="mx-5 flex justify-between">
               <h1 className="font-bold text-[20px]">Referral</h1>
-              <Switch
-                onChange={(checked) => onChange("agent", checked)}
+              {/* <Switch
+                onChange={handleReferralStatusChange}
                 name="referral"
-              />
+                value={formData.status}
+              /> */}
             </div>
             <p className="mx-5 text-gray-500 mt-5">
               Define referral code that customers can use to refer new customers
@@ -159,7 +192,7 @@ const Referral = () => {
             >
               <div className="flex">
                 <div className="w-1/2">
-                  <label>Referral Type</label>
+                  <label>Referral Type<span className="text-red-600 ml-2">*</span></label>
                 </div>
                 <div className="w-2/3">
                   <input
@@ -183,7 +216,7 @@ const Referral = () => {
                 </div>
               </div>
               <div className="flex">
-                <label className="mt-10 w-1/2">Refferer Discount</label>
+                <label className="mt-10 w-1/2">Referrer Discount<span className="text-red-600 ml-2">*</span></label>
                 <input
                   type="text"
                   name="referrerDiscount"
@@ -194,7 +227,7 @@ const Referral = () => {
               </div>
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referrer maximum discount value
+                  Referrer maximum discount value{formData.referralType === "Percentage-discount" &&(<span className="text-red-600 ml-2">*</span>)}
                 </label>
                 <input
                   type="text"
@@ -207,7 +240,7 @@ const Referral = () => {
               </div>
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referrer App Heading Description
+                  Referrer App Heading Description<span className="text-red-600 ml-2">*</span>
                 </label>
                 <input
                   type="text"
@@ -218,7 +251,7 @@ const Referral = () => {
                 />
               </div>
               <div className="flex">
-                <label className="mt-10 w-1/2">Referee discount</label>
+                <label className="mt-10 w-1/2">Referee discount<span className="text-red-600 ml-2">*</span></label>
                 <input
                   type="text"
                   name="refereeDiscount"
@@ -229,7 +262,7 @@ const Referral = () => {
               </div>
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referee maximum discount value
+                  Referee maximum discount value{formData.referralType === "Percentage-discount" &&(<span className="text-red-600 ml-2">*</span>)}
                 </label>
                 <input
                   type="text"
@@ -241,7 +274,7 @@ const Referral = () => {
                 />
               </div>
               <div className="flex">
-                <label className="mt-10 w-1/2">Minimum order amount</label>
+                <label className="mt-10 w-1/2">Minimum order amount<span className="text-red-600 ml-2">*</span></label>
                 <input
                   type="text"
                   name="minOrderAmount"
@@ -252,7 +285,7 @@ const Referral = () => {
               </div>
 
               <div className="flex">
-                <label className="mt-10 w-1/2">Referee discount</label>
+                <label className="mt-10 w-1/2">Referee discount<span className="text-red-600 ml-2">*</span></label>
                 <input
                   type="text"
                   name="refereeDescription"
@@ -262,7 +295,7 @@ const Referral = () => {
                 />
               </div>
               <div className="mt-10 flex">
-                <label className="w-1/2">Status</label>
+                <label className="w-1/2">Status<span className="text-red-600 ml-2">*</span></label>
                 <div className="w-2/3">
                   <Switch
                     className=""
@@ -274,7 +307,7 @@ const Referral = () => {
               </div>
               <div className="mt-10 flex">
                 <div className="w-1/2">
-                  <label>Referral Code on Customers SignUp</label>
+                  <label>Referral Code on Customers SignUp<span className="text-red-600 ml-2">*</span></label>
                 </div>
                 <div className="w-2/3">
                   <Switch
@@ -314,7 +347,7 @@ const Referral = () => {
                       "Name",
                       "Customers Email",
                       "Referral Code",
-                      "Succesful Refers",
+                      "Successful Refers",
                     ].map((headers) => (
                       <th
                         key={headers}

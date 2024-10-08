@@ -85,14 +85,14 @@ const GlobalSearch = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-end gap-[20px]">
+    <div className="flex items-center justify-end">
       <Avatar
         icon={
           <BellIcon
             color={"gray.400"}
             boxSize="1em"
             onClick={handleNotificationLog}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", marginRight: "5px"}}
           />
         }
         bg={"blue.30"}
@@ -109,7 +109,7 @@ const GlobalSearch = () => {
           />
         )}
       </Avatar>
-      <div className="relative">
+      <div className="relative me-4">
         <input
           type="search"
           name="search"

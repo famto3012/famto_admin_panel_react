@@ -134,7 +134,7 @@ const AddIndividualModal = ({
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="name" className="w-1/3">
-              Name
+              Name<span className="text-red-600 ml-2">*</span>
             </label>
             <input
               type="text"
@@ -149,7 +149,7 @@ const AddIndividualModal = ({
 
           <div className="flex items-center">
             <label htmlFor="merchantId" className="w-1/3">
-              Merchant ID
+              Merchant ID<span className="text-red-600 ml-2">*</span>
             </label>
             <input
               type="text"
@@ -164,7 +164,7 @@ const AddIndividualModal = ({
 
           <div className="flex items-center">
             <label htmlFor="geofenceId" className="w-1/3">
-              Geofence
+              Geofence<span className="text-red-600 ml-2">*</span>
             </label>
             <select
               className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -184,7 +184,7 @@ const AddIndividualModal = ({
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3">Banner Image (390px x 400px)</label>
+            <label className="w-1/3">Banner Image (390px x 400px)<span className="text-red-600 ml-2">*</span></label>
             <div className="flex items-center gap-[30px]">
             {!croppedFile && (
                 <div className="h-[85px] w-[175px] bg-gray-200 rounded-md mt-[14px]"></div>

@@ -162,14 +162,15 @@ const LoyalityPoint = () => {
                       className="w-1/3 text-gray-500"
                       htmlFor="earningCriteriaRupee"
                     >
-                      Earning Criteria *
+                      Earning Criteria
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
 
-                    <button className=" text-black rounded-md">
+                    <span className=" text-black rounded-md me-[5px]">
                       <CurrencyRupeeOutlined />
-                    </button>
+                    </span>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 pl-8  outline-none focus:outline-none w-[25rem] "
+                      className="border-2 border-gray-300 rounded p-2 pl-3  outline-none focus:outline-none w-[32%] "
                       type="text"
                       value={loyaltyData?.earningCriteriaRupee}
                       id="earningCriteriaRupee"
@@ -177,27 +178,28 @@ const LoyalityPoint = () => {
                       onChange={handleInputChange}
                     />
 
-                    <RiEqualFill className="mx-2" />
+                    <span className="mx-2 font-bold">=</span>
 
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-[25rem]"
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-[32%]"
                       type="text"
                       value={loyaltyData?.earningCriteriaPoint}
                       id="earningCriteriaPoint"
                       name="earningCriteriaPoint"
                       onChange={handleInputChange}
                     />
-                    <span className="ml-2">points</span>
+                    <span className="ml-3 font-bold">points</span>
                   </div>
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
                       htmlFor="minOrderAmountForEarning"
                     >
-                      Minimum Order Amount for Earning *
+                      Minimum Order Amount for Earning
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3"
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-2/3"
                       type="text"
                       value={loyaltyData?.minOrderAmountForEarning}
                       id="minOrderAmountForEarning"
@@ -210,10 +212,11 @@ const LoyalityPoint = () => {
                       className="w-1/3 text-gray-500"
                       htmlFor="maxEarningPoint"
                     >
-                      Maximum Earning Points *
+                      Maximum Earning Points
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3 "
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-2/3 "
                       type="text"
                       value={loyaltyData?.maxEarningPoint}
                       id="maxEarningPoint"
@@ -226,10 +229,11 @@ const LoyalityPoint = () => {
                       className="w-1/3 text-gray-500"
                       htmlFor="expiryDuration"
                     >
-                      Expiry Duration Days *
+                      Expiry Duration Days
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-2/3 "
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-2/3 "
                       type="text"
                       value={loyaltyData?.expiryDuration}
                       id="expiryDuration"
@@ -240,25 +244,26 @@ const LoyalityPoint = () => {
 
                   <div className="flex items-center relative">
                     <label
-                      className="w-1/3 text-gray-500"
+                      className="w-full sm:w-1/2 lg:w-1/3 text-gray-500 lg:mr-[40px] xl:mr-0"
                       htmlFor="redemptionCriteriaPoint"
                     >
-                      Redemption Criteria *
+                      Redemption Criteria
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 mr-[10px] outline-none focus:outline-none w-[25rem] "
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-[27%] "
                       type="text"
                       value={loyaltyData?.redemptionCriteriaPoint}
                       id="redemptionCriteriaPoint"
                       name="redemptionCriteriaPoint"
                       onChange={handleInputChange}
                     />
-                    points <RiEqualFill className="mx-3" />
-                    <button className="ms-3 text-black rounded-md">
+                     <span className="ml-3 font-bold">points</span><span className="ml-3 mr-3 font-bold">=</span>
+                     <span className=" text-black rounded-md me-4">
                       <CurrencyRupeeOutlined />
-                    </button>
+                    </span>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 pl-8 outline-none focus:outline-none w-[25rem] "
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-[27%] "
                       type="text"
                       value={loyaltyData?.redemptionCriteriaRupee}
                       id="redemptionCriteriaRupee"
@@ -272,10 +277,11 @@ const LoyalityPoint = () => {
                       className="w-1/3 text-gray-500"
                       htmlFor="minOrderAmountForRedemption"
                     >
-                      Minimum Order Amount for Redemption *
+                      Minimum Order Amount for Redemption
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-full md:w-2/3"
                       type="text"
                       value={loyaltyData?.minOrderAmountForRedemption}
                       id="minOrderAmountForRedemption"
@@ -288,10 +294,11 @@ const LoyalityPoint = () => {
                       className="w-1/3 text-gray-500"
                       htmlFor="minLoyaltyPointForRedemption"
                     >
-                      Minimum Loyalty Point for Redemption *
+                      Minimum Loyalty Point for Redemption
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-full md:w-2/3"
                       type="text"
                       value={loyaltyData?.minLoyaltyPointForRedemption}
                       id="minLoyaltyPointForRedemption"
@@ -304,10 +311,11 @@ const LoyalityPoint = () => {
                       className="w-1/3 text-gray-500"
                       htmlFor="maxRedemptionAmountPercentage"
                     >
-                      Maximum Redemption Amount Percentage *
+                      Maximum Redemption Amount Percentage
+                      <span className="text-red-600 ml-2">*</span>
                     </label>
                     <input
-                      className="border-2 border-gray-300 rounded p-2 outline-none focus:outline-none w-full md:w-2/3"
+                      className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-full md:w-2/3"
                       type="text"
                       value={loyaltyData?.maxRedemptionAmountPercentage}
                       id="maxRedemptionAmountPercentage"

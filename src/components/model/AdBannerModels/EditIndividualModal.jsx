@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import CropImage from "../../CropImage";
 
 const EditIndividualModal = ({
   isVisible,
@@ -24,6 +25,13 @@ const EditIndividualModal = ({
   const [previewURL, setPreviewURL] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null)
+  const [croppedFile, setCroppedFile] = useState(null);
+
 
   const toast = useToast();
 
@@ -89,7 +97,7 @@ const EditIndividualModal = ({
       // }
 
       const response = await axios.put(
-        `${BASE_URL}/admin/banner/edit-banner/${selectedBanner}`,
+        `${BASE_URL}/admin/banner/edit-banner/${selectedIndividualBanner}`,
         formData,
         {
           withCredentials: true,
@@ -132,6 +140,29 @@ const EditIndividualModal = ({
     }
   };
 
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0])
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile); 
+    setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    setSelectedFile(null); // Reset the selected file to allow new selection
+  };
+
   return (
     <Modal
       title="Edit Banner"
@@ -144,7 +175,7 @@ const EditIndividualModal = ({
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <label htmlFor="name" className="w-1/3">
-              Name
+              Name<span className="text-red-600 ml-2">*</span>
             </label>
             <input
               type="text"
@@ -159,7 +190,7 @@ const EditIndividualModal = ({
 
           <div className="flex items-center">
             <label htmlFor="merchantId" className="w-1/3">
-              Merchant ID
+              Merchant ID<span className="text-red-600 ml-2">*</span>
             </label>
             <input
               type="text"
@@ -174,7 +205,7 @@ const EditIndividualModal = ({
 
           <div className="flex items-center">
             <label htmlFor="geofenceId" className="w-1/3">
-              Geofence
+              Geofence<span className="text-red-600 ml-2">*</span>
             </label>
             <select
               className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -194,22 +225,40 @@ const EditIndividualModal = ({
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3">Banner Image (390px x 400px)</label>
+            <label className="w-1/3">Banner Image (390px x 400px)<span className="text-red-600 ml-2">*</span></label>
             <div className="flex items-center gap-[30px]">
-              <figure className="mt-3 h-16 w-16 rounded-md relative">
+            {!croppedFile && (
                 <img
-                  src={previewURL || bannerData?.imageUrl}
-                  alt="profile"
-                  className="w-full rounded h-full object-cover"
+                  src={bannerData?.imageUrl}
+                  alt="Banner preview"
+                  className="w-[175px] rounded h-[80px] object-cover"
                 />
-              </figure>
+              )}
+              {croppedFile && (
+                <>
+                  <div>
+                    <img
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
+                      style={{
+                        border: "1px solid white",
+                        borderRadius: "5px",
+                        objectFit: "contain",
+                        width: "175px",
+                        height: "175px",
+                        marginTop: "14px",
+                      }}
+                    />
+                  </div>
+                </>
+              )}
 
               <input
                 type="file"
                 name="bannerImage"
                 id="bannerImage"
                 className="hidden"
-                onChange={handleSelectImage}
+                onChange={onSelectFile}
               />
               <label htmlFor="bannerImage" className="cursor-pointer">
                 <MdCameraAlt
@@ -217,6 +266,14 @@ const EditIndividualModal = ({
                   size={30}
                 />
               </label>
+              {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={16 / 9} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
             </div>
           </div>
         </div>
