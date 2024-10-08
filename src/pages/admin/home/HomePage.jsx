@@ -322,7 +322,7 @@ const HomePage = () => {
             <p>
               Hi <span>{username}</span>
             </p>
-            <p className="text-[20px] text-gray-500 capitalize">{role}</p>
+            <p className="text-[25px] text-gray-500 capitalize">{role}</p>
           </div>
 
           <div className="flex items-center gap-[30px] ">
@@ -339,9 +339,9 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="bg-white p-2 mt-5 mx-5">
+        <div className="bg-white mt-2 mx-5">
           <div className="flex items-center mx-[20px] justify-between">
-            <div className="flex item-center space-x-2 w-2/3 gap-3">
+            <div className="flex item-center space-x-2 w-2/3 gap-3 mt-3 mb-3">
               <input
                 type="radio"
                 id="sales"

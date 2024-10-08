@@ -267,7 +267,9 @@ const AlertNotification = () => {
               <form>
                 <div className="flex flex-col gap-6 ">
                   <div className="flex items-center">
-                    <label className="block text-gray-700">Type of user</label>
+                    <label className="block text-gray-700">
+                      Type of user<span className="text-red-500 ms-2">*</span>
+                    </label>
                     <div className="flex space-x-24 ml-[128px]">
                       {["customer", "agent", "merchant"].map((type) => (
                         <label
@@ -282,7 +284,9 @@ const AlertNotification = () => {
                             onChange={handleChange}
                             className="form-radio"
                           />
-                          <span>{type}</span>
+                          <span>
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -290,7 +294,7 @@ const AlertNotification = () => {
 
                   <div className="flex items-center">
                     <label htmlFor="id" className="text-gray-500">
-                      ID
+                      ID<span className="text-red-500 ms-2">*</span>
                     </label>
                     <input
                       type="text"
@@ -304,7 +308,7 @@ const AlertNotification = () => {
 
                   <div className="flex items-center">
                     <label htmlFor="title" className="text-gray-500">
-                      Title
+                      Title<span className="text-red-500 ms-2">*</span>
                     </label>
                     <input
                       type="text"
@@ -322,19 +326,21 @@ const AlertNotification = () => {
                       className="w-[215px] text-gray-500"
                     >
                       Description (This note will be shown in Notification)
+                      <span className="text-red-500 ms-2">*</span>
                     </label>
                     <textarea
                       id="description"
                       name="description"
                       value={state.description}
                       onChange={handleChange}
-                      className="border-2 border-gray-300 rounded p-2 w-[45%] outline-none focus:outline-none"
+                      className="border-2 border-gray-300 rounded p-2 w-[45%] ml-[18px] outline-none focus:outline-none"
                     />
                   </div>
 
                   <div className="flex items-center">
                     <label className="text-gray-500">
                       Image (342px x 160px)
+                      <span className="text-red-500 ms-2">*</span>
                     </label>
                     <div className="flex items-center gap-[30px]">
                       {!state.notificationPreviewURL && (

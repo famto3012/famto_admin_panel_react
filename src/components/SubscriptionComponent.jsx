@@ -5,7 +5,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { BiEdit } from "react-icons/bi";
 import AddSubMerchantModal from "./model/SubscriptionModels/AddSubMerchantModal";
 import { UserContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import EditSubMerchantModal from "./model/SubscriptionModels/EditSubMerchantModal";
 import DeleteSubMerchantModal from "./model/SubscriptionModels/DeleteSubMerchantModal";
@@ -444,7 +444,12 @@ const SubscriptionComponent = () => {
         </div>
 
         <div className="bg-white mx-5 p-5 pb-10 rounded-lg mt-5">
+          <div className="flex justify-between items-center">
           <h1>Apply Subscription</h1>
+          <Link className="bg-teal-800 p-3 rounded-xl text-white w-[175px] text-center" to="http://famto.in/subscriptions">
+            Website preview
+          </Link>
+          </div>
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>
             <div className="w-fit ml-6 grid xl:grid-cols-2 grid-cols-1 gap-5">

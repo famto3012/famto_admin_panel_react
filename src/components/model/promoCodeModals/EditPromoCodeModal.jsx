@@ -1,8 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal, Spin } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
+import CropImage from "../../CropImage";
 
 const EditPromoCodeModal = ({
   handleCancel,
@@ -38,6 +39,12 @@ const EditPromoCodeModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
   const toast = useToast();
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [img, setImg] = useState(null)
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [croppedFile, setCroppedFile] = useState(null);
 
   // api call for get the promoCode details
 
@@ -109,8 +116,8 @@ const EditPromoCodeModal = ({
       addPromoToSend.append("merchantId", formData.merchantId);
       addPromoToSend.append("geofenceId", formData.geofenceId);
 
-      if (promoImageFile) {
-        addPromoToSend.append("promoImage", promoImageFile);
+      if (croppedFile) {
+        addPromoToSend.append("promoImage", croppedFile);
       }
       const response = await axios.put(
         `${BASE_URL}/admin/promocode/edit-promocode/${currentPromoEdit}`,
@@ -142,12 +149,12 @@ const EditPromoCodeModal = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const promoCodeImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setPromoImageFile(file);
-    setPromoPreviewURL(URL.createObjectURL(file));
-  };
+  // const promoCodeImageChange = (e) => {
+  //   e.preventDefault();
+  //   const file = e.target.files[0];
+  //   setPromoImageFile(file);
+  //   setPromoPreviewURL(URL.createObjectURL(file));
+  // };
 
      // Helper function to format date to "yyyy-MM-dd"
      const formatDate = (dateString) => {
@@ -157,6 +164,29 @@ const EditPromoCodeModal = ({
       const month = String(date.getUTCMonth() + 1).padStart(2, "0");
       const day = String(date.getUTCDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
+    };
+
+    function onSelectFile(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        setIsInnerVisible(true);
+        setCrop(null); // Makes crop preview update between images.
+        const reader = new FileReader();
+        reader.addEventListener("load", () =>
+          setImgSrc(reader.result?.toString() || "")
+        );
+        reader.readAsDataURL(e.target.files[0]);
+        setImg(e.target.files[0])
+      }
+    }
+  
+    const handleCropComplete = (croppedFile) => {
+      setCroppedFile(croppedFile); 
+      // setSelectedFile(croppedFile)// Get the cropped image file
+      console.log("Cropped image file:", croppedFile);
+    };
+  
+    const handleModalClose = () => {
+      // setSelectedFile(null); // Reset the selected file to allow new selection
     };
 
   return (
@@ -172,7 +202,7 @@ const EditPromoCodeModal = ({
       <div className="flex flex-col p-2 justify-between">
         <form onSubmit={handleSubmit} className="h-[30rem] overflow-auto">
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Code</label>
+            <label className="w-1/2 text-gray-500">Code<span className="text-red-600 ml-2">*</span></label>
             <input
               type="text"
               name="promoCode"
@@ -183,7 +213,7 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex mt-5">
-            <label className="w-1/2 text-gray-500">Promotion Type</label>
+            <label className="w-1/2 text-gray-500">Promotion Type<span className="text-red-600 ml-2">*</span></label>
             <input
               type="radio"
               name="promoType"
@@ -204,7 +234,7 @@ const EditPromoCodeModal = ({
             Percentage discount
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Discount</label>
+            <label className="w-1/2 text-gray-500">Discount<span className="text-red-600 ml-2">*</span></label>
             <input
               type="text"
               name="discount"
@@ -227,7 +257,7 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">From</label>
+            <label className="w-1/2 text-gray-500">From<span className="text-red-600 ml-2">*</span></label>
             <input
               type="date"
               name="fromDate"
@@ -238,7 +268,7 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">To</label>
+            <label className="w-1/2 text-gray-500">To<span className="text-red-600 ml-2">*</span></label>
             <input
               type="date"
               name="toDate"
@@ -249,7 +279,7 @@ const EditPromoCodeModal = ({
           </div>
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
-              Promo Application Mode
+              Promo Application Mode<span className="text-red-600 ml-2">*</span>
             </label>
             <select
               name="applicationMode"
@@ -265,7 +295,7 @@ const EditPromoCodeModal = ({
             </select>
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Max discount value</label>
+            <label className="w-1/2 text-gray-500">Max discount value<span className="text-red-600 ml-2">*</span></label>
             <input
               type="number"
               name="maxDiscountValue"
@@ -275,7 +305,7 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Minimum order amount</label>
+            <label className="w-1/2 text-gray-500">Minimum order amount<span className="text-red-600 ml-2">*</span></label>
             <input
               type="text"
               name="minOrderAmount"
@@ -286,7 +316,7 @@ const EditPromoCodeModal = ({
           </div>
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
-              Maximum number of allowed users
+              Maximum number of allowed users<span className="text-red-600 ml-2">*</span>
             </label>
             <input
               type="number"
@@ -297,7 +327,7 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex mt-5">
-            <label className="w-1/2 text-gray-500">Applied on</label>
+            <label className="w-1/2 text-gray-500">Applied on<span className="text-red-600 ml-2">*</span></label>
             <input
               type="radio"
               name="appliedOn"
@@ -318,7 +348,7 @@ const EditPromoCodeModal = ({
             Delivery charge
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Assign Merchant</label>
+            <label className="w-1/2 text-gray-500">Assign Merchant<span className="text-red-600 ml-2">*</span></label>
             <select
               name="merchantId"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
@@ -336,7 +366,7 @@ const EditPromoCodeModal = ({
             </select>
           </div>
           <div className="flex gap-4 mt-5 ">
-            <label className="w-1/2 text-gray-500">Geofence</label>
+            <label className="w-1/2 text-gray-500">Geofence<span className="text-red-600 ml-2">*</span></label>
             <select
               name="geofenceId"
               id="geofenceId"
@@ -355,32 +385,39 @@ const EditPromoCodeModal = ({
             </select>
           </div>
           <div className="flex">
-            <label className="mt-16">Image (342px x 160px)</label>
-            <div className=" flex items-center gap-[30px]">
-            {formData?.imageUrl && !promoPreviewURL && (
-                  <figure className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md">
+            <label className="mt-16">Image (342px x 160px)<span className="text-red-600 ml-2">*</span></label>
+            <div className=" flex items-center gap-[20px]">
+            {!croppedFile && (
+                <img
+                  className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[38px] ml-[210px]"
+                  src={formData.imageUrl}
+                />
+              )}
+              {!!croppedFile && (
+                <>
+                  <div>
                     <img
-                      src={formData?.imageUrl}
-                      alt="profile"
-                      className="w-full rounded h-full object-cover"
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
+                      style={{
+                        border: "1px solid white",
+                        borderRadius: "5px",
+                        objectFit: "contain",
+                        width: "66px",
+                        height: "66px",
+                        marginTop: "38px",
+                        marginLeft: "210px"
+                      }}
                     />
-                  </figure>
-                )}
-                {promoPreviewURL && (
-                  <figure className="bg-gray-400 ml-[230px] mt-10 h-16 w-16 rounded-md" >
-                    <img
-                      src={promoPreviewURL}
-                      alt="profile"
-                      className="w-full rounded h-full object-cover"
-                    />
-                  </figure>
-                )}
+                  </div>
+                </>
+              )}
               <input
                 type="file"
                 name="imageUrl"
                 id="imageUrl"
                 className="hidden"
-                onChange={promoCodeImageChange}
+                onChange={onSelectFile}
               />
               <label htmlFor="imageUrl" className="cursor-pointer ">
                 <MdCameraAlt
@@ -388,6 +425,14 @@ const EditPromoCodeModal = ({
                   size={30}
                 />
               </label>
+              {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
             </div>
           </div>
           <div className="flex justify-end mt-10  gap-4">

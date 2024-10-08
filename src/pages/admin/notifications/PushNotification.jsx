@@ -329,7 +329,9 @@ const PushNotification = () => {
         <div className="bg-white text-[16px] mx-5 rounded-lg mt-5 text-gray-700">
           <form onSubmit={submitAction}>
             <div className="flex">
-              <label className="mt-10 ml-10">Title</label>
+              <label className="mt-10 ml-10">
+                Title<span className="text-red-500 ms-2">*</span>
+              </label>
               <input
                 type="text"
                 name="title"
@@ -341,17 +343,20 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10 w-48">
                 Description (This note will be shown in notification.)
+                <span className="text-red-500 ms-2">*</span>
               </label>
               <input
                 type="text"
                 name="description"
                 value={formData.description}
-                className="border-2 border-gray-300 rounded  mt-10 ml-20  w-96 outline-none focus:outline-none p-2"
+                className="border-2 border-gray-300 rounded  mt-10 ml-[94px]  w-96 outline-none focus:outline-none p-2"
                 onChange={handleInputChange}
               />
             </div>
             <div className="flex">
-              <label className="mt-10 ml-10">Geofence</label>
+              <label className="mt-10 ml-10">
+                Geofence<span className="text-red-500 ms-2">*</span>
+              </label>
               <select
                 name="geofenceId"
                 value={formData.geofenceId}
@@ -370,7 +375,10 @@ const PushNotification = () => {
               </select>
             </div>
             <div className="flex">
-              <label className="mt-16 ml-10">Image (342px x 160px)</label>
+              <label className="mt-16 ml-10">
+                Image (342px x 160px)
+                <span className="text-red-500 ms-2">*</span>
+              </label>
               <div className=" flex items-center gap-[30px]">
                 {!notificationPreviewURL && (
                   <div className="bg-gray-400 ml-[115px] mt-10 h-20 w-20 rounded-md" />
@@ -405,7 +413,7 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10">Customer App</label>
               <Switch
-                className="mt-11 ml-44"
+                className="mt-11 ml-[185px]"
                 onChange={(checked) => onChange("customer", checked)}
                 name="agent"
               />
@@ -413,7 +421,7 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10">Merchant App</label>
               <Switch
-                className="mt-11 ml-[175px]"
+                className="mt-11 ml-[185px]"
                 onChange={(checked) => onChange("merchant", checked)}
                 name="merchant"
               />
@@ -421,7 +429,7 @@ const PushNotification = () => {
             <div className="flex">
               <label className="mt-10 ml-10">Driver App</label>
               <Switch
-                className="mt-11 ml-[200px]"
+                className="mt-11 ml-[210px]"
                 onChange={(checked) => onChange("driver", checked)}
                 name="driver"
               />

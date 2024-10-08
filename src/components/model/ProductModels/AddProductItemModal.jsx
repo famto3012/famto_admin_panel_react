@@ -42,6 +42,7 @@ const AddProductItemModal = ({
   const [previewURL, setPreviewURL] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
+  const modalRef = useRef(null);
 
   const [selectedCSVFile, setSelectedCSVFile] = useState(null);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
@@ -100,6 +101,13 @@ const AddProductItemModal = ({
       fetchData();
     }
   }, [categoryId, merchantId, isVisible, role, token, BASE_URL]);
+
+  useEffect(() => {
+    if (isVisible && modalRef.current) {
+      // Scroll to the top of the modal content when it's opened
+      modalRef.current.scrollTo(0, 0);
+    }
+  }, [isVisible]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -211,6 +219,8 @@ const AddProductItemModal = ({
         });
         setSelectedFile(null);
         setPreviewURL(null);
+        setCroppedFile(null)
+        setImgSrc(null)
         handleCancel();
         toast({
           title: "Success",
@@ -348,6 +358,7 @@ const AddProductItemModal = ({
   };
 
   return (
+    isVisible && (
     <Modal
       title="Add Product"
       onCancel={handleCancel}
@@ -355,6 +366,7 @@ const AddProductItemModal = ({
       footer={null}
       open={isVisible}
       centered
+      ref={modalRef}
     >
       <form onSubmit={handleAddProduct} className="max-h-[30rem] overflow-auto">
         <div className="flex flex-col gap-4 mt-5">
@@ -724,7 +736,8 @@ const AddProductItemModal = ({
         </div>
       </form>
     </Modal>
-  );
+  )
+)
 };
 
 export default AddProductItemModal;
