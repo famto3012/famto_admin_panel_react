@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { MdCameraAlt } from "react-icons/md";
@@ -19,6 +19,7 @@ import BusinessCategory from "../../../components/CustomerApp/BusinessCategory";
 import CustomOrder from "../../../components/CustomerApp/CustomOrder";
 import PickAndDrop from "../../../components/CustomerApp/PickAndDrop";
 import ServiceCategory from "../../../components/CustomerApp/ServiceCategory";
+import CropImage from "../../../components/CropImage";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -40,6 +41,13 @@ const CustomerApp = () => {
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
   const toast = useToast();
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null)
+  const [croppedFile, setCroppedFile] = useState(null);
+
 
   console.log("Customer Data", customerData);
   //API for fetch data..
@@ -120,7 +128,7 @@ const CustomerApp = () => {
           status: "success",
           isClosable: true,
         });
-        handleCancel();
+        // handleCancel();
       }
     } catch (err) {
       console.error(`Error in saving data ${err.message}`);
@@ -143,11 +151,34 @@ const CustomerApp = () => {
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
 
-  const handleImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
+  // const handleImageChange = (e) => {
+  //   e.preventDefault();
+  //   const file = e.target.files[0];
+  //   setNotificationFile(file);
+  //   setNotificationPreviewURL(URL.createObjectURL(file));
+  // };
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0])
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile); 
+    // setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    // setSelectedFile(null); // Reset the selected file to allow new selection
   };
 
   return (
@@ -178,21 +209,34 @@ const CustomerApp = () => {
                     />
                   </figure>
                 )}
-                {notificationPreviewURL && (
-                  <figure className="h-16 w-16 rounded-md  relative">
+               {/* {!croppedFile && (
+                <div className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[20px]"></div>
+              )} */}
+              {!!croppedFile && (
+                <>
+                  <div>
                     <img
-                      src={notificationPreviewURL}
-                      alt="profile"
-                      className="w-full rounded h-full object-cover"
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
+                      style={{
+                        border: "1px solid white",
+                        borderRadius: "5px",
+                        objectFit: "contain",
+                        width: "66px",
+                        height: "66px",
+                        marginTop: "20px",
+                      }}
                     />
-                  </figure>
-                )}
+                  </div>
+                </>
+              )}
                 <input
                   type="file"
                   name="splashScreenImage"
                   id="splashScreenImage"
                   className="hidden"
-                  onChange={handleImageChange}
+                  accept="image/*"
+                  onChange={onSelectFile}
                 />
                 <label htmlFor="splashScreenImage" className="cursor-pointer">
                   <MdCameraAlt
@@ -200,6 +244,14 @@ const CustomerApp = () => {
                     size={30}
                   />
                 </label>
+                {imgSrc && (
+                <CropImage
+                  selectedImage={img}
+                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                  onCropComplete={handleCropComplete}
+                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                />
+              )}
               </div>
             </div>
             <div className="flex mx-5 mt-10 gap-10  border-b-2 border-gray-200 pb-5">
