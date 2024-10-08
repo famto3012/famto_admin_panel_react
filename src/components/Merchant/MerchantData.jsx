@@ -357,7 +357,7 @@ const MerchantData = ({
             onClick={toggleMapModal}
             className="font-medium bg-teal-700 text-white text-start rounded-md  py-2 flex items-center w-1/3 justify-center"
           >
-            {`${MerchantData?.merchantDetail?.location || detail?.merchantDetail?.location ? "Location marked" : "Mark location"}`}
+            {`${MerchantData?.merchantDetail?.location.length !== 0 || detail?.merchantDetail?.location.length !== 0 ? "Location marked" : "Mark location"}`}
             <LocationOnOutlinedIcon className="text-[18px] ms-2" />
           </button>
 
