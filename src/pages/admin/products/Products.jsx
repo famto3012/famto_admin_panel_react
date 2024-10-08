@@ -131,7 +131,6 @@ const Products = () => {
               categoryStatus: data[0]?.status,
             });
           } else {
-            console.log("HERE");
             setAllCategories([]);
             setSelectedCategory(null);
             setAllProducts([]);

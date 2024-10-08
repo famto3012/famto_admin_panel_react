@@ -9,31 +9,41 @@ import { Modal } from "antd";
 import GIFLoader from "../../../components/GIFLoader";
 import { FaCalendarAlt } from "react-icons/fa";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Subscriptioncustomer = () => {
   const [customerlog, setCustomerlog] = useState([]);
   const [merchantlog, setMerchantlog] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
-  const [merchantFilter, setMerchantFilter] = useState("");
   const [merchant, setMerchants] = useState([]);
+
   const [searchMerchant, setSearchMerchant] = useState("");
   const [searchCustomer, setSearchCustomer] = useState("");
+
+  const [merchantFilter, setMerchantFilter] = useState("");
   const [dateMerchantFilter, setDateMerchantFilter] = useState("");
-  const [dateCustomerFilter, setDateCustomerFilter] = useState("");
-  const { token, role } = useContext(UserContext);
+  const [dateCustomerFilter, setDateCustomerFilter] = useState(null);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isTableLoading, setIsTableLoading] = useState(false);
-  const navigate = useNavigate();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  const [currentId, setCurrentId] = useState(null);
   const [isSubscription, setIsSubscription] = useState(false);
-  const dateMerchantInput = useRef(null);
-  const dateCustomerInput = useRef(null);
+
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const customerButtonRef = useRef(null);
+  const merchantButtonRef = useRef(null);
+
+  const navigate = useNavigate();
+  const { token, role } = useContext(UserContext);
 
   useEffect(() => {
     if (!token || role !== "Admin") {
-      navigate("auth/login");
+      navigate("/auth/login");
       return;
     }
 
@@ -62,6 +72,7 @@ const Subscriptioncustomer = () => {
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);
+
         if (merchantResponse.status === 200) {
           setMerchantlog(merchantResponse.data.subscriptionLogs || []);
         }
@@ -86,11 +97,8 @@ const Subscriptioncustomer = () => {
     value: merchant._id,
   }));
 
-  const handleToggle = () => {
-    setIsSubscription(!isSubscription);
-  };
+  const handleToggle = () => setIsSubscription(!isSubscription);
 
-  // API function for search in Customer Subscription log
   const onSearchCustomerChange = (e) => {
     const searchService = e.target.value;
     setSearchCustomer(searchService);
@@ -104,7 +112,7 @@ const Subscriptioncustomer = () => {
   const handleSearchCustomerChangeFilter = async (searchService) => {
     try {
       setIsTableLoading(true);
-      console.log(token);
+
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/subscription-payment/customer-subscription-log-search`,
         {
@@ -117,57 +125,79 @@ const Subscriptioncustomer = () => {
         setCustomerlog(searchResponse.data);
       }
     } catch (err) {
-      console.log(`Error in fetching data`, err);
       setCustomerlog([]);
     } finally {
       setIsTableLoading(false);
     }
   };
 
-  // API function for date change in Customer Subscriptionlog
-  const onDateCustomerChange = (e) => {
-    const searchDate = e.target.value;
-    setDateCustomerFilter(searchDate);
-    if (searchDate !== "") {
-      handleCustomerDateChangeFilter(searchDate);
-    } else {
-      setCustomerlog([]);
-    }
-    console.log(searchDate);
+  const handleCustomerDateChange = (date) => {
+    setDateCustomerFilter(date);
+    setIsPickerOpen(false);
   };
 
-  const handleCustomerDateChangeFilter = async (searchDate) => {
-    try {
-      setIsTableLoading(true);
-      console.log(token);
-      const dateResponse = await axios.get(
-        `${BASE_URL}/admin/subscription-payment/customer-subscription-log-date`,
-        {
-          params: { startDate: searchDate },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
+  const handleMerchantDateChange = (date) => {
+    setDateMerchantFilter(date);
+    setIsPickerOpen(false);
+  };
+
+  useEffect(() => {
+    const handleCustomerDateChangeFilter = async () => {
+      try {
+        setIsTableLoading(true);
+
+        const dateResponse = await axios.get(
+          `${BASE_URL}/admin/subscription-payment/customer-subscription-log-date`,
+          {
+            params: { startDate: dateCustomerFilter },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (dateResponse.status === 200) {
+          setCustomerlog(dateResponse.data.data);
+          console.log(dateResponse.data.message);
         }
-      );
-      if (dateResponse.status === 200) {
-        setCustomerlog(dateResponse.data.data);
-        console.log(dateResponse.data.message);
+      } catch (err) {
+        console.log(`Error in fetching data`, err);
+        setCustomerlog([]);
+      } finally {
+        setIsTableLoading(false);
       }
-    } catch (err) {
-      console.log(`Error in fetching data`, err);
-      setCustomerlog([]);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+    };
 
-  // Function to trigger the date input click
-  const openCustomerDatePicker = () => {
-    if (dateCustomerInput.current) {
-      dateCustomerInput.current.showPicker();
-    }
-  };
+    handleCustomerDateChangeFilter();
+  }, [dateCustomerFilter]);
 
-  // API function for Merchant Filter in Merchant Subscription log
+  useEffect(() => {
+    const handleMerchantDateChangeFilter = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/subscription-payment/merchant-subscription-log-date`,
+          {
+            params: { startDate: dateMerchantFilter },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (response.status === 200) {
+          setMerchantlog(response.data.data);
+          console.log(response.data.data);
+        }
+      } catch (err) {
+        console.log(`Error in fetching data`, err);
+        setMerchantlog([]);
+      }
+    };
+
+    handleMerchantDateChangeFilter();
+  }, [dateMerchantFilter]);
+
+  const openCustomerDatePicker = () => setIsPickerOpen(true);
+  const openMerchantDatePicker = () => setIsPickerOpen(true);
+  const handleCancel = () => setIsModalVisible(false);
+  const handleBackClick = () => navigate(-1);
+
   const onMerchantChange = (merchant) => {
     setMerchantFilter(merchant.label);
     if (merchant.value !== "") {
@@ -179,7 +209,6 @@ const Subscriptioncustomer = () => {
 
   const handleMerchantChangeFilter = async (searchMerchant) => {
     try {
-      console.log(token);
       const response = await axios.get(
         `${BASE_URL}/admin/subscription-payment/merchant-subscription-log/${searchMerchant}`,
         {
@@ -189,7 +218,6 @@ const Subscriptioncustomer = () => {
       );
       if (response.status === 200) {
         setMerchantlog(response.data.combinedData);
-        console.log("fetched", response.data.subscriptionLogs);
       }
     } catch (err) {
       console.log(`Error in fetching data`, err);
@@ -197,48 +225,6 @@ const Subscriptioncustomer = () => {
     }
   };
 
-  // API function for date in Merchant Subscription log
-  const onDateMerchantChange = (e) => {
-    const searchDate = e.target.value;
-    setDateMerchantFilter(searchDate);
-    if (searchDate !== "") {
-      handleMerchantDateChangeFilter(searchDate);
-    } else {
-      setMerchantlog([]);
-    }
-    console.log(searchDate);
-  };
-
-  const handleMerchantDateChangeFilter = async (searchDate) => {
-    try {
-      console.log(token);
-      const dateResponse = await axios.get(
-        `${BASE_URL}/admin/subscription-payment/merchant-subscription-log-date`,
-        {
-          params: { startDate: searchDate },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (dateResponse.status === 200) {
-        setMerchantlog(dateResponse.data);
-        console.log(dateResponse.data.message);
-      }
-    } catch (err) {
-      console.log(`Error in fetching data`, err);
-      setMerchantlog([]);
-    }
-  };
-
-  // Function to trigger the date input click
-  const openMerchantDatePicker = () => {
-    console.log("clicked");
-    if (dateMerchantInput.current) {
-      dateMerchantInput.current.showPicker(); // Open the date picker using showPicker()
-    }
-  };
-
-  // API function for search in Merchant Subscription log
   const onSearchMerchantChange = (e) => {
     const searchService = e.target.value;
     setSearchMerchant(searchService);
@@ -252,7 +238,7 @@ const Subscriptioncustomer = () => {
   const handleSearchMerchantChangeFilter = async (searchService) => {
     try {
       setIsTableLoading(true);
-      console.log(token);
+
       const searchResponse = await axios.get(
         `${BASE_URL}/admin/subscription-payment/merchant-subscription-log-search`,
         {
@@ -272,15 +258,9 @@ const Subscriptioncustomer = () => {
     }
   };
 
-  // Modal Function
   const showModal = (id) => {
     setCurrentId(id);
-    console.log(id);
     setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
   };
 
   const handleChange = async (id) => {
@@ -305,17 +285,10 @@ const Subscriptioncustomer = () => {
               : merchant
           )
         );
-        console.log(response.data);
-      } else {
-        console.log(`Unexpected response status: ${response.status}`);
       }
     } catch (err) {
       console.error(`Error in handleApprove: ${err.message}`);
     }
-  };
-
-  const handleBackClick = () => {
-    navigate(-1);
   };
 
   return (
@@ -388,22 +361,31 @@ const Subscriptioncustomer = () => {
                 </div>
                 {isSubscription ? (
                   <div className="flex gap-7">
-                    <div className="flex items-center">
-                      <input
-                        type="date"
-                        name="date"
-                        ref={dateCustomerInput} // Attach the ref to the input
-                        value={dateCustomerFilter}
-                        onChange={onDateCustomerChange}
-                        className="hidden top-80" // Keep the input hidden
-                        style={{ right: "40px", top: "200px" }}
-                      />
+                    <div className="relative flex items-center">
                       <button
+                        ref={customerButtonRef}
                         onClick={openCustomerDatePicker}
                         className="flex items-center justify-center"
                       >
                         <FaCalendarAlt className="text-gray-400 text-xl" />
                       </button>
+
+                      {isPickerOpen && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: customerButtonRef.current?.offsetHeight + 5,
+                            left: 0,
+                            zIndex: 50,
+                          }}
+                        >
+                          <DatePicker
+                            selected={dateCustomerFilter}
+                            onChange={handleCustomerDateChange}
+                            inline
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center">
                       <FilterAltOutlined className="text-gray-400 " />
@@ -440,22 +422,31 @@ const Subscriptioncustomer = () => {
                       isClearable={false}
                     />
 
-                    <div className="flex items-center">
-                      <input
-                        type="date"
-                        name="date"
-                        ref={dateMerchantInput}
-                        value={dateMerchantFilter}
-                        onChange={onDateMerchantChange}
-                        className="hidden top-80"
-                        style={{ right: "40px", top: "200px" }}
-                      />
+                    <div className="relative flex items-center">
                       <button
+                        ref={merchantButtonRef}
                         onClick={openMerchantDatePicker}
                         className="flex items-center justify-center"
                       >
                         <FaCalendarAlt className="text-gray-400 text-xl" />
                       </button>
+
+                      {isPickerOpen && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: merchantButtonRef.current?.offsetHeight + 5,
+                            left: 0,
+                            zIndex: 50,
+                          }}
+                        >
+                          <DatePicker
+                            selected={dateMerchantFilter}
+                            onChange={handleMerchantDateChange}
+                            inline
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center">

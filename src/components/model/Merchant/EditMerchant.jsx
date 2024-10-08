@@ -108,7 +108,7 @@ const EditMerchant = ({
             ].map(({ label, name, type }) => (
               <div key={name} className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor={name}>
-                  {label}
+                  {label} <span className="text-red-600">*</span>
                 </label>
                 <div className="flex-1">
                   <input

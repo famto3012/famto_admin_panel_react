@@ -447,24 +447,48 @@ const SubscriptionComponent = () => {
           <h1>Apply Subscription</h1>
           <div className="flex mt-10">
             <label className="w-1/3">Added Subscription Plans</label>
-            <div className="w-fit ml-6 grid xl:grid-cols-2 grid-cols-1 gap-5">
-              {subscriptionMerchant.map((subscriptions) => (
-                <div className="bg-zinc-50 shadow-md border rounded-lg flex">
-                  <div>
-                    <div className="flex justify-between m-3">
-                      <p>{subscriptions.name}</p>
-                      <p>{subscriptions.amount}</p>
+            <div className="w-fit grid xl:grid-cols-2 grid-cols-1 gap-5">
+              {subscriptionMerchant.map((subscription) => (
+                <div className="bg-zinc-50 rounded-lg flex border p-3">
+                  <div className="flex flex-col gap-5">
+                    <div className="flex justify-between ">
+                      <p>
+                        Plan name:
+                        <span className="font-[700] ms-2 max-w-[20ch] truncate whitespace-nowrap overflow-hidden">
+                          {subscription.name}
+                        </span>
+                      </p>
+                      <p className="font-[700]">{subscription.amount}</p>
                     </div>
-                    <div className="flex justify-between mt-5 m-3">
-                      <p>{subscriptions.duration}</p>
-                      <p>{subscriptions.renewalReminder}</p>
+
+                    <div className="flex justify-between ">
+                      <p>
+                        Duration:{" "}
+                        <span className="font-[700]">
+                          {subscription.duration}
+                        </span>
+                      </p>
+                      <p>
+                        Remainder:{" "}
+                        <span className="font-[700]">
+                          {subscription.renewalReminder}
+                        </span>
+                      </p>
                     </div>
-                    <p className="m-3">{subscriptions?.taxId?.taxName}</p>
-                    <p className="m-3">{subscriptions?.description}</p>
-                    <div className="mb-5 flex">
+
+                    <p className="">
+                      Tax name:{" "}
+                      <span className="font-[700]">
+                        {subscription?.taxId?.taxName || "-"}
+                      </span>
+                    </p>
+
+                    <p className="">{subscription.description}</p>
+
+                    <div className="flex mb-4">
                       <button
-                        className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 mx-3 mt-5"
-                        onClick={() => showModalEditMerchant(subscriptions._id)}
+                        className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
+                        onClick={() => showModalEditMerchant(subscription._id)}
                       >
                         <BiEdit className="text-[22px] mr-1" /> Edit
                       </button>
@@ -478,9 +502,9 @@ const SubscriptionComponent = () => {
                       />
 
                       <button
-                        className="bg-teal-800 flex  rounded-3xl p-3 items-center text-white mx-3 px-8 mt-5"
+                        className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
                         onClick={() =>
-                          showModalDeleteMerchant(subscriptions._id)
+                          showModalDeleteMerchant(subscription._id)
                         }
                       >
                         <RiDeleteBinLine className="text-[20px] mr-1" />
@@ -503,8 +527,8 @@ const SubscriptionComponent = () => {
                     <input
                       type="radio"
                       name="planId"
-                      value={subscriptions._id}
-                      checked={merchant.planId === subscriptions._id}
+                      value={subscription._id}
+                      checked={merchant.planId === subscription._id}
                       className="size-5 bg-teal-800"
                       onChange={handleMerchant}
                     />
@@ -556,7 +580,7 @@ const SubscriptionComponent = () => {
             className="bg-teal-800 w-1/3 p-2 text-white rounded-lg mt-5 ml-[33%]"
             onClick={handleApplyMerchantSubscription}
           >
-            Apply Subscription for
+            Apply Subscription
           </button>
         </div>
       </div>
@@ -606,8 +630,8 @@ const SubscriptionComponent = () => {
                     <div className="flex flex-col gap-5">
                       <div className="flex justify-between ">
                         <p>
-                          Name:{" "}
-                          <span className="font-[700]">
+                          Plan name:
+                          <span className="font-[700] ms-2">
                             {subscription.name}
                           </span>
                         </p>

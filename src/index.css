@@ -27,7 +27,7 @@
   }
 
   .side {
-    @apply flex items-center mb-1 hover:bg-cyan-400 hover:text-white;
+    @apply flex items-center mb-1 hover:bg-white/40 hover:text-white;
   }
 
   .dropside {
@@ -39,7 +39,7 @@
   }
 
   .selected-link {
-    @apply bg-cyan-400 text-white;
+    @apply bg-white/40 text-white;
   }
 
   .merchantDetail-input {

@@ -1,15 +1,14 @@
-import { Switch, Modal, Spin } from "antd";
+import { Switch, Modal } from "antd";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
-import Select from "react-select"; // Import react-select for product selection
-import { useToast } from "@chakra-ui/react"; // Import useToast from Chakra UI
-import debounce from "lodash.debounce"; // Import lodash debounce
+import { useState, useEffect } from "react";
+import Select from "react-select";
+import { useToast } from "@chakra-ui/react";
+import { formatDateForDateSelect } from "../../../utils/formatter";
 
 const EditProductModal = ({
   isVisible,
   token,
   BASE_URL,
-  merchant,
   geofence,
   currentProduct,
   onEditProduct,
@@ -28,36 +27,15 @@ const EditProductModal = ({
     onAddOn: false,
     merchantId: "",
   });
+  const [allProducts, setAllProducts] = useState([]);
 
-  const [loading, setLoading] = useState(false); // Loading state for fetching data
-  const [dataLoading, setDataLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state for form submission
-  const [productResults, setProductResults] = useState([]);
-  const toast = useToast(); // Toast for notifications
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch product options
-  const fetchProductOptions = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${BASE_URL}/products`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.status === 200) {
-        setProductResults(response.data.data || []); // Handle case where data might be empty
-      }
-    } catch (err) {
-      console.error(`Error in fetching products ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const toast = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setDataLoading(true);
-
         const response = await axios.get(
           `${BASE_URL}/merchant/product-discount/get-product-discount-id/${currentProduct}`,
           {
@@ -66,56 +44,41 @@ const EditProductModal = ({
           }
         );
         if (response.status === 200) {
-          const productData = response.data.data;
-
-          productData.validFrom = formatDate(productData.validFrom);
-          productData.validTo = formatDate(productData.validTo);
-          setProductDiscount(productData);
-
-          // Fetch product options after setting productDiscount
-          fetchProductOptions();
+          const { data } = response.data;
+          setProductDiscount(data);
         }
       } catch (err) {
         console.error(`Error in fetching data ${err.message}`);
-      } finally {
-        setDataLoading(false);
       }
     };
 
     if (currentProduct) {
       fetchData();
     }
-  }, [currentProduct, token, BASE_URL]);
+  }, [currentProduct, token]);
 
-  const handleSearchProduct = async (inputValue) => {
-    if (inputValue.length < 2) {
-      // Only search when input value length is 2 or more characters
-      setProductResults([]);
-      return;
-    }
+  useEffect(() => {
+    const fetchAllProductsOfMerchant = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/products/all-products-of-merchant/${productDiscount.merchantId}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-    try {
-      const response = await axios.get(`${BASE_URL}/products/search`, {
-        params: { query: inputValue },
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.status === 200) {
-        setProductResults(response.data.data || []); // Handle case where data might be empty
+        if (response.status === 200) {
+          setAllProducts(response.data.data || []);
+        }
+      } catch (err) {
+        console.error(`Error in fetching product ${err.message}`);
       }
-    } catch (err) {
-      console.error(`Error in fetching product ${err.message}`);
-    }
-  };
+    };
 
-  // Debounced search handler
-  const debouncedSearchProduct = debounce(handleSearchProduct, 300);
+    if (productDiscount.merchantId) fetchAllProductsOfMerchant();
+  }, [productDiscount.productId]);
 
-  const handleInputProductChange = (inputValue) => {
-    debouncedSearchProduct(inputValue);
-  };
-
-  // API to update the Discount
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -155,7 +118,6 @@ const EditProductModal = ({
     }
   };
 
-  // Handle input change for text inputs
   const handleInputChange = (e) => {
     setProductDiscount({
       ...productDiscount,
@@ -163,7 +125,6 @@ const EditProductModal = ({
     });
   };
 
-  // Handle switch toggle change
   const handleSwitchChange = (checked) => {
     setProductDiscount({
       ...productDiscount,
@@ -171,28 +132,16 @@ const EditProductModal = ({
     });
   };
 
-  // Correct the product options mapping to use actual product names
-  const productOptions = productResults.map((product) => ({
-    label: product.productName, // Adjust this field as necessary
+  const productOptions = allProducts?.map((product) => ({
+    label: product.productName,
     value: product._id,
   }));
 
-  // Handle select change for product selection
   const handleSelectChange = (selectedOption) => {
     setProductDiscount({
       ...productDiscount,
       productId: selectedOption ? selectedOption.value : "",
     });
-  };
-
-  // Helper function to format date to "yyyy-MM-dd"
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -202,35 +151,19 @@ const EditProductModal = ({
       open={isVisible}
       centered
       onCancel={handleCancel}
-      footer={null} // Custom footer to include form buttons
+      footer={null}
     >
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col mt-5 max-h-[30rem] overflow-auto gap-4 justify-between">
-          <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Assign Merchant</label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
-              name="merchantId"
-              value={productDiscount.merchantId}
-              onChange={handleInputChange}
-            >
-              <option value="" hidden>
-                Select Merchant
-              </option>
-              {merchant.map((data) => (
-                <option value={data._id} key={data._id}>
-                  {data.merchantName}
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="flex mt-5 gap-4">
-            <label className="w-1/2 text-gray-500">Discount Name</label>
+            <label className="w-1/2 text-gray-500">
+              Discount Name <span className="text-red-600">*</span>
+            </label>
             <input
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               name="discountName"
-              placeholder={dataLoading ? "Loading data..." : ""}
+              placeholder="Discount name"
               value={productDiscount.discountName}
               onChange={handleInputChange}
             />
@@ -238,7 +171,9 @@ const EditProductModal = ({
 
           <div className="flex mt-5 gap-4">
             <div>
-              <label className="w-1/2 text-gray-500">Discount</label>
+              <label className="w-1/2 text-gray-500">
+                Discount <span className="text-red-600">*</span>
+              </label>
               <input
                 type="radio"
                 className="border-2 ml-[230px] mr-3 border-gray-300 rounded "
@@ -259,6 +194,7 @@ const EditProductModal = ({
               Percentage discount
             </div>
           </div>
+
           <div>
             <input
               type="text"
@@ -268,9 +204,11 @@ const EditProductModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">
-              Description Maximum 150 Characters
+              Description Maximum 150 Characters{" "}
+              <span className="text-red-600">*</span>
             </label>
 
             <input
@@ -282,23 +220,27 @@ const EditProductModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex mt-5 gap-4">
-            <label className="w-1/2 text-gray-500">Select Product</label>
+            <label className="w-1/2 text-gray-500">
+              Select Product <span className="text-red-600">*</span>
+            </label>
             <Select
               name="productId"
               className="border-2 border-gray-300 rounded w-2/3 focus:outline-none"
               value={productOptions.find(
                 (option) => option.value === productDiscount.productId
               )}
-              onInputChange={handleInputProductChange}
               onChange={handleSelectChange}
               options={productOptions}
-              isLoading={loading}
-              placeholder={loading ? "Loading products..." : "Select Product"}
+              placeholder="Select Product"
             />
           </div>
+
           <div className="flex mt-5 gap-4">
-            <label className="w-1/2 text-gray-500">Max Amount</label>
+            <label className="w-1/2 text-gray-500">
+              Max Amount <span className="text-red-600">*</span>
+            </label>
 
             <input
               type="text"
@@ -308,28 +250,37 @@ const EditProductModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Valid From</label>
+            <label className="w-1/2 text-gray-500">
+              Valid From <span className="text-red-600">*</span>
+            </label>
             <input
               type="date"
               name="validFrom"
-              value={productDiscount.validFrom}
+              value={formatDateForDateSelect(productDiscount.validFrom)}
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Valid To</label>
+            <label className="w-1/2 text-gray-500">
+              Valid To <span className="text-red-600">*</span>
+            </label>
             <input
               type="date"
               name="validTo"
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={productDiscount.validTo}
+              value={formatDateForDateSelect(productDiscount.validTo)}
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex mt-5 gap-4">
-            <label className="w-1/2 text-gray-500">Geofence</label>
+            <label className="w-1/2 text-gray-500">
+              Geofence <span className="text-red-600">*</span>
+            </label>
             <select
               className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
               name="geofenceId"
@@ -346,6 +297,7 @@ const EditProductModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex mt-5 justify-between">
             <label>Discount on add-on</label>
             <Switch
@@ -358,7 +310,7 @@ const EditProductModal = ({
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
               onClick={handleCancel}
-              type="button" // Change to "button" to prevent form submission
+              type="button"
             >
               Cancel
             </button>

@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import SidebarDelivery from "../../../components/model/SidebarDelivery";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { ArrowDownOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CheckCircleOutlined, FilterAltOutlined } from "@mui/icons-material";
 import { Modal } from "antd";
 import axios from "axios";
@@ -11,6 +11,11 @@ import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
 import { Pagination } from "@mui/material";
 import { useToast } from "@chakra-ui/react";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import Select from "react-select";
+import { payoutPaymentStatus } from "../../../utils/DefaultData";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -19,9 +24,11 @@ const AgentPayout = () => {
 
   const [paymentStatus, setPaymentStatus] = useState("");
   const [selectedAgent, setSelectedAgent] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
   const [selectedGeofence, setSelectedGeofence] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const [selectedPayout, setSelectedPayout] = useState(null);
 
@@ -39,12 +46,41 @@ const AgentPayout = () => {
   const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
 
-  const dateInputRef = useRef(null);
+  const buttonRef = useRef(null);
 
   const { token } = useContext(UserContext);
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchFilteredData = async () => {
+      try {
+        setIsTableLoading(true);
+
+        const response = await axios.get(
+          `${BASE_URL}/admin/agents/filter-payment`,
+          {
+            params: {
+              paymentStatus,
+              agentId: selectedAgent,
+              date: selectedDate,
+              geofence: selectedGeofence,
+            },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 200) {
+          setAllPayout(response.data.data);
+        }
+      } catch (err) {
+        console.error(`Error in fetching filtered data ${err}`);
+      } finally {
+        setIsTableLoading(false);
+      }
+    };
+
     fetchFilteredData();
   }, [paymentStatus, selectedAgent, selectedDate, selectedGeofence]);
 
@@ -89,35 +125,6 @@ const AgentPayout = () => {
 
     fetchData();
   }, [token, page, limit]);
-
-  // Fetch filtered data based on selected filters
-  const fetchFilteredData = async () => {
-    try {
-      setIsTableLoading(true);
-
-      const response = await axios.get(
-        `${BASE_URL}/admin/agents/filter-payment`,
-        {
-          params: {
-            paymentStatus,
-            agentId: selectedAgent,
-            date: selectedDate,
-            geofence: selectedGeofence,
-          },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (response.status === 200) {
-        setAllPayout(response.data.data);
-      }
-    } catch (err) {
-      console.error(`Error in fetching filtered data ${err}`);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
 
   const handleConfirm = async () => {
     if (!selectedPayout) return;
@@ -185,16 +192,29 @@ const AgentPayout = () => {
     }
   };
 
-  // Function to trigger the date input click
+  const geofenceOptions = [
+    { label: "All", value: "all" },
+    ...allGeofence.map((geofence) => ({
+      label: geofence.name,
+      value: geofence._id,
+    })),
+  ];
+
+  const agentOptions = [
+    { label: "All", value: "all" },
+    ...allAgents.map((agent) => ({
+      label: agent.fullName,
+      value: agent._id,
+    })),
+  ];
+
   const openDatePicker = () => {
-    if (dateInputRef.current) {
-      dateInputRef.current.showPicker();
-    }
+    setIsPickerOpen(true);
   };
 
-  // Handle changes to filter options
-  const handlePaymentStatusChange = (e) => {
-    setPaymentStatus(e.target.value);
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setIsPickerOpen(false); // Close the picker after selecting a date
   };
 
   const showModalApprove = (payout) => {
@@ -205,19 +225,6 @@ const AgentPayout = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedPayout(null);
-  };
-
-  const handleAgentChange = (e) => {
-    setSelectedAgent(e.target.value);
-  };
-
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-    console.log(e.target.value);
-  };
-
-  const handleGeofenceChange = (e) => {
-    setSelectedGeofence(e.target.value);
   };
 
   const handlePageChange = (event, value) => {
@@ -300,7 +307,13 @@ const AgentPayout = () => {
               <GlobalSearch />
             </nav>
             <div className="flex items-center justify-between mx-8 mt-5">
-              <h1 className="text-lg font-bold">Delivery Agents Payout</h1>
+              <div className="flex">
+                <ArrowLeftOutlined
+                  onClick={() => navigate("/all-agents")}
+                  className="cursor-pointer me-4"
+                />
+                <h1 className="text-lg font-bold">Delivery Agents Payout</h1>
+              </div>
 
               <button
                 onClick={handleDownloadPaymentCSV}
@@ -311,73 +324,106 @@ const AgentPayout = () => {
             </div>
             <div className="flex items-center bg-white p-5 mx-5 rounded-lg justify-between mt-[20px] px-[30px]">
               <div className="flex items-center gap-[20px]">
-                <select
-                  className="bg-cyan-50 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
-                  name="payment"
-                  value={paymentStatus}
-                  onChange={handlePaymentStatusChange}
-                >
-                  <option defaultValue="" hidden>
-                    Payment Status
-                  </option>
-                  <option value="all">All</option>
-                  <option value="true">Paid</option>
-                  <option value="false">Unpaid</option>
-                </select>
-                <select
-                  className="bg-cyan-50 w-full text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block p-2.5"
-                  name="agents"
-                  value={selectedAgent}
-                  onChange={handleAgentChange}
-                >
-                  <option defaultValue="All agents" hidden>
-                    All agents
-                  </option>
-                  <option value="All">All</option>
-                  {allAgents?.map((agents) => (
-                    <option value={agents._id} key={agents._id}>
-                      {agents.fullName}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="bg-cyan-50 text-gray-900 text-sm rounded-lg focus:focus:outline-none outline-none block w-full p-2.5"
-                  name="geofence"
-                  value={selectedGeofence}
-                  onChange={handleGeofenceChange}
-                >
-                  <option value="Geofence" hidden>
-                    Geofence
-                  </option>
-                  <option value="All">All</option>
-                  {allGeofence?.map((geofence) => (
-                    <option key={geofence._id} value={geofence._id}>
-                      {geofence.name}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  options={payoutPaymentStatus}
+                  value={payoutPaymentStatus.find(
+                    (option) => option.value === paymentStatus
+                  )}
+                  onChange={(option) => setPaymentStatus(option.value)}
+                  className="min-w-[10rem]"
+                  placeholder="Status"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
+
+                <Select
+                  options={agentOptions}
+                  value={agentOptions.find(
+                    (option) => option.value === selectedAgent
+                  )}
+                  onChange={(option) => setSelectedAgent(option.value)}
+                  className="min-w-[10rem]"
+                  placeholder="Agents"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
+
+                <Select
+                  options={geofenceOptions}
+                  value={geofenceOptions.find(
+                    (option) => option.value === selectedGeofence
+                  )}
+                  onChange={(option) => setSelectedGeofence(option.value)}
+                  className="min-w-[10rem]"
+                  placeholder="Geofence"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
               </div>
+
               <div className="flex items-center gap-4">
-                <div className="flex items-center">
-                  <input
-                    type="date"
-                    name="date"
-                    ref={dateInputRef} // Attach the ref to the input
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    className="hidden top-80" // Keep the input hidden
-                    style={{ right: "40px", top: "200px" }}
-                  />
+                <div className="relative flex items-center">
                   <button
+                    ref={buttonRef}
                     onClick={openDatePicker}
                     className="flex items-center justify-center"
                   >
                     <FaCalendarAlt className="text-gray-400 text-xl" />
                   </button>
+
+                  {isPickerOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: buttonRef.current?.offsetHeight + 5,
+                        left: 0,
+                        zIndex: 50,
+                      }}
+                    >
+                      <DatePicker
+                        selected={selectedDate}
+                        onChange={handleDateChange}
+                        inline
+                        maxDate={new Date()}
+                      />
+                    </div>
+                  )}
                 </div>
+
                 <div>
                   <FilterAltOutlined className="text-gray-400" />
                 </div>
+
                 <div className="relative w-full">
                   <div>
                     <input

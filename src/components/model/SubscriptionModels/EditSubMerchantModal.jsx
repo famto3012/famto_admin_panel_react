@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Select from "react-select";
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const EditSubMerchantModal = ({
   isVisible,
@@ -12,9 +13,6 @@ const EditSubMerchantModal = ({
   tax,
   currentEditMerchant,
 }) => {
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const [merchantData, setMerchantData] = useState({
     name: "",
     amount: "",
@@ -23,49 +21,64 @@ const EditSubMerchantModal = ({
     renewalReminder: "",
     description: "",
   });
-  useEffect(() => {
-    console.log(currentEditMerchant);
-    if (!token) {
-      navigate("/auth/login");
-      return;
-    }
 
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(tax);
     const fetchData = async () => {
-      setIsLoading(true);
       try {
-        const [addResponse] = await Promise.all([
-          axios.get(
-            `${BASE_URL}/admin/subscription/get-merchant-subscription/${currentEditMerchant}`,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
-        ]);
-        if (addResponse.status === 200) {
-          console.log("data in response is", addResponse.data.data);
-          setMerchantData(addResponse.data.data);
-          console.log(addResponse.data.message);
+        const response = await axios.get(
+          `${BASE_URL}/admin/subscription/get-merchant-subscription/${currentEditMerchant}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 200) {
+          setMerchantData(response.data.data);
         }
       } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
+        toast({
+          title: "Error",
+          description: "Error in getting merchant subscriptions",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     };
 
     if (currentEditMerchant) {
       fetchData();
     }
-  }, [token, navigate, currentEditMerchant, BASE_URL]);
+  }, [token, navigate, currentEditMerchant]);
+
+  const taxOptions = tax.map((tax) => ({
+    label: tax.taxName,
+    value: tax.taxId,
+  }));
 
   const handleInputChange = (e) => {
-    setMerchantData({ ...merchantData, [e.target.name]: e.target.value });
+    setMerchantData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
   };
-  const signupAction = async (e) => {
+
+  const handleTaxChange = (selectedOption) => {
+    setMerchantData((prevData) => ({
+      ...prevData,
+      taxId: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
+  const handleAddSubscription = async (e) => {
     e.preventDefault();
+
     try {
-      setIsLoading(true);
       const updateResponse = await axios.put(
         `${BASE_URL}/admin/subscription/edit-merchant-subscription/${currentEditMerchant}`,
         merchantData,
@@ -74,29 +87,28 @@ const EditSubMerchantModal = ({
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (updateResponse.status === 200) {
         handleCancel();
         toast({
           title: "Success",
-          description: "Merchant Subscription Updated successfully.",
+          description: "Merchant Subscription Updated successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-        console.log("edited data", merchantData);
       }
     } catch (err) {
       toast({
         title: "Error",
-        description: "There was an error occured.",
+        description: "Error while updating merchant subscription",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-      console.log(`Error in fetching data:${err}`);
     }
-    console.log("merchantdata", merchantData);
   };
+
   return (
     <Modal
       title="Edit Merchant Subscription Plan"
@@ -106,11 +118,14 @@ const EditSubMerchantModal = ({
       onCancel={handleCancel}
       footer={null}
     >
-      <form onSubmit={signupAction} className="max-h-[30rem] overflow-auto">
+      <form
+        onSubmit={handleAddSubscription}
+        className="max-h-[30rem] overflow-auto"
+      >
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="Name">
-              Name
+              Plan name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -121,9 +136,10 @@ const EditSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="amount">
-              Amount
+              Amount <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -134,9 +150,10 @@ const EditSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="duration">
-              Duration (In Days)
+              Duration (In Days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -147,31 +164,30 @@ const EditSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="taxId">
-              Tax Id
+              Tax Id <span className="text-red-600">*</span>
             </label>
-            <select
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              value={merchantData.taxId}
-              id="taxId"
-              name="taxId"
-              onChange={handleInputChange}
-            >
-               <option hidden value="">
-                  Tax Id
-                </option>
-                {tax.map((tax) => (
-                  <option value={tax._id} key={tax._id}>
-                    {tax._id}
-                  </option>
-                ))}
-            </select>
+
+            <Select
+              className="rounded w-2/3 focus:outline-none"
+              value={
+                taxOptions.find(
+                  (option) => option.value === merchantData.taxId
+                ) || null
+              } // Ensure null when no option matches
+              isSearchable={true}
+              onChange={handleTaxChange}
+              options={taxOptions}
+              placeholder="Select Tax"
+              isClearable={true} // Allow clearing the selection
+            />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="renewalReminder">
-              Renewal Reminder (In days)
+              Renewal Reminder (In days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -182,9 +198,10 @@ const EditSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
-              Description
+              Description <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -195,20 +212,20 @@ const EditSubMerchantModal = ({
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex justify-end mt-10  gap-4">
+
+          <div className="flex justify-end mt-10 gap-4">
             <button
-              className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
+              className="bg-gray-300 rounded-lg px-6 py-2 font-semibold"
               onClick={handleCancel}
-              type="submit"
+              type="button" // Change type to button for cancel button
             >
-              {" "}
               Cancel
             </button>
             <button
-              className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
+              className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold"
               type="submit"
             >
-              Add
+              Update
             </button>
           </div>
         </div>

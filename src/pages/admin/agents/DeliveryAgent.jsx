@@ -496,7 +496,7 @@ const DeliveryAgent = () => {
                     (option) => option.value === statusFilter
                   )}
                   onChange={(option) => setStatusFilter(option.value)}
-                  className=" bg-cyan-50 min-w-[10rem]"
+                  className="min-w-[10rem]"
                   placeholder="Status"
                   isSearchable={false}
                   isMulti={false}

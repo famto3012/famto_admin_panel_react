@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 const SidebarDelivery = () => {
   return (
-    <div className="fixed w-[4rem] h-full bg-gradient-to-t from-teal-700 to-cyan-500 p-4 font-poppins overflow-y-auto">
+    <div className="fixed w-[4rem] h-full bg-gradient-to-br from-[#016B6C] to-[#000] p-4 font-poppins overflow-y-auto">
       <div className="flex gap-3 ml-[6px] mt-[30px]">
         <img
           src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fwhitelogo.svg?alt=media&token=a7436647-2de7-4fee-8e3a-5c637bd0bc61"

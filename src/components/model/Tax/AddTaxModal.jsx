@@ -27,10 +27,27 @@ const AddTaxModal = ({
   const toast = useToast();
   const animatedComponents = makeAnimated();
 
+  const geofenceOptions = allGeofence.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const categoryOptions = allBusinessCategory?.map((category) => ({
+    label: category.title,
+    value: category._id,
+  }));
+
   const handleSelectGeofence = (selectedOptions) => {
     setTaxData({
       ...taxData,
       geofences: selectedOptions.map((option) => option.value),
+    });
+  };
+
+  const handleSelectCategory = (option) => {
+    setTaxData({
+      ...taxData,
+      assignToBusinessCategory: option ? option.value : null,
     });
   };
 
@@ -45,17 +62,10 @@ const AddTaxModal = ({
     }));
   };
 
-  const geofenceOptions = allGeofence.map((geofence) => ({
-    label: geofence.name,
-    value: geofence._id,
-  }));
-
-  const submitAction = async (e) => {
+  const handleAddTax = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-
-      console.log(taxData);
 
       const response = await axios.post(
         `${BASE_URL}/admin/taxes/add-tax`,
@@ -70,7 +80,6 @@ const AddTaxModal = ({
 
       if (response.status === 201) {
         onAddTax(response.data.data);
-        console.log(response.data.data);
         handleCancel();
         setTaxData({
           taxName: "",
@@ -88,7 +97,6 @@ const AddTaxModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in adding new tax: ${err}`);
       toast({
         title: "Error",
         description: `Error in adding new tax`,
@@ -109,10 +117,12 @@ const AddTaxModal = ({
       footer={null}
       centered
     >
-      <form onSubmit={submitAction}>
+      <form onSubmit={handleAddTax}>
         <div className="flex flex-col gap-4 justify-between">
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Tax Name</label>
+            <label className="w-1/2 text-gray-500">
+              Tax Name <span className="text-red-600">*</span>{" "}
+            </label>
             <input
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -121,8 +131,11 @@ const AddTaxModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Tax</label>
+            <label className="w-1/2 text-gray-500">
+              Tax <span className="text-red-600">*</span>
+            </label>
             <input
               type="text"
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -131,8 +144,11 @@ const AddTaxModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Tax Type</label>
+            <label className="w-1/2 text-gray-500">
+              Tax Type <span className="text-red-600">*</span>
+            </label>
             <input
               type="radio"
               className="border-2 ml-24 border-gray-300 rounded outline-none focus:outline-none"
@@ -152,8 +168,11 @@ const AddTaxModal = ({
             />
             <label className="w-1/2 text-gray-500">Percentage</label>
           </div>
+
           <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">Geofence</label>
+            <label className="w-1/2 text-gray-500">
+              Geofence <span className="text-red-600">*</span>
+            </label>
             <Select
               className="w-2/3 outline-none focus:outline-none"
               value={geofenceOptions?.filter((option) =>
@@ -168,26 +187,27 @@ const AddTaxModal = ({
               components={animatedComponents}
             />
           </div>
+
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
-              Assign to business category
+              Assign to business category{" "}
+              <span className="text-red-600">*</span>
             </label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="assignToBusinessCategory"
-              value={taxData.assignToBusinessCategory}
-              onChange={handleInputChange}
-            >
-              <option defaultValue={"Select business category"} hidden>
-                Select business category
-              </option>
-              {allBusinessCategory.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={categoryOptions.find(
+                (option) => option.value === taxData.assignToBusinessCategory
+              )}
+              isMulti={false}
+              isClearable={true}
+              isSearchable={true}
+              onChange={handleSelectCategory}
+              options={categoryOptions}
+              placeholder="Select Business category"
+            />
           </div>
+
           <div className="flex justify-end gap-4">
             <button
               className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"

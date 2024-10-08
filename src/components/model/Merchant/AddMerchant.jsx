@@ -36,7 +36,7 @@ const AddMerchant = ({
 
   const addNewMerchant = async (e) => {
     e.preventDefault();
-    console.log(merchantData);
+
     try {
       setIsLoading(true);
       const response = await axios.post(
@@ -62,8 +62,6 @@ const AddMerchant = ({
         });
       }
     } catch (err) {
-      console.log(`Error in adding new merchant: ${err}`);
-
       if (err.response && err.response.data && err.response.data.errors) {
         const { errors } = err.response.data;
         setErrors({
@@ -104,7 +102,7 @@ const AddMerchant = ({
             ].map(({ label, name, type }) => (
               <div key={name} className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor={name}>
-                  {label}
+                  {label} <span className="text-red-600">*</span>
                 </label>
                 <div className="flex-1">
                   <input

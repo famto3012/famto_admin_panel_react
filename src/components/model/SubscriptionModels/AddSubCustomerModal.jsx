@@ -82,7 +82,7 @@ const AddSubCustomerModal = ({
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="Name">
-              Plan name
+              Plan name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -95,7 +95,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="amount">
-              Plan amount
+              Plan amount <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -108,7 +108,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="duration">
-              Duration (In Days)
+              Duration (In Days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -143,7 +143,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="renewalReminder">
-              Renewal Reminder (In days)
+              Renewal Reminder (In days) <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -156,7 +156,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="noOfOrder">
-              No of Orders
+              No of Orders <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -169,7 +169,7 @@ const AddSubCustomerModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
-              Description
+              Description <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
