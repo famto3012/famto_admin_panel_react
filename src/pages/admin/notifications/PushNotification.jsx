@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
@@ -11,12 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { Spinner, useToast } from "@chakra-ui/react";
+import CropImage from "../../../components/CropImage";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const PushNotification = () => {
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentData, setCurrentData] = useState(null);
   const [currentId, setCurrentId] = useState(null);
@@ -29,6 +28,12 @@ const PushNotification = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [geofence, setGeofence] = useState([]);
+  const [croppedFile, setCroppedFile] = useState(null);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null);
   const { token, role } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
@@ -99,7 +104,7 @@ const PushNotification = () => {
       addpushToSend.append("customer", formData.customer);
       addpushToSend.append("driver", formData.driver);
       addpushToSend.append("merchant", formData.merchant);
-      addpushToSend.append("pushNotificationImage", notificationFile);
+      addpushToSend.append("pushNotificationImage", croppedFile);
 
       const addPushResponse = await axios.post(
         `${BASE_URL}/admin/notification/push-notification`,
@@ -135,13 +140,6 @@ const PushNotification = () => {
     }
   };
 
-  const handleNotificationImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
-  };
-
   const onChange = (name, checked) => {
     setFormData({ ...formData, [name]: checked ? true : false }); //INFO: Changed
   };
@@ -158,7 +156,7 @@ const PushNotification = () => {
   // New function to handle confirm delete
   const handleConfirmDelete = () => {
     setIsShowModalDelete(false);
-    setCurrentManager(null);
+    // setCurrentManager(null);
   };
 
   const onAddNotification = (newNotification) => {
@@ -318,6 +316,29 @@ const PushNotification = () => {
     setIsModalVisible(true);
   };
 
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0]);
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile);
+    // setSelectedFile(croppedFile); // Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    // setSelectedFile(null); // Reset the selected file to allow new selection
+  };
+
   return (
     <>
       <Sidebar />
@@ -380,13 +401,14 @@ const PushNotification = () => {
                 <span className="text-red-500 ms-2">*</span>
               </label>
               <div className=" flex items-center gap-[30px]">
-                {!notificationPreviewURL && (
+                {!croppedFile && (
                   <div className="bg-gray-400 ml-[115px] mt-10 h-20 w-20 rounded-md" />
                 )}
-                {notificationPreviewURL && (
+                {!!croppedFile && (
                   <figure className="ml-[115px] mt-10 h-20 w-20 rounded-mdrelative">
                     <img
-                      src={notificationPreviewURL}
+                      ref={previewCanvasRef}
+                      src={URL.createObjectURL(croppedFile)}
                       alt="profile"
                       className="w-full rounded h-full object-cover "
                     />
@@ -397,7 +419,8 @@ const PushNotification = () => {
                   name="pushNotificationImage"
                   id="pushNotificationImage"
                   className="hidden"
-                  onChange={handleNotificationImageChange}
+                  accept="image/*"
+                  onChange={onSelectFile}
                 />
                 <label
                   htmlFor="pushNotificationImage"
@@ -408,6 +431,14 @@ const PushNotification = () => {
                     size={30}
                   />
                 </label>
+                {imgSrc && (
+                  <CropImage
+                    selectedImage={img}
+                    aspectRatio={16 / 9} // Optional, set aspect ratio (1:1 here)
+                    onCropComplete={handleCropComplete}
+                    onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                  />
+                )}
               </div>
             </div>
             <div className="flex">
@@ -591,9 +622,9 @@ const PushNotification = () => {
                         centered
                       >
                         <p className="font-semibold text-[18px] mb-5">
-                          <Spin spinning={confirmLoading}>
+                          
                             Are you sure want to delete?
-                          </Spin>
+                          
                         </p>
                         <div className="flex justify-end">
                           <button
@@ -606,7 +637,7 @@ const PushNotification = () => {
                             className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
                             onClick={() => handleDelete(currentData)}
                           >
-                            Delete
+                           {confirmLoading ? "Deleting..." : "Delete"}
                           </button>
                         </div>
                       </Modal>

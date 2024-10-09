@@ -1,10 +1,11 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
+import CropImage from "../../CropImage";
 
 const AddBusinessCategoryModal = ({
   isOpen,
@@ -21,8 +22,12 @@ const AddBusinessCategoryModal = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewURL, setPreviewURL] = useState(null);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null);
+  const [croppedFile, setCroppedFile] = useState(null);
 
   const toast = useToast();
   const animatedComponents = makeAnimated();
@@ -36,13 +41,6 @@ const AddBusinessCategoryModal = ({
       ...categoryData,
       geofenceId: selectedOptions.map((option) => option.value),
     });
-  };
-
-  const handleImageChange = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setPreviewURL(URL.createObjectURL(file));
   };
 
   const geofenceOptions = allGeofence.map((geofence) => ({
@@ -62,8 +60,8 @@ const AddBusinessCategoryModal = ({
       categoryData.geofenceId.forEach((id) => {
         businessDataToSend.append("geofenceId[]", id);
       });
-      if (selectedFile) {
-        businessDataToSend.append("bannerImage", selectedFile);
+      if (croppedFile) {
+        businessDataToSend.append("bannerImage", croppedFile);
       }
 
       const response = await axios.post(
@@ -94,6 +92,29 @@ const AddBusinessCategoryModal = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0]);
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile);
+    // setSelectedFile(croppedFile); // Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    // setSelectedFile(null); // Reset the selected file to allow new selection
   };
 
   return (
@@ -137,14 +158,15 @@ const AddBusinessCategoryModal = ({
         <div className="flex">
           <label className="mt-5">Image (342px x 160px)</label>
           <div className=" flex items-center gap-[30px]">
-            {!previewURL && (
-              <div className="bg-gray-400 ml-20 mt-5 h-16 w-16 rounded-md" />
+            {!croppedFile && (
+              <div className="bg-gray-400 ml-[70px] mt-5 h-16 w-16 rounded-md" />
             )}
 
-            {previewURL && (
-              <figure className="ml-20 mt-5 h-16 w-16 rounded-md relative">
+            {!!croppedFile && (
+              <figure className="ml-[70px] mt-5 h-16 w-16 rounded-md relative">
                 <img
-                  src={previewURL}
+                  ref={previewCanvasRef}
+                  src={URL.createObjectURL(croppedFile)}
                   alt="profile"
                   className="w-full rounded h-full object-cover "
                 />
@@ -156,7 +178,8 @@ const AddBusinessCategoryModal = ({
               name="businessImage"
               id="businessImage"
               className="hidden"
-              onChange={handleImageChange}
+              accept="image/*"
+              onChange={onSelectFile}
             />
             <label htmlFor="businessImage" className="cursor-pointer ">
               <MdCameraAlt
@@ -164,6 +187,14 @@ const AddBusinessCategoryModal = ({
                 size={30}
               />
             </label>
+            {imgSrc && (
+              <CropImage
+                selectedImage={img}
+                aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                onCropComplete={handleCropComplete}
+                onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+              />
+            )}
           </div>
         </div>
 
@@ -178,7 +209,7 @@ const AddBusinessCategoryModal = ({
             className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
             type="submit"
           >
-            {isLoading ? "Adding" : "Add"}
+            {isLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>
