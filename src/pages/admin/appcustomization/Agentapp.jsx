@@ -1,5 +1,5 @@
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
 import { Switch } from "antd";
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
+import CropImage from "../../../components/CropImage";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -29,11 +30,17 @@ const Agentapp = () => {
   });
   const [notificationFile, setNotificationFile] = useState(null);
   const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-  const [confirmLoading,setConfirmLoading] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { token, role } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null);
+  const [croppedFile, setCroppedFile] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -43,7 +50,7 @@ const Agentapp = () => {
 
     const fetchData = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const response = await axios.get(
           `${BASE_URL}/admin/app-customization/agent-app`,
           {
@@ -59,7 +66,7 @@ const Agentapp = () => {
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
 
@@ -68,12 +75,6 @@ const Agentapp = () => {
 
   const onChange = (name, checked) => {
     setFormData({ ...formData, [name]: checked });
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setNotificationFile(file);
-    setNotificationPreviewURL(URL.createObjectURL(file));
   };
 
   const submitAction = async (e) => {
@@ -93,8 +94,8 @@ const Agentapp = () => {
         }
       });
 
-      if (notificationFile) {
-        dataToSend.append("splashScreenImage", notificationFile);
+      if (croppedFile) {
+        dataToSend.append("splashScreenImage", croppedFile);
       }
       const addDataResponse = await axios.post(
         `${BASE_URL}/admin/app-customization/agent-app`,
@@ -135,6 +136,29 @@ const Agentapp = () => {
     console.log(formData);
   };
 
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0]);
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile);
+    // setSelectedFile(croppedFile)// Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    // setSelectedFile(null); // Reset the selected file to allow new selection
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -161,8 +185,7 @@ const Agentapp = () => {
               </p>
 
               <div className="flex items-center ml-14 gap-[30px] mx-10">
-             
-                {formData?.splashScreenUrl && !notificationPreviewURL && (
+                {formData?.splashScreenUrl && !croppedFile && (
                   <figure className="h-16 w-16 rounded-md  relative">
                     <img
                       src={formData?.splashScreenUrl}
@@ -171,21 +194,33 @@ const Agentapp = () => {
                     />
                   </figure>
                 )}
-                {notificationPreviewURL && (
-                  <figure className="h-16 w-16 rounded-md  relative">
-                    <img
-                      src={notificationPreviewURL}
-                      alt="profile"
-                      className="w-full rounded h-full object-cover"
-                    />
-                  </figure>
+                {!croppedFile && !formData?.splashScreenUrl && (
+                  <div className="h-[66px] w-[66px] bg-gray-200 rounded-md"></div>
+                )}
+                {!!croppedFile && (
+                  <>
+                    <div>
+                      <img
+                        ref={previewCanvasRef}
+                        src={URL.createObjectURL(croppedFile)}
+                        style={{
+                          border: "1px solid white",
+                          borderRadius: "5px",
+                          objectFit: "cover",
+                          width: "66px",
+                          height: "66px",
+                        }}
+                      />
+                    </div>
+                  </>
                 )}
                 <input
                   type="file"
                   name="splashScreenImage"
                   id="splashScreenImage"
                   className="hidden"
-                  onChange={handleImageChange}
+                  accept="image/*"
+                  onChange={onSelectFile}
                 />
                 <label htmlFor="splashScreenImage" className="cursor-pointer">
                   <MdCameraAlt
@@ -193,6 +228,14 @@ const Agentapp = () => {
                     size={30}
                   />
                 </label>
+                {imgSrc && (
+                  <CropImage
+                    selectedImage={img}
+                    aspectRatio={9 / 16} // Optional, set aspect ratio (1:1 here)
+                    onCropComplete={handleCropComplete}
+                    onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                  />
+                )}
               </div>
             </div>
             <div className="flex justify-between mt-10 mx-10">
@@ -318,7 +361,10 @@ const Agentapp = () => {
           </div>
         </div> */}
             <div className="flex justify-end gap-4 mt-14 px-10 bg-gray-100">
-              <button className="bg-cyan-50 py-2 px-4 rounded-md my-10" type="button">
+              <button
+                className="bg-cyan-50 py-2 px-4 rounded-md my-10"
+                type="button"
+              >
                 Cancel
               </button>
               <button

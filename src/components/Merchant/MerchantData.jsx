@@ -212,7 +212,7 @@ const MerchantData = ({
         </div>
 
         <div className="flex flex-col items-center">
-          {!previewURL && !detail?.merchantDetail?.merchantImageURL && (
+          {!croppedFile && !detail?.merchantDetail?.merchantImageURL && (
             <div className="bg-gray-400 h-20 w-20 rounded-md relative">
               <label
                 htmlFor="merchantImage"
@@ -283,7 +283,7 @@ const MerchantData = ({
           {imgSrc && (
             <CropImage
               selectedImage={img}
-              aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+              aspectRatio={16 / 9} // Optional, set aspect ratio (1:1 here)
               onCropComplete={handleCropComplete}
               onClose={handleModalClose} // Pass the handler to close the modal and reset the state
             />
@@ -299,7 +299,7 @@ const MerchantData = ({
         </button> */}
       </div>
 
-      <div className=" max-w-[700px] mt-14 mb-[50px]">
+      <div className=" w-[830px] mt-14 mb-[50px]">
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
           <label className="text-gray-700 text-[16px] w-1/3">
             Short Description <br /> (Max 10 characters)
@@ -309,7 +309,7 @@ const MerchantData = ({
             name="description"
             placeholder="Description"
             value={detail?.merchantDetail?.description}
-            className=" border rounded-md p-2 outline-none focus:outline-none w-2/3"
+            className=" border rounded-md p-2 outline-none focus:outline-none w-2/3  me-[95px] "
             onChange={handleInputChange}
           />
         </div>
@@ -320,7 +320,7 @@ const MerchantData = ({
             name="geofenceId"
             value={detail?.merchantDetail?.geofenceId}
             onChange={handleInputChange}
-            className="mt-2 p-2 w-2/3 border rounded-md outline-none focus:outline-none "
+            className="mt-2 p-2 w-2/3 border rounded-md outline-none focus:outline-none me-[95px] "
           >
             <option defaultValue={"Select geofence"} hidden>
               Select geofence
@@ -337,8 +337,8 @@ const MerchantData = ({
           <label className=" text-gray-700 text-[16px] w-1/3">Pricing</label>
 
           {detail?.merchantDetail?.pricing ? (
-            <p className="w-2/3 bg-transparent rounded-md p-2 text-left">
-              {detail?.merchantDetail?.pricing?.modelType} |
+            <p className="w-2/3 bg-transparent rounded-md p-2 text-left  me-[95px]">
+              {detail?.merchantDetail?.pricing?.modelType} |{" "}
               {detail?.merchantDetail?.pricing?.detail?.type === "Percentage"
                 ? `${detail?.merchantDetail?.pricing?.detail?.value} %`
                 : `${detail?.merchantDetail?.pricing?.detail?.value}`}
@@ -350,18 +350,12 @@ const MerchantData = ({
 
         <div className="mb-[20px] flex items-center justify-start gap-[30px]">
           <label className="text-gray-700 w-1/3">Location</label>
-
           <button
             type="button"
             onClick={toggleMapModal}
-            className="font-medium bg-teal-700 text-white text-start rounded-md  py-2 flex items-center w-1/3 justify-center"
+            className="font-medium bg-teal-700 text-white text-start rounded-md py-2 w-2/3 flex items-center justify-center me-1"
           >
-            {`${
-              MerchantData?.merchantDetail?.location.length !== 0 ||
-              detail?.merchantDetail?.location.length !== 0
-                ? "Location marked"
-                : "Mark location"
-            }`}
+            Mark location
             <LocationOnOutlinedIcon className="text-[18px] ms-2" />
           </button>
 
@@ -372,14 +366,27 @@ const MerchantData = ({
             BASE_URL={BASE_URL}
             token={token}
           />
+          {detail?.merchantDetail?.locationImage && (
+            <img
+              src={detail?.merchantDetail?.locationImage}
+              className="w-[70px] h-[66px] rounded-md cursor-pointer"
+              alt="location map"
+              onClick={() =>
+                handleImageClick(detail?.merchantDetail?.locationImage)
+              }
+            />
+          )}
+          {!detail?.merchantDetail?.locationImage && (
+            <div className="w-[70px] h-[66px] rounded-md bg-gray-300"></div>
+          )}
         </div>
 
-        <div className="mb-[20px] flex items-center justify-start gap-[30px]">
+        <div className="mb-[20px] flex items-center justify-start gap-[30px]  me-[95px]">
           <label className="text-gray-700 w-1/3">Ratings</label>
           <button
             type="button"
             onClick={toggleRatingModal}
-            className="bg-teal-700 text-white p-2 rounded-md w-2/3 ms-3"
+            className="bg-teal-700 text-white p-2 rounded-md w-2/3"
           >
             Show ratings and reviews
           </button>

@@ -1,5 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { MdCameraAlt } from "react-icons/md";
@@ -12,6 +12,7 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
 import { useSocket } from "../../../context/SocketContext";
+import CropImage from "../../../components/CropImage";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AlertNotification = () => {
@@ -34,6 +35,12 @@ const AlertNotification = () => {
   const [visibleTaskModal, setVisibleTaskModal] = useState({});
   const toast = useToast();
   const { socket } = useSocket();
+  const [croppedFile, setCroppedFile] = useState(null);
+  const [imgSrc, setImgSrc] = useState("");
+  const previewCanvasRef = useRef(null);
+  const [crop, setCrop] = useState(null);
+  const [isInnerVisible, setIsInnerVisible] = useState(false);
+  const [img, setImg] = useState(null);
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -114,7 +121,7 @@ const AlertNotification = () => {
     const formData = new FormData();
     formData.append("title", state.title);
     formData.append("description", state.description);
-    formData.append("alertNotificationImage", state.alertNotificationImage);
+    formData.append("alertNotificationImage", croppedFile);
     formData.append("id", state.id);
     formData.append("userType", state.userType);
     try {
@@ -146,17 +153,6 @@ const AlertNotification = () => {
     } finally {
       setConfirmLoading(false);
     }
-  };
-
-  const handleNotificationImageChange = (e) => {
-    const file = e.target.files[0];
-    const previewURL = URL.createObjectURL(file);
-
-    setState((prevState) => ({
-      ...prevState,
-      alertNotificationImage: file,
-      notificationPreviewURL: previewURL,
-    }));
   };
 
   const handleDelete = async (id) => {
@@ -243,6 +239,29 @@ const AlertNotification = () => {
 
   const showModalCancelTask = (taskId) => {
     setVisibleTaskModal((prev) => ({ ...prev, [taskId]: false }));
+  };
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0]);
+    }
+  }
+
+  const handleCropComplete = (croppedFile) => {
+    setCroppedFile(croppedFile);
+    // setSelectedFile(croppedFile); // Get the cropped image file
+    console.log("Cropped image file:", croppedFile);
+  };
+
+  const handleModalClose = () => {
+    // setSelectedFile(null); // Reset the selected file to allow new selection
   };
 
   return (
@@ -343,13 +362,14 @@ const AlertNotification = () => {
                       <span className="text-red-500 ms-2">*</span>
                     </label>
                     <div className="flex items-center gap-[30px]">
-                      {!state.notificationPreviewURL && (
+                      {!croppedFile && (
                         <div className="bg-gray-400 ml-[55px] mt-0.5 h-20 w-20 rounded-md" />
                       )}
-                      {state.notificationPreviewURL && (
+                      {!!croppedFile && (
                         <figure className="mt-0.5 ml-[55px] h-20 w-20 rounded-md relative">
                           <img
-                            src={state.notificationPreviewURL}
+                            ref={previewCanvasRef}
+                            src={URL.createObjectURL(croppedFile)}
                             alt="profile"
                             className="w-full rounded h-full object-cover"
                           />
@@ -360,7 +380,8 @@ const AlertNotification = () => {
                         name="notificationImage"
                         id="notificationImage"
                         className="hidden"
-                        onChange={handleNotificationImageChange}
+                        accept="image/*"
+                        onChange={onSelectFile}
                       />
                       <label
                         htmlFor="notificationImage"
@@ -371,6 +392,14 @@ const AlertNotification = () => {
                           size={30}
                         />
                       </label>
+                      {imgSrc && (
+                        <CropImage
+                          selectedImage={img}
+                          aspectRatio={16 / 9} // Optional, set aspect ratio (1:1 here)
+                          onCropComplete={handleCropComplete}
+                          onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                        />
+                      )}
                     </div>
                   </div>
 

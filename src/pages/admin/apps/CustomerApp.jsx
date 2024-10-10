@@ -45,9 +45,8 @@ const CustomerApp = () => {
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
-
 
   console.log("Customer Data", customerData);
   //API for fetch data..
@@ -108,7 +107,7 @@ const CustomerApp = () => {
           "emailVerification",
           customerData.emailVerification
         ),
-        customerDataToSend.append("splashScreenImage", notificationFile);
+        customerDataToSend.append("splashScreenImage", croppedFile);
 
       const response = await axios.post(
         `${BASE_URL}/admin/app-customization/customer-app`,
@@ -148,16 +147,6 @@ const CustomerApp = () => {
     setCustomerData({ ...customerData, [name]: checked });
   };
 
-  const [notificationFile, setNotificationFile] = useState(null);
-  const [notificationPreviewURL, setNotificationPreviewURL] = useState(null);
-
-  // const handleImageChange = (e) => {
-  //   e.preventDefault();
-  //   const file = e.target.files[0];
-  //   setNotificationFile(file);
-  //   setNotificationPreviewURL(URL.createObjectURL(file));
-  // };
-
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setIsInnerVisible(true);
@@ -167,12 +156,12 @@ const CustomerApp = () => {
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0])
+      setImg(e.target.files[0]);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
+    setCroppedFile(croppedFile);
     // setSelectedFile(croppedFile)// Get the cropped image file
     console.log("Cropped image file:", croppedFile);
   };
@@ -200,7 +189,7 @@ const CustomerApp = () => {
                 format can image or gif Note: Design according to aspect ratio
               </div>
               <div className="flex w-44">
-                {customerData?.splashScreenUrl && !notificationPreviewURL && (
+                {customerData?.splashScreenUrl && !croppedFile && (
                   <figure className="h-16 w-16 rounded-md  relative">
                     <img
                       src={customerData?.splashScreenUrl}
@@ -209,27 +198,26 @@ const CustomerApp = () => {
                     />
                   </figure>
                 )}
-               {/* {!croppedFile && (
-                <div className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[20px]"></div>
-              )} */}
-              {!!croppedFile && (
-                <>
-                  <div>
-                    <img
-                      ref={previewCanvasRef}
-                      src={URL.createObjectURL(croppedFile)}
-                      style={{
-                        border: "1px solid white",
-                        borderRadius: "5px",
-                        objectFit: "contain",
-                        width: "66px",
-                        height: "66px",
-                        marginTop: "20px",
-                      }}
-                    />
-                  </div>
-                </>
-              )}
+                {!croppedFile && !customerData?.splashScreenUrl && (
+                  <div className="h-[66px] w-[66px] bg-gray-200 rounded-md"></div>
+                )}
+                {!!croppedFile && (
+                  <>
+                    <div>
+                      <img
+                        ref={previewCanvasRef}
+                        src={URL.createObjectURL(croppedFile)}
+                        style={{
+                          border: "1px solid white",
+                          borderRadius: "5px",
+                          objectFit: "cover",
+                          width: "66px",
+                          height: "66px",
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
                 <input
                   type="file"
                   name="splashScreenImage"
@@ -245,13 +233,13 @@ const CustomerApp = () => {
                   />
                 </label>
                 {imgSrc && (
-                <CropImage
-                  selectedImage={img}
-                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
-                  onCropComplete={handleCropComplete}
-                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
-                />
-              )}
+                  <CropImage
+                    selectedImage={img}
+                    aspectRatio={9 / 16} // Optional, set aspect ratio (1:1 here)
+                    onCropComplete={handleCropComplete}
+                    onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                  />
+                )}
               </div>
             </div>
             <div className="flex mx-5 mt-10 gap-10  border-b-2 border-gray-200 pb-5">
