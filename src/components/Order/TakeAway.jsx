@@ -312,7 +312,7 @@ const TakeAway = ({ data }) => {
         merchantId: takeAwayData.merchantId,
       };
 
-      console.log(invoiceData.items);
+      console.log(invoiceData);
 
       const endPoint =
         role === "Admin"

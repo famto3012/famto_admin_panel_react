@@ -84,11 +84,12 @@ const OrderDetails = () => {
           },
           geometry: {
             type: "Point",
-            coordinates: coordinates, // Assuming agent.location is [lat, lng]
+            coordinates: coordinates,
           },
         },
       ],
     };
+
     const mapplsObject = new mappls();
     agentGeoData.features.forEach(async (feature) => {
       const { coordinates } = feature.geometry;
@@ -216,6 +217,7 @@ const OrderDetails = () => {
       }
     });
   };
+
   const showStepperLocationOnMap = (coordinates, by, Id, date) => {
     const markerProps = {
       fitbounds: true,
@@ -449,8 +451,6 @@ const OrderDetails = () => {
 
   useEffect(() => {
     if (activeStepIndex !== -1 && steps?.length > 0) {
-      // Trigger any necessary actions after activeStepIndex is set
-
       setActiveStep(activeStepIndex);
     }
   }, [activeStepIndex, steps]);
@@ -678,39 +678,74 @@ const OrderDetails = () => {
         </div>
         <div className="flex bg-white mx-5 rounded-lg mt-5 gap-16 p-5">
           <div className="w-1/3">
-            <div className="flex justify-between">
-              <label>Order Status</label>
-              <p>{orderDetail.orderStatus}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Order Status
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.orderStatus}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <label>Payment Status</label>
-              <p>{orderDetail.paymentStatus}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Payment Status
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.paymentStatus}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <label>Payment Mode</label>
-              <p>{orderDetail.paymentMode}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Payment Mode
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.paymentMode}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <label>Delivery Mode</label>
-              <p>{orderDetail.deliveryMode}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Delivery Mode
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.deliveryMode}
+              </p>
             </div>
           </div>
+
+          <div className="h-[7rem] w-[2px] bg-gray-300 rounded-full"></div>
+
           <div className="w-1/3">
-            <div className="flex justify-between">
-              <label>Delivery option</label>
-              <p>{orderDetail.deliveryOption}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Delivery option
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.deliveryOption}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <label>Vehicle Type</label>
-              <p>{orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Vehicle Type
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <label>Order Time</label>
-              <p>{orderDetail.orderTime}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Order Time
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.orderTime}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <label>Delivery Time</label>
-              <p>{orderDetail.deliveryTime}</p>
+            <div className="flex justify-between mb-[10px]">
+              <label className="text-[14px] text-gray-500 w-3/5">
+                Delivery Time
+              </label>
+              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                {orderDetail.deliveryTime}
+              </p>
             </div>
           </div>
         </div>
@@ -900,7 +935,7 @@ const OrderDetails = () => {
         {/* Pick and Drop */}
         {orderDetail.deliveryMode === "Pick and Drop" && (
           <div>
-            <table className="w-[60%] mx-auto border-2 border-gray-600">
+            <table className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items Type", "Dimensions", "Weight Range"].map(
@@ -933,7 +968,7 @@ const OrderDetails = () => {
         {/* Custom Order */}
         {orderDetail.deliveryMode === "Custom Order" && (
           <div>
-            <table className="w-full border-2 border-gray-600">
+            <table className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items", "Quantity", "Unit", "Image"].map((header) => (
@@ -960,11 +995,11 @@ const OrderDetails = () => {
           </div>
         )}
 
-        {/* Home Delivery */}
+        {/* Home Delivery and Take Away */}
         {(orderDetail.deliveryMode === "Take Away" ||
           orderDetail.deliveryMode === "Home Delivery") && (
           <div>
-            <table className="w-[60%] mx-auto border-2 border-gray-600">
+            <table className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items", "Quantity", "Amount"].map((header) => (
@@ -992,7 +1027,7 @@ const OrderDetails = () => {
 
         <div>
           <h1 className="text-[18px] font-semibold m-5">Bill Summary</h1>
-          <div className="border-2 border-gray-600">
+          <div className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
             <div className="flex justify-between mx-5 m-3">
               <label>Price</label>
               <p>
@@ -1026,11 +1061,12 @@ const OrderDetails = () => {
               <p>{orderDetail?.billDetail?.taxAmount}</p>
             </div>
           </div>
-          <div className="bg-teal-800 flex justify-between p-5 text-white text-[16px] font-semibold">
+          <div className="bg-teal-800 flex justify-between p-5 text-white text-[16px] font-semibold w-[60%] ms-[20px] me-auto">
             <label>Net Payable Amount</label>
             <p>{orderDetail?.billDetail?.grandTotal}</p>
           </div>
         </div>
+
         <h1 className="text-[18px] font-semibold m-5">Order Activity log</h1>
         <div className="bg-white mx-5 p-5 rounded-lg flex justify-between gap-20 items-center">
           <div className="bg-gray-200 rounded-full w-[60px] h-[60px]">
@@ -1041,16 +1077,22 @@ const OrderDetails = () => {
             />
           </div>
           <div className="flex justify-around w-1/4">
-            <label className="text-gray-600">Agent Name</label>
-            <p>{orderDetail?.deliveryAgentDetail?.name}</p>
+            <label className="text-gray-500">Agent Name</label>
+            <p className="text-gray-900 font-[500]">
+              {orderDetail?.deliveryAgentDetail?.name}
+            </p>
           </div>
           <div className="flex justify-around w-1/4">
-            <label className="text-gray-600">Total Distance</label>
-            <p>{orderDetail?.deliveryAgentDetail?.distanceTravelled}</p>
+            <label className="text-gray-500">Total Distance</label>
+            <p className="text-gray-900 font-[500]">
+              {orderDetail?.deliveryAgentDetail?.distanceTravelled}
+            </p>
           </div>
           <div className="flex justify-around w-1/4 ">
-            <label className="text-gray-600">Total Time</label>
-            <p>{orderDetail?.deliveryAgentDetail?.timeTaken}</p>
+            <label className="text-gray-500">Total Time</label>
+            <p className="text-gray-900 font-[500]">
+              {orderDetail?.deliveryAgentDetail?.timeTaken}
+            </p>
           </div>
         </div>
         <div className="flex m-5 mx-10 ">

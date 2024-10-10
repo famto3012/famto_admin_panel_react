@@ -625,7 +625,7 @@ const Orders = () => {
             <div>
               <input
                 type="search"
-                className="bg-gray-100 relative p-3 rounded-3xl focus:outline-none outline-none"
+                className="bg-gray-100 relative p-3 rounded-3xl focus:outline-none outline-none text-[14px]"
                 placeholder="Search order id"
                 onChange={onSearch}
               />
@@ -661,7 +661,10 @@ const Orders = () => {
             <tbody>
               {isTableLoading && (
                 <tr>
-                  <td colSpan={10} className="text-center py-[20px] bg-gray-50">
+                  <td
+                    colSpan={10}
+                    className="text-center py-[20px] bg-gray-50 text-[14px]"
+                  >
                     Loading data...
                   </td>
                 </tr>
@@ -669,7 +672,10 @@ const Orders = () => {
 
               {!isTableLoading && orders.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="text-center py-[20px] bg-gray-50">
+                  <td
+                    colSpan={10}
+                    className="text-center py-[20px] bg-gray-50 text-[14px]"
+                  >
                     No data available
                   </td>
                 </tr>
@@ -688,16 +694,16 @@ const Orders = () => {
                     <td
                       className={` ${
                         deliveryOption && `underline underline-offset-2`
-                      } p-4`}
+                      } p-4 text-[14px]`}
                     >
                       {deliveryOption ? (
                         <Link to={`/order-details/${order._id}`}>
                           #{order._id}
                         </Link>
                       ) : (
-                        <Link to={`/order-details/${order._id}`}>
-                          #{order._id}
-                        </Link>
+                        // <Link to={`/order-details/${order._id}`}>
+                        <>#{order._id}</>
+                        // </Link>
                       )}
                     </td>
                     <td className="p-4 w-[120px]">
@@ -705,13 +711,13 @@ const Orders = () => {
                         {deliveryOption && (
                           <>
                             {order.orderStatus === "Completed" && (
-                              <p className=" text-green-500 font-[600]">
+                              <p className=" text-green-500 font-[600] text-[14px]">
                                 Completed
                               </p>
                             )}
 
                             {order.orderStatus === "Cancelled" && (
-                              <p className=" text-red-500 font-[600]">
+                              <p className=" text-red-500 font-[600] text-[14px]">
                                 Cancelled
                               </p>
                             )}
@@ -721,7 +727,7 @@ const Orders = () => {
                                   <>
                                     {order?.isReady === false ? (
                                       <button
-                                        className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                        className="text-white text-[14px] bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
                                         onClick={() =>
                                           handleMarkAsReady(order._id)
                                         }
@@ -730,7 +736,7 @@ const Orders = () => {
                                       </button>
                                     ) : (
                                       <button
-                                        className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                        className="text-white bg-teal-600 font-[500] text-[14px] py-1 rounded-md outline-none focus:outline-none"
                                         onClick={() =>
                                           handleMarkOrderCompleted(order._id)
                                         }
@@ -745,7 +751,7 @@ const Orders = () => {
                                   <>
                                     {order?.isReady === false ? (
                                       <button
-                                        className="text-white bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
+                                        className="text-white text-[14px] bg-teal-600 font-[500] py-1 rounded-md outline-none focus:outline-none"
                                         onClick={() =>
                                           handleMarkAsReady(order._id)
                                         }
@@ -753,7 +759,7 @@ const Orders = () => {
                                         Mark As Ready
                                       </button>
                                     ) : (
-                                      <p className="text-orange-500 font-[600]">
+                                      <p className="text-orange-500 font-[600] text-[14px]">
                                         On-going
                                       </p>
                                     )}
@@ -761,7 +767,7 @@ const Orders = () => {
                                 )}
                                 {order?.deliveryMode !== "Take Away" &&
                                   order?.deliveryMode !== "Home Delivery" && (
-                                    <p className="text-orange-500 font-[600]">
+                                    <p className="text-orange-500 font-[600] text-[14px]">
                                       On-going
                                     </p>
                                   )}
@@ -826,16 +832,16 @@ const Orders = () => {
                         {!deliveryOption && order.orderStatus}
                       </div>
                     </td>
-                    <td className="py-4 w-[200px] text-center">
+                    <td className="py-4 w-[200px] text-center text-[14px]">
                       {order.merchantName}
                     </td>
-                    <td className="p-4">{order.customerName}</td>
-                    <td className="p-4">{order.deliveryMode}</td>
-                    <td className="p-4 w-[120px] text-center">
+                    <td className="p-4 text-[14px]">{order.customerName}</td>
+                    <td className="p-4 text-[14px]">{order.deliveryMode}</td>
+                    <td className="p-4 text-[14px] w-[120px] text-center">
                       <p>{order.orderDate}</p>
                       <p>{order.orderTime}</p>
                     </td>
-                    <td className="p-4 w-[120px]  text-center">
+                    <td className="p-4 w-[120px]  text-center text-[14px]">
                       <>
                         {(!order?.deliveryDate || !order?.deliveryTime) && (
                           <p>N/A</p>
@@ -849,9 +855,9 @@ const Orders = () => {
                         )}
                       </>
                     </td>
-                    <td className="p-4">{order.paymentMethod}</td>
-                    <td className="p-4">{order.deliveryOption}</td>
-                    <td className="p-4">{order.amount}</td>
+                    <td className="p-4 text-[14px]">{order.paymentMethod}</td>
+                    <td className="p-4 text-[14px]">{order.deliveryOption}</td>
+                    <td className="p-4 text-[14px]">{order.amount}</td>
                   </tr>
                 ))}
             </tbody>

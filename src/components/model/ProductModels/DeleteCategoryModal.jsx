@@ -36,7 +36,6 @@ const DeleteCategoryModal = ({
 
       if (response.status === 200) {
         onDeleteCategory(categoryId);
-        onCancel();
         toast({
           title: "Success",
           description: `Category deleted successfully`,
@@ -46,7 +45,6 @@ const DeleteCategoryModal = ({
         });
       }
     } catch (err) {
-      console.log(`Error in deleting category: ${err}`);
       toast({
         title: "Error",
         description: `Error in deleting category`,

@@ -3,10 +3,6 @@ import { ArrowBack, SearchOutlined } from "@mui/icons-material";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
-import DateRangePicker from "@wojtekmaj/react-daterange-picker";
-
-import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
-import "react-calendar/dist/Calendar.css";
 
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -18,6 +14,8 @@ import CustomOrder from "../../../components/Order/CustomOrder";
 import { UserContext } from "../../../context/UserContext";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -34,13 +32,10 @@ const CreateOrder = () => {
   const [customerResults, setCustomerResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormVisible, setFormVisible] = useState(false);
-  const [value, setValue] = useState([new Date(), new Date()]);
-  const [time, setTime] = useState(() => {
-    const currentTime = new Date();
-    const hours = currentTime.getHours().toString().padStart(2, "0");
-    const minutes = currentTime.getMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes}`;
-  });
+
+  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+  const [startDate, endDate] = dateRange;
+  const [time, setTime] = useState(new Date());
 
   const { token, role } = useContext(UserContext);
   const toast = useToast();
@@ -87,6 +82,7 @@ const CreateOrder = () => {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
+
         if (response.status === 200) setCustomerResults(response.data.data);
       } catch (err) {
         toast({
@@ -119,56 +115,32 @@ const CreateOrder = () => {
     setTopData({ ...topData, newCustomer });
   };
 
-  const formatDate = (date) => {
-    const d = new Date(date);
-    return `${d.getFullYear()}-${(d.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
-  };
+  useEffect(() => {
+    // Format the start and end dates
+    const formattedStartDate = startDate
+      ? startDate.toLocaleDateString("en-CA")
+      : null;
+    const formattedEndDate = endDate
+      ? endDate.toLocaleDateString("en-CA")
+      : null;
+    // Format the time
+    const formattedTime = time
+      ? time.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : null;
 
-  const selectDateRange = (value) => {
-    setValue(value);
-    const formattedStartDate = formatDate(value[0]);
-    const formattedEndDate = formatDate(value[1]);
     setTopData((prevState) => ({
       ...prevState,
       ifScheduled: {
         ...prevState.ifScheduled,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
+        time: formattedTime,
       },
     }));
-  };
-
-  const selectTime = (e) => {
-    const value = e.target.value;
-
-    // Parse the selected time
-    const [hours, minutes] = value.split(":").map(Number);
-
-    // Create a new Date object and set the time
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes);
-
-    // Add one hour to the current time
-    date.setHours(date.getHours() + 1);
-
-    // Format the new time in HH:MM format
-    const newHours = String(date.getHours()).padStart(2, "0");
-    const newMinutes = String(date.getMinutes()).padStart(2, "0");
-    const newTime = `${newHours}:${newMinutes}`;
-
-    setTime(value);
-    setTopData((prevState) => ({
-      ...prevState,
-      deliveryTime: newTime,
-      ifScheduled: {
-        ...prevState.ifScheduled,
-        time: value,
-      },
-    }));
-  };
+  }, [startDate, endDate, time]);
 
   return (
     <>
@@ -282,23 +254,30 @@ const CreateOrder = () => {
                 </label>
 
                 <div className="flex gap-5 justify-start z-50">
-                  <DateRangePicker
-                    onChange={selectDateRange}
-                    name="date"
-                    value={value}
-                    format="y-MM-dd"
+                  <DatePicker
+                    selectsRange={true}
+                    startDate={startDate}
+                    endDate={endDate}
+                    onChange={(update) => {
+                      setDateRange(update);
+                    }}
+                    dateFormat="yyyy/MM/dd"
+                    withPortal
+                    className="border-2 p-2 rounded-sm cursor-pointer outline-none focus:outline-none"
+                    placeholderText="Select Date range"
                     minDate={new Date()}
-                    maxDate={
-                      new Date(new Date().setDate(new Date().getDate() + 30))
-                    }
                   />
 
-                  <input
-                    type="time"
-                    name="time"
-                    value={time}
-                    onChange={selectTime}
-                    className="outline-none focus:outline-none"
+                  <DatePicker
+                    selected={time}
+                    onChange={(time) => setTime(time)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    dateFormat="h:mm aa"
+                    showTimeCaption={false}
+                    className="border-2 p-2 rounded-sm cursor-pointer outline-none focus:outline-none"
+                    placeholderText="Select Time"
                   />
                 </div>
               </div>

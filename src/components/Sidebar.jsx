@@ -23,7 +23,6 @@ import {
   HubOutlined as HubOutlinedIcon,
   LoyaltyOutlined as LoyaltyOutlinedIcon,
   ShareLocationOutlined as ShareLocationOutlinedIcon,
-  // CurrencyRupeeOutlined as CurrencyRupeeOutlinedIcon,
 } from "@mui/icons-material";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { BsPersonLinesFill } from "react-icons/bs";
@@ -86,7 +85,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed w-[300px] h-full bg-gradient-to-br from-[#016B6C] to-[#000] font-poppins overflow-y-auto pb-[50px] z-20 overflow-element">
+    <div className="fixed w-[300px] h-full bg-[#333] font-poppins overflow-y-auto pb-[50px] z-20 overflow-element">
       <div className="flex gap-3 ml-[10px] mt-[30px]">
         <img
           src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FAsset%205.svg?alt=media&token=017cbae8-518a-47bc-bab3-3bc4cfb0dbed"
@@ -110,7 +109,9 @@ const Sidebar = () => {
         <Link
           to="/all-orders"
           className={`ps-4 side ${
-            selectedLink === "/all-orders" || selectedLink === "/create-order"
+            selectedLink === "/all-orders" ||
+            selectedLink === "/create-order" ||
+            /^\/order-details\/[A-Za-z0-9]+$/.test(selectedLink)
               ? "selected-link"
               : ""
           }`}
@@ -122,7 +123,10 @@ const Sidebar = () => {
           <Link
             to="/all-merchants"
             className={`ps-4 side ${
-              selectedLink === "/all-merchants" ? "selected-link" : ""
+              selectedLink === "/all-merchants" ||
+              /^\/merchant-detail\/[A-Za-z0-9]+$/.test(selectedLink)
+                ? "selected-link"
+                : ""
             }`}
           >
             <StorefrontOutlinedIcon className="m-2" />
@@ -141,7 +145,10 @@ const Sidebar = () => {
         <Link
           to="/customers"
           className={`ps-4 side ${
-            selectedLink === "/customers" ? "selected-link" : ""
+            selectedLink === "/customers" ||
+            /^\/customer-detail\/[A-Za-z0-9]+$/.test(selectedLink)
+              ? "selected-link"
+              : ""
           }`}
         >
           <GroupsOutlinedIcon className="m-2" />
@@ -153,7 +160,10 @@ const Sidebar = () => {
             <Link
               to="/all-agents"
               className={`ps-4 side ${
-                selectedLink === "/all-agents" ? "selected-link" : ""
+                selectedLink === "/all-agents" ||
+                /^\/agent-details\/[A-Za-z0-9]+$/.test(selectedLink)
+                  ? "selected-link"
+                  : ""
               }`}
             >
               <AssignmentIndOutlinedIcon className="m-2" />
@@ -175,7 +185,11 @@ const Sidebar = () => {
         <Link
           to="/commission"
           className={`ps-4 side ${
-            selectedLink === "/commission" ? "selected-link" : ""
+            selectedLink === "/commission" ||
+            selectedLink === "/view-subscription" ||
+            selectedLink === "/view-commission"
+              ? "selected-link"
+              : ""
           }`}
         >
           <PercentOutlinedIcon className="flex mr-[3px] m-2" />

@@ -5,7 +5,6 @@ import axios from "axios";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { UserContext } from "../../../context/UserContext";
-import { useNavigate } from "react-router-dom";
 import CropImage from "../../CropImage";
 
 const AddCategoriesModal = ({
@@ -16,6 +15,7 @@ const AddCategoriesModal = ({
   role,
   merchantId,
   onAddCategory,
+  onAddCategoryCSV,
 }) => {
   const [categoryData, setCategoryData] = useState({
     categoryName: "",
@@ -205,6 +205,7 @@ const AddCategoriesModal = ({
       );
 
       if (response.status === 200) {
+        onAddCategoryCSV(response.data.data);
         setSelectedCSVFile(null);
         handleCancel();
         toast({
@@ -214,7 +215,6 @@ const AddCategoriesModal = ({
           duration: 3000,
           isClosable: true,
         });
-        // navigate(0);
       }
     } catch (err) {
       toast({

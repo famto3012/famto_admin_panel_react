@@ -18,7 +18,7 @@ const MerchantData = ({
   onDataChange,
 }) => {
   const [showRatingModal, setShowRatingModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  // const [showEditModal, setShowEditModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
 
   const [previewURL, setPreviewURL] = useState("");
@@ -26,9 +26,8 @@ const MerchantData = ({
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
-
 
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState("");
@@ -36,10 +35,10 @@ const MerchantData = ({
   const { coordinates } = useMap();
 
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
-  const toggleEditModal = (e) => {
-    e.preventDefault();
-    setShowEditModal(!showEditModal);
-  };
+  // const toggleEditModal = (e) => {
+  //   e.preventDefault();
+  //   setShowEditModal(!showEditModal);
+  // };
   const toggleMapModal = () => setShowMapModal(!showMapModal);
 
   useEffect(() => {
@@ -97,15 +96,15 @@ const MerchantData = ({
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(file);
-      setImg(file)
+      setImg(file);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
+    setCroppedFile(croppedFile);
     // setSelectedFile(croppedFile)// Get the cropped image file
     console.log("Cropped image file:", croppedFile);
-    onDataChange({ merchantImage: croppedFile});
+    onDataChange({ merchantImage: croppedFile });
   };
 
   const handleModalClose = () => {
@@ -281,23 +280,23 @@ const MerchantData = ({
             accept="image/*"
             onChange={onSelectFile}
           />
-            {imgSrc && (
-                <CropImage
-                  selectedImage={img}
-                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
-                  onCropComplete={handleCropComplete}
-                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
-                />
-              )}
+          {imgSrc && (
+            <CropImage
+              selectedImage={img}
+              aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+              onCropComplete={handleCropComplete}
+              onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+            />
+          )}
         </div>
 
-        <button
+        {/* <button
           onClick={toggleEditModal}
           className="bg-teal-600 w-fit h-fit py-2 px-1.5 rounded text-white flex items-center gap-[10px]"
         >
           <MdOutlineModeEditOutline />
           Edit Merchant
-        </button>
+        </button> */}
       </div>
 
       <div className=" max-w-[700px] mt-14 mb-[50px]">
@@ -357,7 +356,12 @@ const MerchantData = ({
             onClick={toggleMapModal}
             className="font-medium bg-teal-700 text-white text-start rounded-md  py-2 flex items-center w-1/3 justify-center"
           >
-            {`${MerchantData?.merchantDetail?.location.length !== 0 || detail?.merchantDetail?.location.length !== 0 ? "Location marked" : "Mark location"}`}
+            {`${
+              MerchantData?.merchantDetail?.location.length !== 0 ||
+              detail?.merchantDetail?.location.length !== 0
+                ? "Location marked"
+                : "Mark location"
+            }`}
             <LocationOnOutlinedIcon className="text-[18px] ms-2" />
           </button>
 
@@ -382,7 +386,7 @@ const MerchantData = ({
         </div>
       </div>
 
-      <EditMerchant
+      {/* <EditMerchant
         isVisible={showEditModal}
         onCancel={toggleEditModal}
         BASE_URL={BASE_URL}
@@ -390,7 +394,7 @@ const MerchantData = ({
         role={role}
         data={detail}
         merchantId={merchantId}
-      />
+      /> */}
 
       <RatingModal
         isVisible={showRatingModal}
