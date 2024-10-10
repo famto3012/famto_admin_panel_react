@@ -3,21 +3,20 @@ import { Modal } from "antd";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { UserContext } from "../../../context/UserContext";
-import Select from "react-select";
 
 const AddDiscountModal = ({
   isVisible,
   token,
-  merchant,
-  BASE_URL,
   geofence,
-  onDiscountAdd,
+  selectedMerchant,
+  BASE_URL,
   handleCancel,
+  onDiscountAdd,
 }) => {
   const { role, userId } = useContext(UserContext);
 
   const [merchantDiscount, setMerchantDiscount] = useState({
-    merchantId: role === "Admin" ? "" : userId,
+    merchantId: "",
     discountName: "",
     maxCheckoutValue: "",
     maxDiscountValue: "",
@@ -32,22 +31,24 @@ const AddDiscountModal = ({
 
   const toast = useToast();
 
-  const merchantOptions = merchant?.map((merchant) => ({
-    label: merchant.merchantName,
-    value: merchant._id,
-  }));
+  useEffect(() => {
+    if (role === "Admin" && selectedMerchant) {
+      setMerchantDiscount((prev) => ({
+        ...prev,
+        merchantId: selectedMerchant.merchantId,
+      }));
+    } else if (role === "Merchant") {
+      setMerchantDiscount((prev) => ({
+        ...prev,
+        merchantId: userId,
+      }));
+    }
+  }, [selectedMerchant, role]);
 
   const handleInputChange = (e) => {
     setMerchantDiscount({
       ...merchantDiscount,
       [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleMerchantChange = (option) => {
-    setMerchantDiscount({
-      ...merchantDiscount,
-      merchantId: option.value ? option.value : "",
     });
   };
 
@@ -68,7 +69,20 @@ const AddDiscountModal = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (response.status === 201) {
+        setMerchantDiscount({
+          merchantId: "",
+          discountName: "",
+          maxCheckoutValue: "",
+          maxDiscountValue: "",
+          discountType: "",
+          discountValue: "",
+          description: "",
+          validFrom: "",
+          validTo: "",
+          geofenceId: "",
+        });
         handleCancel();
         onDiscountAdd(response.data.data);
         toast({
@@ -80,8 +94,6 @@ const AddDiscountModal = ({
         });
       }
     } catch (err) {
-      console.error(`Error in adding discount ${err.message}`);
-      handleCancel();
       toast({
         title: "Error",
         description: "Error in adding Merchant Discount",
@@ -111,17 +123,11 @@ const AddDiscountModal = ({
                 Assign Merchant <span className="text-red-600">*</span>
               </label>
 
-              <Select
-                className="rounded w-2/3 outline-none focus:outline-none"
-                value={merchantOptions.find(
-                  (option) => option.value === setMerchantDiscount.merchantId
-                )}
-                isMulti={false}
-                isSearchable={true}
-                onChange={handleMerchantChange}
-                options={merchantOptions}
-                placeholder="Select Merchant"
-                isClearable={false}
+              <input
+                type="text"
+                value={selectedMerchant.merchantName}
+                readOnly
+                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
               />
             </div>
           )}

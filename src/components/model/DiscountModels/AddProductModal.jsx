@@ -10,14 +10,15 @@ const AddProductModal = ({
   token,
   BASE_URL,
   geofence,
-  merchant,
+
+  selectedMerchant,
   handleCancel,
   onAddProduct,
 }) => {
   const { role, userId } = useContext(UserContext);
 
   const [productDiscount, setProductDiscount] = useState({
-    merchantId: "",
+    merchantId: role === "Admin" ? selectedMerchant?.merchantId : userId,
     discountName: "",
     maxAmount: "",
     discountType: "",
@@ -36,17 +37,29 @@ const AddProductModal = ({
   const toast = useToast();
 
   useEffect(() => {
-    if (role === "Merchant") {
+    if (role === "Admin" && selectedMerchant) {
+      setProductDiscount((prev) => ({
+        ...prev,
+        merchantId: selectedMerchant.merchantId,
+      }));
+    } else if (role === "Merchant") {
       setProductDiscount((prev) => ({
         ...prev,
         merchantId: userId,
       }));
     }
+  }, [selectedMerchant, role]);
 
+  useEffect(() => {
     const fetchAllProductsOfMerchant = async () => {
       try {
+        const merchantId =
+          role === "Admin" ? selectedMerchant?.merchantId : userId;
+
+        if (!merchantId) return;
+
         const response = await axios.get(
-          `${BASE_URL}/products/all-products-of-merchant/${productDiscount.merchantId}`,
+          `${BASE_URL}/products/all-products-of-merchant/${merchantId}`,
           {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
@@ -61,13 +74,8 @@ const AddProductModal = ({
       }
     };
 
-    if (productDiscount.merchantId) fetchAllProductsOfMerchant();
-  }, [productDiscount.merchantId]);
-
-  const merchantOptions = merchant?.map((merchant) => ({
-    label: merchant.merchantName,
-    value: merchant._id,
-  }));
+    fetchAllProductsOfMerchant();
+  }, [role, selectedMerchant, userId, token, BASE_URL]);
 
   const productOptions = allProducts?.map((product) => ({
     label: product.productName,
@@ -80,15 +88,29 @@ const AddProductModal = ({
     try {
       setIsLoading(true);
 
-      const response = await axios.post(
-        `${BASE_URL}/admin/product-discount/add-product-discount-admin`,
-        productDiscount,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/product-discount/add-product-discount-admin`
+          : `${BASE_URL}/merchant/product-discount/add-product-discount`;
+
+      const response = await axios.post(endPoint, productDiscount, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.status === 201) {
+        setProductDiscount({
+          merchantId: "",
+          discountName: "",
+          maxAmount: "",
+          discountType: "",
+          discountValue: "",
+          description: "",
+          validFrom: "",
+          validTo: "",
+          geofenceId: "",
+          productId: "",
+          onAddOn: false,
+        });
         handleCancel();
         onAddProduct(response.data.data);
         toast({
@@ -127,13 +149,6 @@ const AddProductModal = ({
     setProductDiscount({ ...productDiscount, [e.target.name]: e.target.value });
   };
 
-  const handleMerchantChange = (option) => {
-    setProductDiscount({
-      ...productDiscount,
-      merchantId: option.value ? option.value : "",
-    });
-  };
-
   return (
     <Modal
       title="Add Product-wise Discount"
@@ -145,24 +160,20 @@ const AddProductModal = ({
     >
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col mt-5 max-h-[30rem] overflow-auto gap-4 justify-between">
-          <div className="flex gap-4">
-            <label className="w-1/2 text-gray-500">
-              Assign Merchant <span className="text-red-600">*</span>
-            </label>
+          {role === "Admin" && (
+            <div className="flex gap-4">
+              <label className="w-1/2 text-gray-500">
+                Assign Merchant <span className="text-red-600">*</span>
+              </label>
 
-            <Select
-              className="rounded w-2/3 outline-none focus:outline-none"
-              value={merchantOptions.find(
-                (option) => option.value === productDiscount.merchantId
-              )}
-              isMulti={false}
-              isSearchable={true}
-              onChange={handleMerchantChange}
-              options={merchantOptions}
-              placeholder="Select Merchant"
-              isClearable={false}
-            />
-          </div>
+              <input
+                type="text"
+                readOnly
+                className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
+                value={selectedMerchant.merchantName}
+              />
+            </div>
+          )}
 
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">

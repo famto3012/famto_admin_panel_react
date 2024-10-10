@@ -18,6 +18,7 @@ const AddProductItemModal = ({
   categoryId,
   merchantId,
   onAddProduct,
+  onAddProductCSV,
 }) => {
   const [productData, setProductData] = useState({
     productName: "",
@@ -165,8 +166,6 @@ const AddProductItemModal = ({
     try {
       setIsLoading(true);
 
-      console.log(productData);
-
       const dataToSend = new FormData();
 
       Object.keys(productData).forEach((key) => {
@@ -219,8 +218,8 @@ const AddProductItemModal = ({
         });
         setSelectedFile(null);
         setPreviewURL(null);
-        setCroppedFile(null)
-        setImgSrc(null)
+        setCroppedFile(null);
+        setImgSrc(null);
         handleCancel();
         toast({
           title: "Success",
@@ -250,16 +249,13 @@ const AddProductItemModal = ({
     try {
       e.preventDefault();
 
-      const response = await axios.get(
-        `${BASE_URL}/products/download-sample-product-csv`,
-        {
-          responseType: "blob",
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/products/csv/sample-csv`, {
+        responseType: "blob",
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log("In fronend");
 
@@ -299,7 +295,7 @@ const AddProductItemModal = ({
       }
 
       const response = await axios.post(
-        `${BASE_URL}/products/upload-product-csv`,
+        `${BASE_URL}/products/csv/upload-csv`,
         csvToSend,
         {
           withCredentials: true,
@@ -310,6 +306,7 @@ const AddProductItemModal = ({
       );
 
       if (response.status === 200) {
+        onAddProductCSV(response.data.data);
         setSelectedCSVFile(null);
         handleCancel();
         toast({
@@ -319,7 +316,6 @@ const AddProductItemModal = ({
           duration: 3000,
           isClosable: true,
         });
-        // navigate(0);
       }
     } catch (err) {
       toast({
@@ -350,7 +346,6 @@ const AddProductItemModal = ({
   const handleCropComplete = (croppedFile) => {
     setCroppedFile(croppedFile);
     setSelectedFile(croppedFile); // Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
   };
 
   const handleModalClose = () => {
@@ -359,385 +354,391 @@ const AddProductItemModal = ({
 
   return (
     isVisible && (
-    <Modal
-      title="Add Product"
-      onCancel={handleCancel}
-      width="600px"
-      footer={null}
-      open={isVisible}
-      centered
-      ref={modalRef}
-    >
-      <form onSubmit={handleAddProduct} className="max-h-[30rem] overflow-auto">
-        <div className="flex flex-col gap-4 mt-5">
-          <div className="grid justify-end">
-            <label
-              htmlFor="uploadCSV"
-              className="flex items-center bg-teal-800 w-fit p-2 gap-2 text-white rounded-xl border cursor-pointer"
-            >
-              <AiOutlineCloudUpload size={20} />
-              Upload CSV
+      <Modal
+        title="Add Product"
+        onCancel={handleCancel}
+        width="600px"
+        footer={null}
+        open={isVisible}
+        centered
+        ref={modalRef}
+      >
+        <form
+          onSubmit={handleAddProduct}
+          className="max-h-[30rem] overflow-auto"
+        >
+          <div className="flex flex-col gap-4 mt-5">
+            <div className="grid justify-end">
+              <label
+                htmlFor="uploadCSV"
+                className="flex items-center bg-teal-800 w-fit p-2 gap-2 text-white rounded-xl border cursor-pointer"
+              >
+                <AiOutlineCloudUpload size={20} />
+                Upload CSV
+                <input
+                  type="file"
+                  name="uploadCSV"
+                  id="uploadCSV"
+                  className="hidden"
+                  onChange={handleSelectCSVFile}
+                />
+              </label>
+
+              <p
+                onClick={downloadSampleCSV}
+                className="text-gray-500 underline underline-offset-2 cursor-pointer"
+              >
+                Download Sample CSV
+              </p>
+
+              {selectedCSVFile && (
+                <div className="flex items-center gap-4 mt-[20px]">
+                  <p>{selectedCSVFile.name}</p>
+                  {isUploadLoading ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <AiOutlineCloudUpload
+                      size={25}
+                      onClick={handlUploadCSVFile}
+                      className="cursor-pointer  text-teal-600"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="productName">
+                Product Name <span className="text-red-600">*</span>
+              </label>
               <input
-                type="file"
-                name="uploadCSV"
-                id="uploadCSV"
-                className="hidden"
-                onChange={handleSelectCSVFile}
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="productName"
+                placeholder="Product name"
+                value={productData.productName}
+                onChange={handleInputChange}
               />
-            </label>
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="price">
+                Price <span className="text-red-600">*</span>
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="price"
+                placeholder="Price"
+                value={productData.price}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3 text-gray-500"
+                htmlFor="availableQuantity"
+              >
+                Available Quantity
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="availableQuantity"
+                placeholder="Available quantity"
+                value={productData.availableQuantity}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="alert">
+                Alert Quantity
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="alert"
+                placeholder="Alert quantity"
+                value={productData.alert}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3 text-gray-500 "
+                htmlFor="minQuantityToOrder"
+              >
+                Minimum Quantity to Order
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="minQuantityToOrder"
+                placeholder="Minimum quantity to order"
+                value={productData.minQuantityToOrder}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3 text-gray-500"
+                htmlFor="maxQmaxQuantityPerOrderty"
+              >
+                Maximum Quantity to Order
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="maxQuantityPerOrder"
+                placeholder="Maximum quantity to order"
+                value={productData.maxQuantityPerOrder}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="costPrice">
+                Cost Price <span className="text-red-600">*</span>
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="costPrice"
+                placeholder="Cost price"
+                value={productData.costPrice}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="sku">
+                SKU
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="sku"
+                placeholder="SKU"
+                value={productData.sku}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="discountId">
+                Discount
+              </label>
+              <select
+                name="discountId"
+                value={productData.discountId}
+                onChange={handleInputChange}
+                className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
+              >
+                <option defaultValue={"Select discount"} hidden>
+                  Select discount
+                </option>
+                {allProductDiscount?.map((discount) => (
+                  <option key={discount._id} value={discount._id}>
+                    {discount.discountName.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <p
-              onClick={downloadSampleCSV}
-              className="text-gray-500 underline underline-offset-2 cursor-pointer"
-            >
-              Download Sample CSV
-            </p>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
+                Often bought together
+              </label>
+              <Select
+                className="w-2/3 outline-none focus:outline-none"
+                value={productOptions.filter((option) =>
+                  productData.oftenBoughtTogetherId.includes(option.value)
+                )}
+                isMulti={true}
+                isSearchable={true}
+                onChange={handleSelectProduct}
+                options={productOptions}
+                placeholder="Select Product"
+                isClearable={true}
+                components={animatedComponents}
+              />
+            </div>
 
-            {selectedCSVFile && (
-              <div className="flex items-center gap-4 mt-[20px]">
-                <p>{selectedCSVFile.name}</p>
-                {isUploadLoading ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <AiOutlineCloudUpload
-                    size={25}
-                    onClick={handlUploadCSVFile}
-                    className="cursor-pointer  text-teal-600"
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="preparationTime">
+                Preparation Time
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="preparationTime"
+                placeholder="Preparation time (in minutes)"
+                value={productData.preparationTime}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="searchTag">
+                Search Tag
+              </label>
+              <div className="w-2/3">
+                <div className="flex flex-wrap gap-1 mb-1">
+                  {productData?.searchTags?.map((tag, index) => (
+                    <div
+                      className="flex items-center bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full"
+                      key={index}
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(index)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  name="searchTags"
+                  placeholder="Search tags"
+                  value={tagValue}
+                  onChange={(e) => setTagValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full border-2 border-gray-100 rounded p-2 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="description">
+                Description
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={productData.description}
+                onChange={handleInputChange}
+              ></input>
+            </div>
+            <div className="flex items-start">
+              <label className="w-1/3 text-gray-500" htmlFor="longDescription">
+                Long description
+              </label>
+              <textarea
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none resize-y"
+                type="text"
+                name="longDescription"
+                placeholder="Long description"
+                value={productData.longDescription}
+                rows={5}
+                onChange={handleInputChange}
+              ></textarea>
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="type">
+                Type <span className="text-red-600">*</span>
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
+                type="radio"
+                name="type"
+                value="Veg"
+                checked={productData.type === "Veg"}
+                onChange={handleInputChange}
+              />
+              Veg
+              <input
+                className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
+                type="radio"
+                name="type"
+                value="Non-veg"
+                checked={productData.type === "Non-veg"}
+                onChange={handleInputChange}
+              />
+              Non-veg
+              <input
+                className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
+                type="radio"
+                name="type"
+                value="Other"
+                checked={productData.type === "Other"}
+                onChange={handleInputChange}
+              />
+              Other
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="photos">
+                Photos
+              </label>
+
+              <div className=" flex items-center gap-[30px]">
+                {!croppedFile && (
+                  <div className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[20px]"></div>
+                )}
+                {!!croppedFile && (
+                  <>
+                    <div>
+                      <img
+                        ref={previewCanvasRef}
+                        src={URL.createObjectURL(croppedFile)}
+                        style={{
+                          border: "1px solid white",
+                          borderRadius: "5px",
+                          objectFit: "contain",
+                          width: "66px",
+                          height: "66px",
+                          marginTop: "20px",
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+                <input
+                  type="file"
+                  name="agentImage"
+                  id="agentImage"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={onSelectFile}
+                />
+                <label htmlFor="agentImage" className="cursor-pointer ">
+                  <MdCameraAlt
+                    className=" bg-teal-800  text-[40px] text-white p-5 h-16 w-16 mt-5 rounded"
+                    size={30}
+                  />
+                </label>
+                {imgSrc && (
+                  <CropImage
+                    selectedImage={img}
+                    aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                    onCropComplete={handleCropComplete}
+                    onClose={handleModalClose} // Pass the handler to close the modal and reset the state
                   />
                 )}
               </div>
-            )}
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="productName">
-              Product Name <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="productName"
-              placeholder="Product name"
-              value={productData.productName}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="price">
-              Price <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="price"
-              placeholder="Price"
-              value={productData.price}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="availableQuantity">
-              Available Quantity
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="availableQuantity"
-              placeholder="Available quantity"
-              value={productData.availableQuantity}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="alert">
-              Alert Quantity
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="alert"
-              placeholder="Alert quantity"
-              value={productData.alert}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label
-              className="w-1/3 text-gray-500 "
-              htmlFor="minQuantityToOrder"
-            >
-              Minimum Quantity to Order
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="minQuantityToOrder"
-              placeholder="Minimum quantity to order"
-              value={productData.minQuantityToOrder}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label
-              className="w-1/3 text-gray-500"
-              htmlFor="maxQmaxQuantityPerOrderty"
-            >
-              Maximum Quantity to Order
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="maxQuantityPerOrder"
-              placeholder="Maximum quantity to order"
-              value={productData.maxQuantityPerOrder}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="costPrice">
-              Cost Price <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="costPrice"
-              placeholder="Cost price"
-              value={productData.costPrice}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="sku">
-              SKU
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="sku"
-              placeholder="SKU"
-              value={productData.sku}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="discountId">
-              Discount
-            </label>
-            <select
-              name="discountId"
-              value={productData.discountId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
-            >
-              <option defaultValue={"Select discount"} hidden>
-                Select discount
-              </option>
-              {allProductDiscount?.map((discount) => (
-                <option key={discount._id} value={discount._id}>
-                  {discount.discountName.toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </div>
+            </div>
 
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
-              Often bought together
-            </label>
-            <Select
-              className="w-2/3 outline-none focus:outline-none"
-              value={productOptions.filter((option) =>
-                productData.oftenBoughtTogetherId.includes(option.value)
-              )}
-              isMulti={true}
-              isSearchable={true}
-              onChange={handleSelectProduct}
-              options={productOptions}
-              placeholder="Select Product"
-              isClearable={true}
-              components={animatedComponents}
-            />
-          </div>
-
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="preparationTime">
-              Preparation Time
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="preparationTime"
-              placeholder="Preparation time (in minutes)"
-              value={productData.preparationTime}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="searchTag">
-              Search Tag
-            </label>
-            <div className="w-2/3">
-              <div className="flex flex-wrap gap-1 mb-1">
-                {productData?.searchTags?.map((tag, index) => (
-                  <div
-                    className="flex items-center bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full"
-                    key={index}
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(index)}
-                      className="ml-2 text-gray-500 hover:text-gray-700"
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <input
-                ref={inputRef}
-                type="text"
-                name="searchTags"
-                placeholder="Search tags"
-                value={tagValue}
-                onChange={(e) => setTagValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full border-2 border-gray-100 rounded p-2 focus:outline-none"
-              />
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                className="bg-cyan-50 py-2 px-4 rounded-md"
+                type="button"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-teal-800 text-white py-2 px-4 rounded-md focus:outline-none"
+                type="submit"
+              >
+                {isLoading ? `Adding...` : `Add`}
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="description">
-              Description
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="description"
-              placeholder="Description"
-              value={productData.description}
-              onChange={handleInputChange}
-            ></input>
-          </div>
-          <div className="flex items-start">
-            <label className="w-1/3 text-gray-500" htmlFor="longDescription">
-              Long description
-            </label>
-            <textarea
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none resize-y"
-              type="text"
-              name="longDescription"
-              placeholder="Long description"
-              value={productData.longDescription}
-              rows={5}
-              onChange={handleInputChange}
-            ></textarea>
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="type">
-              Type <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
-              type="radio"
-              name="type"
-              value="Veg"
-              checked={productData.type === "Veg"}
-              onChange={handleInputChange}
-            />
-            Veg
-            <input
-              className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
-              type="radio"
-              name="type"
-              value="Non-veg"
-              checked={productData.type === "Non-veg"}
-              onChange={handleInputChange}
-            />
-            Non-veg
-            <input
-              className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
-              type="radio"
-              name="type"
-              value="Other"
-              checked={productData.type === "Other"}
-              onChange={handleInputChange}
-            />
-            Other
-          </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="photos">
-              Photos
-            </label>
-
-            <div className=" flex items-center gap-[30px]">
-              {!croppedFile && (
-                <div className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[20px]"></div>
-              )}
-              {!!croppedFile && (
-                <>
-                  <div>
-                    <img
-                      ref={previewCanvasRef}
-                      src={URL.createObjectURL(croppedFile)}
-                      style={{
-                        border: "1px solid white",
-                        borderRadius: "5px",
-                        objectFit: "contain",
-                        width: "66px",
-                        height: "66px",
-                        marginTop: "20px",
-                      }}
-                    />
-                  </div>
-                </>
-              )}
-              <input
-                type="file"
-                name="agentImage"
-                id="agentImage"
-                className="hidden"
-                accept="image/*"
-                onChange={onSelectFile}
-              />
-              <label htmlFor="agentImage" className="cursor-pointer ">
-                <MdCameraAlt
-                  className=" bg-teal-800  text-[40px] text-white p-5 h-16 w-16 mt-5 rounded"
-                  size={30}
-                />
-              </label>
-              {imgSrc && (
-                <CropImage
-                  selectedImage={img}
-                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
-                  onCropComplete={handleCropComplete}
-                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4 mt-6">
-            <button
-              className="bg-cyan-50 py-2 px-4 rounded-md"
-              type="button"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-            <button
-              className="bg-teal-800 text-white py-2 px-4 rounded-md focus:outline-none"
-              type="submit"
-            >
-              {isLoading ? `Adding...` : `Add`}
-            </button>
-          </div>
-        </div>
-      </form>
-    </Modal>
-  )
-)
+        </form>
+      </Modal>
+    )
+  );
 };
 
 export default AddProductItemModal;

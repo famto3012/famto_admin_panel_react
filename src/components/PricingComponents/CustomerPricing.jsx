@@ -1,6 +1,6 @@
-import { ConsoleSqlOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AddCustomerPricingModal from "../model/PricingModels/AddCustomerPricingModal";
 import { Switch } from "antd";
 import { MdOutlineEdit } from "react-icons/md";
@@ -33,7 +33,7 @@ const CustomerPricing = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
   const [business, setBusiness] = useState([]);
-  const { token, role } = useContext(UserContext);
+  const { token } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -46,51 +46,40 @@ const CustomerPricing = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [
-          custPricingResponse,
-          custSurgeResponse,
-          geofenceResponse,
-          businessCategoryResponse,
-        ] = await Promise.all([
-          axios.get(
-            `${BASE_URL}/admin/customer-pricing/get-all-customer-pricing`,
-            {
+        const [custPricing, custSurge, geofence, businessCategory] =
+          await Promise.all([
+            axios.get(
+              `${BASE_URL}/admin/customer-pricing/get-all-customer-pricing`,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+            axios.get(
+              `${BASE_URL}/admin/customer-surge/get-all-customer-surge`,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+            axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
               withCredentials: true,
               headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
-          axios.get(`${BASE_URL}/admin/customer-surge/get-all-customer-surge`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/admin/geofence/get-geofence`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(
-            `${BASE_URL}/admin/business-categories/get-all-business-category`,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          ),
-        ]);
+            }),
+            axios.get(
+              `${BASE_URL}/admin/business-categories/get-all-business-category`,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+          ]);
 
-        if (custPricingResponse.status === 200) {
-          setCustomerPricing(custPricingResponse.data.data);
-          console.log(custPricingResponse.data.data);
-        }
-        if (custSurgeResponse.status === 200) {
-          setCustomerSurge(custSurgeResponse.data.data);
-          console.log(custSurgeResponse.data.data);
-        }
-        if (geofenceResponse.status === 200) {
-          setGeofence(geofenceResponse.data.geofences);
-        }
-        if (businessCategoryResponse.status === 200) {
-          setBusiness(businessCategoryResponse.data.data);
-          console.log(businessCategoryResponse.data.data);
-        }
+        // Set state independently
+        setCustomerPricing(custPricing.data.data || []);
+        setCustomerSurge(custSurge.data.data || []);
+        setGeofence(geofence.data.geofences || []);
+        setBusiness(businessCategory.data.data || []);
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
@@ -99,23 +88,45 @@ const CustomerPricing = () => {
     };
 
     fetchData();
-  }, [token, role, navigate]);
+  }, [token, navigate]);
 
-  // Function to add the customer rule in the list
+  const showModalAddRule = () => setModalVisibleAddRule(true);
+  const showModalAddSurge = () => setModalVisibleAddSurge(true);
+
+  const showModalEditRule = (customerpricingId) => {
+    setCurrentEditRule(customerpricingId);
+    setModalVisibleEditRule(true);
+  };
+
+  const showModalEditSurge = (customersurgeId) => {
+    setCurrentEditSurge(customersurgeId);
+    setModalVisibleEditSurge(true);
+  };
+
+  const showModalDeleteRule = (customerpricingId) => {
+    setCurrentDeleteRule(customerpricingId);
+    setModalVisibleDeleteRule(true);
+  };
+
+  const handleConfirmDeleteRule = () => {
+    setModalVisibleDeleteRule(false);
+    setCurrentDeleteRule(null);
+  };
+
+  const showModalDeleteSurge = (customersurgeId) => {
+    setCurrentDeleteSurge(customersurgeId);
+    setModalVisibleDeleteSurge(true);
+  };
 
   const handleAddRule = (newRule) => {
     setCustomerPricing((prevRules) => [...prevRules, newRule]);
     setModalVisibleAddRule(false);
   };
 
-  // Function to add the customer rule in the list
-
   const handleAddSurge = (newSurge) => {
     setCustomerSurge((prevSurge) => [...prevSurge, newSurge]);
     setModalVisibleAddSurge(false);
   };
-
-  // Function to update the customer rule in the list
 
   const handleEditRule = (updatedRule) => {
     setCustomerPricing((prevRules) =>
@@ -124,7 +135,6 @@ const CustomerPricing = () => {
       )
     );
   };
-  // Function to update the customer surge in the list
 
   const handleEditSurge = (updatedSurge) => {
     setCustomerSurge((prevSurge) =>
@@ -134,57 +144,12 @@ const CustomerPricing = () => {
     );
   };
 
-  // Modal function for Add rule in Customer Pricing
-
-  const showModalAddRule = () => {
-    setModalVisibleAddRule(true);
-  };
-
-  // Modal function for Add surge in Customer Surge
-
-  const showModalAddSurge = () => {
-    setModalVisibleAddSurge(true);
-  };
-
-  // Modal function for  Edit rule in Customer pricing
-
-  const showModalEditRule = (customerpricingId) => {
-    setCurrentEditRule(customerpricingId);
-    setModalVisibleEditRule(true);
-  };
-
-  // Modal function for  Edit surge in agent Customer Surge
-
-  const showModalEditSurge = (customersurgeId) => {
-    setCurrentEditSurge(customersurgeId);
-    setModalVisibleEditSurge(true);
-  };
-
-  // Modal function for Delete rule in Customer Pricing
-
-  const showModalDeleteRule = (customerpricingId) => {
-    setCurrentDeleteRule(customerpricingId);
-    setModalVisibleDeleteRule(true);
-  };
-
   const removeRule = (customerpricingId) => {
     setCustomerPricing(
       customerpricing.filter(
         (customerpricing) => customerpricing._id !== customerpricingId
       )
     );
-  };
-
-  const handleConfirmDeleteRule = () => {
-    setModalVisibleDeleteRule(false);
-    setCurrentDeleteRule(null);
-  };
-
-  // Modal function for Delete surge in Customer Surge
-
-  const showModalDeleteSurge = (customersurgeId) => {
-    setCurrentDeleteSurge(customersurgeId);
-    setModalVisibleDeleteSurge(true);
   };
 
   const removeSurge = (customersurgeId) => {
@@ -209,31 +174,26 @@ const CustomerPricing = () => {
     setModalVisibleDeleteSurge(false);
   };
 
-  // Status Changing function for Add rule in Customer Pricing
-
   const handleToggleRule = async (customerpricingId) => {
     try {
-      const customerResponse = customerpricing.find(
-        (customerResponse) => customerResponse._id === customerpricingId
+      const response = await axios.post(
+        `${BASE_URL}/admin/customer-pricing/change-status/${customerpricingId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      if (customerResponse) {
-        const updatedStatus = !customerResponse.status;
-        await axios.post(
-          `${BASE_URL}/admin/customer-pricing/change-status/${customerpricingId}`,
-          {
-            ...customerResponse,
-            status: updatedStatus,
-          },
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setCustomerPricing(
-          customerpricing.map((c) =>
-            c._id === customerpricingId ? { ...c, status: updatedStatus } : c
+
+      if (response.status === 200) {
+        setCustomerPricing((prevPricing) =>
+          prevPricing.map((pricing) =>
+            pricing.id === customerpricingId
+              ? { ...pricing, status: !pricing.status }
+              : pricing
           )
         );
+
         toast({
           title: "Success",
           description: "Status Updated Successfully.",
@@ -243,7 +203,6 @@ const CustomerPricing = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in toggling status: ${err}`);
       toast({
         title: "Error",
         description: "Failed to update status.",
@@ -254,31 +213,26 @@ const CustomerPricing = () => {
     }
   };
 
-  // Status Changing function for Add surge in Customer Surge
-
   const handleToggleSurge = async (customersurgeId) => {
     try {
-      const customerResponse = customersurge.find(
-        (customerResponse) => customerResponse._id === customersurgeId
+      const response = await axios.post(
+        `${BASE_URL}/admin/customer-surge/change-status/${customersurgeId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      if (customerResponse) {
-        const updatedStatus = !customerResponse.status;
-        await axios.post(
-          `${BASE_URL}/admin/customer-surge/change-status/${customersurgeId}`,
-          {
-            ...customerResponse,
-            status: updatedStatus,
-          },
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setCustomerSurge(
-          customersurge.map((c) =>
-            c._id === customersurgeId ? { ...c, status: updatedStatus } : c
+
+      if (response.status === 200) {
+        setCustomerSurge((prevSurge) =>
+          prevSurge.map((surge) =>
+            surge.id === customersurgeId
+              ? { ...surge, status: !surge.status }
+              : surge
           )
         );
+
         toast({
           title: "Success",
           description: "Status Updated Successfully.",
@@ -288,7 +242,6 @@ const CustomerPricing = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in toggling status: ${err}`);
       toast({
         title: "Error",
         description: "Failed to update status.",

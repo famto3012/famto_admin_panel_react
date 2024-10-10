@@ -787,7 +787,7 @@ const Merchant = () => {
                     <input
                       type="search"
                       onChange={onSearch}
-                      className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none cursor-pointer"
+                      className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none cursor-pointer text-[14px]"
                       placeholder="Search merchant"
                     />
                   </div>

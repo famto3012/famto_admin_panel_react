@@ -25,7 +25,6 @@
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@saas-ui/charts": "^0.11.2",
     "@saas-ui/react": "^2.8.7",
-    "@wojtekmaj/react-daterange-picker": "^6.0.0",
     "admin-panel": "file:",
     "antd": "^5.18.3",
     "axios": "^1.7.2",

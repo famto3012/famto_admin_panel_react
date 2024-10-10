@@ -15,7 +15,7 @@ const EditCustomerSurgeModal = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const [confirmLoading,setConfirmLoading] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [customerSurge, setCustomerSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -31,7 +31,6 @@ const EditCustomerSurgeModal = ({
     }
 
     const fetchData = async () => {
-  
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/customer-surge/${currentEdit}`, {
@@ -52,7 +51,7 @@ const EditCustomerSurgeModal = ({
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } 
+      }
     };
 
     if (currentEdit) {
@@ -66,7 +65,7 @@ const EditCustomerSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
-    setConfirmLoading(true);
+      setConfirmLoading(true);
       console.log("customerSurge", customerSurge);
       const editResponse = await axios.put(
         `${BASE_URL}/admin/customer-surge/edit-customer-surge/${currentEdit}`,
@@ -101,7 +100,7 @@ const EditCustomerSurgeModal = ({
       });
       console.log(`Error in fetching data:${err}`);
     } finally {
-    setConfirmLoading(false);
+      setConfirmLoading(false);
     }
     console.log(customerSurge);
   };
@@ -117,7 +116,7 @@ const EditCustomerSurgeModal = ({
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
-              Rule Name
+              Rule Name <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -131,7 +130,7 @@ const EditCustomerSurgeModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseFare">
-              Base Fare
+              Base Fare <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -145,7 +144,7 @@ const EditCustomerSurgeModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseDistance">
-              Base Distance
+              Base Distance <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -187,7 +186,7 @@ const EditCustomerSurgeModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
-              Geofence
+              Geofence <span className="text-red-500">*</span>
             </label>
             <select
               name="geofenceId"

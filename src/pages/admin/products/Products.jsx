@@ -154,58 +154,15 @@ const Products = () => {
     };
 
     if (selectedMerchant) {
-      console.log("Finding Categories");
       getAllCategories(selectedMerchant);
     }
   }, [selectedMerchant, token]);
 
   useEffect(() => {
-    const getProductsByCategory = async (categoryId) => {
-      try {
-        setIsProductListLoading(true);
-
-        const response = await axios.get(
-          `${BASE_URL}/products/product-by-category/${categoryId}`,
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (response.status === 200) {
-          const { data } = response.data;
-
-          if (data.length > 0) {
-            setAllProducts(data);
-            setSelectedProduct({
-              productId: data[0]?._id,
-              productName: data[0]?.productName,
-            });
-          } else {
-            setIsProductListLoading(false);
-            setAllProducts([]);
-            setSelectedProduct(null);
-            setProductDetail(null);
-            return;
-          }
-        }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description: "An error occurred while getting the data",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } finally {
-        setIsProductListLoading(false);
-      }
-    };
-
     if (selectedCategory?.categoryId) {
       getProductsByCategory(selectedCategory.categoryId);
     }
-  }, [selectedCategory, token]);
+  }, [selectedCategory?.categoryId, token]);
 
   useEffect(() => {
     const getProductDetail = async (productId) => {
@@ -246,7 +203,49 @@ const Products = () => {
     } else {
       setProductDetail(null);
     }
-  }, [selectedProduct, token]);
+  }, [selectedProduct?.productId, token]);
+
+  const getProductsByCategory = async (categoryId) => {
+    try {
+      setIsProductListLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/products/product-by-category/${categoryId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        const { data } = response.data;
+
+        if (data.length > 0) {
+          setAllProducts(data);
+          setSelectedProduct({
+            productId: data[0]?._id,
+            productName: data[0]?.productName,
+          });
+        } else {
+          setIsProductListLoading(false);
+          setAllProducts([]);
+          setSelectedProduct(null);
+          setProductDetail(null);
+          return;
+        }
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occurred while getting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsProductListLoading(false);
+    }
+  };
 
   const selectCategory = (id, name, status) => {
     setSelectedCategory({
@@ -284,26 +283,54 @@ const Products = () => {
   const handleAddCategory = (category) =>
     setAllCategories([...allCategories, category]);
 
+  const handleAddCategoryCSV = (category) => {
+    setAllCategories(category);
+
+    setSelectedCategory({
+      categoryId: category[0]?._id,
+      categoryName: category[0]?.categoryName,
+      categoryStatus: category[0]?.status,
+    });
+  };
+
   const handleAddProduct = (product) =>
     setAllProducts([...allProducts, product]);
 
+  const handleAddProductCSV = (product) => {
+    setAllProducts(product);
+
+    setSelectedProduct({
+      productId: product._id,
+      productName: product.productName,
+    });
+  };
+
   const filterDeletedCategory = (categoryId) => {
-    setAllCategories(
-      allCategories.filter((category) => category._id !== categoryId)
+    const remainingCategories = allCategories.filter(
+      (category) => category._id !== categoryId
     );
 
-    if (allCategories.length > 1) {
-      setSelectedCategory({
-        categoryId: allCategories[0]._id,
-        categoryName: allCategories[0].categoryName,
-        categoryStatus: allCategories[0].status,
-      });
+    setAllCategories(remainingCategories);
+    handleCancel();
+
+    if (remainingCategories.length > 0) {
+      const newSelectedCategory = {
+        categoryId: remainingCategories[0]._id,
+        categoryName: remainingCategories[0].categoryName,
+        categoryStatus: remainingCategories[0].status,
+      };
+
+      setSelectedCategory(newSelectedCategory);
+      getProductsByCategory(newSelectedCategory.categoryId);
     } else {
       setSelectedCategory({
         categoryId: "",
         categoryName: "",
         categoryStatus: null,
       });
+      setAllProducts([]);
+      setSelectedProduct(null);
+      setProductDetail(null);
     }
   };
 
@@ -521,7 +548,7 @@ const Products = () => {
       const idToSend = role === "Admin" ? selectedMerchant : userId;
 
       const response = await axios.post(
-        `${BASE_URL}/products/download-product-csv`,
+        `${BASE_URL}/products/csv/download-csv`,
         { merchantId: idToSend },
         {
           responseType: "blob",
@@ -665,6 +692,7 @@ const Products = () => {
                 role={role}
                 merchantId={selectedMerchant}
                 onAddCategory={handleAddCategory}
+                onAddCategoryCSV={handleAddCategoryCSV}
               />
             </div>
           </div>
@@ -770,6 +798,7 @@ const Products = () => {
                     categoryId={selectedCategory?.categoryId}
                     merchantId={selectedMerchant}
                     onAddProduct={handleAddProduct}
+                    onAddProductCSV={handleAddProductCSV}
                   />
                 </div>
               </div>

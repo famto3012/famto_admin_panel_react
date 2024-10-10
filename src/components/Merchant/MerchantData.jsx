@@ -18,7 +18,7 @@ const MerchantData = ({
   onDataChange,
 }) => {
   const [showRatingModal, setShowRatingModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  // const [showEditModal, setShowEditModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
 
   const [previewURL, setPreviewURL] = useState("");
@@ -35,10 +35,10 @@ const MerchantData = ({
   const { coordinates } = useMap();
 
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
-  const toggleEditModal = (e) => {
-    e.preventDefault();
-    setShowEditModal(!showEditModal);
-  };
+  // const toggleEditModal = (e) => {
+  //   e.preventDefault();
+  //   setShowEditModal(!showEditModal);
+  // };
   const toggleMapModal = () => setShowMapModal(!showMapModal);
 
   useEffect(() => {
@@ -290,13 +290,13 @@ const MerchantData = ({
           )}
         </div>
 
-        <button
+        {/* <button
           onClick={toggleEditModal}
           className="bg-teal-600 w-fit h-fit py-2 px-1.5 rounded text-white flex items-center gap-[10px]"
         >
           <MdOutlineModeEditOutline />
           Edit Merchant
-        </button>
+        </button> */}
       </div>
 
       <div className=" w-[830px] mt-14 mb-[50px]">
@@ -393,7 +393,7 @@ const MerchantData = ({
         </div>
       </div>
 
-      <EditMerchant
+      {/* <EditMerchant
         isVisible={showEditModal}
         onCancel={toggleEditModal}
         BASE_URL={BASE_URL}
@@ -401,7 +401,7 @@ const MerchantData = ({
         role={role}
         data={detail}
         merchantId={merchantId}
-      />
+      /> */}
 
       <RatingModal
         isVisible={showRatingModal}
