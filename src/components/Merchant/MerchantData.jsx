@@ -211,9 +211,9 @@ const MerchantData = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col col-span-1 2xl:col-span-2 items-center">
           {!croppedFile && !detail?.merchantDetail?.merchantImageURL && (
-            <div className="bg-gray-400 h-20 w-20 rounded-md relative">
+            <div className="bg-gray-400 w-[90%] h-[10rem] rounded relative">
               <label
                 htmlFor="merchantImage"
                 className="cursor-pointer absolute bottom-0 right-0"
@@ -229,7 +229,7 @@ const MerchantData = ({
           {croppedFile && (
             <figure
               onClick={() => handleImageClick(URL.createObjectURL(croppedFile))}
-              className="w-20 h-20 rounded relative"
+              className="w-[90%] h-[10rem] rounded relative"
             >
               <img
                 src={URL.createObjectURL(croppedFile)}
@@ -253,7 +253,7 @@ const MerchantData = ({
               onClick={() =>
                 handleImageClick(detail?.merchantDetail?.merchantImageURL)
               }
-              className="w-20 h-20 rounded relative"
+              className="w-[90%] h-[10rem] rounded relative"
             >
               <img
                 src={detail?.merchantDetail?.merchantImageURL}
