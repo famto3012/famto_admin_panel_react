@@ -18,6 +18,7 @@ import DeleteProductModal from "../../../components/model/ProductModels/DeletePr
 import ProductDetail from "../../../components/Product/ProductDetail";
 import { Spinner, useToast } from "@chakra-ui/react";
 import Select from "react-select";
+import CSVModal from "../../../components/model/ProductModels/CSVModal";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -45,6 +46,7 @@ const Products = () => {
   const [editProductModal, setEditProductModal] = useState(false);
   const [deleteCategoryModal, setDeleteCategoryModal] = useState(false);
   const [deleteProductModal, setDeleteProductModal] = useState(false);
+  const [csvModal, setCsvModal] = useState(false);
 
   const [isCategoryListLoading, setIsCategoryListLoading] = useState(false);
   const [isProductListLoading, setIsProductListLoading] = useState(false);
@@ -269,6 +271,7 @@ const Products = () => {
   const showEditProductModal = () => setEditProductModal(true);
   const showDeleteCategoryModal = () => setDeleteCategoryModal(true);
   const showDeleteProductModal = () => setDeleteProductModal(true);
+  const showCsvModal = () => setCsvModal(true);
 
   const handleCancel = () => {
     setAddCategoryModal(false);
@@ -278,12 +281,13 @@ const Products = () => {
     setDeleteCategoryModal(false);
     setDeleteProductModal(false);
     setChangeCategoryModal(false);
+    setCsvModal(false);
   };
 
   const handleAddCategory = (category) =>
     setAllCategories([...allCategories, category]);
 
-  const handleAddCategoryCSV = (category) => {
+  const handleAddCSVData = (category) => {
     setAllCategories(category);
 
     setSelectedCategory({
@@ -541,48 +545,6 @@ const Products = () => {
     value: merchant._id,
   }));
 
-  const handleDownloadCSV = async (e) => {
-    try {
-      setCSVDownloadLoading(true);
-
-      const idToSend = role === "Admin" ? selectedMerchant : userId;
-
-      const response = await axios.post(
-        `${BASE_URL}/products/csv/download-csv`,
-        { merchantId: idToSend },
-        {
-          responseType: "blob",
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        // Create a URL for the file and trigger the download
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "Combined_product.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "An error occoured while downloading CSV file",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setCSVDownloadLoading(false);
-    }
-  };
-
   return (
     <>
       <Sidebar />
@@ -610,22 +572,21 @@ const Products = () => {
           )}
 
           <div className="flex gap-3">
-            <div>
-              <button
-                onClick={handleDownloadCSV}
-                className="bg-cyan-100 text-black rounded-md p-2 font-semibold flex gap-[5px] items-center"
-              >
-                {CSVDownloadLoading ? (
-                  <>
-                    <Spinner size="sm" /> <span>CSV</span>
-                  </>
-                ) : (
-                  <>
-                    <ArrowDownOutlined /> <span>CSV</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={showCsvModal}
+              className="bg-cyan-100 text-black rounded-md py-2 px-4 font-semibold flex gap-[5px] items-center"
+            >
+              CSV
+            </button>
+
+            <CSVModal
+              isVisible={csvModal}
+              handleCancel={handleCancel}
+              token={token}
+              BASE_URL={BASE_URL}
+              merchantId={selectedMerchant}
+              onCSVDataAdd={handleAddCSVData}
+            />
           </div>
         </div>
 
@@ -692,7 +653,7 @@ const Products = () => {
                 role={role}
                 merchantId={selectedMerchant}
                 onAddCategory={handleAddCategory}
-                onAddCategoryCSV={handleAddCategoryCSV}
+                onAddCategoryCSV={handleAddCSVData}
               />
             </div>
           </div>

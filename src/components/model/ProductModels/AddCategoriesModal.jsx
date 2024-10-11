@@ -2,8 +2,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
-import { Spinner, useToast } from "@chakra-ui/react";
-import { AiOutlineCloudUpload } from "react-icons/ai";
+import { useToast } from "@chakra-ui/react";
+
 import { UserContext } from "../../../context/UserContext";
 import CropImage from "../../CropImage";
 
@@ -15,7 +15,6 @@ const AddCategoriesModal = ({
   role,
   merchantId,
   onAddCategory,
-  onAddCategoryCSV,
 }) => {
   const [categoryData, setCategoryData] = useState({
     categoryName: "",
@@ -37,10 +36,7 @@ const AddCategoriesModal = ({
   const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
 
-  const [selectedCSVFile, setSelectedCSVFile] = useState(null);
-
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploadLoading, setIsUploadLoading] = useState(false);
 
   const toast = useToast();
   const { userId } = useContext(UserContext);
@@ -172,63 +168,6 @@ const AddCategoriesModal = ({
     }
   };
 
-  const handleSelectCSVFile = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setSelectedCSVFile(file);
-  };
-
-  const handlUploadCSVFile = async (e) => {
-    try {
-      e.preventDefault();
-
-      setIsUploadLoading(true);
-
-      const userIdToSend = role === "Admin" ? merchantId : userId;
-
-      const csvToSend = new FormData();
-
-      if (selectedCSVFile) {
-        csvToSend.append("categoryCSV", selectedCSVFile);
-        csvToSend.append("merchantId", userIdToSend);
-      }
-
-      const response = await axios.post(
-        `${BASE_URL}/categories/admin/upload-category-csv`,
-        csvToSend,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        onAddCategoryCSV(response.data.data);
-        setSelectedCSVFile(null);
-        handleCancel();
-        toast({
-          title: "Success",
-          description: "CSV data added successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Error in uploading CSV file",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsUploadLoading(false);
-    }
-  };
-
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setIsInnerVisible(true);
@@ -299,7 +238,7 @@ const AddCategoriesModal = ({
             />
           </div>
 
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
               Description
             </label>
@@ -311,7 +250,7 @@ const AddCategoriesModal = ({
               name="description"
               onChange={handleInputChange}
             ></input>
-          </div>
+          </div> */}
 
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500">
@@ -352,7 +291,7 @@ const AddCategoriesModal = ({
             <label className="cursor-pointer"> Both</label>
           </div>
 
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <label className=" w-1/3">Photos</label>
             <div className="flex items-center gap-[30px]">
               {!croppedFile && (
@@ -399,48 +338,9 @@ const AddCategoriesModal = ({
                 />
               )}
             </div>
-          </div>
+          </div> */}
 
-          <div className="flex items-start justify-between gap-4 mt-5">
-            <div className="flex flex-col">
-              <label
-                htmlFor="uploadCSV"
-                className="flex items-center bg-teal-800 w-fit p-2 gap-2 text-white rounded-xl border cursor-pointer"
-              >
-                <AiOutlineCloudUpload size={20} />
-                Upload CSV
-                <input
-                  type="file"
-                  name="uploadCSV"
-                  id="uploadCSV"
-                  className="hidden"
-                  onChange={handleSelectCSVFile}
-                />
-              </label>
-
-              <p
-                onClick={downloadSampleCSV}
-                className="text-gray-500 underline underline-offset-2 cursor-pointer"
-              >
-                Download Sample CSV
-              </p>
-
-              {selectedCSVFile && (
-                <div className="flex items-center gap-4 mt-[20px]">
-                  <p>{selectedCSVFile.name}</p>
-                  {isUploadLoading ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <AiOutlineCloudUpload
-                      size={25}
-                      onClick={handlUploadCSVFile}
-                      className="cursor-pointer  text-teal-600"
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-
+          <div className="flex items-start justify-end gap-4 mt-5">
             <div className="flex gap-4 w-fit h-fit">
               <button
                 className="bg-cyan-50 py-2 px-4 rounded-md"

@@ -181,6 +181,7 @@ const EditCategoriesModal = ({
               ))}
             </select>
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="categoryName">
               Category Name <span className="text-red-600">*</span>
@@ -193,7 +194,8 @@ const EditCategoriesModal = ({
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex items-center">
+
+          {/* <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="description">
               Description
             </label>
@@ -204,7 +206,8 @@ const EditCategoriesModal = ({
               name="description"
               onChange={handleInputChange}
             ></input>
-          </div>
+          </div> */}
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500">
               Type <span className="text-red-600">*</span>
@@ -239,7 +242,8 @@ const EditCategoriesModal = ({
             />
             <label> Both</label>
           </div>
-          <div className="flex items-center">
+
+          {/* <div className="flex items-center">
             <label className=" w-1/3">Photos</label>
             <div className="flex items-center gap-[30px]">
               {!croppedFile && (
@@ -289,7 +293,8 @@ const EditCategoriesModal = ({
                 />
               )}
             </div>
-          </div>
+          </div> */}
+
           <div className="flex justify-end gap-4 mt-6">
             <button
               className="bg-cyan-50 py-2 px-4 rounded-md"
