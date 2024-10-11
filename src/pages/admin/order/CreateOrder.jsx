@@ -263,7 +263,7 @@ const CreateOrder = () => {
                     }}
                     dateFormat="yyyy/MM/dd"
                     withPortal
-                    className="border-2 p-2 rounded-sm cursor-pointer outline-none focus:outline-none"
+                    className="border-2 p-2 rounded-lg cursor-pointer mt-2 outline-none focus:outline-none"
                     placeholderText="Select Date range"
                     minDate={new Date()}
                   />
@@ -276,7 +276,7 @@ const CreateOrder = () => {
                     timeIntervals={15}
                     dateFormat="h:mm aa"
                     showTimeCaption={false}
-                    className="border-2 p-2 rounded-sm cursor-pointer outline-none focus:outline-none"
+                    className="border-2 p-2 rounded-lg cursor-pointer mt-2 outline-none focus:outline-none"
                     placeholderText="Select Time"
                   />
                 </div>

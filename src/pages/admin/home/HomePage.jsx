@@ -411,7 +411,7 @@ const HomePage = () => {
               }}
               dateFormat="yyyy/MM/dd"
               withPortal
-              className="border-2 p-2 rounded-sm cursor-pointer mt-4 outline-none focus:outline-none"
+              className="border-2 p-2 rounded-lg cursor-pointer mt-4 outline-none focus:outline-none"
               placeholderText="Select Date range"
               maxDate={new Date()}
             />

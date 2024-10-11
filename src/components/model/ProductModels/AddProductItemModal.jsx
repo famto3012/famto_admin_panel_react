@@ -2,10 +2,9 @@ import { Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
-import { Spinner, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
-import { AiOutlineCloudUpload } from "react-icons/ai";
 import "react-image-crop/dist/ReactCrop.css";
 import CropImage from "../../CropImage";
 
@@ -18,7 +17,6 @@ const AddProductItemModal = ({
   categoryId,
   merchantId,
   onAddProduct,
-  onAddProductCSV,
 }) => {
   const [productData, setProductData] = useState({
     productName: "",
@@ -44,9 +42,6 @@ const AddProductItemModal = ({
   const [isLoading, setIsLoading] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
   const modalRef = useRef(null);
-
-  const [selectedCSVFile, setSelectedCSVFile] = useState(null);
-  const [isUploadLoading, setIsUploadLoading] = useState(false);
 
   const [tagValue, setTagValue] = useState("");
   const inputRef = useRef(null);
@@ -245,91 +240,6 @@ const AddProductItemModal = ({
     }
   };
 
-  const downloadSampleCSV = async (e) => {
-    try {
-      e.preventDefault();
-
-      const response = await axios.get(`${BASE_URL}/products/csv/sample-csv`, {
-        responseType: "blob",
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("In fronend");
-
-      // Create a URL for the file and trigger the download
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      console.log("url", url);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "Product_sample.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      console.log(`Error in downloading sample CSV file: ${err.stack}`);
-    }
-  };
-
-  const handleSelectCSVFile = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setSelectedCSVFile(file);
-  };
-
-  const handlUploadCSVFile = async (e) => {
-    try {
-      e.preventDefault();
-
-      setIsUploadLoading(true);
-
-      const csvToSend = new FormData();
-
-      if (selectedCSVFile) {
-        csvToSend.append("productCSV", selectedCSVFile);
-        csvToSend.append("categoryId", categoryId);
-      }
-
-      const response = await axios.post(
-        `${BASE_URL}/products/csv/upload-csv`,
-        csvToSend,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        onAddProductCSV(response.data.data);
-        setSelectedCSVFile(null);
-        handleCancel();
-        toast({
-          title: "Success",
-          description: "CSV data added successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Error in uploading CSV file",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsUploadLoading(false);
-    }
-  };
-
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setIsInnerVisible(true);
@@ -368,44 +278,6 @@ const AddProductItemModal = ({
           className="max-h-[30rem] overflow-auto"
         >
           <div className="flex flex-col gap-4 mt-5">
-            <div className="grid justify-end">
-              <label
-                htmlFor="uploadCSV"
-                className="flex items-center bg-teal-800 w-fit p-2 gap-2 text-white rounded-xl border cursor-pointer"
-              >
-                <AiOutlineCloudUpload size={20} />
-                Upload CSV
-                <input
-                  type="file"
-                  name="uploadCSV"
-                  id="uploadCSV"
-                  className="hidden"
-                  onChange={handleSelectCSVFile}
-                />
-              </label>
-
-              <p
-                onClick={downloadSampleCSV}
-                className="text-gray-500 underline underline-offset-2 cursor-pointer"
-              >
-                Download Sample CSV
-              </p>
-
-              {selectedCSVFile && (
-                <div className="flex items-center gap-4 mt-[20px]">
-                  <p>{selectedCSVFile.name}</p>
-                  {isUploadLoading ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <AiOutlineCloudUpload
-                      size={25}
-                      onClick={handlUploadCSVFile}
-                      className="cursor-pointer  text-teal-600"
-                    />
-                  )}
-                </div>
-              )}
-            </div>
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="productName">
                 Product Name <span className="text-red-600">*</span>
