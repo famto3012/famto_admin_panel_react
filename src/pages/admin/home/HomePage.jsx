@@ -353,8 +353,8 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="bg-white mt-2 mx-5">
-          <div className="flex items-center mx-[20px] justify-between">
+        <div className="bg-white mt-2 mx-5 pt-4">
+          <div className="flex items-center mx-[20px] justify-between ">
             <div className="flex item-center space-x-2 w-2/3 gap-3 mt-3 mb-3">
               <input
                 type="radio"

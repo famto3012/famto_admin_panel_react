@@ -263,7 +263,7 @@ const MerchantDetails = () => {
       <main className="p-6 bg-gray-100 pl-[300px] h-full">
         <GlobalSearch />
         <div className="flex justify-between my-[15px] mt-8 mb-8">
-          <h3 className="font-[600] text-[18px] ms-3">Merchant name</h3>
+          <h3 className="font-[600] text-[18px] ms-3">{merchantData?.merchantDetail?.merchantName}</h3>
           <div className="flex items-center gap-[15px]">
             {role === "Admin" && !merchantData.isBlocked && (
               <>

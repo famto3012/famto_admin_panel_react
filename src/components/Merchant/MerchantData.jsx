@@ -20,9 +20,7 @@ const MerchantData = ({
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
 
-  const [previewURL, setPreviewURL] = useState("");
   const [imgSrc, setImgSrc] = useState("");
-  const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
   const [img, setImg] = useState(null);
@@ -52,13 +50,6 @@ const MerchantData = ({
   useEffect(() => {
     console.log(detail);
   }, [detail]);
-
-  // const handleSelectImage = (e) => {
-  //   e.preventDefault();
-  //   const file = e.target.files[0];
-  //   setPreviewURL(URL.createObjectURL(file));
-  //   onDataChange({ merchantImage: file });
-  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -360,7 +351,7 @@ const MerchantData = ({
           <MapModal
             isVisible={showMapModal}
             onClose={toggleMapModal}
-            location={MerchantData?.merchantDetail?.location}
+            location={detail?.merchantDetail?.location}
             BASE_URL={BASE_URL}
             token={token}
           />

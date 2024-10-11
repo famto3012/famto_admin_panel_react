@@ -12,6 +12,8 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { Spinner, useToast } from "@chakra-ui/react";
 import CropImage from "../../../components/CropImage";
+import { userTypeForPushNotificationOptions, userTypeOptions } from "../../../utils/DefaultData";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -245,7 +247,7 @@ const PushNotification = () => {
   };
 
   const onTypeChange = (e) => {
-    const selectedType = e.target.value;
+    const selectedType = e;
     setType(selectedType);
     if (selectedType !== "") {
       handleTypeFilter(selectedType);
@@ -483,19 +485,27 @@ const PushNotification = () => {
         </div>
         <p className="font-bold ml-5">Push Notification log</p>
         <div className="bg-white mx-5 rounded-lg mt-5 flex p-8 justify-between">
-          <select
-            name="type"
-            value={type}
-            onChange={onTypeChange}
-            className="bg-blue-50 rounded-lg p-3 outline-none focus:outline-none"
-          >
-            <option hidden value="">
-              Type of user
-            </option>
-            <option value="customer">Customer</option>
-            <option value="merchant">Merchant</option>
-            <option value="driver">Driver</option>
-          </select>
+          <Select
+            options={userTypeForPushNotificationOptions}
+            value={userTypeForPushNotificationOptions.find(
+              (option) => option.value === type
+            )}
+            onChange={(option) => onTypeChange(option.value)}
+            className=" bg-cyan-50 min-w-[10rem]"
+            placeholder="Type of user"
+            isSearchable={false}
+            isMulti={false}
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
           <div>
             <FilterAltOutlined className="text-gray-500" />
             <input
@@ -622,9 +632,7 @@ const PushNotification = () => {
                         centered
                       >
                         <p className="font-semibold text-[18px] mb-5">
-                          
-                            Are you sure want to delete?
-                          
+                          Are you sure want to delete?
                         </p>
                         <div className="flex justify-end">
                           <button
@@ -637,7 +645,7 @@ const PushNotification = () => {
                             className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
                             onClick={() => handleDelete(currentData)}
                           >
-                           {confirmLoading ? "Deleting..." : "Delete"}
+                            {confirmLoading ? "Deleting..." : "Delete"}
                           </button>
                         </div>
                       </Modal>

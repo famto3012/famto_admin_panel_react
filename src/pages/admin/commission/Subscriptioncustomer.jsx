@@ -11,6 +11,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { formatDate } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -75,9 +76,11 @@ const Subscriptioncustomer = () => {
 
         if (merchantResponse.status === 200) {
           setMerchantlog(merchantResponse.data.subscriptionLogs || []);
+          console.log("Merchant", merchantResponse.data)
         }
         if (customerResponse.status === 200) {
           setCustomerlog(customerResponse.data.subscriptionLogs || []);
+          console.log("Customer", customerResponse.data)
         }
         if (allmerchantResponse.status === 200) {
           setMerchants(allmerchantResponse.data.data);
@@ -522,10 +525,10 @@ const Subscriptioncustomer = () => {
                         >
                           <td className="p-3">{customerlog.user}</td>
                           <td>{customerlog.userId}</td>
-                          <td>{customerlog.planId}</td>
+                          <td>{customerlog.plan}</td>
                           <td>{customerlog.amount}</td>
                           <td>{customerlog.paymentMode}</td>
-                          <td className="px-[25px]">
+                          <td className="px-[25px] text-green-400">
                             {customerlog.paymentStatus}
                           </td>
                         </tr>
@@ -543,7 +546,7 @@ const Subscriptioncustomer = () => {
                         "Subscription Plans",
                         "Total Amount",
                         "Payment Mode",
-                        "Date",
+                        "Start Date",
                         "Status",
                       ].map((header, index) => (
                         <th
@@ -579,11 +582,11 @@ const Subscriptioncustomer = () => {
                           className="align-middle border-b border-gray-300 text-center h-20"
                         >
                           <td>{merchantlog.user}</td>
-                          <td>{merchantlog.planId}</td>
+                          <td>{merchantlog.plan}</td>
                           <td>{merchantlog.amount}</td>
                           <td>{merchantlog.paymentMode}</td>
-                          <td>{merchantlog.startDate}</td>
-                          <td className="flex items-center gap-6 px-[15px] py-4">
+                          <td>{formatDate(merchantlog.startDate)}</td>
+                          <td className="flex justify-center px-[15px] pt-5">
                             {merchantlog.paymentStatus === "Unpaid" ? (
                               <button
                                 className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
@@ -592,7 +595,7 @@ const Subscriptioncustomer = () => {
                                 Set as paid
                               </button>
                             ) : (
-                              <p>Paid</p>
+                              <p className="text-green-400">Paid</p>
                             )}
 
                             <Modal

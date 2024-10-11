@@ -47,10 +47,8 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   }));
 
   const foodCategoryIds = allBusinessCategory
-    ?.filter((category) => category.title === "Food")
-    .map((category) => category._id);
-
-  console.log("foodCategoryIds", foodCategoryIds);
+  ?.filter((category) => category.title === "Food")
+  .map((category) => category._id);
 
   return (
     <>
@@ -145,7 +143,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         ) && (
           <div className="mb-4 flex w-[800px]">
             <label className="block text-gray-700 w-2/5">
-              If restaurant, then
+              If food, then
             </label>
 
             <div className="flex items-center gap-[4rem]">
