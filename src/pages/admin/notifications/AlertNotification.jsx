@@ -13,6 +13,8 @@ import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
 import { useSocket } from "../../../context/SocketContext";
 import CropImage from "../../../components/CropImage";
+import Select from "react-select";
+import { userTypeOptions } from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const AlertNotification = () => {
@@ -92,9 +94,9 @@ const AlertNotification = () => {
 
   const handleInputChange = async (e) => {
     try {
-      setSearchType(e.target.value);
+      setSearchType(e);
       const typeResponse = await axios.get(
-        `${BASE_URL}/admin/notification/alert-notification/${e.target.value}`,
+        `${BASE_URL}/admin/notification/alert-notification/${e}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -452,20 +454,27 @@ const AlertNotification = () => {
             <div>
               <p className="font-bold mt-5 mx-[30px]">Alert Notification log</p>
               <div className="bg-white mx-9 rounded-lg mt-5 flex p-8 justify-between">
-                <select
-                  name="type"
-                  value={searchType}
-                  onChange={handleInputChange}
-                  className="bg-blue-50 p-3 outline-none focus:outline-none rounded-lg"
-                  defaultValue=""
-                >
-                  <option hidden value="">
-                    Type of user
-                  </option>
-                  <option value="customer">Customer</option>
-                  <option value="agent">Agent</option>
-                  <option value="merchant">Merchant</option>
-                </select>
+              <Select
+                  options={userTypeOptions}
+                  value={userTypeOptions.find(
+                    (option) => option.value === searchType
+                  )}
+                  onChange={(option) => handleInputChange(option.value)}
+                  className=" bg-cyan-50 min-w-[10rem]"
+                  placeholder="Type of user"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
                 <div>
                   <FilterAltOutlinedIcon className="text-gray-500" />
                   <input

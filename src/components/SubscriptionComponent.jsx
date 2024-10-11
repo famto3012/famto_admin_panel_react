@@ -190,16 +190,19 @@ const SubscriptionComponent = () => {
     e.preventDefault();
 
     try {
-      if (!merchant.planId || !merchant.userId || !merchant.paymentMode) {
-        toast({
-          title: "Error",
-          description: "Please select Plan ID and Merchant ID and Payment mode",
-          duration: 3000,
-          status: "error",
-          isClosable: true,
-        });
+      if (role === "Admin") {
+        if (!merchant.planId || !merchant.userId || !merchant.paymentMode) {
+          toast({
+            title: "Error",
+            description:
+              "Please select Plan ID and Merchant ID and Payment mode",
+            duration: 3000,
+            status: "error",
+            isClosable: true,
+          });
 
-        return;
+          return;
+        }
       }
 
       setIsLoading(true);
@@ -306,7 +309,7 @@ const SubscriptionComponent = () => {
             status: "error",
             isClosable: true,
           });
-          setIsPaymentLoading(false);
+          // setIsPaymentLoading(false);
         }
       },
       prefill: {
@@ -408,13 +411,17 @@ const SubscriptionComponent = () => {
 
   return (
     <>
-      <div className="pl-[300px] bg-gray-200 ">
+      <div
+        className={`pl-[300px] bg-gray-100 ${
+          role === "Admin" ? "" : "h-[78%]"
+        }`}
+      >
         <h1 className="my-5 p-5 bg-white font-semibold text-[18px]">
           Merchant
         </h1>
-
-        <div className="bg-white mx-5 p-5 rounded-lg my-5">
-          {/* <div className="flex w-2/3 justify-between">
+        {role === "Admin" && (
+          <div className="bg-white mx-5 p-5 rounded-lg my-5">
+            {/* <div className="flex w-2/3 justify-between">
             <p>
               Enable this toggle to transfer Subscription on the basis of
               delivery methods.
@@ -422,7 +429,6 @@ const SubscriptionComponent = () => {
             <Switch />
           </div> */}
 
-          {role === "Admin" && (
             <div className="flex items-center ">
               <label className="w-1/3">Merchant Subscription Setup</label>
               <button
@@ -440,93 +446,108 @@ const SubscriptionComponent = () => {
                 BASE_URL={BASE_URL}
               />
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="bg-white mx-5 p-5 pb-10 rounded-lg mt-5">
           <div className="flex justify-between items-center">
-          <h1>Apply Subscription</h1>
-          <Link className="bg-teal-800 p-3 rounded-xl text-white w-[175px] text-center" to="http://famto.in/subscriptions">
-            Website preview
-          </Link>
+            <h1>Apply Subscription</h1>
+            <Link
+              className="bg-teal-800 p-3 rounded-xl text-white w-[175px] text-center"
+              to="http://famto.in/subscriptions"
+            >
+              Website preview
+            </Link>
           </div>
           <div className="flex mt-10">
-            <label className="w-1/3">Added Subscription Plans</label>
+            <label className="w-1/3">Available Subscription Plans</label>
             <div className="w-fit grid xl:grid-cols-2 grid-cols-1 gap-5">
               {subscriptionMerchant.map((subscription) => (
                 <div className="bg-zinc-50 rounded-lg flex border p-3">
                   <div className="flex flex-col gap-5">
-                    <div className="flex justify-between ">
-                      <p>
-                        Plan name:
-                        <span className="font-[700] ms-2 max-w-[20ch] truncate whitespace-nowrap overflow-hidden">
-                          {subscription.name}
-                        </span>
-                      </p>
-                      <p className="font-[700]">{subscription.amount}</p>
-                    </div>
+                    {/* <div className="flex justify-between "> */}
+                    <p>
+                      Plan name:
+                      <span className="font-[700] ms-2 max-w-[20ch] truncate whitespace-nowrap overflow-hidden">
+                        {subscription.name}
+                      </span>
+                    </p>
+                    <p>
+                      Amount:
+                      <span className="font-[700] ml-1">
+                        {subscription.amount}
+                      </span>
+                    </p>
+                    {/* </div> */}
 
-                    <div className="flex justify-between ">
-                      <p>
-                        Duration:{" "}
-                        <span className="font-[700]">
-                          {subscription.duration}
-                        </span>
-                      </p>
-                      <p>
-                        Remainder:{" "}
-                        <span className="font-[700]">
-                          {subscription.renewalReminder}
-                        </span>
-                      </p>
-                    </div>
-
-                    <p className="">
-                      Tax name:{" "}
+                    {/* <div className="flex justify-between "> */}
+                    <p>
+                      Duration:{" "}
                       <span className="font-[700]">
-                        {subscription?.taxId?.taxName || "-"}
+                        {subscription.duration}
                       </span>
                     </p>
 
+                    {/* </div> */}
+                    {role === "Admin" && (
+                      <>
+                        <p>
+                          Remainder:{" "}
+                          <span className="font-[700]">
+                            {subscription.renewalReminder}
+                          </span>
+                        </p>
+                        <p>
+                          Tax name:{" "}
+                          <span className="font-[700]">
+                            {subscription?.taxId?.taxName || "-"}
+                          </span>
+                        </p>
+                      </>
+                    )}
+
                     <p className="">{subscription.description}</p>
+                    {role === "Admin" && (
+                      <div className="flex mb-4">
+                        <button
+                          className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
+                          onClick={() =>
+                            showModalEditMerchant(subscription._id)
+                          }
+                        >
+                          <BiEdit className="text-[22px] mr-1" /> Edit
+                        </button>
+                        <EditSubMerchantModal
+                          isVisible={isModalVisibleMerchantEdit}
+                          handleCancel={handleCancel}
+                          currentEditMerchant={currentEditMerchant}
+                          token={token}
+                          tax={tax}
+                          BASE_URL={BASE_URL}
+                        />
 
-                    <div className="flex mb-4">
-                      <button
-                        className="bg-blue-50 flex items-center rounded-3xl p-3 px-10 ml-3 mt-5"
-                        onClick={() => showModalEditMerchant(subscription._id)}
-                      >
-                        <BiEdit className="text-[22px] mr-1" /> Edit
-                      </button>
-                      <EditSubMerchantModal
-                        isVisible={isModalVisibleMerchantEdit}
-                        handleCancel={handleCancel}
-                        currentEditMerchant={currentEditMerchant}
-                        token={token}
-                        tax={tax}
-                        BASE_URL={BASE_URL}
-                      />
-
-                      <button
-                        className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
-                        onClick={() =>
-                          showModalDeleteMerchant(subscription._id)
-                        }
-                      >
-                        <RiDeleteBinLine className="text-[20px] mr-1" />
-                        Delete
-                      </button>
-                      <DeleteSubMerchantModal
-                        isVisible={deleteModalMerchant}
-                        handleCancel={handleCancel}
-                        handleConfirmDeleteMerchant={
-                          handleConfirmDeleteMerchant
-                        }
-                        currentDeleteMerchant={currentDeleteMerchant}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        removeMerchant={removeMerchant}
-                      />
-                    </div>
+                        <button
+                          className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
+                          onClick={() =>
+                            showModalDeleteMerchant(subscription._id)
+                          }
+                        >
+                          <RiDeleteBinLine className="text-[20px] mr-1" />
+                          Delete
+                        </button>
+                        <DeleteSubMerchantModal
+                          isVisible={deleteModalMerchant}
+                          handleCancel={handleCancel}
+                          handleConfirmDeleteMerchant={
+                            handleConfirmDeleteMerchant
+                          }
+                          currentDeleteMerchant={currentDeleteMerchant}
+                          token={token}
+                          BASE_URL={BASE_URL}
+                          removeMerchant={removeMerchant}
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className=" ml-auto rounded-lg w-14 flex items-center justify-center">
                     <input
@@ -542,18 +563,19 @@ const SubscriptionComponent = () => {
               ))}
             </div>
           </div>
-
-          <div className="flex mt-5 items-center">
-            <label className="w-1/3 text-gray-800">Merchant Id</label>
-            <input
-              type="text"
-              name="userId"
-              value={merchant.userId}
-              placeholder="Enter merchant ID"
-              className="border-2 border-gray-100 rounded shadow-md p-2 w-1/3 focus:outline-none"
-              onChange={handleMerchant}
-            />
-          </div>
+          {role === "Admin" && (
+            <div className="flex mt-5 items-center">
+              <label className="w-1/3 text-gray-800">Merchant Id</label>
+              <input
+                type="text"
+                name="userId"
+                value={merchant.userId}
+                placeholder="Enter merchant ID"
+                className="border-2 border-gray-100 rounded shadow-md p-2 w-1/3 focus:outline-none"
+                onChange={handleMerchant}
+              />
+            </div>
+          )}
 
           <div className="flex mt-5">
             <div className="w-1/3">
@@ -591,11 +613,11 @@ const SubscriptionComponent = () => {
       </div>
 
       {role === "Admin" && (
-        <div className="pl-[300px] bg-gray-100">
-          <h1 className="mt-10 px-5 pt-5 pb-2 bg-white font-semibold text-[18px]">
+        <div className="pl-[300px] bg-gray-100 ">
+          <h1 className=" px-5 pt-5 pb-5 bg-white font-semibold text-[18px]">
             Customers
           </h1>
-          <div className=" mx-5 p-5 rounded-lg mt-5">
+          <div className="p-5 rounded-lg">
             {/* <div className="flex w-2/3 justify-between mt-5">
               <p>
                 Enable this toggle to transfer Subscription on the basis of
@@ -604,7 +626,7 @@ const SubscriptionComponent = () => {
               <Switch />
             </div> */}
 
-            <div className="flex flex-row item-center bg-white p-3 rounded-md">
+            <div className="flex flex-row item-center bg-white p-5 rounded-md">
               <label className="w-1/3 flex items-center">
                 Customer Subscription Setup
               </label>
@@ -625,38 +647,43 @@ const SubscriptionComponent = () => {
             </div>
           </div>
 
-          <div className="bg-white mx-5 p-5 pb-10 rounded-lg mt-5">
+          <div className="bg-white mx-5 p-5 pb-10 rounded-lg">
             <h1>Apply Subscription</h1>
             <div className="flex mt-10">
-              <label className="w-1/3">Added Subscription Plans</label>
+              <label className="w-1/3">Available Subscription Plans</label>
               <div className="w-fit grid xl:grid-cols-2 grid-cols-1 gap-5">
                 {subscriptionCustomer.map((subscription) => (
                   <div className="bg-zinc-50 rounded-lg flex border p-3">
                     <div className="flex flex-col gap-5">
-                      <div className="flex justify-between ">
-                        <p>
-                          Plan name:
-                          <span className="font-[700] ms-2">
-                            {subscription.name}
-                          </span>
-                        </p>
-                        <p className="font-[700]">{subscription.amount}</p>
-                      </div>
+                      {/* <div className="flex justify-between "> */}
+                      <p>
+                        Plan name:
+                        <span className="font-[700] ms-2">
+                          {subscription.name}
+                        </span>
+                      </p>
+                      <p>
+                        Amount:
+                        <span className="font-[700] ml-1">
+                          {subscription.amount}
+                        </span>
+                      </p>
+                      {/* </div> */}
 
-                      <div className="flex justify-between ">
-                        <p>
-                          Duration:{" "}
-                          <span className="font-[700]">
-                            {subscription.duration}
-                          </span>
-                        </p>
-                        <p>
-                          Remainder:{" "}
-                          <span className="font-[700]">
-                            {subscription.renewalReminder}
-                          </span>
-                        </p>
-                      </div>
+                      {/* <div className="flex justify-between "> */}
+                      <p>
+                        Duration:{" "}
+                        <span className="font-[700]">
+                          {subscription.duration}
+                        </span>
+                      </p>
+                      <p>
+                        Remainder:{" "}
+                        <span className="font-[700]">
+                          {subscription.renewalReminder}
+                        </span>
+                      </p>
+                      {/* </div> */}
 
                       <p className="">
                         Tax name:{" "}

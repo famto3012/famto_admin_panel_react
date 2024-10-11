@@ -162,12 +162,11 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
             setMapTwo(newMapTwo);
             setMap(newMap); // Save the map instance in context
             setIsMapLoaded(true);
-            if (location) {
-              const { lat, lng } = location;
 
-              newMarker = mapplsClassObject.Marker({
+            if (location) {
+              mapplsClassObject.Marker({
                 map: newMap,
-                position: { lat, lng },
+                position: { lat: location[0], lng: location[1] },
                 draggable: false,
               });
             }

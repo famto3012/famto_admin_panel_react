@@ -63,7 +63,7 @@ const AgentPayout = () => {
             params: {
               paymentStatus,
               agentId: selectedAgent,
-              date: selectedDate,
+              date: selectedDate || new Date(),
               geofence: selectedGeofence,
             },
             withCredentials: true,

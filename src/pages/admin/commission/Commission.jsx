@@ -56,19 +56,17 @@ const Commission = () => {
             </label>
           </div>
 
-          {role === "Admin" && (
-            <div>
-              {isCommission ? (
-                <button className="bg-teal-800 p-3 rounded-xl text-white ">
-                  <Link to="/view-commission"> View Commision log</Link>
-                </button>
-              ) : (
-                <button className="bg-teal-800 p-3 rounded-xl text-white ">
-                  <Link to="/view-subscription">View Subscription log</Link>
-                </button>
-              )}
-            </div>
-          )}
+          <div>
+            {isCommission ? (
+              <button className="bg-teal-800 p-3 rounded-xl text-white ">
+                <Link to="/view-commission"> View Commission log</Link>
+              </button>
+            ) : (
+              <button className="bg-teal-800 p-3 rounded-xl text-white ">
+                <Link to="/view-subscription">View Subscription log</Link>
+              </button>
+            )}
+          </div>
         </div>
         {isCommission ? <CommissionComponent /> : <SubscriptionComponent />}
       </div>

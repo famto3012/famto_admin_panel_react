@@ -50,7 +50,6 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   ?.filter((category) => category.title === "Food")
   .map((category) => category._id);
   
-  console.log("foodCategoryIds", foodCategoryIds)
 
   return (
     <>
@@ -63,7 +62,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
           </label>
 
           <Select
-            className="mt-2 p-2 w-3/5 rounded-md outline-none focus:outline-none"
+            className="mt-2 me-5 p-2 w-3/5 rounded-md outline-none focus:outline-none"
             value={businessCategoryOptions?.filter((option) =>
               detail?.merchantDetail?.businessCategoryId?.includes(option.value)
             )}
@@ -143,7 +142,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         {detail?.merchantDetail?.businessCategoryId?.includes(foodCategoryIds[0]) && (
           <div className="mb-4 flex w-[800px]">
             <label className="block text-gray-700 w-2/5">
-              If restaurant, then
+              If food, then
             </label>
 
             <div className="flex items-center gap-[4rem]">

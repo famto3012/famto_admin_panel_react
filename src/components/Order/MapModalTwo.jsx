@@ -3,6 +3,7 @@ import { mappls, mappls_plugin } from "mappls-web-maps";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useMap } from "../../context/MapContext";
 import { UserContext } from "../../context/UserContext";
+import axios from "axios";
 
 const mapplsClassObject = new mappls();
 const mapplsPluginObject = new mappls_plugin();
@@ -113,7 +114,7 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
     } else {
       // Initialize a new map instance if none exists
       mapplsClassObject.initialize(
-        authToken,
+        mapToken,
         { map: true, plugins: ["search"] },
         () => {
           console.log("Initializing new map instance.");

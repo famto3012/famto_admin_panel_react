@@ -43,6 +43,18 @@ const serviceableOptions = [
   { value: "false", label: "Closed" },
 ];
 
+const userTypeOptions = [
+  { value: "customer", label: "Customer" },
+  { value: "agent", label: "Agent" },
+  { value: "merchant", label: "Merchant" },
+];
+
+const userTypeForPushNotificationOptions = [
+  { value: "customer", label: "Customer" },
+  { value: "driver", label: "Agent" },
+  { value: "merchant", label: "Merchant" },
+];
+
 const agentStatusOptions = [
   { value: "all", label: "All" },
   { value: "Free", label: "Free" },
@@ -78,4 +90,6 @@ export {
   agentVehicleOptions,
   accountLogsOptions,
   payoutPaymentStatus,
+  userTypeOptions,
+  userTypeForPushNotificationOptions,
 };
