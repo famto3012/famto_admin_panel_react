@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AddAgentPricingModal from "../model/PricingModels/AddAgentPricingModal";
 import { Switch } from "antd";
 import { MdOutlineEdit } from "react-icons/md";
@@ -32,9 +32,11 @@ const AgentPricing = () => {
   const [currentDeleteSurge, setCurrentDeleteSurge] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [geofence, setGeofence] = useState([]);
+
   const { token, role } = useContext(UserContext);
   const toast = useToast();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -62,11 +64,9 @@ const AgentPricing = () => {
 
         if (agentPricingResponse.status === 200) {
           setAgentPricing(agentPricingResponse.data.data);
-          console.log(agentPricingResponse.data.data);
         }
         if (agentSurgeResponse.status === 200) {
           setAgentSurge(agentSurgeResponse.data.data);
-          console.log(agentSurgeResponse.data.data);
         }
         if (geofenceResponse.status === 200) {
           setGeofence(geofenceResponse.data.geofences);
@@ -89,14 +89,12 @@ const AgentPricing = () => {
   };
 
   // Function to add the agent rule in the list
-
   const handleAddSurge = (newSurge) => {
     setAgentSurge((prevSurge) => [...prevSurge, newSurge]);
     setModalVisibleAddSurge(false);
   };
 
   // Function to update the agent rule in the list
-
   const handleEditRule = (updatedRule) => {
     setAgentPricing((prevRules) =>
       prevRules.map((agentrule) =>
@@ -104,8 +102,8 @@ const AgentPricing = () => {
       )
     );
   };
-  // Function to update the agent surge in the list
 
+  // Function to update the agent surge in the list
   const handleEditSurge = (updatedSurge) => {
     setAgentSurge((prevSurge) =>
       prevSurge.map((agentsurge) =>
@@ -115,33 +113,28 @@ const AgentPricing = () => {
   };
 
   // Modal function for Add rule in Agent Pricing
-
   const showModalAddRule = () => {
     setModalVisibleAddRule(true);
   };
 
   // Modal function for Add surge in Agent Surge
-
   const showModalAddSurge = () => {
     setModalVisibleAddSurge(true);
   };
 
   // Modal function for Edit rule in Agent Pricing
-
   const showModalEditRule = (agentPricingId) => {
     setCurrentEditRule(agentPricingId);
     setModalVisibleEditRule(true);
   };
 
   // Modal function for Edit surge in Agent Surge
-
   const showModalEditSurge = (agentsurgeId) => {
     setCurrentEditSurge(agentsurgeId);
     setModalVisibleEditSurge(true);
   };
 
   // Modal function for Delete rule in Agent Pricing
-
   const showModalDeleteRule = (agentPricingId) => {
     setCurrentDeleteRule(agentPricingId);
     setModalVisibleDeleteRule(true);
@@ -159,7 +152,6 @@ const AgentPricing = () => {
   };
 
   // Modal function for Delete surge in Agent Surge
-
   const showModalDeleteSurge = (agentSurgeId) => {
     setCurrentDeleteSurge(agentSurgeId);
     setModalVisibleDeleteSurge(true);
@@ -186,7 +178,6 @@ const AgentPricing = () => {
   };
 
   // Status Changing function for Add rule in Agent Pricing
-
   const handleToggleRule = async (agentPricingId) => {
     try {
       const agentResponse = agentpricing.find(
@@ -219,7 +210,6 @@ const AgentPricing = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in toggling status: ${err}`);
       toast({
         title: "Error",
         description: "Failed to update status.",
@@ -231,7 +221,6 @@ const AgentPricing = () => {
   };
 
   // Status Changing function for Add surge in Agent Surge
-
   const handleToggleSurge = async (agentsurgeId) => {
     try {
       const agentResponse = agentsurge.find(
@@ -264,7 +253,6 @@ const AgentPricing = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in toggling status: ${err}`);
       toast({
         title: "Error",
         description: "Failed to update  status.",
@@ -450,7 +438,7 @@ const AgentPricing = () => {
 
       <div className="overflow-auto w-full max-h-[30rem]">
         <table className="w-full mt-[20px]">
-          <thead className="sticky top-0 left-0">
+          <thead className="sticky top-0 left-0 z-50">
             <tr>
               {[
                 "Rule Name",
@@ -503,7 +491,7 @@ const AgentPricing = () => {
                   <td>{agentsurge.geofenceId.name}</td>
                   <td className="py-3 ">
                     <div className="flex items-center gap-3 justify-end mx-4">
-                      <div>
+                      <div className="z-30">
                         <Switch
                           checked={agentsurge.status}
                           onChange={() => handleToggleSurge(agentsurge._id)}

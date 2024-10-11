@@ -29,7 +29,9 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../../context/SocketContext";
-import DateRangePicker from "@wojtekmaj/react-daterange-picker";
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -60,7 +62,9 @@ const DeliveryManagement = () => {
   const [mapObject, setMapObject] = useState(null);
   const [authToken, setAuthToken] = useState("");
   const [active, setActive] = useState(0);
-  const [value, setValue] = useState([new Date(), new Date()]);
+
+  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+  const [startDate, endDate] = dateRange;
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -681,35 +685,40 @@ const DeliveryManagement = () => {
     }
   };
 
-  const selectDateRange = async (value) => {
-    setValue(value);
-    const formattedStartDate = formatDate(value[0]);
-    const formattedEndDate = formatDate(value[1]);
-    try {
-      console.log("Start", formattedStartDate, "End", formattedEndDate);
-      const response = await axios.get(
-        `${BASE_URL}/admin/delivery-management/task-date`,
-        {
-          params: { startDate: formattedStartDate, endDate: formattedEndDate },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+  useEffect(() => {
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
 
-      if (response.status === 200) {
-        console.log(response.data);
-        setTaskData(response.data);
+    const getTaskByDate = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/delivery-management/task-date`,
+          {
+            params: {
+              startDate: formattedStartDate,
+              endDate: formattedEndDate,
+            },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 200) {
+          setTaskData(response.data);
+        }
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: "An error occoured while filtering the orders",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "An error occoured while filtering the orders",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+    };
+
+    getTaskByDate();
+  }, [startDate, endDate]);
 
   return (
     <>
@@ -725,18 +734,19 @@ const DeliveryManagement = () => {
           </p>
           <div className="bg-white rounded-lg flex justify-between p-5 mt-5 ">
             <div>
-              <DateRangePicker
-                onChange={selectDateRange}
-                name="date"
-                value={value}
-                format="y-MM-dd"
-                // minDate={new Date()}
+              <DatePicker
+                selectsRange={true}
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(update) => {
+                  setDateRange(update);
+                }}
+                dateFormat="yyyy/MM/dd"
+                withPortal
+                className="border-2 p-2 rounded-lg cursor-pointer mt-4 outline-none focus:outline-none"
+                placeholderText="Select Date range"
                 maxDate={new Date()}
               />
-              <select className="bg-blue-50 p-2 ml-5 rounded-md" name="agent">
-                <option>All Agents</option>
-                <option>Agents</option>
-              </select>
             </div>
             <div className="flex gap-8 items-center">
               <SettingOutlined
@@ -771,47 +781,51 @@ const DeliveryManagement = () => {
                           <p className="font-semibold text-[16px] ml-5">sec</p>
                         </div>
                       </div>
-                      <div>
-                        <label className="text-[18px] mb-3 font-semibold">
+                      <div className="my-4">
+                        <label className="text-[18px] mb-5 font-semibold">
                           Set auto allocation
                         </label>
-                        <div className="flex items-center ">
-                          <input
-                            type="radio"
-                            id="send-to-all"
-                            name="autoAllocationType"
-                            value="All"
-                            onChange={handleOptionChange}
-                            checked={
-                              autoAllocation?.autoAllocationType === "All"
-                            }
-                            className=""
-                          />
-                          <label
-                            htmlFor="send-to-all"
-                            className="ml-2 font-semibold"
-                          >
-                            Send-to-all
-                          </label>
-                        </div>
-                        <div className="flex items-center ">
-                          <input
-                            type="radio"
-                            id="nearest-available"
-                            name="autoAllocationType"
-                            value="Nearest"
-                            onChange={handleOptionChange}
-                            checked={
-                              autoAllocation?.autoAllocationType === "Nearest"
-                            }
-                            className=""
-                          />
-                          <label
-                            htmlFor="nearest-available"
-                            className="ml-2 font-semibold"
-                          >
-                            Nearest Available
-                          </label>
+
+                        <div className="flex flex-col gap-[10px]">
+                          <div className="flex items-center mt-3 gap-[5px]">
+                            <input
+                              type="radio"
+                              id="send-to-all"
+                              name="autoAllocationType"
+                              value="All"
+                              onChange={handleOptionChange}
+                              checked={
+                                autoAllocation?.autoAllocationType === "All"
+                              }
+                              className=""
+                            />
+                            <label
+                              htmlFor="send-to-all"
+                              className="ml-2 font-semibold"
+                            >
+                              Send-to-all
+                            </label>
+                          </div>
+
+                          <div className="flex items-center gap-[5px]">
+                            <input
+                              type="radio"
+                              id="nearest-available"
+                              name="autoAllocationType"
+                              value="Nearest"
+                              onChange={handleOptionChange}
+                              checked={
+                                autoAllocation?.autoAllocationType === "Nearest"
+                              }
+                              className=""
+                            />
+                            <label
+                              htmlFor="nearest-available"
+                              className="ml-2 font-semibold"
+                            >
+                              Nearest Available
+                            </label>
+                          </div>
                         </div>
                       </div>
                       {autoAllocation?.autoAllocationType === "All" && (
@@ -941,7 +955,7 @@ const DeliveryManagement = () => {
                 }}
               />
 
-              <div className="px-5 bg-white max-h-[300px] overflow-y-auto">
+              <div className=" bg-white max-h-[300px] overflow-y-auto">
                 <div>
                   {taskData?.length === 0 && (
                     <p className="text-center mt-[20px]">No Tasks Found.</p>

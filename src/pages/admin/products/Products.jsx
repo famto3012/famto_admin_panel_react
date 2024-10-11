@@ -18,6 +18,7 @@ import DeleteProductModal from "../../../components/model/ProductModels/DeletePr
 import ProductDetail from "../../../components/Product/ProductDetail";
 import { Spinner, useToast } from "@chakra-ui/react";
 import Select from "react-select";
+import CSVModal from "../../../components/model/ProductModels/CSVModal";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -45,6 +46,7 @@ const Products = () => {
   const [editProductModal, setEditProductModal] = useState(false);
   const [deleteCategoryModal, setDeleteCategoryModal] = useState(false);
   const [deleteProductModal, setDeleteProductModal] = useState(false);
+  const [csvModal, setCsvModal] = useState(false);
 
   const [isCategoryListLoading, setIsCategoryListLoading] = useState(false);
   const [isProductListLoading, setIsProductListLoading] = useState(false);
@@ -154,58 +156,15 @@ const Products = () => {
     };
 
     if (selectedMerchant) {
-      console.log("Finding Categories");
       getAllCategories(selectedMerchant);
     }
   }, [selectedMerchant, token]);
 
   useEffect(() => {
-    const getProductsByCategory = async (categoryId) => {
-      try {
-        setIsProductListLoading(true);
-
-        const response = await axios.get(
-          `${BASE_URL}/products/product-by-category/${categoryId}`,
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (response.status === 200) {
-          const { data } = response.data;
-
-          if (data.length > 0) {
-            setAllProducts(data);
-            setSelectedProduct({
-              productId: data[0]?._id,
-              productName: data[0]?.productName,
-            });
-          } else {
-            setIsProductListLoading(false);
-            setAllProducts([]);
-            setSelectedProduct(null);
-            setProductDetail(null);
-            return;
-          }
-        }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description: "An error occurred while getting the data",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } finally {
-        setIsProductListLoading(false);
-      }
-    };
-
     if (selectedCategory?.categoryId) {
       getProductsByCategory(selectedCategory.categoryId);
     }
-  }, [selectedCategory, token]);
+  }, [selectedCategory?.categoryId, token]);
 
   useEffect(() => {
     const getProductDetail = async (productId) => {
@@ -246,7 +205,49 @@ const Products = () => {
     } else {
       setProductDetail(null);
     }
-  }, [selectedProduct, token]);
+  }, [selectedProduct?.productId, token]);
+
+  const getProductsByCategory = async (categoryId) => {
+    try {
+      setIsProductListLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/products/product-by-category/${categoryId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        const { data } = response.data;
+
+        if (data.length > 0) {
+          setAllProducts(data);
+          setSelectedProduct({
+            productId: data[0]?._id,
+            productName: data[0]?.productName,
+          });
+        } else {
+          setIsProductListLoading(false);
+          setAllProducts([]);
+          setSelectedProduct(null);
+          setProductDetail(null);
+          return;
+        }
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occurred while getting the data",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsProductListLoading(false);
+    }
+  };
 
   const selectCategory = (id, name, status) => {
     setSelectedCategory({
@@ -270,6 +271,7 @@ const Products = () => {
   const showEditProductModal = () => setEditProductModal(true);
   const showDeleteCategoryModal = () => setDeleteCategoryModal(true);
   const showDeleteProductModal = () => setDeleteProductModal(true);
+  const showCsvModal = () => setCsvModal(true);
 
   const handleCancel = () => {
     setAddCategoryModal(false);
@@ -279,31 +281,60 @@ const Products = () => {
     setDeleteCategoryModal(false);
     setDeleteProductModal(false);
     setChangeCategoryModal(false);
+    setCsvModal(false);
   };
 
   const handleAddCategory = (category) =>
     setAllCategories([...allCategories, category]);
 
+  const handleAddCSVData = (category) => {
+    setAllCategories(category);
+
+    setSelectedCategory({
+      categoryId: category[0]?._id,
+      categoryName: category[0]?.categoryName,
+      categoryStatus: category[0]?.status,
+    });
+  };
+
   const handleAddProduct = (product) =>
     setAllProducts([...allProducts, product]);
 
+  const handleAddProductCSV = (product) => {
+    setAllProducts(product);
+
+    setSelectedProduct({
+      productId: product._id,
+      productName: product.productName,
+    });
+  };
+
   const filterDeletedCategory = (categoryId) => {
-    setAllCategories(
-      allCategories.filter((category) => category._id !== categoryId)
+    const remainingCategories = allCategories.filter(
+      (category) => category._id !== categoryId
     );
 
-    if (allCategories.length > 1) {
-      setSelectedCategory({
-        categoryId: allCategories[0]._id,
-        categoryName: allCategories[0].categoryName,
-        categoryStatus: allCategories[0].status,
-      });
+    setAllCategories(remainingCategories);
+    handleCancel();
+
+    if (remainingCategories.length > 0) {
+      const newSelectedCategory = {
+        categoryId: remainingCategories[0]._id,
+        categoryName: remainingCategories[0].categoryName,
+        categoryStatus: remainingCategories[0].status,
+      };
+
+      setSelectedCategory(newSelectedCategory);
+      getProductsByCategory(newSelectedCategory.categoryId);
     } else {
       setSelectedCategory({
         categoryId: "",
         categoryName: "",
         categoryStatus: null,
       });
+      setAllProducts([]);
+      setSelectedProduct(null);
+      setProductDetail(null);
     }
   };
 
@@ -514,48 +545,6 @@ const Products = () => {
     value: merchant._id,
   }));
 
-  const handleDownloadCSV = async (e) => {
-    try {
-      setCSVDownloadLoading(true);
-
-      const idToSend = role === "Admin" ? selectedMerchant : userId;
-
-      const response = await axios.post(
-        `${BASE_URL}/products/download-product-csv`,
-        { merchantId: idToSend },
-        {
-          responseType: "blob",
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        // Create a URL for the file and trigger the download
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "Combined_product.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "An error occoured while downloading CSV file",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setCSVDownloadLoading(false);
-    }
-  };
-
   return (
     <>
       <Sidebar />
@@ -583,22 +572,21 @@ const Products = () => {
           )}
 
           <div className="flex gap-3">
-            <div>
-              <button
-                onClick={handleDownloadCSV}
-                className="bg-cyan-100 text-black rounded-md p-2 font-semibold flex gap-[5px] items-center"
-              >
-                {CSVDownloadLoading ? (
-                  <>
-                    <Spinner size="sm" /> <span>CSV</span>
-                  </>
-                ) : (
-                  <>
-                    <ArrowDownOutlined /> <span>CSV</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={showCsvModal}
+              className="bg-cyan-100 text-black rounded-md py-2 px-4 font-semibold flex gap-[5px] items-center"
+            >
+              CSV
+            </button>
+
+            <CSVModal
+              isVisible={csvModal}
+              handleCancel={handleCancel}
+              token={token}
+              BASE_URL={BASE_URL}
+              merchantId={selectedMerchant}
+              onCSVDataAdd={handleAddCSVData}
+            />
           </div>
         </div>
 
@@ -665,6 +653,7 @@ const Products = () => {
                 role={role}
                 merchantId={selectedMerchant}
                 onAddCategory={handleAddCategory}
+                onAddCategoryCSV={handleAddCSVData}
               />
             </div>
           </div>
@@ -770,6 +759,7 @@ const Products = () => {
                     categoryId={selectedCategory?.categoryId}
                     merchantId={selectedMerchant}
                     onAddProduct={handleAddProduct}
+                    onAddProductCSV={handleAddProductCSV}
                   />
                 </div>
               </div>

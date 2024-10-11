@@ -18,7 +18,6 @@ const MerchantData = ({
   onDataChange,
 }) => {
   const [showRatingModal, setShowRatingModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
 
   const [imgSrc, setImgSrc] = useState("");
@@ -33,10 +32,7 @@ const MerchantData = ({
   const { coordinates } = useMap();
 
   const toggleRatingModal = () => setShowRatingModal(!showRatingModal);
-  const toggleEditModal = (e) => {
-    e.preventDefault();
-    setShowEditModal(!showEditModal);
-  };
+
   const toggleMapModal = () => setShowMapModal(!showMapModal);
 
   useEffect(() => {
@@ -104,107 +100,11 @@ const MerchantData = ({
 
   return (
     <>
-      <div className="grid grid-cols-2 2xl:grid-cols-6 gap-2">
-        <div className="flex flex-col col-span-1 2xl:col-span-2">
-          <div className="mb-4 flex items-center gap-[10px] w-[370px]">
-            <label className="text-red-500 font-[600] w-1/3">ID</label>
-            <input
-              type="text"
-              className="outline-none focus:outline-none p-[10px] bg-transparent rounded text-red-600 placeholder:text-red-600"
-              disabled
-              value={detail._id}
-            />
-          </div>
-
-          <div className="mb-4 flex items-center gap-[10px] w-[370px]">
-            <label className="block text-gray-700 w-1/3">Merchant name*</label>
-            <input
-              type="text"
-              name="merchantName"
-              className="merchantDetail-input"
-              placeholder="Merchant name"
-              spellCheck={false}
-              value={detail?.merchantDetail?.merchantName}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="mb-4 flex items-center gap-[10px] w-[370px]">
-            <label className="block text-gray-700 w-1/3">
-              Display address*
-            </label>
-            <input
-              type="text"
-              name="displayAddress"
-              className="merchantDetail-input"
-              placeholder="Merchant Address"
-              spellCheck={false}
-              value={detail?.merchantDetail?.displayAddress}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="mb-4 flex items-center gap-[10px] w-[370px]">
-            <label className="block text-gray-700 w-1/3">Name of owner*</label>
-            <input
-              type="text"
-              name="fullName"
-              className="merchantDetail-input"
-              placeholder="Full name of Owner"
-              spellCheck={false}
-              value={detail.fullName}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col col-span-1 2xl:col-span-2">
-          <div className="mb-4 flex items-center gap-[10px] w-[370px] ">
-            <label className="block text-gray-700 w-1/3">Email</label>
-            <input
-              type="text"
-              name="email"
-              className="merchantDetail-input"
-              placeholder="Merchant name"
-              value={detail.email}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="mb-4 flex items-center gap-[10px] w-[370px]">
-            <label className="block text-gray-700 w-1/3">Phone</label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              className="merchantDetail-input"
-              placeholder="Merchant name"
-              value={detail.phoneNumber}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="mb-4 flex items-center gap-[10px] w-[370px]">
-            <label className="block text-gray-700 w-1/3 ">
-              Registration status
-            </label>
-            <input
-              type="text"
-              className={`${
-                detail?.isApproved === `Approved`
-                  ? `text-green-600`
-                  : detail?.isApproved === `Pending`
-                  ? ` text-orange-600`
-                  : ``
-              }outline-none focus:outline-none p-[10px] bg-transparent rounded w-2/3`}
-              disabled
-              value={detail.isApproved}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center">
+      <div className="grid grid-cols-2 2xl:grid-cols-6 gap-4">
+        {/* Merchant Image Section */}
+        <div className="flex flex-col col-span-2 2xl:col-span-2 items-center order-1 2xl:order-2">
           {!croppedFile && !detail?.merchantDetail?.merchantImageURL && (
-            <div className="bg-gray-400 h-20 w-20 rounded-md relative">
+            <div className="bg-gray-400 w-[90%] h-[12rem] rounded-md relative">
               <label
                 htmlFor="merchantImage"
                 className="cursor-pointer absolute bottom-0 right-0"
@@ -220,19 +120,19 @@ const MerchantData = ({
           {croppedFile && (
             <figure
               onClick={() => handleImageClick(URL.createObjectURL(croppedFile))}
-              className="w-20 h-20 rounded relative"
+              className="w-[90%] h-[12rem] rounded-md relative"
             >
               <img
                 src={URL.createObjectURL(croppedFile)}
                 alt="profile"
-                className="w-full h-full rounded object-cover"
+                className="w-full h-full rounded-md object-cover"
               />
               <label
                 htmlFor="merchantImage"
                 className="cursor-pointer absolute bottom-0 right-0"
               >
                 <MdCameraAlt
-                  className="bg-teal-500 text-white p-1 rounded-br-md"
+                  className="bg-teal-500 text-white p-1 rounded-md"
                   size={20}
                 />
               </label>
@@ -244,20 +144,20 @@ const MerchantData = ({
               onClick={() =>
                 handleImageClick(detail?.merchantDetail?.merchantImageURL)
               }
-              className="w-20 h-20 rounded relative"
+              className="w-[90%] h-[12rem] rounded-md relative"
             >
               <img
                 src={detail?.merchantDetail?.merchantImageURL}
                 alt="profile"
-                className="w-full h-full rounded object-cover"
+                className="w-full h-full rounded-md object-cover"
               />
               <label
                 htmlFor="merchantImage"
                 className="cursor-pointer absolute bottom-0 right-0"
               >
                 <MdCameraAlt
-                  className="bg-teal-500 text-white p-1 rounded-br-md"
-                  size={20}
+                  className="bg-teal-500 text-white p-3 rounded-br-md"
+                  size={44}
                 />
               </label>
             </figure>
@@ -274,20 +174,118 @@ const MerchantData = ({
           {imgSrc && (
             <CropImage
               selectedImage={img}
-              aspectRatio={16 / 9} // Optional, set aspect ratio (1:1 here)
+              aspectRatio={16 / 9}
               onCropComplete={handleCropComplete}
-              onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+              onClose={handleModalClose}
             />
           )}
         </div>
 
-        <button
-          onClick={toggleEditModal}
-          className="bg-teal-600 w-fit h-fit py-2 px-1.5 rounded text-white flex items-center gap-[10px]"
-        >
-          <MdOutlineModeEditOutline />
-          Edit Merchant
-        </button>
+        {/* Merchant Details and Contact Details Section Side by Side */}
+        <div className="col-span-2 2xl:col-span-4 grid grid-cols-1 lg:grid-cols-2 gap-4 order-2 2xl:order-1">
+          {/* Merchant Details Section */}
+          <div className="flex flex-col">
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="text-red-500 font-[600] w-1/3">ID</label>
+              <input
+                type="text"
+                className="outline-none focus:outline-none p-[10px] bg-transparent rounded text-red-600 placeholder:text-red-600"
+                disabled
+                value={detail._id}
+              />
+            </div>
+
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="block text-gray-700 w-1/3">
+                Merchant name*
+              </label>
+              <input
+                type="text"
+                name="merchantName"
+                className="merchantDetail-input"
+                placeholder="Merchant name"
+                spellCheck={false}
+                value={detail?.merchantDetail?.merchantName}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="block text-gray-700 w-1/3">
+                Display address*
+              </label>
+              <input
+                type="text"
+                name="displayAddress"
+                className="merchantDetail-input"
+                placeholder="Merchant Address"
+                spellCheck={false}
+                value={detail?.merchantDetail?.displayAddress}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="block text-gray-700 w-1/3">
+                Name of owner*
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                className="merchantDetail-input"
+                placeholder="Full name of Owner"
+                spellCheck={false}
+                value={detail.fullName}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          {/* Contact Details Section */}
+          <div className="flex flex-col">
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="block text-gray-700 w-1/3">Email</label>
+              <input
+                type="text"
+                name="email"
+                className="merchantDetail-input"
+                placeholder="Merchant name"
+                value={detail.email}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="block text-gray-700 w-1/3">Phone</label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                className="merchantDetail-input"
+                placeholder="Merchant name"
+                value={detail.phoneNumber}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="mb-4 flex items-center gap-[10px] w-full">
+              <label className="block text-gray-700 w-1/3 ">
+                Registration status
+              </label>
+              <input
+                type="text"
+                className={`${
+                  detail?.isApproved === "Approved"
+                    ? "text-green-600"
+                    : detail?.isApproved === "Pending"
+                    ? " text-orange-600"
+                    : ""
+                } outline-none focus:outline-none p-[10px] bg-transparent rounded w-2/3`}
+                disabled
+                value={detail.isApproved}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className=" w-[830px] mt-14 mb-[50px]">
@@ -384,7 +382,7 @@ const MerchantData = ({
         </div>
       </div>
 
-      <EditMerchant
+      {/* <EditMerchant
         isVisible={showEditModal}
         onCancel={toggleEditModal}
         BASE_URL={BASE_URL}
@@ -392,7 +390,7 @@ const MerchantData = ({
         role={role}
         data={detail}
         merchantId={merchantId}
-      />
+      /> */}
 
       <RatingModal
         isVisible={showRatingModal}

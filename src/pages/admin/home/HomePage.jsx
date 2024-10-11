@@ -17,24 +17,32 @@ import { Switch } from "antd";
 import axios from "axios";
 import { useSocket } from "../../../context/SocketContext";
 import { useNavigate } from "react-router-dom";
-import DateRangePicker from "@wojtekmaj/react-daterange-picker";
-import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
-import "react-calendar/dist/Calendar.css";
+
 import { formatDate } from "../../../utils/formatter";
 import { useSoundContext } from "../../../context/SoundContext";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
   const [realTimeDataCount, setRealTimeDataCount] = useState({});
-  const [value, setValue] = useState([new Date(), new Date()]);
+
   const [sales, setSales] = useState([]);
   const [merchants, setMerchants] = useState([]);
   const [data, setData] = useState([]);
   const [commission, setCommission] = useState([]);
   const [subscription, setSubscription] = useState([]);
+
+  const [dateRange, setDateRange] = useState([
+    new Date(new Date().setDate(new Date().getDate() - 7)),
+    new Date(),
+  ]);
+  const [startDate, endDate] = dateRange;
+
   const { socket } = useSocket();
+
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
     if (event.target.value === "sales") {
@@ -150,6 +158,56 @@ const HomePage = () => {
     requestPermission();
   }, []);
 
+  useEffect(() => {
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
+
+    const getChartData = async () => {
+      try {
+        let endpoint =
+          role === "Admin"
+            ? `${BASE_URL}/admin/home/home-screen-sale-data`
+            : `${BASE_URL}/admin/home/home-screen-sale-data-merchant`;
+
+        const response = await axios.get(endpoint, {
+          params: { startDate: formattedStartDate, endDate: formattedEndDate },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          if (role === "Admin") {
+            setSales(convertRevenueDataToSalesChartFormat(response.data));
+            setMerchants(
+              convertRevenueDataToMerchantChartFormat(response.data)
+            );
+            setCommission(
+              convertRevenueDataToCommissionChartFormat(response.data)
+            );
+            setSubscription(
+              convertRevenueDataToSubscriptionChartFormat(response.data)
+            );
+          } else {
+            setSales(convertRevenueDataToSalesChartFormat(response.data));
+            setCommission(
+              convertRevenueDataToCommissionChartFormat(response.data)
+            );
+          }
+        }
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: "An error occoured while filtering the orders",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
+
+    getChartData();
+  }, [startDate, endDate, token, role]);
+
   function convertRevenueDataToSalesChartFormat(revenueData) {
     return revenueData.map((entry) => {
       const date = new Date(entry.createdAt);
@@ -217,50 +275,6 @@ const HomePage = () => {
       };
     });
   }
-
-  const selectDateRange = async (value) => {
-    setValue(value);
-    const formattedStartDate = formatDate(value[0]);
-    const formattedEndDate = formatDate(value[1]);
-    try {
-      let endpoint =
-        role === "Admin"
-          ? `${BASE_URL}/admin/home/home-screen-sale-data`
-          : `${BASE_URL}/admin/home/home-screen-sale-data-merchant`;
-      console.log("Start", formattedStartDate, "End", formattedEndDate);
-      const response = await axios.get(endpoint, {
-        params: { startDate: formattedStartDate, endDate: formattedEndDate },
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 200) {
-        if (role === "Admin") {
-          setSales(convertRevenueDataToSalesChartFormat(response.data));
-          setMerchants(convertRevenueDataToMerchantChartFormat(response.data));
-          setCommission(
-            convertRevenueDataToCommissionChartFormat(response.data)
-          );
-          setSubscription(
-            convertRevenueDataToSubscriptionChartFormat(response.data)
-          );
-        } else {
-          setSales(convertRevenueDataToSalesChartFormat(response.data));
-          setCommission(
-            convertRevenueDataToCommissionChartFormat(response.data)
-          );
-        }
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "An error occoured while filtering the orders",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
 
   useEffect(() => {
     console.log("sales", sales);
@@ -388,12 +402,17 @@ const HomePage = () => {
               )}
             </div>
 
-            <DateRangePicker
-              onChange={selectDateRange}
-              name="date"
-              value={value}
-              format="y-MM-dd"
-              // minDate={new Date()}
+            <DatePicker
+              selectsRange={true}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => {
+                setDateRange(update);
+              }}
+              dateFormat="yyyy/MM/dd"
+              withPortal
+              className="border-2 p-2 rounded-lg cursor-pointer mt-4 outline-none focus:outline-none"
+              placeholderText="Select Date range"
               maxDate={new Date()}
             />
           </div>

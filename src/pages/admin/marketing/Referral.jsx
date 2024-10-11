@@ -106,7 +106,6 @@ const Referral = () => {
         }
       );
       if (addResponse.status === 200) {
-        console.log(addResponse.data.message);
         toast({
           title: "Success",
           description: "Referral Updated Successfully",
@@ -116,7 +115,6 @@ const Referral = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in fetch data:${err}`);
       toast({
         title: "Error",
         description: "There was an error occured",
@@ -125,14 +123,13 @@ const Referral = () => {
         isClosable: true,
       });
     }
-    console.log(formData);
   };
 
-  const handleReferralStatusChange = async()=>{
+  const handleReferralStatusChange = async () => {
     try {
       const editResponse = await axios.put(
         `${BASE_URL}/referrals/edit-referral-status`,
-       {},
+        {},
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -149,7 +146,6 @@ const Referral = () => {
         });
       }
     } catch (err) {
-      console.log(`Error in fetch data:${err}`);
       toast({
         title: "Error",
         description: "There was an error occured",
@@ -158,7 +154,7 @@ const Referral = () => {
         isClosable: true,
       });
     }
-  }
+  };
 
   return (
     <div>
@@ -192,7 +188,9 @@ const Referral = () => {
             >
               <div className="flex">
                 <div className="w-1/2">
-                  <label>Referral Type<span className="text-red-600 ml-2">*</span></label>
+                  <label>
+                    Referral Type<span className="text-red-600 ml-2">*</span>
+                  </label>
                 </div>
                 <div className="w-2/3">
                   <input
@@ -216,7 +214,9 @@ const Referral = () => {
                 </div>
               </div>
               <div className="flex">
-                <label className="mt-10 w-1/2">Referrer Discount<span className="text-red-600 ml-2">*</span></label>
+                <label className="mt-10 w-1/2">
+                  Referrer Discount<span className="text-red-600 ml-2">*</span>
+                </label>
                 <input
                   type="text"
                   name="referrerDiscount"
@@ -227,7 +227,10 @@ const Referral = () => {
               </div>
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referrer maximum discount value{formData.referralType === "Percentage-discount" &&(<span className="text-red-600 ml-2">*</span>)}
+                  Referrer maximum discount value
+                  {formData.referralType === "Percentage-discount" && (
+                    <span className="text-red-600 ml-2">*</span>
+                  )}
                 </label>
                 <input
                   type="text"
@@ -240,7 +243,8 @@ const Referral = () => {
               </div>
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referrer App Heading Description<span className="text-red-600 ml-2">*</span>
+                  Referrer App Heading Description
+                  <span className="text-red-600 ml-2">*</span>
                 </label>
                 <input
                   type="text"
@@ -251,7 +255,9 @@ const Referral = () => {
                 />
               </div>
               <div className="flex">
-                <label className="mt-10 w-1/2">Referee discount<span className="text-red-600 ml-2">*</span></label>
+                <label className="mt-10 w-1/2">
+                  Referee discount<span className="text-red-600 ml-2">*</span>
+                </label>
                 <input
                   type="text"
                   name="refereeDiscount"
@@ -262,7 +268,10 @@ const Referral = () => {
               </div>
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referee maximum discount value{formData.referralType === "Percentage-discount" &&(<span className="text-red-600 ml-2">*</span>)}
+                  Referee maximum discount value
+                  {formData.referralType === "Percentage-discount" && (
+                    <span className="text-red-600 ml-2">*</span>
+                  )}
                 </label>
                 <input
                   type="text"
@@ -274,7 +283,10 @@ const Referral = () => {
                 />
               </div>
               <div className="flex">
-                <label className="mt-10 w-1/2">Minimum order amount<span className="text-red-600 ml-2">*</span></label>
+                <label className="mt-10 w-1/2">
+                  Minimum order amount
+                  <span className="text-red-600 ml-2">*</span>
+                </label>
                 <input
                   type="text"
                   name="minOrderAmount"
@@ -285,7 +297,9 @@ const Referral = () => {
               </div>
 
               <div className="flex">
-                <label className="mt-10 w-1/2">Referee discount<span className="text-red-600 ml-2">*</span></label>
+                <label className="mt-10 w-1/2">
+                  Referee discount<span className="text-red-600 ml-2">*</span>
+                </label>
                 <input
                   type="text"
                   name="refereeDescription"
@@ -295,7 +309,9 @@ const Referral = () => {
                 />
               </div>
               <div className="mt-10 flex">
-                <label className="w-1/2">Status<span className="text-red-600 ml-2">*</span></label>
+                <label className="w-1/2">
+                  Status<span className="text-red-600 ml-2">*</span>
+                </label>
                 <div className="w-2/3">
                   <Switch
                     className=""
@@ -307,7 +323,10 @@ const Referral = () => {
               </div>
               <div className="mt-10 flex">
                 <div className="w-1/2">
-                  <label>Referral Code on Customers SignUp<span className="text-red-600 ml-2">*</span></label>
+                  <label>
+                    Referral Code on Customers SignUp
+                    <span className="text-red-600 ml-2">*</span>
+                  </label>
                 </div>
                 <div className="w-2/3">
                   <Switch
@@ -320,15 +339,16 @@ const Referral = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-end mt-10 mb-10 gap-4">
+
+              <div className="flex justify-end mt-10 mb-2 gap-[15px]">
                 <button
-                  className="bg-cyan-50 rounded-lg px-8 py-2 right-10 mb-5 mr-5 font-semibold justify-end"
+                  className="bg-cyan-50 rounded-lg px-8 py-2 right-10 mb-5 font-semibold justify-end"
                   type="button"
                 >
                   Cancel
                 </button>
                 <button
-                  className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 mr-10 text-white font-semibold justify-end"
+                  className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 text-white font-semibold justify-end"
                   type="submit"
                 >
                   Save

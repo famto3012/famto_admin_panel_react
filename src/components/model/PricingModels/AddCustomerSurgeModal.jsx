@@ -12,7 +12,7 @@ const AddCustomerSurgeModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
-  const [confirmLoading,setConfirmLoading]= useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [customerSurge, setCustomerSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -29,7 +29,7 @@ const AddCustomerSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
-      setConfirmLoading(true)
+      setConfirmLoading(true);
       console.log("customerSurge", customerSurge);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/customer-surge/add-customer-surge`,
@@ -63,9 +63,8 @@ const AddCustomerSurgeModal = ({
         duration: 3000,
         isClosable: true,
       });
-      
-    } finally{
-      setConfirmLoading(false)
+    } finally {
+      setConfirmLoading(false);
     }
   };
   return (
@@ -80,7 +79,7 @@ const AddCustomerSurgeModal = ({
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
-              Rule Name
+              Rule Name <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -94,7 +93,7 @@ const AddCustomerSurgeModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseFare">
-              Base Fare
+              Base Fare <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -108,7 +107,7 @@ const AddCustomerSurgeModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="baseDistance">
-              Base Distance
+              Base Distance <span className="text-red-500">*</span>
             </label>
             <input
               className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
@@ -150,7 +149,7 @@ const AddCustomerSurgeModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
-              Geofence
+              Geofence <span className="text-red-500">*</span>
             </label>
             <select
               name="geofenceId"
@@ -181,7 +180,7 @@ const AddCustomerSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-          {confirmLoading ? "Adding..." : "Add"}
+            {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

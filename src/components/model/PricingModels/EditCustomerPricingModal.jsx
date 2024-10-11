@@ -35,10 +35,7 @@ const EditCustomerPricingModal = ({
   });
 
   useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-      return;
-    }
+    if (!currentEdit) return;
 
     const fetchData = async () => {
       try {
@@ -48,8 +45,8 @@ const EditCustomerPricingModal = ({
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
+
         if (addResponse.status === 200) {
-          console.log("data in response is", addResponse.data.data);
           const customGeofenceId = addResponse.data.data.geofenceId._id;
           const updatedData = {
             ...addResponse.data.data,
@@ -57,7 +54,6 @@ const EditCustomerPricingModal = ({
           };
 
           setCustomerPricing(updatedData);
-          console.log(addResponse.data.message);
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
@@ -72,17 +68,18 @@ const EditCustomerPricingModal = ({
   const handleRadioChange = (e) => {
     const { value } = e.target;
     setCustomerPricing({ ...customerPricing, deliveryMode: value });
-    console.log(value);
   };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerPricing({ ...customerPricing, [name]: value });
   };
-  const submitAction = async (e) => {
+
+  const handleEditPricing = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
-      console.log("customerpricing", customerPricing);
+
       const editResponse = await axios.put(
         `${BASE_URL}/admin/customer-pricing/edit-customer-pricing/${currentEdit}`,
         customerPricing,
@@ -104,7 +101,6 @@ const EditCustomerPricingModal = ({
           duration: 3000,
           isClosable: true,
         });
-        console.log(editResponse.data.message);
       }
     } catch (err) {
       toast({
@@ -114,11 +110,9 @@ const EditCustomerPricingModal = ({
         duration: 3000,
         isClosable: true,
       });
-      console.log(`Error in fetching data:${err}`);
     } finally {
       setConfirmLoading(false);
     }
-    console.log(customerPricing);
   };
 
   return (
@@ -129,8 +123,11 @@ const EditCustomerPricingModal = ({
       width="700px"
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.2)" }, // Custom mask background color
+      }}
     >
-      <form onSubmit={submitAction}>
+      <form onSubmit={handleEditPricing}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">

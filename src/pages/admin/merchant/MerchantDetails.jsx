@@ -7,6 +7,7 @@ import { Switch } from "antd";
 import { useToast } from "@chakra-ui/react";
 
 import BlockIcon from "@mui/icons-material/Block";
+import { MdOutlineModeEditOutline } from "react-icons/md";
 
 import { UserContext } from "../../../context/UserContext";
 
@@ -20,6 +21,7 @@ import ConfigureMerchant from "../../../components/Merchant/ConfigureMerchant";
 import MerchantAvailability from "../../../components/Merchant/MerchantAvailability";
 import BlockMerchantModel from "../../../components/model/Merchant/BlockMerchantModel";
 import DeleteMerchant from "../../../components/model/Merchant/DeleteMerchant";
+import EditMerchant from "../../../components/model/Merchant/EditMerchant";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -32,6 +34,13 @@ const MerchantDetails = () => {
   const [showDelete, setShowDelete] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const toggleEditModal = (e) => {
+    // e.preventDefault();
+    setShowEditModal(!showEditModal);
+  };
 
   const navigate = useNavigate();
   const { merchantId } = useParams();
@@ -211,8 +220,8 @@ const MerchantDetails = () => {
 
       // Assuming merchantData is your data object that you want to send k
       appendFormData(merchantData);
-      console.log("merchantData", merchantData)
-      console.log("Edit",formData)
+      console.log("merchantData", merchantData);
+      console.log("Edit", formData);
 
       const endpoint =
         role === "Admin"
@@ -255,12 +264,12 @@ const MerchantDetails = () => {
         <GlobalSearch />
         <div className="flex justify-between my-[15px] mt-8 mb-8">
           <h3 className="font-[600] text-[18px] ms-3">{merchantData?.merchantDetail?.merchantName}</h3>
-          <div>
+          <div className="flex items-center gap-[15px]">
             {role === "Admin" && !merchantData.isBlocked && (
               <>
                 <Link
                   onClick={toggleBlock}
-                  className="bg-yellow-100 py-2 px-5 mr-3 rounded-xl "
+                  className="bg-yellow-100 py-2 px-5 rounded-xl "
                 >
                   <BlockIcon className="h-5 w-5 text-red-600" /> Block
                 </Link>
@@ -274,8 +283,26 @@ const MerchantDetails = () => {
                 />
 
                 <button
+                  onClick={toggleEditModal}
+                  className="bg-teal-600 text-white flex items-center gap-[10px] py-2 px-1.5 rounded"
+                >
+                  <MdOutlineModeEditOutline />
+                  Edit Merchant
+                </button>
+
+                <EditMerchant
+                  isVisible={showEditModal}
+                  onCancel={toggleEditModal}
+                  BASE_URL={BASE_URL}
+                  token={token}
+                  role={role}
+                  data={merchantData}
+                  merchantId={merchantId}
+                />
+
+                <button
                   onClick={toggleDeleteModal}
-                  className="bg-red-500 text-white rounded-md p-2 me-3"
+                  className="bg-red-500 text-white rounded-md p-2"
                 >
                   Delete
                 </button>

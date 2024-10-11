@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { Switch, Modal, Spin } from "antd";
@@ -22,18 +22,26 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Discount = () => {
   const [merchant, setMerchant] = useState([]);
-  const [selectedMerchant, setSelectedMerchant] = useState(null);
+  const [geofence, setGeofence] = useState([]);
+  const [discount, setDiscount] = useState([]);
+  const [allMerchantDiscounts, setAllMerchantDiscounts] = useState([]);
+  const [allProductDiscounts, setAllProductDiscounts] = useState([]);
+
+  const [selectedMerchant, setSelectedMerchant] = useState({
+    merchantId: "",
+    merchantName: "",
+  });
   const [currentDiscount, setCurrentDiscount] = useState(null);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [currentDiscountDelete, setCurrentDiscountDelete] = useState(null);
   const [currentProductDelete, setCurrentProductDelete] = useState(null);
-  const [geofence, setGeofence] = useState([]);
-  const [discount, setDiscount] = useState([]);
-  const { token, role, userId } = useContext(UserContext);
+
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+
   const toast = useToast();
+  const { token, role, userId } = useContext(UserContext);
 
   // UseStates for show Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -69,8 +77,14 @@ const Discount = () => {
       const { data } = response.data;
       setMerchant(data);
 
-      if (!selectedMerchant && data.length > 0) {
-        setSelectedMerchant(data[0]._id);
+      console.log(data);
+
+      if (data.length > 0) {
+        console.log("Setting merchants");
+        setSelectedMerchant({
+          merchantId: data[0]._id,
+          merchantName: data[0].merchantName,
+        });
       }
     }
   };
@@ -95,40 +109,72 @@ const Discount = () => {
   }));
 
   useEffect(() => {
-    const merchantId = role === "Admin" ? selectedMerchant : userId;
+    console.log(selectedMerchant);
 
-    console.log("MERCHANT ID", merchantId);
+    const merchantId = role === "Admin" ? selectedMerchant?.merchantId : userId;
 
-    const fetchDiscount = async () => {
-      try {
-        setIsTableLoading(true);
+    if (merchantId) {
+      fetchDiscount(merchantId);
+      console.log("INITIAL", merchantId);
+    }
+  }, [selectedMerchant.merchantId, token, role]);
 
-        const response = await axios.get(
-          `${BASE_URL}/merchant/shop-discount/get-merchant-discount-admin/${merchantId}`,
+  const fetchDiscount = async (merchantId) => {
+    try {
+      setIsTableLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/merchant/shop-discount/get-merchant-discount-admin/${merchantId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setDiscount(response.data.data);
+      }
+    } catch (err) {
+      console.error(`Error in fetching discount ${err.message}`);
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const getDataForMerchant = async () => {
+      const [merchantDiscount, productDiscount] = await Promise.all([
+        axios.get(`${BASE_URL}/merchant/shop-discount/get-merchant-discount`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(
+          `${BASE_URL}/merchant/product-discount/get-product-discount`,
           {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
           }
-        );
-        if (response.status === 200) {
-          setDiscount(response.data.data);
-        }
-      } catch (err) {
-        console.error(`Error in fetching discount ${err.message}`);
-      } finally {
-        setIsTableLoading(false);
-      }
+        ),
+      ]);
+
+      setAllMerchantDiscounts(merchantDiscount.data.data || []);
+      setAllProductDiscounts(productDiscount.data.data || []);
     };
 
-    if (selectedMerchant) {
-      fetchDiscount();
-    }
-  }, [selectedMerchant, token, role]);
+    if (role === "Merchant") getDataForMerchant();
+  }, []);
 
   const removeDiscount = (currentDiscountDelete) => {
-    setDiscount(
-      discount.filter((discount) => discount._id !== currentDiscountDelete)
-    );
+    if (role === "Admin") {
+      setDiscount(
+        discount.filter((discount) => discount._id !== currentDiscountDelete)
+      );
+    } else if (role === "Merchant") {
+      setAllMerchantDiscounts(
+        allMerchantDiscounts.filter(
+          (discount) => discount._id !== currentDiscountDelete
+        )
+      );
+    }
   };
 
   const handleConfirmDelete = () => {
@@ -140,13 +186,18 @@ const Discount = () => {
     try {
       setConfirmLoading(true);
 
-      const response = await axios.delete(
-        `${BASE_URL}/admin/shop-discount/delete-merchant-discount-admin/${currentDiscountDelete}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      console.log(currentDiscountDelete);
+
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/shop-discount/delete-merchant-discount-admin/${currentDiscountDelete}`
+          : `${BASE_URL}/admin/shop-discount/delete-merchant-discount/${currentDiscountDelete}`;
+
+      const response = await axios.delete(endPoint, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       if (response.status === 200) {
         removeDiscount(currentDiscountDelete);
         handleConfirmDelete();
@@ -172,9 +223,17 @@ const Discount = () => {
   };
 
   const removeProduct = (currentProductDelete) => {
-    setDiscount(
-      discount.filter((discount) => discount._id !== currentProductDelete)
-    );
+    if (role === "Admin") {
+      setDiscount(
+        discount.filter((discount) => discount._id !== currentProductDelete)
+      );
+    } else if (role === "Merchant") {
+      setAllProductDiscounts(
+        allProductDiscounts.filter(
+          (discount) => discount._id !== currentProductDelete
+        )
+      );
+    }
   };
 
   const handleConfirmDeleteProduct = () => {
@@ -186,13 +245,16 @@ const Discount = () => {
     try {
       setConfirmLoading(true);
 
-      const response = await axios.delete(
-        `${BASE_URL}/admin/product-discount/delete-product-discount-admin/${currentProductDelete}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/product-discount/delete-product-discount-admin/${currentProductDelete}`
+          : `${BASE_URL}/merchant/product-discount/delete-product-discount/${currentProductDelete}`;
+
+      const response = await axios.delete(endPoint, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       if (response.status === 200) {
         removeProduct(currentProductDelete);
         handleConfirmDeleteProduct();
@@ -217,43 +279,51 @@ const Discount = () => {
     }
   };
 
+  const onMerchantDiscountToggle = (dicountId) => {
+    if (role === "Admin") {
+      setDiscount((prevDiscounts) =>
+        prevDiscounts.map((d) =>
+          d._id === dicountId ? { ...d, status: !d.status } : d
+        )
+      );
+    } else if (role === "Merchant") {
+      setAllMerchantDiscounts((prevDiscount) =>
+        prevDiscount.map((discount) =>
+          discount._id === dicountId
+            ? { ...discount, status: !discount.status }
+            : discount
+        )
+      );
+    }
+  };
+
   const handleToggle = async (merchantDiscountId) => {
     try {
-      const discountToUpdate = discount.find(
-        (d) => d._id === merchantDiscountId
-      );
-      if (discountToUpdate) {
-        const updatedStatus = !discountToUpdate.status;
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/shop-discount/merchant-status-admin/${merchantDiscountId}`
+          : `${BASE_URL}/merchant/shop-discount/merchant-status/${merchantDiscountId}`;
 
-        await axios.put(
-          `${BASE_URL}/admin/shop-discount/merchant-status-admin/${merchantDiscountId}`,
-          {
-            ...discountToUpdate,
-            status: updatedStatus,
-          },
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+      const response = await axios.put(
+        endPoint,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        onMerchantDiscountToggle(merchantDiscountId);
         toast({
           title: "Success",
-          description: "Discount Status Updated Successfully.",
+          description: "Discount status updated successfully.",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-
-        // Update the state with the new status
-        setDiscount((prevDiscounts) =>
-          prevDiscounts.map((d) =>
-            d._id === merchantDiscountId ? { ...d, status: updatedStatus } : d
-          )
-        );
       }
     } catch (err) {
-      console.error(`Error in toggling discount status: ${err.message}`);
-      // Optionally show an error toast notification
       toast({
         title: "Error",
         description: "Failed to update discount status.",
@@ -264,41 +334,51 @@ const Discount = () => {
     }
   };
 
-  const handleToggleProduct = async (DiscountId) => {
-    try {
-      const discountToUpdate = discount.find((d) => d._id === DiscountId);
-      if (discountToUpdate) {
-        const updatedStatus = !discountToUpdate.status;
+  const onProductDiscountToggle = (dicountId) => {
+    if (role === "Admin") {
+      setDiscount((prevDiscounts) =>
+        prevDiscounts.map((d) =>
+          d._id === dicountId ? { ...d, status: !d.status } : d
+        )
+      );
+    } else if (role === "Merchant") {
+      setAllProductDiscounts((prevDiscount) =>
+        prevDiscount.map((discount) =>
+          discount._id === dicountId
+            ? { ...discount, status: !discount.status }
+            : discount
+        )
+      );
+    }
+  };
 
-        await axios.put(
-          `${BASE_URL}/admin/product-discount/product-status-admin/${DiscountId}`,
-          {
-            ...discountToUpdate,
-            status: updatedStatus,
-          },
-          {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+  const handleToggleProduct = async (discountId) => {
+    try {
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/product-discount/product-status-admin/${discountId}`
+          : `${BASE_URL}/merchant/product-discount/product-status/${discountId}`;
+
+      const response = await axios.put(
+        endPoint,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        onProductDiscountToggle(discountId);
         toast({
           title: "Success",
-          description: "Discount Status Updated Successfully.",
+          description: "Discount status updated successfully.",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-
-        // Update the state with the new status
-        setDiscount((prevDiscounts) =>
-          prevDiscounts.map((d) =>
-            d._id === DiscountId ? { ...d, status: updatedStatus } : d
-          )
-        );
       }
     } catch (err) {
-      console.error(`Error in toggling discount status: ${err.message}`);
-      // Optionally show an error toast notification
       toast({
         title: "Error",
         description: "Failed to update discount status.",
@@ -381,8 +461,15 @@ const Discount = () => {
     setIsShowModalDelete2(true);
   };
 
-  const merchantDiscounts = discount.filter((item) => !item.productId);
-  const productDiscounts = discount.filter((item) => item.productId);
+  let merchantDiscounts =
+    role === "Admin"
+      ? discount.filter((item) => !item.productId)
+      : allMerchantDiscounts;
+
+  let productDiscounts =
+    role === "Admin"
+      ? discount.filter((item) => item.productId)
+      : allProductDiscounts;
 
   return (
     <div>
@@ -401,12 +488,15 @@ const Discount = () => {
                 <Select
                   className="w-[200px] outline-none focus:outline-none"
                   value={merchantOptions.find(
-                    (option) => option.value === selectedMerchant
+                    (option) => option.value === selectedMerchant.merchantId
                   )}
                   isMulti={false}
                   isSearchable={true}
                   onChange={(option) => {
-                    setSelectedMerchant(option ? option.value : "");
+                    setSelectedMerchant({
+                      merchantId: option.value,
+                      merchantName: option.label,
+                    });
                   }}
                   options={merchantOptions}
                   placeholder="Select Merchant"
@@ -417,7 +507,7 @@ const Discount = () => {
               {/* <Switch /> */}
             </div>
             <div className="flex justify-between mt-5 mx-5">
-              <h1 className="font-bold text-[20px]">Discount</h1>
+              <h1 className="font-bold text-[20px]">Merchant Discount</h1>
               <button
                 onClick={showModal}
                 className="bg-teal-800 text-white px-5 rounded-lg p-2"
@@ -429,8 +519,6 @@ const Discount = () => {
                 isVisible={isModalVisible}
                 token={token}
                 geofence={geofence}
-                role={role}
-                merchant={merchant}
                 selectedMerchant={selectedMerchant}
                 BASE_URL={BASE_URL}
                 handleCancel={handleCancel}
@@ -438,7 +526,7 @@ const Discount = () => {
               />
             </div>
 
-            <div className="w-full">
+            <div className="w-full overflow-y-auto">
               <table className="bg-teal-800 mt-[45px] text-center w-full">
                 <thead>
                   <tr>
@@ -469,7 +557,7 @@ const Discount = () => {
                     </tr>
                   )}
 
-                  {!isTableLoading && discount.length === 0 && (
+                  {!isTableLoading && merchantDiscounts.length === 0 && (
                     <tr className="h-[70px]">
                       <td colSpan={7}>No data available</td>
                     </tr>
@@ -478,7 +566,7 @@ const Discount = () => {
                   {merchantDiscounts.map((merchantDiscounts, index) => (
                     <tr
                       style={{
-                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
+                        backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6",
                       }}
                       key={merchantDiscounts._id}
                     >
@@ -545,9 +633,7 @@ const Discount = () => {
                             centered
                           >
                             <p className="font-semibold text-[18px] mb-5">
-                              <Spin spinning={confirmLoading}>
-                                Are you sure you want to delete?
-                              </Spin>
+                              Are you sure you want to delete?
                             </p>
                             <div className="flex justify-end">
                               <button
@@ -562,8 +648,7 @@ const Discount = () => {
                                   confirmDeleteDiscount(currentDiscountDelete)
                                 }
                               >
-                                {" "}
-                                Delete
+                                {confirmLoading ? `Deleting...` : `Delete`}
                               </button>
                             </div>
                           </Modal>
@@ -576,7 +661,9 @@ const Discount = () => {
               </table>
             </div>
 
-            <div className="flex justify-end mt-10">
+            <div className="flex justify-between mt-10">
+              <h1 className="font-bold text-[20px] ms-4">Product Discount</h1>
+
               <button
                 onClick={showModalProduct}
                 className="bg-teal-800 text-white px-5 mr-5 rounded-lg p-2"
@@ -588,11 +675,11 @@ const Discount = () => {
               <AddProductModal
                 isVisible={isModalVisibleProduct}
                 token={token}
-                geofence={geofence}
-                merchant={merchant}
                 BASE_URL={BASE_URL}
-                onAddProduct={handleAddProduct}
+                geofence={geofence}
+                selectedMerchant={selectedMerchant}
                 handleCancel={handleCancel}
+                onAddProduct={handleAddProduct}
               />
             </div>
             <div className="w-full">
@@ -626,18 +713,12 @@ const Discount = () => {
                     </tr>
                   )}
 
-                  {!isTableLoading && discount.length === 0 && (
-                    <tr className="h-[70px]">
-                      <td colSpan={7}>No data available</td>
-                    </tr>
-                  )}
-
                   {!isTableLoading &&
                     productDiscounts.map((table, index) => (
                       <tr
                         style={{
                           backgroundColor:
-                            index % 2 === 0 ? "white" : "#f3f4f6", // Apply inline styles for alternating row colors
+                            index % 2 === 0 ? "white" : "#f3f4f6",
                         }}
                         key={table._id}
                       >
@@ -728,6 +809,12 @@ const Discount = () => {
                         <td className="border-b border-gray-300"></td>
                       </tr>
                     ))}
+
+                  {!isTableLoading && productDiscounts?.length === 0 && (
+                    <tr className="h-[70px]">
+                      <td colSpan={7}>No data available</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
