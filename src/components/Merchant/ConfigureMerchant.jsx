@@ -1,6 +1,7 @@
 import { Switch } from "antd";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Select from "react-select";
+import { UserContext } from "../../context/UserContext";
 
 const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   const handleInputChange = (e) => {
@@ -47,49 +48,53 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   }));
 
   const foodCategoryIds = allBusinessCategory
-  ?.filter((category) => category.title === "Food")
-  .map((category) => category._id);
-
+    ?.filter((category) => category.title === "Food")
+    .map((category) => category._id);
+  console.log("foodCategoryIds", foodCategoryIds);
+  const { role } = useContext(UserContext);
   return (
     <>
       <div className="mb-4 flex flex-col gap-[10px]">
         <h3 className="text-gray-700 font-bold mb-2">Configuration</h3>
 
-        <div className="mb-4 flex w-[800px]">
-          <label className="block mt-3 text-gray-700 w-2/5">
-            Business category
-          </label>
+        {role === "Admin" && (
+          <div className="mb-4 flex w-[800px]">
+            <label className="block mt-3 text-gray-700 w-2/5">
+              Business category
+            </label>
 
-          <Select
-            className="mt-2 w-3/5 rounded-md outline-none focus:outline-none"
-            value={businessCategoryOptions?.filter((option) =>
-              detail?.merchantDetail?.businessCategoryId?.includes(option.value)
-            )}
-            isMulti={true}
-            isSearchable={true}
-            onChange={handleSelectChange}
-            options={businessCategoryOptions}
-            placeholder="Select business category"
-            isClearable={true}
-          />
+            <Select
+              className="mt-2 w-3/5 rounded-md outline-none focus:outline-none"
+              value={businessCategoryOptions?.filter((option) =>
+                detail?.merchantDetail?.businessCategoryId?.includes(
+                  option.value
+                )
+              )}
+              isMulti={true}
+              isSearchable={true}
+              onChange={handleSelectChange}
+              options={businessCategoryOptions}
+              placeholder="Select business category"
+              isClearable={true}
+            />
 
-          {/* <select
-            name="businessCategoryId"
-            value={detail?.merchantDetail?.businessCategoryId}
-            onChange={handleInputChange}
-            className="mt-2 p-2 w-3/5 border rounded-md outline-none focus:outline-none"
-          >
-            <option defaultValue={"Select business category"} hidden>
-              Select business category
-            </option>
-            {allBusinessCategory?.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.title}
-              </option>
-            ))}
-          </select> */}
-        </div>
-
+            {/* <select
+           name="businessCategoryId"
+           value={detail?.merchantDetail?.businessCategoryId}
+           onChange={handleInputChange}
+           className="mt-2 p-2 w-3/5 border rounded-md outline-none focus:outline-none"
+         >
+           <option defaultValue={"Select business category"} hidden>
+             Select business category
+           </option>
+           {allBusinessCategory?.map((category) => (
+             <option key={category._id} value={category._id}>
+               {category.title}
+             </option>
+           ))}
+         </select> */}
+          </div>
+        )}
         {/* <div className="mb-4 flex w-[800px]">
           <label className="block text-gray-700 w-2/5">
             If restaurant, then
@@ -142,9 +147,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
           foodCategoryIds[0]
         ) && (
           <div className="mb-4 flex w-[800px]">
-            <label className="block text-gray-700 w-2/5">
-              If food, then
-            </label>
+            <label className="block text-gray-700 w-2/5">If food, then</label>
 
             <div className="flex items-center gap-[4rem]">
               <label className="mr-4 cursor-pointer">

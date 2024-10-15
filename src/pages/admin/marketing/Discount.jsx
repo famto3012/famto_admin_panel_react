@@ -279,23 +279,26 @@ const Discount = () => {
     }
   };
 
-  const onMerchantDiscountToggle = (dicountId) => {
+  const onMerchantDiscountToggle = (discountId) => {
     if (role === "Admin") {
       setDiscount((prevDiscounts) =>
         prevDiscounts.map((d) =>
-          d._id === dicountId ? { ...d, status: !d.status } : d
+          d._id === discountId
+            ? { ...d, status: !d.status } // Toggle the clicked discount
+            : { ...d, status: false } // Set all others to false
         )
       );
     } else if (role === "Merchant") {
-      setAllMerchantDiscounts((prevDiscount) =>
-        prevDiscount.map((discount) =>
-          discount._id === dicountId
-            ? { ...discount, status: !discount.status }
-            : discount
+      setAllMerchantDiscounts((prevDiscounts) =>
+        prevDiscounts.map((discount) =>
+          discount._id === discountId
+            ? { ...discount, status: !discount.status } // Toggle the clicked discount
+            : { ...discount, status: false } // Set all others to false
         )
       );
     }
   };
+  
 
   const handleToggle = async (merchantDiscountId) => {
     try {
