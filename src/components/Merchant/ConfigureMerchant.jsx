@@ -1,6 +1,7 @@
 import { Switch } from "antd";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Select from "react-select";
+import { UserContext } from "../../context/UserContext";
 
 const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   const handleInputChange = (e) => {
@@ -50,36 +51,40 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
     ?.filter((category) => category.title === "Food")
     .map((category) => category._id);
 
+  const { role } = useContext(UserContext);
+
   return (
     <>
       <div className="mb-4 flex flex-col gap-[10px]">
         <h3 className="text-gray-700 font-bold mb-2">Configuration</h3>
+        {role === "Admin" && (
+          <div className="mb-4 flex w-[800px]">
+            <label className="block mt-3 text-gray-700 w-2/5">
+              Business category
+            </label>
 
-        <div className="mb-4 flex w-[800px]">
-          <label className="block mt-3 text-gray-700 w-1/3">
-            Business category
-          </label>
-
-          <Select
-            className="mt-2 w-3/5 rounded-md outline-none focus:outline-none"
-            value={businessCategoryOptions?.filter((option) =>
-              detail?.merchantDetail?.businessCategoryId?.includes(option.value)
-            )}
-            isMulti={true}
-            isSearchable={true}
-            onChange={handleSelectChange}
-            options={businessCategoryOptions}
-            placeholder="Select business category"
-            isClearable={true}
-          />
-        </div>
-
+            <Select
+              className="mt-2 w-3/5 rounded-md outline-none focus:outline-none"
+              value={businessCategoryOptions?.filter((option) =>
+                detail?.merchantDetail?.businessCategoryId?.includes(
+                  option.value
+                )
+              )}
+              isMulti={true}
+              isSearchable={true}
+              onChange={handleSelectChange}
+              options={businessCategoryOptions}
+              placeholder="Select business category"
+              isClearable={true}
+            />
+          </div>
+        )}
+      
         {detail?.merchantDetail?.businessCategoryId?.includes(
           foodCategoryIds[0]
         ) && (
           <div className="mb-4 flex w-[800px]">
-            <label className="block text-gray-700 w-1/3">If food, then</label>
-
+            <label className="block text-gray-700 w-2/5">If food, then</label>
             <div className="flex items-center gap-[4rem]">
               <label className="mr-4 cursor-pointer">
                 <div className="flex items-center gap-2">

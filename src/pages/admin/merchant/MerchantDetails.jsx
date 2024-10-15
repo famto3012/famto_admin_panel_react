@@ -84,6 +84,7 @@ const MerchantDetails = () => {
         }
         if (businessCategoryResponse.status === 200) {
           setBusinessCategory(businessCategoryResponse.data.data);
+          console.log("business category", businessCategoryResponse.data.data);
         }
       } catch (err) {
         toast({
@@ -93,6 +94,23 @@ const MerchantDetails = () => {
           duration: 3000,
           isClosable: true,
         });
+      }
+    };
+
+    const getAllBusinessCategory = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/business-categories/get-all-business-category`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (response.status === 200) {
+          setBusinessCategory(response.data.data);
+        }
+      } catch (err) {
+        console.log(err);
       }
     };
 
@@ -123,6 +141,7 @@ const MerchantDetails = () => {
       getMerchantData();
     } else if (role === "Merchant") {
       getMerchantProfile();
+      getAllBusinessCategory();
     }
   }, [merchantId, token, role]);
 
