@@ -16,7 +16,6 @@ import {
   MenuList,
   MenuButton,
   Menu,
-  Badge,
   useToast,
   StepIcon,
   StepNumber,
@@ -34,6 +33,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+const mapplsClassObject = new mappls();
 
 const DeliveryManagement = () => {
   const [autoAllocation, setAutoAllocation] = useState({
@@ -199,13 +199,6 @@ const DeliveryManagement = () => {
     }));
   };
 
-  const handleRadioChange = (event) => {
-    setAutoAllocation((prev) => ({
-      ...prev,
-      priorityType: event.target.value,
-    }));
-  };
-
   const submitAutoAllocation = async (e) => {
     e.preventDefault();
     try {
@@ -342,6 +335,68 @@ const DeliveryManagement = () => {
       setLoading(false);
     }
   };
+  const initializeMap = () => {
+    const mapProps = {
+      center: [8.528818999999999, 76.94310683333333],
+      traffic: true,
+      zoom: 12,
+      geolocation: true,
+      clickableIcons: true,
+    };
+
+    mapplsClassObject.initialize(`${authToken}`, async () => {
+      if (mapContainerRef.current) {
+        const map = mapplsClassObject.Map({
+          id: "map",
+          properties: mapProps,
+        });
+
+        if (map && typeof map.on === "function") {
+          map.on("load", () => {
+            setMapObject(map); // Save the map object to state
+          });
+        } else {
+          console.error(
+            "mapObject.on is not a function or mapObject is not defined"
+          );
+        }
+      } else {
+        console.error("Map container not found");
+      }
+    });
+    // mapplsClassObject.initialize(authToken, async() => {
+    //   if(mapContainerRef.current){
+    //   const newMap = await mapplsClassObject.Map({
+    //     id: mapContainerRef.current.id, // Use the ref's id for initialization
+    //     properties: {
+    //       center: [8.5892862, 76.8773566],
+    //       draggable: true,
+    //       zoom: 12,
+    //       backgroundColor: "#fff",
+    //       heading: 100,
+    //       traffic: true,
+    //       geolocation: false,
+    //       disableDoubleClickZoom: true,
+    //       fullscreenControl: true,
+    //       scrollWheel: true,
+    //       scrollZoom: true,
+    //       rotateControl: true,
+    //       scaleControl: true,
+    //       zoomControl: true,
+    //       clickableIcons: true,
+    //       indoor: true,
+    //       indoor_position: "bottom-left",
+    //       tilt: 30,
+    //     },
+    //   });
+    //   if (newMap && typeof newMap.on === "function") {
+    //     // setMapTwo(newMapTwo);
+    //     setMapObject(newMap); // Save the map instance in context
+    //     // setIsMapLoaded(true);
+    //   }
+    // }
+    // });
+  };
 
   // Initialize the map
   useEffect(() => {
@@ -351,36 +406,8 @@ const DeliveryManagement = () => {
     handleGetAllAgent();
     getAutoAllocation();
 
-    const mapProps = {
-      center: [8.528818999999999, 76.94310683333333],
-      traffic: true,
-      zoom: 12,
-      geolocation: true,
-      clickableIcons: true,
-    };
-
-    const mapplsClassObject = new mappls();
     if (allAgentData && authToken) {
-      mapplsClassObject.initialize(`${authToken}`, async () => {
-        if (mapContainerRef.current) {
-          const map = await mapplsClassObject.Map({
-            id: "map",
-            properties: mapProps,
-          });
-
-          if (map && typeof map.on === "function") {
-            map.on("load", () => {
-              setMapObject(map); // Save the map object to state
-            });
-          } else {
-            console.error(
-              "mapObject.on is not a function or mapObject is not defined"
-            );
-          }
-        } else {
-          console.error("Map container not found");
-        }
-      });
+      initializeMap();
     }
   }, [authToken]);
 
@@ -418,14 +445,12 @@ const DeliveryManagement = () => {
         })),
       };
 
-      const mapplsObject = new mappls();
-
       agentGeoData.features.forEach(async (feature) => {
         const { coordinates } = feature.geometry;
         const { htmlPopup } = feature.properties;
 
         try {
-          const agentMarker = await mapplsObject.Marker({
+          const agentMarker = await mapplsClassObject.Marker({
             map: mapObject,
             position: { lat: coordinates[0], lng: coordinates[1] },
             properties: { ...markerProps, popupHtml: htmlPopup },
@@ -507,14 +532,12 @@ const DeliveryManagement = () => {
       ],
     };
 
-    const mapplsObject = new mappls();
-
     agentGeoData.features.forEach(async (feature) => {
       const { coordinates } = feature.geometry;
       const { htmlPopup } = feature.properties;
 
       try {
-        const agentMarker = await mapplsObject.Marker({
+        const agentMarker = await mapplsClassObject.Marker({
           map: mapObject,
           position: { lat: coordinates[0], lng: coordinates[1] },
           properties: { ...markerProps, popupHtml: htmlPopup },
@@ -559,15 +582,12 @@ const DeliveryManagement = () => {
         },
       ],
     };
-
-    const mapplsObject = new mappls();
-
     agentGeoData.features.forEach(async (feature) => {
       const { coordinates } = feature.geometry;
       const { htmlPopup } = feature.properties;
 
       try {
-        const agentMarker = await mapplsObject.Marker({
+        const agentMarker = await mapplsClassObject.Marker({
           map: mapObject,
           position: { lat: coordinates[0], lng: coordinates[1] },
           properties: { ...markerProps, popupHtml: htmlPopup },

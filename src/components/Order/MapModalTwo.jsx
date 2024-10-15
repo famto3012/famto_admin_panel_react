@@ -262,7 +262,7 @@ const MapModalTwo = ({ isVisible, onClose, authToken }) => {
       </div>
       {!isMapLoaded && (
         <>
-          <Button onClick={initializeMapTwo} className="mt-2">
+          <Button onClick={initializeMapTwo} className="mt-2 bg-teal-600">
             Initialize Map
           </Button>
           <div id="map" className="h-[500px] relative"></div>
