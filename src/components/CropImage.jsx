@@ -223,7 +223,7 @@ export default function CropImage({
       setCrop(null);
       setCompletedCrop(null);
       setIsVisible(false); // Close the modal after confirming the crop
-      handleClose()
+      handleClose();
       onClose(); // Notify the parent component to reset the selectedImage
     });
   }
@@ -242,27 +242,30 @@ export default function CropImage({
       <Modal
         title="Crop Image"
         open={isVisible}
-        onCancel={handleClose} // Use handleClose to reset state when modal is canceled
+        onCancel={handleClose}
         footer={null}
         centered
         width="500px"
       >
-        {!!imgSrc && (
-          <ReactCrop
-            crop={crop}
-            onChange={(_, percentCrop) => setCrop(percentCrop)}
-            onComplete={(c) => setCompletedCrop(c)}
-            aspect={aspect}
-          >
-            <img
-              ref={imgRef}
-              alt="Crop me"
-              src={imgSrc}
-              style={{ maxWidth: "100%" }}
-              onLoad={onImageLoad}
-            />
-          </ReactCrop>
-        )}
+        <div>
+          {!!imgSrc && (
+            <ReactCrop
+              crop={crop}
+              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={aspect}
+            >
+              <img
+                ref={imgRef}
+                alt="Crop me"
+                src={imgSrc}
+                style={{ maxWidth: "100%" }}
+                onLoad={onImageLoad}
+              />
+            </ReactCrop>
+          )}
+        </div>
+
         <button
           onClick={handleCropConfirm}
           className="h-[30px] w-[100px] bg-teal-500 text-white rounded-md mt-4"

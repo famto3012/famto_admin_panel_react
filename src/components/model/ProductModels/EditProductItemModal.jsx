@@ -49,7 +49,7 @@ const EditProductItemModal = ({
   const [imgSrc, setImgSrc] = useState("");
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
 
@@ -159,6 +159,11 @@ const EditProductItemModal = ({
     value: product._id,
   }));
 
+  const discountOptions = allProductDiscount?.map((discount) => ({
+    label: discount.discountName,
+    value: discount._id,
+  }));
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProductData({
@@ -166,7 +171,6 @@ const EditProductItemModal = ({
       [name]: value,
     });
   };
-
 
   const handleSelectProduct = (selectedOptions) => {
     setProductData({
@@ -262,24 +266,24 @@ const EditProductItemModal = ({
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setIsInnerVisible(true);
-      setCrop(null); // Makes crop preview update between images.
+      setCrop(null);
       const reader = new FileReader();
       reader.addEventListener("load", () =>
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0])
+      setImg(e.target.files[0]);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
-    setSelectedFile(croppedFile)// Get the cropped image file
+    setCroppedFile(croppedFile);
+    setSelectedFile(croppedFile);
     console.log("Cropped image file:", croppedFile);
   };
 
   const handleModalClose = () => {
-    setSelectedFile(null); // Reset the selected file to allow new selection
+    setSelectedFile(null);
   };
 
   return (
@@ -298,7 +302,7 @@ const EditProductItemModal = ({
         <div className="flex flex-col gap-4 mt-5">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="productName">
-              Product Name
+              Product Name <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -311,7 +315,7 @@ const EditProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="price">
-              Price
+              Price <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -382,7 +386,7 @@ const EditProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="costPrice">
-              Cost Price
+              Cost Price <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
@@ -410,21 +414,19 @@ const EditProductItemModal = ({
             <label className="w-1/3 text-gray-500" htmlFor="discountId">
               Discount
             </label>
-            <select
-              name="discountId"
-              value={productData.discountId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
-            >
-              <option defaultValue={"Select discount"} hidden>
-                Select discount
-              </option>
-              {allProductDiscount?.map((discount) => (
-                <option key={discount._id} value={discount._id}>
-                  {discount.discountName.toUpperCase()}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={discountOptions.find(
+                (option) => option.value === productData.discountId
+              )}
+              isMulti={false}
+              isSearchable={true}
+              onChange={(option) =>
+                setProductData({ ...productData, discountId: option.value })
+              }
+              options={discountOptions}
+              placeholder="Select discount"
+            />
           </div>
 
           <div className="flex items-center">
@@ -524,7 +526,7 @@ const EditProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="type">
-              Type
+              Type <span className="text-red-600">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 mr-3 focus:outline-none"
@@ -544,6 +546,15 @@ const EditProductItemModal = ({
               onChange={handleInputChange}
             />
             Non-veg
+            <input
+              className="border-2 border-gray-100 rounded p-2 mr-3 ml-5 focus:outline-none"
+              type="radio"
+              name="type"
+              value="Other"
+              checked={productData.type === "Other"}
+              onChange={handleInputChange}
+            />
+            Other
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="photos">
@@ -587,7 +598,7 @@ const EditProductItemModal = ({
                 <MdCameraAlt
                   className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-5 rounded"
                   size={30}
-                /> 
+                />
               </label>
               {imgSrc && (
                 <CropImage

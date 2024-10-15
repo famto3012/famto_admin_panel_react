@@ -17,6 +17,8 @@ import ShowBill from "./ShowBill";
 import MapModalTwo from "./MapModalTwo";
 import NewAddressTwo from "./NewAddressTwo";
 import { useMap } from "../../context/MapContext";
+import Select from "react-select";
+import { unitOptions } from "../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -85,10 +87,9 @@ const CustomOrder = ({ data }) => {
     setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
 
-  const handleItemChange = (index, e) => {
-    const { name, value } = e.target;
+  const handleItemChange = (index, option) => {
     const updatedItems = [...customOrderData.items];
-    updatedItems[index] = { ...updatedItems[index], [name]: value };
+    updatedItems[index] = { ...updatedItems[index], unit: option.value };
     setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
 
@@ -243,7 +244,11 @@ const CustomOrder = ({ data }) => {
               <button
                 type="button"
                 onClick={() => setModalVisible(true)}
-                className="font-medium bg-teal-700 text-white w-[80%] rounded-md  py-2 flex items-center justify-center"
+                className={` ${
+                  coordinates?.latitude && coordinates?.longitude
+                    ? `bg-teal-700 text-white`
+                    : `bg-transparent text-teal-700`
+                } font-medium border border-teal-700 w-4/5 rounded-md mx-auto py-2`}
               >
                 {coordinates?.latitude && coordinates?.longitude ? (
                   `Location selected`
@@ -278,12 +283,12 @@ const CustomOrder = ({ data }) => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center w-full max-h-[500px] overflow-auto">
-            <span className="w-1/3"></span>
+          <div className="flex flex-col items-center w-full max-h-[500px] overflow-auto ">
+            {/* <span className="w-1/3"></span> */}
             {customOrderData.items.map((item, index) => (
               <div
                 key={index}
-                className="w-2/3 bg-gray-200 p-5 rounded-lg mb-4 flex flex-col gap-[20px]"
+                className="w-2/3 ms-auto bg-gray-200 p-5 rounded-lg mb-4 flex flex-col gap-4"
               >
                 <div className="flex items-center">
                   <label className="w-1/3">Item Name</label>
@@ -292,34 +297,49 @@ const CustomOrder = ({ data }) => {
                     name="itemName"
                     value={item.itemName}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3 outline-none focus:outline-none"
+                    className="flex-grow p-3 outline-none rounded-md focus:outline-none border border-gray-300"
                   />
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex items-center ">
                   <label className="w-1/3">Quantity</label>
                   <input
                     name="quantity"
                     type="text"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-[40%] p-3 outline-none focus:outline-none"
+                    className="flex-grow p-2.5 me-3 rounded-md outline-none focus:outline-none border border-gray-300"
                   />
-                  <select
-                    name="unit"
-                    className="p-3 outline-none focus:outline-none"
-                    value={item.unit}
-                    onChange={(e) => handleItemChange(index, e)}
-                  >
-                    <option defaultValue="Unit" hidden>
-                      Unit
-                    </option>
-                    <option value="gm">gm</option>
-                    <option value="kg">kg</option>
-                    <option value="ltr">ltr</option>
-                    <option value="cm">cm</option>
-                    <option value="m">m</option>
-                  </select>
+
+                  <Select
+                    className="w-[100px] outline-none focus:outline-none z-10"
+                    value={unitOptions.find(
+                      (option) => option.value === item.unit
+                    )}
+                    onChange={(option) => handleItemChange(index, option)}
+                    options={unitOptions}
+                    placeholder="Unit"
+                    isClearable={false}
+                    isSearchable={false}
+                    menuPortalTarget={document.body}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        padding: "5px",
+                        borderColor: "#d1d5db",
+                        borderRadius: "0.375rem",
+                        boxShadow: "none",
+                        "&:hover": {
+                          borderColor: "#a1a1aa",
+                        },
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: "0 8px",
+                      }),
+                      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    }}
+                  />
                 </div>
 
                 <div className="flex items-center">
@@ -329,23 +349,23 @@ const CustomOrder = ({ data }) => {
                     type="text"
                     value={item.numOfUnits}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3 outline-none focus:outline-none"
+                    className="flex-grow p-2.5 rounded-md outline-none focus:outline-none border border-gray-300"
                   />
                 </div>
 
                 {item.itemImageURL && (
-                  <div className="flex items-center gap-[30px]">
-                    <figure className="h-20 w-20 bg-gray-400 ms-4 rounded">
+                  <div className="flex items-center gap-4">
+                    <figure className="h-20 w-20 bg-gray-400 rounded overflow-hidden">
                       <img
                         src={item.itemImageURL}
                         alt="Item image"
-                        className="w-full h-full object-cover rounded"
+                        className="w-full h-full object-cover"
                       />
                     </figure>
                   </div>
                 )}
 
-                <div className="mx-3 flex justify-between mt-3 gap-3">
+                <div className="flex justify-between mt-3 gap-3">
                   <input
                     type="file"
                     name="adImage"
@@ -355,7 +375,7 @@ const CustomOrder = ({ data }) => {
                   />
                   <label
                     htmlFor={`adImage-${index}`}
-                    className="bg-zinc-300 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    className="bg-gray-300 w-1/2 rounded-md p-2 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <AddOutlined />
                     Upload Photo
@@ -366,7 +386,7 @@ const CustomOrder = ({ data }) => {
                     className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
                     onClick={() => handleRemoveItem(index)}
                   >
-                    <RiDeleteBinLine className="text-red-500 text-[18px]" />{" "}
+                    <RiDeleteBinLine className="text-red-500 text-[18px]" />
                     Delete Item
                   </button>
                 </div>

@@ -1,17 +1,25 @@
 const itemTypes = [
-  "Documents & Parcels",
-  "Food & Groceries",
-  "Clothing & Laundry",
-  "Medical Supplies",
-  "Personal Items",
-  "Gifts & Flowers",
-  "Electronics",
-  "Household Items",
-  "Books & Stationery",
-  "Online Orders",
-  "Pet Supplies",
-  "Automotive Parts",
-  "Others",
+  { label: "Documents & Parcels", value: "Documents & Parcels" },
+  { label: "Food & Groceries", value: "Food & Groceries" },
+  { label: "Clothing & Laundry", value: "Clothing & Laundry" },
+  { label: "Medical Supplies", value: "Medical Supplies" },
+  { label: "Personal Items", value: "Personal Items" },
+  { label: "Gifts & Flowers", value: "Gifts & Flowers" },
+  { label: "Electronics", value: "Electronics" },
+  { label: "Household Items", value: "Household Items" },
+  { label: "Books & Stationery", value: "Books & Stationery" },
+  { label: "Online Orders", value: "Online Orders" },
+  { label: "Pet Supplies", value: "Pet Supplies" },
+  { label: "Automotive Parts", value: "Automotive Parts" },
+  { label: "Others", value: "Others" },
+];
+
+const unitOptions = [
+  { value: "gm", label: "gm" },
+  { value: "kg", label: "kg" },
+  { value: "ltr", label: "ltr" },
+  { value: "m", label: "m" },
+  { value: "cm", label: "cm" },
 ];
 
 const orderStatusOption = [
@@ -80,8 +88,14 @@ const payoutPaymentStatus = [
   { value: "false", label: "Un-paid" },
 ];
 
+const vehicleTypeOptions = [
+  { value: "Bike", label: "Bike" },
+  { value: "Scooter", label: "Scooter" },
+];
+
 export {
   itemTypes,
+  unitOptions,
   orderStatusOption,
   paymentModeOption,
   deliveryModeOption,
@@ -92,4 +106,5 @@ export {
   payoutPaymentStatus,
   userTypeOptions,
   userTypeForPushNotificationOptions,
+  vehicleTypeOptions,
 };

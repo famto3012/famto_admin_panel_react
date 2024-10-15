@@ -17,7 +17,7 @@ const DeleteSubCustomerModal = ({
   const handleOk = async () => {
     setConfirmLoading(true);
     try {
-        console.log(currentDeleteCustomer)
+      console.log(currentDeleteCustomer);
       const response = await axios.delete(
         `${BASE_URL}/admin/subscription/delete-customer-subscription/${currentDeleteCustomer}`,
         {
@@ -26,7 +26,7 @@ const DeleteSubCustomerModal = ({
         }
       );
       if (response.status === 200) {
-        console.log(response.data.message)
+        console.log(response.data.message);
         removeCustomer(currentDeleteCustomer);
         handleConfirmDeleteCustomer();
         toast({
@@ -35,7 +35,7 @@ const DeleteSubCustomerModal = ({
           status: "success",
           duration: 3000,
           isClosable: true,
-      });
+        });
       }
     } catch (error) {
       console.error("Error deleting:", error);
@@ -45,7 +45,7 @@ const DeleteSubCustomerModal = ({
         status: "error",
         duration: 3000,
         isClosable: true,
-    });
+      });
     } finally {
       setConfirmLoading(false);
     }
@@ -61,9 +61,7 @@ const DeleteSubCustomerModal = ({
       footer={null}
       centered
     >
-      <Spin spinning={confirmLoading}>
-        <p>Are you sure you want to delete?</p>
-      </Spin>
+      <p className="text-[20px] mb-5">Are you sure you want to delete ?</p>
 
       <div className="flex gap-[30px] justify-end">
         <button className=" bg-teal-100 text-teal-600 p-2 rounded">
@@ -73,7 +71,7 @@ const DeleteSubCustomerModal = ({
           onClick={handleOk}
           className="bg-red-100 text-red-600 p-2 rounded"
         >
-          Delete
+          {confirmLoading ? `Deleting...` : `Delete`}
         </button>
       </div>
     </Modal>

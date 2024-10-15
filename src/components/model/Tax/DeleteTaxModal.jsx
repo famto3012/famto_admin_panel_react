@@ -59,7 +59,7 @@ const DeleteTaxModal = ({
       footer={null}
       centered
     >
-      <p>Are you sure you want to delete this tax?</p>
+      <p>Are you sure you want to delete ?</p>
 
       <div className="flex gap-[30px] justify-end">
         <button

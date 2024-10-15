@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import RatingModal from "../model/Merchant/RatingModal";
-import EditMerchant from "../model/Merchant/EditMerchant";
-import { MdOutlineModeEditOutline, MdCameraAlt } from "react-icons/md";
+import { MdCameraAlt } from "react-icons/md";
 import MapModal from "../Order/MapModal";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import ImageModal from "../model/AgentModels/ImageModal";
 import { useMap } from "../../context/MapContext";
 import CropImage from "../CropImage";
+import Select from "react-select";
 
 const MerchantData = ({
   detail,
@@ -47,10 +47,6 @@ const MerchantData = ({
     });
   }, [coordinates]);
 
-  useEffect(() => {
-    console.log(detail);
-  }, [detail]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     onDataChange({
@@ -62,6 +58,21 @@ const MerchantData = ({
       },
     });
   };
+
+  const handleSelectChange = (option) => {
+    onDataChange({
+      ...detail,
+      merchantDetail: {
+        ...detail.merchantDetail,
+        geofenceId: option.value,
+      },
+    });
+  };
+
+  const geofenceOptions = allGeofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   const handleImageClick = (imageUrl) => {
     setImageModalUrl(imageUrl);
@@ -110,50 +121,48 @@ const MerchantData = ({
                 className="cursor-pointer absolute bottom-0 right-0"
               >
                 <MdCameraAlt
-                  className="bg-teal-500 text-white p-1 rounded-br-md"
-                  size={20}
+                  className="bg-teal-500 text-white p-3 rounded-br-md"
+                  size={44}
                 />
               </label>
             </div>
           )}
 
           {croppedFile && (
-            <figure
-              onClick={() => handleImageClick(URL.createObjectURL(croppedFile))}
-              className="w-[90%] h-[12rem] rounded-md relative"
-            >
+            <figure className="w-[90%] h-[12rem] rounded-md relative">
               <img
+                onClick={() =>
+                  handleImageClick(URL.createObjectURL(croppedFile))
+                }
                 src={URL.createObjectURL(croppedFile)}
                 alt="profile"
-                className="w-full h-full rounded-md object-cover"
+                className="w-full h-full rounded-md object-cover cursor-pointer"
               />
               <label
                 htmlFor="merchantImage"
                 className="cursor-pointer absolute bottom-0 right-0"
               >
                 <MdCameraAlt
-                  className="bg-teal-500 text-white p-1 rounded-md"
-                  size={20}
+                  className="bg-teal-500 text-white p-3 rounded-br-md"
+                  size={44}
                 />
               </label>
             </figure>
           )}
 
           {!croppedFile && detail?.merchantDetail?.merchantImageURL && (
-            <figure
-              onClick={() =>
-                handleImageClick(detail?.merchantDetail?.merchantImageURL)
-              }
-              className="w-[90%] h-[12rem] rounded-md relative"
-            >
+            <figure className="w-[90%] h-[12rem] rounded-md relative  z-10">
               <img
+                onClick={() =>
+                  handleImageClick(detail?.merchantDetail?.merchantImageURL)
+                }
                 src={detail?.merchantDetail?.merchantImageURL}
                 alt="profile"
-                className="w-full h-full rounded-md object-cover"
+                className="w-full h-full rounded-md object-cover cursor-pointer"
               />
               <label
                 htmlFor="merchantImage"
-                className="cursor-pointer absolute bottom-0 right-0"
+                className="cursor-pointer absolute bottom-0 right-0 z-20"
               >
                 <MdCameraAlt
                   className="bg-teal-500 text-white p-3 rounded-br-md"
@@ -305,21 +314,28 @@ const MerchantData = ({
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
           <label className="text-gray-700 text-[16px] w-1/3">Geofence</label>
-          <select
-            name="geofenceId"
-            value={detail?.merchantDetail?.geofenceId}
-            onChange={handleInputChange}
-            className="mt-2 p-2 w-2/3 border rounded-md outline-none focus:outline-none me-[95px] "
-          >
-            <option defaultValue={"Select geofence"} hidden>
-              Select geofence
-            </option>
-            {allGeofence?.map((geofence) => (
-              <option key={geofence._id} value={geofence._id}>
-                {geofence.name}
-              </option>
-            ))}
-          </select>
+
+          <Select
+            options={geofenceOptions}
+            value={geofenceOptions.find(
+              (option) => option.value === detail?.merchantDetail?.geofenceId
+            )}
+            onChange={handleSelectChange}
+            className="mt-2 w-2/3 border rounded-md outline-none focus:outline-none me-[95px] "
+            placeholder="Select geofence"
+            isSearchable={true}
+            isMulti={false}
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
         </div>
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
@@ -381,16 +397,6 @@ const MerchantData = ({
           </button>
         </div>
       </div>
-
-      {/* <EditMerchant
-        isVisible={showEditModal}
-        onCancel={toggleEditModal}
-        BASE_URL={BASE_URL}
-        token={token}
-        role={role}
-        data={detail}
-        merchantId={merchantId}
-      /> */}
 
       <RatingModal
         isVisible={showRatingModal}

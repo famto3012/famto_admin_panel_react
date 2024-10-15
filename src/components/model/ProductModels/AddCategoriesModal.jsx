@@ -1,11 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Modal } from "antd";
-import { MdCameraAlt } from "react-icons/md";
+// import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
 
 import { UserContext } from "../../../context/UserContext";
-import CropImage from "../../CropImage";
+// import CropImage from "../../CropImage";
 
 const AddCategoriesModal = ({
   isVisible,
@@ -75,6 +76,11 @@ const AddCategoriesModal = ({
     }));
   };
 
+  const categoryOptions = availableBusinessCategory?.map((category) => ({
+    label: category.title,
+    value: category._id,
+  }));
+
   const handleAddCategory = async (e) => {
     e.preventDefault();
     try {
@@ -137,59 +143,28 @@ const AddCategoriesModal = ({
     }
   };
 
-  const downloadSampleCSV = async (e) => {
-    try {
-      e.preventDefault();
+  // function onSelectFile(e) {
+  //   if (e.target.files && e.target.files.length > 0) {
+  //     setIsInnerVisible(true);
+  //     setCrop(null); // Makes crop preview update between images.
+  //     const reader = new FileReader();
+  //     reader.addEventListener("load", () =>
+  //       setImgSrc(reader.result?.toString() || "")
+  //     );
+  //     reader.readAsDataURL(e.target.files[0]);
+  //     setImg(e.target.files[0]);
+  //   }
+  // }
 
-      const response = await axios.get(
-        `${BASE_URL}/categories/admin/download-sample-category-csv`,
-        {
-          responseType: "blob",
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  // const handleCropComplete = (croppedFile) => {
+  //   setCroppedFile(croppedFile);
+  //   setSelectedFile(croppedFile); // Get the cropped image file
+  //   console.log("Cropped image file:", croppedFile);
+  // };
 
-      // Create a URL for the file and trigger the download
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      console.log("url", url);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "Category_sample.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      console.log(`Error in downloading sample CSV file: ${err.stack}`);
-    }
-  };
-
-  function onSelectFile(e) {
-    if (e.target.files && e.target.files.length > 0) {
-      setIsInnerVisible(true);
-      setCrop(null); // Makes crop preview update between images.
-      const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
-      );
-      reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0]);
-    }
-  }
-
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    setSelectedFile(croppedFile); // Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
-
-  const handleModalClose = () => {
-    setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  // const handleModalClose = () => {
+  //   setSelectedFile(null); // Reset the selected file to allow new selection
+  // };
 
   return (
     <Modal
@@ -202,26 +177,27 @@ const AddCategoriesModal = ({
     >
       <form onSubmit={handleAddCategory}>
         <div className="flex flex-col gap-4 mt-5">
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-5">
             <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
               Business Category <span className="text-red-600">*</span>
             </label>
 
-            <select
-              name="businessCategoryId"
-              value={categoryData.businessCategoryId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option defaultValue={"Select business category"} hidden>
-                Select business category
-              </option>
-              {availableBusinessCategory?.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
+            <Select
+              options={categoryOptions}
+              value={categoryOptions.find(
+                (option) => option.value === categoryData.businessCategoryId
+              )}
+              onChange={(option) =>
+                setCategoryData({
+                  ...categoryData,
+                  businessCategoryId: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-full"
+              placeholder="Business category"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
 
           <div className="flex items-center">
@@ -229,7 +205,7 @@ const AddCategoriesModal = ({
               Category Name <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               value={categoryData.categoryName}
               id="categoryName"

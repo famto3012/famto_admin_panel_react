@@ -3,6 +3,8 @@ import { Modal } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
+import Select from "react-select";
+import { vehicleTypeOptions } from "../../../utils/DefaultData";
 
 const AddAgentModal = ({
   isVisible,
@@ -31,13 +33,6 @@ const AddAgentModal = ({
     type: "",
     licensePlate: "",
     drivingLicenseNumber: "",
-    // rcFrontImage: null,
-    // rcBackImage: null,
-    // aadharFrontImage: null,
-    // aadharBackImage: null,
-    // drivingLicenseFrontImage: null,
-    // drivingLicenseBackImage: null,
-    // agentImage: null,
   });
 
   const [agentFile, setAgentFile] = useState(null);
@@ -62,15 +57,14 @@ const AddAgentModal = ({
   const [rcBackPreviewURL, setRcBackPreviewURL] = useState(null);
 
   const [confirmLoading, setConfirmLoading] = useState(false);
+
   const toast = useToast();
 
-  // Function for Add Agent data
+  const managerOptions = manager;
 
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
   };
-
-  // Generalized function to handle image changes
 
   const handleImageChange = (e, setFile, setPreviewURL) => {
     e.preventDefault();
@@ -251,19 +245,30 @@ const AddAgentModal = ({
                 <label className="w-1/3 text-gray-500 " htmlFor="type">
                   Vehicle Type <span className="text-red-600">*</span>
                 </label>
-                <select
-                  className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-10 focus:outline-none"
-                  name="type"
-                  id="type"
-                  value={addData.type}
-                  onChange={handleInputChange}
-                >
-                  <option value="" hidden>
-                    Vehicle Type
-                  </option>
-                  <option value="Bike">Bike</option>
-                  <option value="Scooter">Scooter</option>
-                </select>
+
+                <Select
+                  options={vehicleTypeOptions}
+                  value={vehicleTypeOptions.find(
+                    (option) => option.value === addData.type
+                  )}
+                  onChange={(option) =>
+                    setAddData({ ...addData, type: option.value })
+                  }
+                  className="rounded w-[15rem] ml-10 focus:outline-none"
+                  placeholder="Vehicle type"
+                  isSearchable={false}
+                  isMulti={false}
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      paddingRight: "",
+                    }),
+                    dropdownIndicator: (provided) => ({
+                      ...provided,
+                      padding: "10px",
+                    }),
+                  }}
+                />
               </div>
             </div>
             <div className="flex gap-6">
@@ -558,6 +563,30 @@ const AddAgentModal = ({
                 </option>
               ))}
             </select>
+
+            <Select
+              options={vehicleTypeOptions}
+              value={vehicleTypeOptions.find(
+                (option) => option.value === addData.type
+              )}
+              onChange={(option) =>
+                setAddData({ ...addData, type: option.value })
+              }
+              className="rounded w-[15rem] ml-10 focus:outline-none"
+              placeholder="Vehicle type"
+              isSearchable={false}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="salaryStructureId">

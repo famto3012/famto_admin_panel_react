@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
 
 import NewAddress from "./NewAddress";
 import { UserContext } from "../../context/UserContext";
@@ -32,21 +33,19 @@ const PickAndDrop = ({ data }) => {
   });
 
   const [allCustomerAddress, setAllCustomerAddress] = useState([]);
-
   const [cartData, setCartData] = useState({});
-
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
-
   const [selectedVehicle, setSelectedVehicle] = useState("");
-
   const [selectedPickUpAddress, setSelectedPickUpAddress] = useState("");
-
   const [selectedDeliveryAddress, setSelectedDeliveryAddress] = useState("");
-
   const [isNewPickupAddressVisible, setIsNewPickupAddressVisible] =
     useState(false);
   const [isNewDeliveryAddressVisible, setIsNewDeliveryAddressVisible] =
     useState(false);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const { token } = useContext(UserContext);
   const toast = useToast();
@@ -62,11 +61,10 @@ const PickAndDrop = ({ data }) => {
     });
   };
 
-  const handleItemChange = (index, e) => {
-    const { name, value } = e.target;
+  const handleItemChange = (index, option) => {
     setPickAndDropData((prevData) => {
       const items = [...prevData.items];
-      items[index] = { ...items[index], [name]: value };
+      items[index] = { ...items[index], itemName: option.value };
       return {
         ...prevData,
         items,
@@ -138,10 +136,6 @@ const PickAndDrop = ({ data }) => {
         ...pickAndDropData,
       };
 
-      console.log(invoiceData);
-
-      // return;
-
       const response = await axios.post(
         `${BASE_URL}/orders/admin/create-order-invoice`,
         invoiceData,
@@ -203,6 +197,31 @@ const PickAndDrop = ({ data }) => {
   const handleSelectVehicle = (type) => {
     setSelectedVehicle(type);
     setPickAndDropData({ ...pickAndDropData, vehicleType: type });
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - e.currentTarget.offsetLeft);
+    setScrollLeft(e.currentTarget.scrollLeft);
+    document.body.classList.add("no-select");
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    document.body.classList.remove("no-select");
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    document.body.classList.remove("no-select");
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - e.currentTarget.offsetLeft;
+    const walk = (x - startX) * 2;
+    e.currentTarget.scrollLeft = scrollLeft - walk;
   };
 
   return (
@@ -392,7 +411,7 @@ const PickAndDrop = ({ data }) => {
             </button>
           </div>
 
-          <div className="max-h-[500px] overflow-y-auto">
+          <div className="max-h-[1000px] overflow-y-auto">
             {pickAndDropData?.items?.map((item, index) => (
               <div
                 key={index}
@@ -400,21 +419,22 @@ const PickAndDrop = ({ data }) => {
               >
                 <div className="flex">
                   <label className="w-1/3">Item type</label>
-                  <select
-                    name="itemName"
-                    value={item.itemName}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="w-1/2 p-3 outline-none focus:outline-none"
-                  >
-                    <option defaultValue={"Select item type"} hidden>
-                      Select item type
-                    </option>
-                    {itemTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
+
+                  <Select
+                    className="w-1/2 outline-none focus:outline-none z-10"
+                    value={itemTypes.find(
+                      (option) => option.value === item.itemName
+                    )}
+                    isSearchable={true}
+                    onChange={(option) => handleItemChange(index, option)}
+                    options={itemTypes}
+                    placeholder="Select item"
+                    isClearable={false}
+                    menuPortalTarget={document.body}
+                    styles={{
+                      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    }}
+                  />
                 </div>
                 <div className="flex mt-5">
                   <label className="w-1/3">Dimensions (in cm)</label>
@@ -457,10 +477,12 @@ const PickAndDrop = ({ data }) => {
                     </div>
                   </div>
                 </div>
-                <div className="mx-3 flex justify-end mt-3 gap-3">
+
+                <div className="flex items-center mt-3">
+                  <label htmlFor="" className="w-1/3"></label>
                   <button
                     type="button"
-                    className="bg-red-100 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
+                    className="bg-red-200 w-1/2 rounded-md p-2 flex items-center justify-center gap-2"
                     onClick={() => handleRemoveItem(index)}
                   >
                     <RiDeleteBinLine /> Remove Item
@@ -499,7 +521,15 @@ const PickAndDrop = ({ data }) => {
                 ))}
 
                 {selectedDeliveryAddress === "other" && (
-                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                  <div
+                    className={`flex items-center gap-[20px] mt-[14px] py-2 max-w-[550px] overflow-x-auto ${
+                      isDragging ? "cursor-grabbing" : "cursor-grab"
+                    }`}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                  >
                     {data?.customerAddress
                       .find((addr) => addr.type === "other")
                       ?.otherAddress?.map((otherAddr) => (
@@ -523,7 +553,7 @@ const PickAndDrop = ({ data }) => {
                               });
                             }}
                           />
-                          <span className="flex flex-col gap-1 ms-2 ">
+                          <span className="flex flex-col w-[150px] gap-1 ms-2">
                             <span>{otherAddr.flat}</span>
                             <span>{otherAddr.area}</span>
                             <span>{otherAddr.landmark}</span>

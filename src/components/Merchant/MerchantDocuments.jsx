@@ -57,7 +57,8 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
       <h3 className="text-gray-700 font-bold mb-2">Documents provided</h3>
 
       <div className="flex justify-between items-center my-[20px] max-w-[900px]">
-        <label className=" text-gray-700 text-[16px] w-1/6">Pan card</label>
+        <label className=" text-gray-700 text-[16px] w-1/4">Pan card</label>
+
         <input
           type="text"
           name="pancardNumber"
@@ -65,6 +66,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
           onChange={handleInputChange}
           className="p-2 border rounded-md w-[20rem] mx-[40px] outline-none focus:outline-none flex-grow"
         />
+
         <div className="flex items-center gap-[30px]">
           {!previewURL?.pancardPreviewURL &&
             !detail?.merchantDetail?.pancardImageURL && (
@@ -120,7 +122,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
       </div>
 
       <div className="flex justify-between items-center my-[20px] max-w-[900px]">
-        <label className="text-gray-700 text-[16px] w-1/6">GSTIN</label>
+        <label className="text-gray-700 text-[16px] w-1/4">GSTIN</label>
         <input
           type="text"
           name="GSTINNumber"
@@ -183,7 +185,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
       </div>
 
       <div className="flex justify-between items-center my-[20px] max-w-[900px]">
-        <label className=" text-gray-700 text-[16px] w-1/6">FSSAI</label>
+        <label className=" text-gray-700 text-[16px] w-1/4">FSSAI</label>
         <input
           type="text"
           name="FSSAINumber"
@@ -245,7 +247,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
       </div>
 
       <div className="flex justify-between items-center my-[20px] max-w-[900px]">
-        <label className=" text-gray-700 text-[16px] w-1/6">
+        <label className=" text-gray-700 text-[16px] w-1/4">
           Adhaar Number
         </label>
         <input

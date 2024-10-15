@@ -428,17 +428,15 @@ const Customers = () => {
                 }}
               />
 
-              <div className="relative">
-                <FilterAltOutlined className="text-gray-400" />
-                <input
-                  type="search"
-                  placeholder="Search customer"
-                  className="bg-gray-100 h-10 px-5 pr-2 rounded-full ml-4 w-72 text-sm focus:outline-none"
-                  onChange={onSearch}
-                />
-                <button type="submit" className="absolute right-2 top-2">
-                  <SearchOutlined className="text-xl text-gray-500" />
-                </button>
+              <div className="ms-auto">
+                <div>
+                  <input
+                    type="search"
+                    onChange={onSearch}
+                    className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
+                    placeholder="Search customer"
+                  />
+                </div>
               </div>
             </div>
             <div className="overflow-auto mt-[20px] w-full">
@@ -489,12 +487,16 @@ const Customers = () => {
                         className="align-middle even:bg-gray-200 text-center"
                       >
                         <td className="p-4">
-                          <Link
-                            to={`/customer-detail/${customer._id}`}
-                            className="underline underline-offset-4"
-                          >
-                            {customer._id}
-                          </Link>
+                          {role === "Admin" ? (
+                            <Link
+                              to={`/customer-detail/${customer._id}`}
+                              className="underline underline-offset-4 cursor-pointer"
+                            >
+                              {customer._id}
+                            </Link>
+                          ) : (
+                            <p>{customer._id}</p>
+                          )}
                         </td>
                         <td>{customer.fullName}</td>
                         <td>{customer.email}</td>

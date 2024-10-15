@@ -68,8 +68,9 @@ const DeleteCategoryModal = ({
       >
         <div>
           <p className="font-bold text-[20px] mb-5">
-            {`Are you sure want to delete ${categoryName} ?`}
+            Are you sure you want to delete ?
           </p>
+
           <div className="flex justify-end">
             <button
               className="bg-zinc-200 p-2 rounded-md font-semibold"

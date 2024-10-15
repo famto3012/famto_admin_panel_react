@@ -17,7 +17,7 @@ const DeleteSubMerchantModal = ({
   const handleOk = async () => {
     setConfirmLoading(true);
     try {
-        console.log(currentDeleteMerchant)
+      console.log(currentDeleteMerchant);
       const response = await axios.delete(
         `${BASE_URL}/admin/subscription/delete-merchant-subscription/${currentDeleteMerchant}`,
         {
@@ -26,7 +26,7 @@ const DeleteSubMerchantModal = ({
         }
       );
       if (response.status === 200) {
-        console.log(response.data.message)
+        console.log(response.data.message);
         removeMerchant(currentDeleteMerchant);
         handleConfirmDeleteMerchant();
         toast({
@@ -35,7 +35,7 @@ const DeleteSubMerchantModal = ({
           status: "success",
           duration: 3000,
           isClosable: true,
-      });
+        });
       }
     } catch (error) {
       console.error("Error deleting:", error);
@@ -45,7 +45,7 @@ const DeleteSubMerchantModal = ({
         status: "error",
         duration: 3000,
         isClosable: true,
-    });
+      });
     } finally {
       setConfirmLoading(false);
     }
@@ -61,9 +61,7 @@ const DeleteSubMerchantModal = ({
       footer={null}
       centered
     >
-      <Spin spinning={confirmLoading}>
-        <p>Are you sure you want to delete?</p>
-      </Spin>
+      <p className="text-[20px] mb-5">Are you sure you want to delete ?</p>
 
       <div className="flex gap-[30px] justify-end">
         <button className=" bg-teal-100 text-teal-600 p-2 rounded">
