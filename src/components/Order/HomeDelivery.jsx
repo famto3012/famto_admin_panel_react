@@ -34,6 +34,10 @@ const HomeDelivery = ({ data }) => {
   const [allCustomerAddress, setAllCustomerAddress] = useState();
   const [productResults, setProductResults] = useState([]);
 
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   const [isMerchantLoading, setIsMerchantLoading] = useState(false);
   const [isProductLoading, setIsProductLoading] = useState(false);
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
@@ -52,6 +56,31 @@ const HomeDelivery = ({ data }) => {
       getAvailableBusinessCategory();
     }
   }, [data, role]);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - e.currentTarget.offsetLeft);
+    setScrollLeft(e.currentTarget.scrollLeft);
+    document.body.classList.add("no-select");
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    document.body.classList.remove("no-select");
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    document.body.classList.remove("no-select");
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - e.currentTarget.offsetLeft;
+    const walk = (x - startX) * 2;
+    e.currentTarget.scrollLeft = scrollLeft - walk;
+  };
 
   const getAvailableBusinessCategory = async () => {
     try {
@@ -575,7 +604,15 @@ const HomeDelivery = ({ data }) => {
                 ))}
 
                 {selectedAddress === "other" && (
-                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                  <div
+                    className={`flex items-center gap-[20px] mt-[14px] py-2 max-w-[550px] overflow-x-auto ${
+                      isDragging ? "cursor-grabbing" : "cursor-grab"
+                    }`}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                  >
                     {data?.customerAddress
                       .find((addr) => addr.type === "other")
                       ?.otherAddress?.map((otherAddr) => (
@@ -592,7 +629,7 @@ const HomeDelivery = ({ data }) => {
                               handleSelectOtherAddress(otherAddr.id)
                             }
                           />
-                          <span className="flex flex-col gap-1 ms-2 ">
+                          <span className="flex flex-col w-[150px] gap-1 ms-2">
                             <span>{otherAddr.flat}</span>
                             <span>{otherAddr.area}</span>
                             <span>{otherAddr.landmark}</span>

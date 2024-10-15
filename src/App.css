@@ -1,11 +1,9 @@
-/* Define custom properties */
-:root {
+/* :root {
   --sb-track-color: #e5e5e5;
   --sb-thumb-color: #088183;
   --sb-size: 4px;
 }
 
-/* WebKit browsers */
 ::-webkit-scrollbar {
   width: var(--sb-size);
 }
@@ -21,7 +19,6 @@
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Fallback for other browsers */
 @supports not selector(::-webkit-scrollbar) {
   body {
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
@@ -29,7 +26,86 @@
   }
 }
 
-/* Example: Targeting a specific class or ID */
+.overflow-element::-webkit-scrollbar {
+  width: var(--sb-size);
+}
+
+.overflow-element::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  width: var(--sb-size);
+  border-radius: 20px;
+}
+
+.overflow-element::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 14px;
+}
+
+@supports not selector(.overflow-element::-webkit-scrollbar) {
+  .overflow-element {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+    scrollbar-width: thin;
+  }
+}
+
+.ant-switch-checked {
+  background: #016b6c !important;
+}
+
+input[type="radio"] {
+  accent-color: #115e59 !important;
+}
+
+.react-daterange-picker__wrapper {
+  border: none !important;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+} */
+
+/* ==================== */
+
+/* Define custom properties */
+:root {
+  --sb-track-color: #e5e5e5;
+  --sb-thumb-color: #088183;
+  --sb-size: 4px;
+}
+
+/* Hide scrollbar for WebKit browsers */
+::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
+}
+
+/* Hide scrollbar for Firefox */
+body {
+  scrollbar-width: none; /* Hides scrollbar */
+}
+
+/* Hide scrollbar for other browsers */
+.overflow-element {
+  overflow: -moz-scrollbars-none; /* Hides scrollbar */
+  -ms-overflow-style: none; /* Hides scrollbar */
+}
+
+/* Custom styles for scrollbars (if needed) */
+/* Note: These won't be displayed due to the display: none rule */
+::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 24px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 24px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom styles for elements with specific class or ID */
 .overflow-element::-webkit-scrollbar {
   width: var(--sb-size);
 }
@@ -63,4 +139,11 @@ input[type="radio"] {
 
 .react-daterange-picker__wrapper {
   border: none !important;
+}
+
+.no-select {
+  user-select: none; /* Prevent text selection */
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For Internet Explorer/Edge */
 }

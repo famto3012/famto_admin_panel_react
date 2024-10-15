@@ -618,15 +618,15 @@ const Orders = () => {
           </div>
 
           <div className="flex items-center gap-[20px]">
-            <div>
+            {/* <div>
               <FilterAltOutlinedIcon className="mt-2 text-gray-400" />
-            </div>
+            </div> */}
 
             <div>
               <input
                 type="search"
-                className="bg-gray-100 relative p-3 rounded-3xl focus:outline-none outline-none text-[14px]"
-                placeholder="Search order id"
+                className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
+                placeholder="Search order ID"
                 onChange={onSearch}
               />
             </div>
@@ -791,14 +791,19 @@ const Orders = () => {
                                       onClick={showModalReject}
                                     />
                                     <Modal
+                                      title={
+                                        <span className="font-bold text-[16px]">
+                                          Reject?
+                                        </span>
+                                      }
                                       open={isModalReject}
                                       onCancel={handleCancel}
                                       centered
                                       footer={null}
                                     >
                                       <form>
-                                        <p className="font-semibold text-[18px] p-2">
-                                          Are you sure want to Reject ?
+                                        <p className=" text-[16px] py-2">
+                                          Do you want to Reject?
                                         </p>
                                         <div className="flex justify-end mt-5 gap-6">
                                           <button

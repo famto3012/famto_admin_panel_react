@@ -59,9 +59,7 @@ const DeleteAgentSurgeModal = ({
       footer={null}
       centered
     >
-      <Spin spinning={confirmLoading}>
-        <p>Are you sure you want to delete?</p>
-      </Spin>
+      <p>Are you sure you want to delete ?</p>
 
       <div className="flex gap-[30px] justify-end">
         <button className=" bg-teal-100 text-teal-600 p-2 rounded">
@@ -71,7 +69,7 @@ const DeleteAgentSurgeModal = ({
           onClick={handleOk}
           className="bg-red-100 text-red-600 p-2 rounded"
         >
-          Delete
+          {confirmLoading ? `Deleting...` : `Delete`}
         </button>
       </div>
     </Modal>

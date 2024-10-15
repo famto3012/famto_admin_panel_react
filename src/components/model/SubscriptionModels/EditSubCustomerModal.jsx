@@ -63,10 +63,13 @@ const EditSubCustomerModal = ({
     setCustomerData({ ...customerData, [e.target.name]: e.target.value });
   };
 
-  const taxOptions = tax.map((tax) => ({
-    label: tax.taxName,
-    value: tax.taxId,
-  }));
+  const taxOptions = [
+    { label: "No Tax", value: null },
+    ...tax.map((tax) => ({
+      label: tax.taxName,
+      value: tax.taxId,
+    })),
+  ];
 
   const handleTaxChange = (selectedOption) => {
     setCustomerData((prevData) => ({
@@ -102,7 +105,7 @@ const EditSubCustomerModal = ({
     } catch (err) {
       toast({
         title: "Error",
-        description: "Error in updating subscription plan",
+        description: "Error in updating subscription plan" + err,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -178,12 +181,12 @@ const EditSubCustomerModal = ({
                 taxOptions.find(
                   (option) => option.value === customerData.taxId
                 ) || null
-              } // Ensure null when no option matches
+              }
               isSearchable={true}
               onChange={handleTaxChange}
               options={taxOptions}
               placeholder="Select Tax"
-              isClearable={true} // Allow clearing the selection
+              isClearable={true}
             />
           </div>
 

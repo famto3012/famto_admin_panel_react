@@ -64,10 +64,8 @@ const DeleteProductModal = ({
       centered
     >
       <div>
-        <p className="text-[20px] mb-5">
-          Are you sure want to delete{" "}
-          <span className="font-[500]">{productName}</span> ?
-        </p>
+        <p className="text-[20px] mb-5">Are you sure you want to delete ?</p>
+
         <div className="flex justify-end">
           <button
             className="bg-zinc-200 p-2 rounded-md font-semibold"

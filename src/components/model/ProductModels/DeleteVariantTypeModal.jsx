@@ -65,7 +65,10 @@ const DeleteVariantTypeModal = ({
       centered
     >
       <div>
-        <p className="text-[20px] mb-5">Are you sure want to delete ?</p>
+        <p className="text-[20px] mb-5">
+          Are you sure you want to delete this ?
+        </p>
+
         <div className="flex justify-end">
           <button
             className="bg-zinc-200 p-2 rounded-md font-semibold"

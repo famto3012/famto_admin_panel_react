@@ -76,13 +76,13 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
         <div className="mt-6 p-6 bg-gray-200 rounded-lg shadow-lg w-1/2">
           <div>
             <div className="flex flex-col gap-3">
-              <div className="flex space-x-2 justify-around mx-2">
+              <div className="flex flex-row space-x-2 justify-around">
                 {["home", "work", "others"].map((button) => (
                   <button
                     key={button}
                     type="button"
                     onClick={() => handleButtonClick(button)}
-                    className={`px-5 p-2 rounded capitalize ${
+                    className={`px-5 p-2 rounded capitalize flex-1 ${
                       selectedType === button
                         ? "bg-teal-700 text-white"
                         : "bg-transparent border border-teal-700 text-teal-700 outline-none focus:outline-none"
@@ -168,9 +168,15 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
                 <button
                   type="button"
                   onClick={() => setModalVisible(true)}
-                  className="font-medium bg-teal-700 text-white w-2/3 rounded-md mx-auto py-2"
+                  className={` ${
+                    coordinatesTwo?.latitude && coordinatesTwo?.longitude
+                      ? `bg-teal-700 text-white`
+                      : `bg-transparent text-teal-700`
+                  } font-medium border border-teal-700 w-2/3 rounded-md mx-auto py-2`}
                 >
-                  {`Mark location`}
+                  {coordinatesTwo?.latitude && coordinatesTwo?.longitude
+                    ? `Location selected`
+                    : `Mark location`}
                 </button>
 
                 <MapModalTwo

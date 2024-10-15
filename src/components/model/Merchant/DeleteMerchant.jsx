@@ -56,16 +56,14 @@ const DeleteMerchant = ({
 
   return (
     <Modal
-      title="Delete merchant"
+      title={<span className="font-bold text-[16px]">Delete?</span>}
       open={isVisible}
       onCancel={onCancel}
       footer={null}
       centered
     >
       <>
-        <p className="my-5 text-[16px] text-center">
-          Are you sure to delete the merchant?
-        </p>
+        <p className="text-[16px] py-2">Do you want to Delete ?</p>
 
         <div className="flex justify-end gap-4 mt-5">
           <button

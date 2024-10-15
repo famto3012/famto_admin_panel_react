@@ -421,14 +421,6 @@ const SubscriptionComponent = () => {
         </h1>
         {role === "Admin" && (
           <div className="bg-white mx-5 p-5 rounded-lg my-5">
-            {/* <div className="flex w-2/3 justify-between">
-            <p>
-              Enable this toggle to transfer Subscription on the basis of
-              delivery methods.
-            </p>
-            <Switch />
-          </div> */}
-
             <div className="flex items-center ">
               <label className="w-1/3">Merchant Subscription Setup</label>
               <button
@@ -459,54 +451,54 @@ const SubscriptionComponent = () => {
               Website preview
             </Link>
           </div>
+
           <div className="flex mt-10">
             <label className="w-1/3">Available Subscription Plans</label>
             <div className="w-fit grid xl:grid-cols-2 grid-cols-1 gap-5">
               {subscriptionMerchant.map((subscription) => (
-                <div className="bg-zinc-50 rounded-lg flex border p-3">
-                  <div className="flex flex-col gap-5">
-                    {/* <div className="flex justify-between "> */}
-                    <p>
-                      Plan name:
-                      <span className="font-[700] ms-2 max-w-[20ch] truncate whitespace-nowrap overflow-hidden">
-                        {subscription.name}
-                      </span>
-                    </p>
-                    <p>
-                      Amount:
-                      <span className="font-[700] ml-1">
-                        {subscription.amount}
-                      </span>
-                    </p>
-                    {/* </div> */}
+                <div className="bg-zinc-50 rounded-lg flex border p-3 ">
+                  <div className="flex flex-col gap-5 max-w-[300px]">
+                    <div className="flex flex-col flex-1 gap-5">
+                      <p>
+                        Plan name:
+                        <span className="font-[700] ms-2 max-w-[20ch] truncate whitespace-nowrap overflow-hidden">
+                          {subscription.name}
+                        </span>
+                      </p>
+                      <p>
+                        Amount:
+                        <span className="font-[700] ml-1">
+                          {subscription.amount}
+                        </span>
+                      </p>
 
-                    {/* <div className="flex justify-between "> */}
-                    <p>
-                      Duration:{" "}
-                      <span className="font-[700]">
-                        {subscription.duration}
-                      </span>
-                    </p>
+                      <p>
+                        Duration:{" "}
+                        <span className="font-[700]">
+                          {subscription.duration}
+                        </span>
+                      </p>
 
-                    {/* </div> */}
-                    {role === "Admin" && (
-                      <>
-                        <p>
-                          Remainder:{" "}
-                          <span className="font-[700]">
-                            {subscription.renewalReminder}
-                          </span>
-                        </p>
-                        <p>
-                          Tax name:{" "}
-                          <span className="font-[700]">
-                            {subscription?.taxId?.taxName || "-"}
-                          </span>
-                        </p>
-                      </>
-                    )}
+                      {role === "Admin" && (
+                        <>
+                          <p>
+                            Remainder:{" "}
+                            <span className="font-[700]">
+                              {subscription.renewalReminder}
+                            </span>
+                          </p>
+                          <p>
+                            Tax name:{" "}
+                            <span className="font-[700]">
+                              {subscription?.taxId?.taxName || "-"}
+                            </span>
+                          </p>
+                        </>
+                      )}
 
-                    <p className="">{subscription.description}</p>
+                      <p className="">{subscription.description}</p>
+                    </div>
+
                     {role === "Admin" && (
                       <div className="flex mb-4">
                         <button
@@ -563,6 +555,7 @@ const SubscriptionComponent = () => {
               ))}
             </div>
           </div>
+
           {role === "Admin" && (
             <div className="flex mt-5 items-center">
               <label className="w-1/3 text-gray-800">Merchant Id</label>
@@ -571,7 +564,7 @@ const SubscriptionComponent = () => {
                 name="userId"
                 value={merchant.userId}
                 placeholder="Enter merchant ID"
-                className="border-2 border-gray-100 rounded shadow-md p-2 w-1/3 focus:outline-none"
+                className="border-2 border-gray-200 rounded p-2 w-1/3 focus:outline-none"
                 onChange={handleMerchant}
               />
             </div>
@@ -618,14 +611,6 @@ const SubscriptionComponent = () => {
             Customers
           </h1>
           <div className="p-5 rounded-lg">
-            {/* <div className="flex w-2/3 justify-between mt-5">
-              <p>
-                Enable this toggle to transfer Subscription on the basis of
-                delivery methods.
-              </p>
-              <Switch />
-            </div> */}
-
             <div className="flex flex-row item-center bg-white p-5 rounded-md">
               <label className="w-1/3 flex items-center">
                 Customer Subscription Setup
@@ -654,52 +639,50 @@ const SubscriptionComponent = () => {
               <div className="w-fit grid xl:grid-cols-2 grid-cols-1 gap-5">
                 {subscriptionCustomer.map((subscription) => (
                   <div className="bg-zinc-50 rounded-lg flex border p-3">
-                    <div className="flex flex-col gap-5">
-                      {/* <div className="flex justify-between "> */}
-                      <p>
-                        Plan name:
-                        <span className="font-[700] ms-2">
-                          {subscription.name}
-                        </span>
-                      </p>
-                      <p>
-                        Amount:
-                        <span className="font-[700] ml-1">
-                          {subscription.amount}
-                        </span>
-                      </p>
-                      {/* </div> */}
+                    <div className="flex flex-col gap-5 max-w-[300px]">
+                      <div className="flex flex-col flex-1 gap-5">
+                        <p>
+                          Plan name:
+                          <span className="font-[700] ms-2">
+                            {subscription.name}
+                          </span>
+                        </p>
+                        <p>
+                          Amount:
+                          <span className="font-[700] ml-1">
+                            {subscription.amount}
+                          </span>
+                        </p>
 
-                      {/* <div className="flex justify-between "> */}
-                      <p>
-                        Duration:{" "}
-                        <span className="font-[700]">
-                          {subscription.duration}
-                        </span>
-                      </p>
-                      <p>
-                        Remainder:{" "}
-                        <span className="font-[700]">
-                          {subscription.renewalReminder}
-                        </span>
-                      </p>
-                      {/* </div> */}
+                        <p>
+                          Duration:{" "}
+                          <span className="font-[700]">
+                            {subscription.duration}
+                          </span>
+                        </p>
+                        <p>
+                          Remainder:{" "}
+                          <span className="font-[700]">
+                            {subscription.renewalReminder}
+                          </span>
+                        </p>
 
-                      <p className="">
-                        Tax name:{" "}
-                        <span className="font-[700]">
-                          {subscription?.taxId?.taxName || "-"}
-                        </span>
-                      </p>
+                        <p className="">
+                          Tax name:{" "}
+                          <span className="font-[700]">
+                            {subscription?.taxId?.taxName || "-"}
+                          </span>
+                        </p>
 
-                      <p className="">
-                        No of Orders:{" "}
-                        <span className="font-[700]">
-                          {subscription.noOfOrder}
-                        </span>
-                      </p>
+                        <p className="">
+                          No of Orders:{" "}
+                          <span className="font-[700]">
+                            {subscription.noOfOrder}
+                          </span>
+                        </p>
 
-                      <p className="">{subscription.description}</p>
+                        <p className="">{subscription.description}</p>
+                      </div>
 
                       <div className="flex mb-4">
                         <button
@@ -741,7 +724,7 @@ const SubscriptionComponent = () => {
                         />
                       </div>
                     </div>
-                    <div className="bg-white ml-auto rounded-lg w-14 flex items-center justify-center">
+                    <div className=" ml-auto rounded-lg w-14 flex items-center justify-center">
                       <input
                         type="radio"
                         name="planId"
@@ -763,7 +746,7 @@ const SubscriptionComponent = () => {
                 name="userId"
                 value={customer.userId}
                 placeholder="Enter customer ID"
-                className="border-2 border-gray-100 rounded shadow-md p-2 w-1/3 focus:outline-none"
+                className="border-2 border-gray-200 rounded p-2 w-1/3 focus:outline-none"
                 onChange={handleCustomer}
               />
             </div>

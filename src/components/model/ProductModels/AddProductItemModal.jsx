@@ -105,6 +105,11 @@ const AddProductItemModal = ({
     }
   }, [isVisible]);
 
+  const discountOptions = allProductDiscount?.map((discount) => ({
+    label: discount.discountName,
+    value: discount._id,
+  }));
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -395,21 +400,20 @@ const AddProductItemModal = ({
               <label className="w-1/3 text-gray-500" htmlFor="discountId">
                 Discount
               </label>
-              <select
-                name="discountId"
-                value={productData.discountId}
-                onChange={handleInputChange}
-                className="border-2 border-gray-100 rounded p-2 focus:outline-none w-2/3"
-              >
-                <option defaultValue={"Select discount"} hidden>
-                  Select discount
-                </option>
-                {allProductDiscount?.map((discount) => (
-                  <option key={discount._id} value={discount._id}>
-                    {discount.discountName.toUpperCase()}
-                  </option>
-                ))}
-              </select>
+
+              <Select
+                className="w-2/3 outline-none focus:outline-none"
+                value={discountOptions.find(
+                  (option) => option.value === productData.discountId
+                )}
+                isMulti={false}
+                isSearchable={true}
+                onChange={(option) =>
+                  setProductData({ ...productData, discountId: option.value })
+                }
+                options={discountOptions}
+                placeholder="Select discount"
+              />
             </div>
 
             <div className="flex items-center">
@@ -425,7 +429,7 @@ const AddProductItemModal = ({
                 isSearchable={true}
                 onChange={handleSelectProduct}
                 options={productOptions}
-                placeholder="Select Product"
+                placeholder="Select product"
                 isClearable={true}
                 components={animatedComponents}
               />

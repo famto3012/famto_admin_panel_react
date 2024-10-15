@@ -1,9 +1,11 @@
 import { Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { MdCameraAlt } from "react-icons/md";
+// import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
+import Select from "react-select";
+
 import { useToast } from "@chakra-ui/react";
-import CropImage from "../../CropImage";
+// import CropImage from "../../CropImage";
 
 const EditCategoriesModal = ({
   isVisible,
@@ -53,6 +55,7 @@ const EditCategoriesModal = ({
             Authorization: `Bearer ${token}`,
           },
         }),
+
         axios.get(getCategoryEndPoint, {
           withCredentials: true,
           headers: {
@@ -66,12 +69,20 @@ const EditCategoriesModal = ({
       }
 
       if (categoryResponse.status === 200) {
-        setCategoryData(categoryResponse.data.data);
+        setCategoryData({
+          ...categoryResponse.data.data,
+          businessCategoryId: categoryResponse.data.data.businessCategoryId._id,
+        });
       }
     };
 
     fetchData();
   }, [role, token, merchantId, categoryId]);
+
+  const categoryOptions = availableBusinessCategory?.map((category) => ({
+    label: category.title,
+    value: category._id,
+  }));
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -130,28 +141,28 @@ const EditCategoriesModal = ({
     }
   };
 
-  function onSelectFile(e) {
-    if (e.target.files && e.target.files.length > 0) {
-      setIsInnerVisible(true);
-      setCrop(null); // Makes crop preview update between images.
-      const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
-      );
-      reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0]);
-    }
-  }
+  // function onSelectFile(e) {
+  //   if (e.target.files && e.target.files.length > 0) {
+  //     setIsInnerVisible(true);
+  //     setCrop(null);
+  //     const reader = new FileReader();
+  //     reader.addEventListener("load", () =>
+  //       setImgSrc(reader.result?.toString() || "")
+  //     );
+  //     reader.readAsDataURL(e.target.files[0]);
+  //     setImg(e.target.files[0]);
+  //   }
+  // }
 
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    setSelectedFile(croppedFile); // Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
+  // const handleCropComplete = (croppedFile) => {
+  //   setCroppedFile(croppedFile);
+  //   setSelectedFile(croppedFile);
+  //   console.log("Cropped image file:", croppedFile);
+  // };
 
-  const handleModalClose = () => {
-    setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  // const handleModalClose = () => {
+  //   setSelectedFile(null);
+  // };
 
   return (
     <Modal
@@ -164,22 +175,27 @@ const EditCategoriesModal = ({
     >
       <form onSubmit={submitCategory}>
         <div className="flex flex-col gap-4 mt-5">
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-5">
             <label className="w-1/2 text-gray-500" htmlFor="businessCategory">
               Business Category <span className="text-red-600">*</span>
             </label>
-            <select
-              name="businessCategoryId"
-              value={categoryData.businessCategoryId._id}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              {availableBusinessCategory.map((business) => (
-                <option key={business._id} value={business._id}>
-                  {business.title}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={categoryOptions}
+              value={categoryOptions.find(
+                (option) => option.value === categoryData.businessCategoryId
+              )}
+              onChange={(option) =>
+                setCategoryData({
+                  ...categoryData,
+                  businessCategoryId: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-full"
+              placeholder="Business category"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
 
           <div className="flex items-center">
@@ -187,7 +203,7 @@ const EditCategoriesModal = ({
               Category Name <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               name="categoryName"
               value={categoryData.categoryName}

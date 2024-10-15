@@ -779,15 +779,15 @@ const Merchant = () => {
               </div>
 
               <div className="flex items-center gap-[30px]">
-                <div>
+                {/* <div>
                   <FilterAltOutlinedIcon className="text-gray-400" />
-                </div>
-                <div className="relative w-full">
+                </div> */}
+                <div className="w-full">
                   <div>
                     <input
                       type="search"
                       onChange={onSearch}
-                      className="bg-gray-100 relative p-2 w-64 rounded-2xl outline-none focus:outline-none cursor-pointer text-[14px]"
+                      className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
                       placeholder="Search merchant"
                     />
                   </div>
@@ -920,6 +920,11 @@ const Merchant = () => {
                                     onClick={showModalReject}
                                   />
                                   <Modal
+                                    title={
+                                      <span className="font-bold text-[16px]">
+                                        Reject?
+                                      </span>
+                                    }
                                     open={isModalReject}
                                     onCancel={handleCancel}
                                     centered
@@ -930,8 +935,8 @@ const Merchant = () => {
                                         handleReject(e, data._id)
                                       }
                                     >
-                                      <p className="font-semibold text-[18px] p-2">
-                                        Are you sure want to Reject ?
+                                      <p className="text-[16px] py-2">
+                                        Do you want to Reject ?
                                       </p>
                                       <div className="flex justify-end mt-5 gap-6">
                                         <button

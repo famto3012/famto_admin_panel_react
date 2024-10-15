@@ -50,13 +50,13 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
   const foodCategoryIds = allBusinessCategory
     ?.filter((category) => category.title === "Food")
     .map((category) => category._id);
-  console.log("foodCategoryIds", foodCategoryIds);
+
   const { role } = useContext(UserContext);
+
   return (
     <>
       <div className="mb-4 flex flex-col gap-[10px]">
         <h3 className="text-gray-700 font-bold mb-2">Configuration</h3>
-
         {role === "Admin" && (
           <div className="mb-4 flex w-[800px]">
             <label className="block mt-3 text-gray-700 w-2/5">
@@ -77,78 +77,14 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
               placeholder="Select business category"
               isClearable={true}
             />
-
-            {/* <select
-           name="businessCategoryId"
-           value={detail?.merchantDetail?.businessCategoryId}
-           onChange={handleInputChange}
-           className="mt-2 p-2 w-3/5 border rounded-md outline-none focus:outline-none"
-         >
-           <option defaultValue={"Select business category"} hidden>
-             Select business category
-           </option>
-           {allBusinessCategory?.map((category) => (
-             <option key={category._id} value={category._id}>
-               {category.title}
-             </option>
-           ))}
-         </select> */}
           </div>
         )}
-        {/* <div className="mb-4 flex w-[800px]">
-          <label className="block text-gray-700 w-2/5">
-            If restaurant, then
-          </label>
-
-          <div className="flex items-center gap-[4rem]">
-            <label className="mr-4 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="merchantFoodType"
-                  value="Veg"
-                  checked={detail?.merchantDetail?.merchantFoodType === "Veg"}
-                  onChange={handleInputChange}
-                  className=" text-teal-600 focus:ring-teal-500"
-                />
-                <span>Veg</span>
-              </div>
-            </label>
-
-            <label className="mr-4 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="merchantFoodType"
-                  value="Non-veg"
-                  checked={
-                    detail?.merchantDetail?.merchantFoodType === "Non-veg"
-                  }
-                  onChange={handleInputChange}
-                  className="  text-teal-600 focus:ring-teal-500"
-                />
-                <span>Non-Veg</span>
-              </div>
-            </label>
-            <label className="mr-4 cursor-pointer">
-              <input
-                type="radio"
-                name="merchantFoodType"
-                value="Both"
-                checked={detail?.merchantDetail?.merchantFoodType === "Both"}
-                onChange={handleInputChange}
-                className="mr-2 text-teal-600 focus:ring-teal-500"
-              />{" "}
-              Both
-            </label>
-          </div>
-        </div> */}
+      
         {detail?.merchantDetail?.businessCategoryId?.includes(
           foodCategoryIds[0]
         ) && (
           <div className="mb-4 flex w-[800px]">
             <label className="block text-gray-700 w-2/5">If food, then</label>
-
             <div className="flex items-center gap-[4rem]">
               <label className="mr-4 cursor-pointer">
                 <div className="flex items-center gap-2">
@@ -196,7 +132,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         )}
 
         <div className="mb-4 flex w-[800px]">
-          <label className="block text-gray-700 w-2/5">Delivery option</label>
+          <label className="block text-gray-700 w-1/3">Delivery option</label>
           <div className="flex items-center gap-[4rem]">
             <label className="mr-4 cursor-pointer">
               <input
@@ -235,7 +171,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         </div>
 
         <div className="mb-4 flex items-start w-[800px]">
-          <label className="block text-gray-700 w-2/5">
+          <label className="block text-gray-700 w-1/3">
             Select Delivery time
           </label>
           <input
@@ -249,7 +185,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         </div>
 
         <div className="mb-4 flex w-[800px]">
-          <span className="w-2/5"></span>
+          <span className="w-1/3"></span>
           <p className="text-gray-500 w-2/5 text-sm mt-2">
             Note: Enter here the default time taken for the Delivery of an
             order. If a merchant is handling their delivery by itself then he
@@ -258,7 +194,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         </div>
 
         <div className="mb-4 flex w-[800px]">
-          <label className="block w-2/5 text-gray-700">
+          <label className="block w-1/3 text-gray-700">
             Pre Order Sales Status
           </label>
 
@@ -274,7 +210,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
       </div>
 
       <div className="mb-6 flex w-[800px]">
-        <h3 className="text-black mb-2 w-2/5">Serving Area</h3>
+        <h3 className="text-black mb-2 w-1/3">Serving Area</h3>
         <div className="mb-4 w3/5">
           <div className="flex flex-col gap-4">
             <label className="mr-4 text-gray-700 text-[14px] cursor-pointer">

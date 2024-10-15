@@ -150,14 +150,14 @@ const SponsorshipDetail = ({
 
   return (
     <>
-      <div className="mb-6 flex">
+      <div className="mb-6 flex w-[1200px]">
         <div className="flex justify-between rounded">
-          <h3 className="text-gray-700 mb-2 mt-3 ">Sponsorship Status</h3>
+          <h3 className="text-gray-700 mb-2 mt-3 w-1/3">Sponsorship Status</h3>
 
           <div
             className={`${
               sponsorshipData?.currentPlan ? `visible` : ` invisible`
-            } mb-4 max-w-[30rem] p-5 justify-center text-center mx-[12rem] shadow-lg `}
+            } mb-4 w-[30rem] p-5 justify-center text-center mx-[3.5rem] shadow-lg `}
           >
             <label className="block text-teal-700 font-[600] mb-[10px] text-[16px]">
               Current Chosen Plan
@@ -176,9 +176,9 @@ const SponsorshipDetail = ({
       </div>
 
       {haveSponsorship && (
-        <div className="mb-6 flex">
-          <h3 className="text-black mb-2 flex">Choose or Renew Plan</h3>
-          <div className="grid ml-[11rem] gap-3">
+        <div className="mb-6 flex w-[800px]">
+          <h3 className="text-black mb-2 flex w-1/3">Choose or Renew Plan</h3>
+          <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-4">
               {[
                 { value: "250", label: "Monthly", price: "250" },

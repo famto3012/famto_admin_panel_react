@@ -488,7 +488,7 @@ const DeliveryAgent = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-10 px-[10px] bg-white  p-5 rounded-lg">
+            <div className="flex items-center justify-between mt-10 px-[10px] bg-white rounded-lg mx-5 ">
               <div className="flex items-center justify-evenly gap-3 bg-white  rounded-lg p-6">
                 <Select
                   options={agentStatusOptions}
@@ -558,20 +558,17 @@ const DeliveryAgent = () => {
               </div>
 
               <div className="flex items-center gap-[30px]">
-                <div>
+                {/* <div>
                   <FilterAltOutlinedIcon className="mt-2 text-gray-400" />
-                </div>
+                </div> */}
                 <input
                   type="search"
                   name="search"
-                  placeholder="Search Agent Name"
+                  placeholder="Search agent "
                   className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
                   value={searchFilter}
                   onChange={onSearchChange}
                 />
-                <button type="submit" className="absolute right-8 mt-1">
-                  <SearchOutlined className="text-xl text-gray-600" />
-                </button>
               </div>
             </div>
 

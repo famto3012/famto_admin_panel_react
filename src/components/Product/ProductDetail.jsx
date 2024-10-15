@@ -3,6 +3,7 @@ import { DeleteOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import Select from "react-select";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import { Tooltip } from "antd";
 import DeleteVariantTypeModal from "../model/ProductModels/DeleteVariantTypeModal";
 
 const ProductDetail = ({ detail, BASE_URL, token }) => {
@@ -239,11 +240,9 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           <input
             type="text"
             name="productName"
-            value={productDetail.productName}
-            placeholder="Product Name"
+            value={productDetail?.productName || "-"}
             readOnly
-            onChange={handleChange}
-            className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
+            className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
 
@@ -254,11 +253,9 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           <input
             type="text"
             name="price"
-            value={productDetail.price}
-            placeholder="Product Price"
+            value={productDetail?.price || "-"}
             readOnly
-            onChange={handleChange}
-            className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
+            className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
 
@@ -269,12 +266,24 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           <input
             type="text"
             name="description"
-            value={productDetail.description}
-            placeholder="Description"
+            value={productDetail?.description || "-"}
             readOnly
-            onChange={handleChange}
-            className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
+            className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
+        </div>
+
+        <div className="p-5 flex justify-between">
+          <label className="w-1/3 text-gray-700 items-center mt-2">
+            Long Description
+          </label>
+
+          <textarea
+            name="longDescription"
+            value={productDetail?.longDescription || "-"}
+            readOnly
+            rows={5}
+            className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2 resize-none"
+          ></textarea>
         </div>
 
         <div className="p-5 flex justify-between">
@@ -284,26 +293,26 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
           <input
             type="text"
             name="availableQuantity"
-            value={productDetail.availableQuantity}
-            placeholder="Available quantity"
+            value={productDetail?.availableQuantity || "-"}
             readOnly
-            onChange={handleChange}
-            className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
+            className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
 
         <div className="p-5 flex justify-between">
-          <label className="w-1/3 text-gray-700 items-center mt-2">
-            Alerts <InfoCircleOutlined />
+          <label className="flex items-center gap-2">
+            Alerts
+            <Tooltip title="Enter the minimum quantity at which you want to receive an e-mail for updating your inventory.">
+              <InfoCircleOutlined />
+            </Tooltip>
           </label>
+
           <input
             type="text"
             name="alert"
-            value={productDetail.alert}
-            placeholder="Alert"
+            value={productDetail?.alert || "-"}
             readOnly
-            onChange={handleChange}
-            className="border-gray-300 border rounded-md outline-none focus:outline-none w-2/3 p-2"
+            className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
         </div>
 

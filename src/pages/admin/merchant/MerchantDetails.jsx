@@ -347,7 +347,7 @@ const MerchantDetails = () => {
         </div>
 
         <form
-          className="bg-white rounded-lg ms-3 p-5 w-full overflow-auto"
+          className="bg-white rounded-lg ms-3 p-5 w-full overflow-hidden"
           onSubmit={handleSaveMerchant}
         >
           <MerchantData
