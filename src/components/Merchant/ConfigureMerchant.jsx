@@ -59,7 +59,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
         <h3 className="text-gray-700 font-bold mb-2">Configuration</h3>
         {role === "Admin" && (
           <div className="mb-4 flex w-[800px]">
-            <label className="block mt-3 text-gray-700 w-2/5">
+            <label className="block mt-3 text-gray-700 w-1/3">
               Business category
             </label>
 
@@ -79,12 +79,12 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
             />
           </div>
         )}
-      
+
         {detail?.merchantDetail?.businessCategoryId?.includes(
           foodCategoryIds[0]
         ) && (
           <div className="mb-4 flex w-[800px]">
-            <label className="block text-gray-700 w-2/5">If food, then</label>
+            <label className="block text-gray-700 w-1/3">If food, then</label>
             <div className="flex items-center gap-[4rem]">
               <label className="mr-4 cursor-pointer">
                 <div className="flex items-center gap-2">
