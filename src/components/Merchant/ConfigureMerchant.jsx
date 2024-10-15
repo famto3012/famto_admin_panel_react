@@ -80,6 +80,7 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
           </div>
         )}
 
+        {/*  */}
         {detail?.merchantDetail?.businessCategoryId?.includes(
           foodCategoryIds[0]
         ) && (
