@@ -5,6 +5,11 @@ import { MdCameraAlt } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
 import { useToast } from "@chakra-ui/react";
+import Select from "react-select";
+import {
+  agentTagOptions,
+  vehicleTypeOptions,
+} from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -46,7 +51,6 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
 
         if (managerResponse.status === 200) {
           setManager(managerResponse.data.data);
-          console.log(managerResponse.data.data);
         }
 
         if (geofenceResponse.status === 200) {
@@ -59,7 +63,23 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
 
     fetchData();
     setAgentData(data);
+    console.log(data);
   }, [token, role, navigate]);
+
+  const managerOptions = manager?.map((manager) => ({
+    label: manager?.name,
+    value: manager?._id,
+  }));
+
+  const salaryOptions = salary?.map((salary) => ({
+    label: salary?.ruleName,
+    value: salary?._id,
+  }));
+
+  const geofenceOptions = allGeofence?.map((geofence) => ({
+    label: geofence?.name,
+    value: geofence?._id,
+  }));
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
@@ -81,6 +101,16 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
       workStructure: {
         ...prevData.workStructure,
         [name]: value,
+      },
+    }));
+  };
+
+  const handleSelectChange = (field) => (option) => {
+    setAgentData((prevData) => ({
+      ...prevData,
+      workStructure: {
+        ...prevData.workStructure,
+        [field]: option.value,
       },
     }));
   };
@@ -123,7 +153,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
     }
   };
 
-  const signupAction = async (e) => {
+  const handleEditAgent = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
@@ -220,8 +250,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
       onCancel={onCancel}
       footer={null}
     >
-      {" "}
-      <form onSubmit={signupAction}>
+      <form onSubmit={handleEditAgent}>
         <div className="flex flex-col gap-4 mt-5 max-h-[30rem] overflow-auto">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="fullName">
@@ -236,6 +265,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="phoneNumber">
               Phone Number <span className="text-red-600">*</span>
@@ -249,6 +279,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="email">
               Email <span className="text-red-600">*</span>
@@ -264,6 +295,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
           </div>
 
           <h1 className="font-semibold text-[18px]">Vehicle Details</h1>
+
           {agentData?.vehicleDetail?.map((vehicle, index) => (
             <div className="flex" key={index}>
               <div className="w-3/4">
@@ -283,6 +315,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
                     onChange={(e) => handleInputChange(e, index)}
                   />
                 </div>
+
                 <div className="flex mt-5 items-center">
                   <label
                     className="w-1/3 text-gray-500"
@@ -299,26 +332,43 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
                     onChange={(e) => handleInputChange(e, index)}
                   />
                 </div>
+
                 <div className="flex mt-5 gap-4">
                   <label
-                    className="w-1/2 text-gray-500"
+                    className="w-1/3 text-gray-500 "
                     htmlFor={`type-${index}`}
                   >
                     Vehicle Type <span className="text-red-600">*</span>
                   </label>
-                  <select
-                    className="border-2 border-gray-100 rounded p-2 w-[17rem] mr-5"
-                    name="type"
-                    id={`type-${index}`}
-                    value={vehicle?.type || ""}
-                    onChange={(e) => handleInputChange(e, index)}
-                  >
-                    <option value="" hidden>
-                      Vehicle Type
-                    </option>
-                    <option value="Bike">Bike</option>
-                    <option value="Scooter">Scooter</option>
-                  </select>
+
+                  <Select
+                    options={vehicleTypeOptions}
+                    value={vehicleTypeOptions.find(
+                      (option) => option.value === vehicle?.type
+                    )}
+                    onChange={(option) =>
+                      setAgentData((prevData) => ({
+                        ...prevData,
+                        vehicleDetail: prevData.vehicleDetail.map((veh, i) =>
+                          i === index ? { ...veh, type: option.value } : veh
+                        ),
+                      }))
+                    }
+                    className="rounded w-[15rem] ml-10 focus:outline-none"
+                    placeholder="Vehicle type"
+                    isSearchable={false}
+                    isMulti={false}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        paddingRight: "",
+                      }),
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        padding: "10px",
+                      }),
+                    }}
+                  />
                 </div>
               </div>
 
@@ -354,6 +404,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
                     </figure>
                   </label>
                 </div>
+
                 <div className="flex items-center gap-[30px]">
                   <input
                     type="file"
@@ -390,6 +441,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
           ))}
 
           <h1 className="font-semibold text-[18px]">Bank Details</h1>
+
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="accountHolderName">
               Account Holder Name <span className="text-red-600">*</span>
@@ -447,6 +499,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
           </div>
 
           <h1 className="font-semibold text-[18px]">GOVERNMENT ID'S</h1>
+
           <div className="flex">
             <div className="flex items-center w-3/4">
               <label className="w-1/3 text-gray-500" htmlFor="aadharNumber">
@@ -461,6 +514,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
                 onChange={handleInputChange}
               />
             </div>
+
             <div className="flex gap-6">
               <div className="flex items-center gap-[30px]">
                 <input
@@ -549,6 +603,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
               >
                 Driving License Number <span className="text-red-600">*</span>
               </label>
+
               <input
                 className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                 type="text"
@@ -576,6 +631,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
                     )
                   }
                 />
+
                 <label
                   htmlFor="drivingLicenseFrontImage"
                   className="cursor-pointer"
@@ -617,6 +673,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
                     )
                   }
                 />
+
                 <label
                   htmlFor="drivingLicenseBackImage"
                   className="cursor-pointer"
@@ -652,81 +709,120 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
             <label className="w-1/2 text-gray-500" htmlFor="managerId">
               Manager
             </label>
-            <select
-              name="managerId"
-              value={agentData?.workStructure?.managerId?._id}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue={"Select manager"}>
-                Select manager
-              </option>
-              {manager.map((managers) => (
-                <option value={managers?._id} key={managers?._id}>
-                  {managers?.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={managerOptions}
+              value={managerOptions.find(
+                (option) =>
+                  option.value === agentData?.workStructure?.managerId?._id
+              )}
+              onChange={handleSelectChange("managerId")}
+              className="rounded focus:outline-none w-full"
+              placeholder="Select manager"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
 
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="salaryStructureId">
               Salary Structure <span className="text-red-600">*</span>
             </label>
-            <select
-              name="salaryStructureId"
-              value={agentData?.workStructure?.salaryStructureId?._id}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select salary structure">
-                Select salary structure
-              </option>
-              {salary.map((salary) => (
-                <option value={salary._id} key={salary._id}>
-                  {salary.ruleName}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={salaryOptions}
+              value={salaryOptions.find(
+                (option) =>
+                  option.value ===
+                  agentData?.workStructure?.salaryStructureId?._id
+              )}
+              onChange={handleSelectChange("salaryStructureId")}
+              className="rounded focus:outline-none w-full"
+              placeholder="Select salary structure"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
 
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="geofencename">
               Geofence <span className="text-red-600">*</span>
             </label>
-            <select
-              name="geofenceId"
-              value={agentData?.geofenceId?._id}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select geofence">
-                Select geofence
-              </option>
-              {allGeofence.map((geofence) => (
-                <option value={geofence._id} key={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === agentData?.geofenceId?._id
+              )}
+              onChange={(option) =>
+                setAgentData({
+                  ...agentData,
+                  geofenceId: { _id: option.value },
+                })
+              }
+              className="rounded focus:outline-none w-full"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
 
           <div className="flex items-center mt-5">
-            <label className=" text-gray-500 w-1/2" htmlFor="tag">
+            <label className="w-1/2 text-gray-500 me-4" htmlFor="tag">
               Tags <span className="text-red-600">*</span>
             </label>
-            <select
-              name="tag"
-              value={agentData?.workStructure?.tag}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select Tag">
-                Select Tag
-              </option>
-              <option value="Normal">Normal</option>
-              <option value="Fish & Meat">Fish & Meat</option>
-            </select>
+
+            <Select
+              options={agentTagOptions}
+              value={agentTagOptions.find(
+                (option) => option.value === agentData?.workStructure?.tag
+              )}
+              onChange={handleSelectChange("tag")}
+              className="rounded focus:outline-none w-full"
+              placeholder="Select tag"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
 
           <h1 className="font-semibold text-[18px]">Add Profile</h1>
@@ -774,6 +870,7 @@ const EditAgentModal = ({ isVisible, onCancel, data }) => {
             <p>1.PNG</p>
             <p>Photo</p> <span className="text-red-600">*</span>
           </div>
+
           <div className="flex justify-end gap-4 mt-6">
             <button
               className="bg-cyan-50 py-2 px-4 rounded-md"

@@ -1,12 +1,12 @@
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useContext, useEffect, useState } from "react";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import NewAddress from "./NewAddress";
 import { UserContext } from "../../context/UserContext";
 import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import ShowBill from "./ShowBill";
+import { useDraggable } from "../../hooks/useDraggable";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -34,16 +34,19 @@ const HomeDelivery = ({ data }) => {
   const [allCustomerAddress, setAllCustomerAddress] = useState();
   const [productResults, setProductResults] = useState([]);
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
   const [isMerchantLoading, setIsMerchantLoading] = useState(false);
   const [isProductLoading, setIsProductLoading] = useState(false);
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
 
   const { token, role, userId } = useContext(UserContext);
   const toast = useToast();
+  const {
+    isDragging,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseUp,
+    handleMouseMove,
+  } = useDraggable();
 
   const [selectedAddress, setSelectedAddress] = useState("");
   const [selectedOtherAddressId, setSelectedOtherAddressId] = useState("");
@@ -56,31 +59,6 @@ const HomeDelivery = ({ data }) => {
       getAvailableBusinessCategory();
     }
   }, [data, role]);
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartX(e.pageX - e.currentTarget.offsetLeft);
-    setScrollLeft(e.currentTarget.scrollLeft);
-    document.body.classList.add("no-select");
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-    document.body.classList.remove("no-select");
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    document.body.classList.remove("no-select");
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - e.currentTarget.offsetLeft;
-    const walk = (x - startX) * 2;
-    e.currentTarget.scrollLeft = scrollLeft - walk;
-  };
 
   const getAvailableBusinessCategory = async () => {
     try {

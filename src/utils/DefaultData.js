@@ -93,6 +93,22 @@ const vehicleTypeOptions = [
   { value: "Scooter", label: "Scooter" },
 ];
 
+const agentTagOptions = [
+  { value: "Normal", label: "Normal" },
+  { value: "Fish & Meat", label: "Fish & Meat" },
+];
+
+const taskStatusOptions = [
+  { value: "Unassigned", label: "Unassigned Tasks" },
+  { value: "Assigned", label: "Assigned Tasks" },
+  { value: "Completed", label: "Completed Tasks" },
+];
+
+const promoCodeModeOptions = [
+  { value: "Public", label: "Public" },
+  { value: "Hidden", label: "Hidden" },
+];
+
 export {
   itemTypes,
   unitOptions,
@@ -107,4 +123,7 @@ export {
   userTypeOptions,
   userTypeForPushNotificationOptions,
   vehicleTypeOptions,
+  agentTagOptions,
+  taskStatusOptions,
+  promoCodeModeOptions,
 };

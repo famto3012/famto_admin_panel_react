@@ -19,6 +19,7 @@ import NewAddressTwo from "./NewAddressTwo";
 import { useMap } from "../../context/MapContext";
 import Select from "react-select";
 import { unitOptions } from "../../utils/DefaultData";
+import { useDraggable } from "../../hooks/useDraggable";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -37,6 +38,13 @@ const CustomOrder = ({ data }) => {
   const { coordinates } = useMap();
   const { token } = useContext(UserContext);
   const toast = useToast();
+  const {
+    isDragging,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseUp,
+    handleMouseMove,
+  } = useDraggable();
 
   useEffect(() => {
     setAllCustomerAddress(data.customerAddress);
@@ -433,7 +441,15 @@ const CustomOrder = ({ data }) => {
                 ))}
 
                 {selectedAddress === "other" && (
-                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                  <div
+                    className={`flex items-center gap-[20px] mt-[14px] py-2 max-w-[550px] overflow-x-auto ${
+                      isDragging ? "cursor-grabbing" : "cursor-grab"
+                    }`}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                  >
                     {data?.customerAddress
                       .find((addr) => addr.type === "other")
                       ?.otherAddress?.map((otherAddr) => (
@@ -450,7 +466,7 @@ const CustomOrder = ({ data }) => {
                               handleSelectOtherAddress(otherAddr.id)
                             }
                           />
-                          <span className="flex flex-col gap-1 ms-2 ">
+                          <span className="flex flex-col w-[150px] gap-1 ms-2">
                             <span>{otherAddr.flat}</span>
                             <span>{otherAddr.area}</span>
                             <span>{otherAddr.landmark}</span>

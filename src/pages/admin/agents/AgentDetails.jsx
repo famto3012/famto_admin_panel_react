@@ -159,22 +159,32 @@ const AgentDetails = () => {
               <div className="flex gap-10 justify-between">
                 <div className="w-1/2 ">
                   <div className="flex items-center">
-                    <label className="w-1/3">FullName</label>
-                    <p className="w-2/3">{agent.fullName}</p>
+                    <label className="w-1/3 text-gray-400">Full name</label>
+                    <p className="w-2/3 font-[500]">{agent.fullName}</p>
                   </div>
                   <div className="flex items-center mt-5">
-                    <label className="w-1/3">Email</label>
-                    <p className="w-2/3">{agent.email}</p>
+                    <label className="w-1/3 text-gray-400">Email</label>
+                    <p className="w-2/3 font-[500]">{agent.email}</p>
                   </div>
                 </div>
                 <div className=" w-1/2">
                   <div className="flex items-center gap-2 ">
-                    <label className="w-2/3">Phone Number</label>
-                    <p className="">{agent.phoneNumber}</p>
+                    <label className="w-2/3 text-gray-400">Phone Number</label>
+                    <p className="w-2/3 font-[500]">{agent.phoneNumber}</p>
                   </div>
                   <div className="flex items-center gap-3 mt-5">
-                    <label className="w-2/3">Registration Status</label>
-                    <p className="">{agent.isApproved}</p>
+                    <label className="w-2/3 text-gray-400">
+                      Registration Status
+                    </label>
+                    <p
+                      className={`${
+                        agent.isApproved === "Approved"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }  w-2/3 font-[500]`}
+                    >
+                      {agent.isApproved}
+                    </p>
                   </div>
                 </div>
                 <div>
@@ -183,7 +193,7 @@ const AgentDetails = () => {
                     onClick={() => handleImageClick(agent.agentImageURL)}
                   >
                     <img
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover rounded-md"
                       src={agent.agentImageURL}
                     />
                   </figure>
@@ -191,10 +201,10 @@ const AgentDetails = () => {
 
                 <div>
                   <button
-                    className="bg-gray-100 p-2 focus:outline-none rounded-lg flex items-center"
+                    className="bg-gray-100 p-2 focus:outline-none rounded-lg flex items-center gap-2"
                     onClick={toggleEditModal}
                   >
-                    <MdOutlineEdit className="mr-4 text-[18px]" />
+                    <MdOutlineEdit className="text-[18px]" />
                     Edit
                   </button>
                   <EditAgentModal

@@ -33,6 +33,8 @@ const Subscriptioncustomer = () => {
   const [currentId, setCurrentId] = useState(null);
   const [isSubscription, setIsSubscription] = useState(false);
 
+  const [selectedOption, setSelectedOption] = useState("Customer");
+
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,11 +78,11 @@ const Subscriptioncustomer = () => {
 
         if (merchantResponse.status === 200) {
           setMerchantlog(merchantResponse.data.subscriptionLogs || []);
-          console.log("Merchant", merchantResponse.data)
+          console.log("Merchant", merchantResponse.data);
         }
         if (customerResponse.status === 200) {
           setCustomerlog(customerResponse.data.subscriptionLogs || []);
-          console.log("Customer", customerResponse.data)
+          console.log("Customer", customerResponse.data);
         }
         if (allmerchantResponse.status === 200) {
           setMerchants(allmerchantResponse.data.data);
@@ -100,7 +102,10 @@ const Subscriptioncustomer = () => {
     value: merchant._id,
   }));
 
-  const handleToggle = () => setIsSubscription(!isSubscription);
+  // const handleToggle = () => setIsSubscription(!isSubscription);
+  const handleToggle = (value) => {
+    setSelectedOption(value);
+  };
 
   const onSearchCustomerChange = (e) => {
     const searchService = e.target.value;
@@ -331,38 +336,30 @@ const Subscriptioncustomer = () => {
             <div className="mx-3 mt-5">
               <div className="flex justify-between items-center gap-3 ml-2 ">
                 <div>
-                  <label
-                    htmlFor="Toggle3"
-                    className="inline-flex outline-none gap-5 cursor-pointer "
-                  >
-                    <input
-                      id="Toggle3"
-                      type="checkbox"
-                      className="hidden peer "
-                      onChange={handleToggle}
-                    />
-
+                  <label className="inline-flex outline-none cursor-pointer bg-transparent border-2 border-black p-1 rounded-full">
                     <span
-                      className={`px-4 py-2 rounded-lg dark:bg-gray-100 ${
-                        isSubscription
-                          ? "peer-checked:dark:bg-teal-800 text-white"
-                          : "peer-checked:dark:bg-gray-100"
+                      onClick={() => handleToggle("Customer")}
+                      className={`px-4 py-2 transition-colors duration-300 rounded-full ${
+                        selectedOption === "Customer" &&
+                        "bg-teal-700 text-white"
                       }`}
                     >
                       Customer
                     </span>
+
                     <span
-                      className={`px-4 py-2 rounded-lg dark:bg-teal-800 ${
-                        isSubscription
-                          ? "peer-checked:dark:bg-gray-100"
-                          : "peer-checked:dark:bg-teal-800 text-white"
+                      onClick={() => handleToggle("Merchant")}
+                      className={`px-4 py-2 transition-colors duration-300 rounded-full ${
+                        selectedOption === "Merchant" &&
+                        "bg-teal-700 text-white"
                       }`}
                     >
                       Merchant
                     </span>
                   </label>
                 </div>
-                {isSubscription ? (
+
+                {selectedOption === "Customer" ? (
                   <div className="flex gap-7">
                     <div className="relative flex items-center">
                       <button
@@ -390,9 +387,7 @@ const Subscriptioncustomer = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center">
-                      <FilterAltOutlined className="text-gray-400 " />
-                    </div>
+
                     <div className="relative flex justify-end">
                       <input
                         type="search"
@@ -452,10 +447,6 @@ const Subscriptioncustomer = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center">
-                      <FilterAltOutlined className="text-gray-400 " />
-                    </div>
-
                     <div className="relative flex justify-end">
                       <input
                         type="search"
@@ -477,7 +468,7 @@ const Subscriptioncustomer = () => {
               </div>
             </div>
 
-            {isSubscription ? (
+            {selectedOption === "Customer" ? (
               <div className="overflow-auto mt-[40px]">
                 <table className="text-start w-full ">
                   <thead>
