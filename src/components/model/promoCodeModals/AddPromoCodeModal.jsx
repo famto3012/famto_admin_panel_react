@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Modal } from "antd";
 import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import CropImage from "../../CropImage";
+import Select from "react-select";
+import { promoCodeModeOptions } from "../../../utils/DefaultData";
 
 const AddPromoCodeModal = ({
   isVisible,
@@ -39,10 +41,9 @@ const AddPromoCodeModal = ({
   const [imgSrc, setImgSrc] = useState("");
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,6 +75,35 @@ const AddPromoCodeModal = ({
 
     fetchData();
   }, [token]);
+
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const merchantOptions = merchant?.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
+
+  const onSelectFile = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null);
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0]);
+    }
+  };
+
+  const handleCropComplete = (croppedFile) => setCroppedFile(croppedFile);
+
+  const handleChange = (e) => {
+    setAddPromocode({ ...addPromocode, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -136,41 +166,6 @@ const AddPromoCodeModal = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleChange = (e) => {
-    setAddPromocode({ ...addPromocode, [e.target.name]: e.target.value });
-  };
-
-  // const handleNotificationImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setNotificationFile(file);
-  //     setNotificationPreviewURL(URL.createObjectURL(file));
-  //   }
-  // };
-
-  function onSelectFile(e) {
-    if (e.target.files && e.target.files.length > 0) {
-      setIsInnerVisible(true);
-      setCrop(null); // Makes crop preview update between images.
-      const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
-      );
-      reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0]);
-    }
-  }
-
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    // setSelectedFile(croppedFile); // Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
-
-  const handleModalClose = () => {
-    // setSelectedFile(null); // Reset the selected file to allow new selection
   };
 
   return (
@@ -273,18 +268,23 @@ const AddPromoCodeModal = ({
             <label className="w-1/2 text-gray-500">
               Promo Application Mode<span className="text-red-600 ml-2">*</span>
             </label>
-            <select
-              name="applicationMode"
-              value={addPromocode.applicationMode}
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              onChange={handleChange}
-            >
-              <option defaultValue={""} hidden>
-                Select Application Mode
-              </option>
-              <option value="Public">Public</option>
-              <option value="Hidden">Hidden</option>
-            </select>
+
+            <Select
+              options={promoCodeModeOptions}
+              value={promoCodeModeOptions.find(
+                (option) => option.value === addPromocode.applicationMode
+              )}
+              onChange={(option) =>
+                setAddPromocode({
+                  ...addPromocode,
+                  applicationMode: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-2/3"
+              placeholder="Select merchant"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
@@ -350,42 +350,45 @@ const AddPromoCodeModal = ({
             <label className="w-1/2 text-gray-500">
               Assign Merchant<span className="text-red-600 ml-2">*</span>
             </label>
-            <select
-              name="merchantId"
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={addPromocode.merchantId}
-              onChange={handleChange}
-            >
-              <option defaultValue={"Select merchant"} hidden>
-                Select Merchant
-              </option>
-              {merchant.map((data) => (
-                <option value={data._id} key={data._id}>
-                  {data.merchantName}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={merchantOptions}
+              value={merchantOptions.find(
+                (option) => option.value === addPromocode.merchantId
+              )}
+              onChange={(option) =>
+                setAddPromocode({
+                  ...addPromocode,
+                  merchantId: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-2/3"
+              placeholder="Select merchant"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
           <div className="flex gap-4 mt-5 ">
             <label className="w-1/2 text-gray-500">
               Geofence<span className="text-red-600 ml-2">*</span>
             </label>
-            <select
-              name="geofenceId"
-              id="geofenceId"
-              value={addPromocode.geofenceId}
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              onChange={handleChange}
-            >
-              <option defaultValue={"Select geofence"} hidden>
-                Select Geofence
-              </option>
-              {geofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === addPromocode.geofenceId
+              )}
+              onChange={(option) =>
+                setAddPromocode({
+                  ...addPromocode,
+                  geofenceId: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-2/3"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
           <div className="flex">
             <label className="mt-16">
@@ -408,7 +411,7 @@ const AddPromoCodeModal = ({
                         width: "66px",
                         height: "66px",
                         marginTop: "38px",
-                        marginLeft: "210px"
+                        marginLeft: "210px",
                       }}
                     />
                   </div>

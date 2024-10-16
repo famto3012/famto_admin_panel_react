@@ -10,7 +10,6 @@ const AddProductModal = ({
   token,
   BASE_URL,
   geofence,
-
   selectedMerchant,
   handleCancel,
   onAddProduct,
@@ -80,6 +79,11 @@ const AddProductModal = ({
   const productOptions = allProducts?.map((product) => ({
     label: product.productName,
     value: product._id,
+  }));
+
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
   }));
 
   const handleSubmit = async (e) => {
@@ -224,7 +228,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 gap-4">
+          {/* <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">
               Description Maximum 150 Characters{" "}
               <span className="text-red-600">*</span>
@@ -238,7 +242,7 @@ const AddProductModal = ({
               value={productDiscount.description}
               onChange={handleInputChangeBasic}
             />
-          </div>
+          </div> */}
 
           <div className="flex mt-5 gap-4">
             <label className="w-1/2 text-gray-500">
@@ -302,21 +306,27 @@ const AddProductModal = ({
             <label className="w-1/2 text-gray-500">
               Geofence <span className="text-red-600">*</span>
             </label>
-            <select
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              name="geofenceId"
-              value={productDiscount.geofenceId}
-              onChange={handleInputChangeBasic}
-            >
-              <option value="" hidden>
-                Select Geofence
-              </option>
-              {geofence.map((data) => (
-                <option value={data._id} key={data._id}>
-                  {data.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === productDiscount.geofenceId
+              )}
+              onChange={(option) =>
+                setProductDiscount({
+                  ...productDiscount,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded w-2/3 outline-none focus:outline-none"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
+            />
           </div>
 
           <div className="flex mt-5 justify-between">

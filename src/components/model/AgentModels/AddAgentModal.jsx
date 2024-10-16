@@ -4,7 +4,10 @@ import axios from "axios";
 import React, { useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import Select from "react-select";
-import { vehicleTypeOptions } from "../../../utils/DefaultData";
+import {
+  agentTagOptions,
+  vehicleTypeOptions,
+} from "../../../utils/DefaultData";
 
 const AddAgentModal = ({
   isVisible,
@@ -60,7 +63,20 @@ const AddAgentModal = ({
 
   const toast = useToast();
 
-  const managerOptions = manager;
+  const managerOptions = manager?.map((manager) => ({
+    label: manager?.name,
+    value: manager?._id,
+  }));
+
+  const salaryOptions = salary?.map((salary) => ({
+    label: salary?.ruleName,
+    value: salary?._id,
+  }));
+
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence?.name,
+    value: geofence?._id,
+  }));
 
   const handleInputChange = (e) => {
     setAddData({ ...addData, [e.target.name]: e.target.value });
@@ -178,7 +194,7 @@ const AddAgentModal = ({
               Full Name <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               value={addData.fullName}
               id="fullName"
@@ -191,7 +207,7 @@ const AddAgentModal = ({
               Phone Number <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="tel"
               value={addData.phoneNumber}
               id="phoneNumber"
@@ -204,7 +220,7 @@ const AddAgentModal = ({
               Email <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="email"
               value={addData.email}
               id="email"
@@ -220,7 +236,7 @@ const AddAgentModal = ({
                   License Plate <span className="text-red-600">*</span>
                 </label>
                 <input
-                  className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
+                  className="border-2 border-gray-200 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                   type="text"
                   value={addData.licensePlate}
                   id="licensePlate"
@@ -233,7 +249,7 @@ const AddAgentModal = ({
                   Vehicle Model <span className="text-red-600">*</span>
                 </label>
                 <input
-                  className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
+                  className="border-2 border-gray-200 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                   type="text"
                   value={addData.model}
                   id="model"
@@ -334,7 +350,7 @@ const AddAgentModal = ({
               Account Holder Name <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               value={addData.accountHolderName}
               id="accountHolderName"
@@ -347,7 +363,7 @@ const AddAgentModal = ({
               Account Number <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="number"
               value={addData.accountNumber}
               id="accountNumber"
@@ -361,7 +377,7 @@ const AddAgentModal = ({
               IFSC Code <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               value={addData.IFSCCode}
               id="IFSCCode"
@@ -374,7 +390,7 @@ const AddAgentModal = ({
               UPI ID <span className="text-red-600">*</span>
             </label>
             <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+              className="border-2 border-gray-200 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               value={addData.UPIId}
               id="UPIId"
@@ -389,7 +405,7 @@ const AddAgentModal = ({
                 Aadhar Number <span className="text-red-600">*</span>
               </label>
               <input
-                className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
+                className="border-2 border-gray-200 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                 type="text"
                 value={addData.aadharNumber}
                 id="aadharNumber"
@@ -471,7 +487,7 @@ const AddAgentModal = ({
                 Driving License Number <span className="text-red-600">*</span>
               </label>
               <input
-                className="border-2 border-gray-100 rounded p-2 w-[15rem] ml-14 focus:outline-none"
+                className="border-2 border-gray-200 rounded p-2 w-[15rem] ml-14 focus:outline-none"
                 type="text"
                 value={addData.drivingLicenseNumber}
                 id="drivingLicenseNumber"
@@ -542,39 +558,25 @@ const AddAgentModal = ({
               </div>
             </div>
           </div>
+
           <h1 className="font-semibold text-[18px]">Work Structure</h1>
+
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="managerId">
               Manager
             </label>
-            <select
-              name="managerId"
-              id="managerId"
-              value={addData.managerId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select manager">
-                Select manager
-              </option>
-              {manager.map((managers) => (
-                <option value={managers._id} key={managers._id}>
-                  {managers.name}
-                </option>
-              ))}
-            </select>
 
             <Select
-              options={vehicleTypeOptions}
-              value={vehicleTypeOptions.find(
-                (option) => option.value === addData.type
+              options={managerOptions}
+              value={managerOptions.find(
+                (option) => option.value === addData.managerId
               )}
               onChange={(option) =>
-                setAddData({ ...addData, type: option.value })
+                setAddData({ ...addData, managerId: option.value })
               }
-              className="rounded w-[15rem] ml-10 focus:outline-none"
-              placeholder="Vehicle type"
-              isSearchable={false}
+              className="rounded focus:outline-none w-full"
+              placeholder="Select manager"
+              isSearchable={true}
               isMulti={false}
               styles={{
                 control: (provided) => ({
@@ -588,68 +590,99 @@ const AddAgentModal = ({
               }}
             />
           </div>
+
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="salaryStructureId">
               Salary Structure <span className="text-red-600">*</span>
             </label>
-            <select
-              name="salaryStructureId"
-              id="salaryStructureId"
-              value={addData.salaryStructureId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select salary structure">
-                Select salary structure
-              </option>
-              {salary.map((salary) => (
-                <option value={salary._id} key={salary._id}>
-                  {salary.ruleName}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={salaryOptions}
+              value={salaryOptions.find(
+                (option) => option.value === addData.salaryStructureId
+              )}
+              onChange={(option) =>
+                setAddData({ ...addData, salaryStructureId: option.value })
+              }
+              className="rounded focus:outline-none w-full"
+              placeholder="Select salary structure"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
+
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500" htmlFor="geofenceId">
               Geofence <span className="text-red-600">*</span>
             </label>
-            <select
-              name="geofenceId"
-              id="geofenceId"
-              value={addData.geofenceId}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select geofence">
-                Select geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === addData.geofenceId
+              )}
+              onChange={(option) =>
+                setAddData({ ...addData, geofenceId: option.value })
+              }
+              className="rounded focus:outline-none w-full"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
+
           <div className="flex items-center mt-5">
-            <label className="w-1/3 text-gray-500" htmlFor="tag">
+            <label className="w-1/2 text-gray-500 me-4" htmlFor="tag">
               Tags <span className="text-red-600">*</span>
             </label>
 
-            <select
-              name="tag"
-              id="tag"
-              value={addData.tag}
-              onChange={handleInputChange}
-              className="border-2 border-gray-100 rounded p-2 focus:outline-none w-full"
-            >
-              <option hidden defaultValue="Select tag">
-                Select tag
-              </option>
-              <option value="Normal">Normal</option>
-              <option value="Fish & Meat">Fish & Meat</option>
-            </select>
+            <Select
+              options={agentTagOptions}
+              value={agentTagOptions.find(
+                (option) => option.value === addData.tag
+              )}
+              onChange={(option) =>
+                setAddData({ ...addData, tag: option.value })
+              }
+              className="rounded focus:outline-none w-full"
+              placeholder="Select tag"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
+
           <h1 className="font-semibold text-[18px]">Add Profile</h1>
+
           <div className=" flex items-center gap-[30px]">
             {!agentPreviewURL && (
               <div className="bg-cyan-100 ml-5 mt-5 h-16 w-16 rounded-md" />

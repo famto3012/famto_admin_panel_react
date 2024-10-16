@@ -311,32 +311,34 @@ const MerchantData = ({
             onChange={handleInputChange}
           />
         </div>
-        
-        <div className="mb-[20px] flex items-center justify-between gap-[30px]">
-          <label className="text-gray-700 text-[16px] w-1/3">Geofence</label>
 
-          <Select
-            options={geofenceOptions}
-            value={geofenceOptions.find(
-              (option) => option.value === detail?.merchantDetail?.geofenceId
-            )}
-            onChange={handleSelectChange}
-            className="mt-2 w-2/3 border rounded-md outline-none focus:outline-none me-[95px] "
-            placeholder="Select geofence"
-            isSearchable={true}
-            isMulti={false}
-            styles={{
-              control: (provided) => ({
-                ...provided,
-                paddingRight: "",
-              }),
-              dropdownIndicator: (provided) => ({
-                ...provided,
-                padding: "10px",
-              }),
-            }}
-          />
-        </div>
+        {role === "Admin" && (
+          <div className="mb-[20px] flex items-center justify-between gap-[30px]">
+            <label className="text-gray-700 text-[16px] w-1/3">Geofence</label>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === detail?.merchantDetail?.geofenceId
+              )}
+              onChange={handleSelectChange}
+              className="mt-2 w-2/3 border rounded-md outline-none focus:outline-none me-[95px] "
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
+          </div>
+        )}
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
           <label className=" text-gray-700 text-[16px] w-1/3">Pricing</label>

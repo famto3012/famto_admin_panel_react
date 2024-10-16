@@ -135,7 +135,6 @@ const PromoCode = () => {
           isClosable: true,
         });
 
-        // Update the state with the new status
         setAllPromocode((prevData) =>
           prevData.map((allPromocode) =>
             allPromocode._id === Id
@@ -155,37 +154,8 @@ const PromoCode = () => {
     }
   };
 
-  //update all promo code status
-
-  const toggleChange = async (checked) => {
-    setStatus(checked);
-
-    try {
-      const response = await axios.patch(
-        `${BASE_URL}/admin/promocode/edit-all-promocode`,
-        status,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.status === 200) {
-        setStatus(response.data.data);
-      }
-    } catch (err) {
-      console.error(`Error in updating data ${err}`);
-    }
-  };
-
   const handleAddPromocode = (newPromocode) => {
-    setAllPromocode((prevPromocodes) => {
-      // Ensure prevPromocodes is an array before adding the new promo code
-      if (Array.isArray(prevPromocodes)) {
-        return [...prevPromocodes, newPromocode];
-      } else {
-        return [newPromocode];
-      }
-    });
+    setAllPromocode([newPromocode, ...allPromocode]);
   };
 
   const handleEditPromoCode = (updatedPromo) => {
@@ -232,7 +202,6 @@ const PromoCode = () => {
 
               <div className="mx-5 flex justify-between">
                 <h1 className="font-bold text-[20px]">Promo codes</h1>
-                {/* <Switch checked={status} onChange={toggleChange} /> */}
               </div>
 
               <div className="m-5 text-gray-500">

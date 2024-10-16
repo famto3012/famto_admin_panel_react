@@ -14,6 +14,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { itemTypes } from "../../utils/DefaultData";
 import ShowBill from "./ShowBill";
 import NewAddressTwo from "./NewAddressTwo";
+import { useDraggable } from "../../hooks/useDraggable";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -43,12 +44,15 @@ const PickAndDrop = ({ data }) => {
   const [isNewDeliveryAddressVisible, setIsNewDeliveryAddressVisible] =
     useState(false);
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
   const { token } = useContext(UserContext);
   const toast = useToast();
+  const {
+    isDragging,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseUp,
+    handleMouseMove,
+  } = useDraggable();
 
   useEffect(() => {
     setAllCustomerAddress(data.customerAddress);
@@ -199,31 +203,6 @@ const PickAndDrop = ({ data }) => {
     setPickAndDropData({ ...pickAndDropData, vehicleType: type });
   };
 
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartX(e.pageX - e.currentTarget.offsetLeft);
-    setScrollLeft(e.currentTarget.scrollLeft);
-    document.body.classList.add("no-select");
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-    document.body.classList.remove("no-select");
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    document.body.classList.remove("no-select");
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - e.currentTarget.offsetLeft;
-    const walk = (x - startX) * 2;
-    e.currentTarget.scrollLeft = scrollLeft - walk;
-  };
-
   return (
     <div>
       <h1 className="bg-teal-800 text-white px-6 py-4 text-xl font-semibold">
@@ -256,7 +235,15 @@ const PickAndDrop = ({ data }) => {
                 ))}
 
                 {selectedPickUpAddress === "other" && (
-                  <div className="flex items-center gap-3 mt-[14px] py-2 max-w-[350px] overflow-x-auto">
+                  <div
+                    className={`flex items-center gap-[20px] mt-[14px] py-2 max-w-[550px] overflow-x-auto ${
+                      isDragging ? "cursor-grabbing" : "cursor-grab"
+                    }`}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                  >
                     {data?.customerAddress
                       .find((addr) => addr.type === "other")
                       ?.otherAddress?.map((otherAddr) => (
@@ -280,7 +267,7 @@ const PickAndDrop = ({ data }) => {
                               });
                             }}
                           />
-                          <span className="flex flex-col gap-1 ms-2 ">
+                          <span className="flex flex-col w-[150px] gap-1 ms-2">
                             <span>{otherAddr.flat}</span>
                             <span>{otherAddr.area}</span>
                             <span>{otherAddr.landmark}</span>

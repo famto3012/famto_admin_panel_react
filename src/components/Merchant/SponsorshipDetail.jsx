@@ -181,10 +181,10 @@ const SponsorshipDetail = ({
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-4">
               {[
-                { value: "250", label: "Monthly", price: "250" },
-                { value: "750", label: "3 Month", price: "750" },
-                { value: "1500", label: "6 Month", price: "1500" },
-                { value: "3000", label: "1 Year", price: "3000" },
+                { value: "299", label: "Monthly", price: "299" },
+                { value: "799", label: "3 Month", price: "799" },
+                { value: "1399", label: "6 Month", price: "1399" },
+                { value: "2999", label: "1 Year", price: "2999" },
               ].map((plan, index) => (
                 <label
                   key={index}

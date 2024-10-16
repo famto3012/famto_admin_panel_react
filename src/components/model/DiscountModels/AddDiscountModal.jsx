@@ -3,6 +3,7 @@ import { Modal } from "antd";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { UserContext } from "../../../context/UserContext";
+import Select from "react-select";
 
 const AddDiscountModal = ({
   isVisible,
@@ -44,6 +45,11 @@ const AddDiscountModal = ({
       }));
     }
   }, [selectedMerchant, role]);
+
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   const handleInputChange = (e) => {
     setMerchantDiscount({
@@ -114,6 +120,9 @@ const AddDiscountModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.3)" }, // Custom mask background color
+      }}
     >
       <form>
         <div className="flex flex-col gap-4 pt-[30px] max-h-[30rem] overflow-auto justify-between">
@@ -202,7 +211,7 @@ const AddDiscountModal = ({
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
               Description Maximum 150 Characters{" "}
               <span className="text-red-600">*</span>
@@ -216,7 +225,7 @@ const AddDiscountModal = ({
               value={merchantDiscount.description}
               onChange={handleInputChange}
             />
-          </div>
+          </div> */}
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
               From <span className="text-red-600">*</span>
@@ -229,6 +238,7 @@ const AddDiscountModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
               To <span className="text-red-600">*</span>
@@ -241,25 +251,32 @@ const AddDiscountModal = ({
               onChange={handleInputChange}
             />
           </div>
+
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
               GeoFence <span className="text-red-600">*</span>
             </label>
-            <select
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="geofenceId"
-              value={merchantDiscount.geofenceId}
-              onChange={handleInputChange}
-            >
-              <option defaultValue={"select geofence"} hidden>
-                Select Geofence
-              </option>
-              {geofence.map((data) => (
-                <option value={data._id} key={data._id}>
-                  {data.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === merchantDiscount.geofenceId
+              )}
+              onChange={(option) =>
+                setMerchantDiscount({
+                  ...merchantDiscount,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded w-2/3 outline-none focus:outline-none"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
+            />
           </div>
 
           <div className="flex justify-end  gap-4">

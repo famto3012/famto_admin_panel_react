@@ -28,9 +28,14 @@ import { formatDate, formatTime } from "../../../utils/formatter";
 import { ChevronDownIcon } from "@saas-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../../context/SocketContext";
+import Select from "react-select";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {
+  agentStatusOptions,
+  taskStatusOptions,
+} from "../../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const mapplsClassObject = new mappls();
@@ -159,8 +164,8 @@ const DeliveryManagement = () => {
     }
   };
 
-  const selectChange = (e) => {
-    const selectedTask = e.target.value;
+  const selectChange = (option) => {
+    const selectedTask = option.value;
     setTask(selectedTask);
     if (selectedTask !== "") {
       handleTaskFilter(selectedTask);
@@ -169,8 +174,8 @@ const DeliveryManagement = () => {
     }
   };
 
-  const selectChangeOfStatus = (e) => {
-    const selectedStatus = e.target.value;
+  const selectChangeOfStatus = (option) => {
+    const selectedStatus = option.value;
     setStatus(selectedStatus);
     if (selectedStatus === "") {
       handleStatusFilter("Free");
@@ -954,16 +959,27 @@ const DeliveryManagement = () => {
             </div>
 
             <div className="w-full p-2 mt-4">
-              <select
-                className="border-2 border-zinc-200 bg-gray-100 rounded-lg p-2 w-full focus:outline-none"
-                name="task"
-                value={task}
+              <Select
+                options={taskStatusOptions}
+                value={taskStatusOptions.find(
+                  (option) => option.value === task
+                )}
                 onChange={selectChange}
-              >
-                <option value="Unassigned">Unassigned Tasks </option>
-                <option value="Assigned">Assigned Tasks</option>
-                <option value="Completed">Completed Tasks</option>
-              </select>
+                className="rounded-lg w-full focus:outline-none outline-none"
+                placeholder="Select Task status"
+                isSearchable={false}
+                isMulti={false}
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
+              />
 
               <input
                 type="search"
@@ -1445,16 +1461,28 @@ const DeliveryManagement = () => {
             </div>
 
             <div className="w-full p-2 bg-white ">
-              <select
-                className="border-2 border-zinc-200 bg-gray-100 rounded-lg  p-2 w-full focus:outline-none"
-                name="tasks"
-                value={status}
+              <Select
+                options={agentStatusOptions}
+                value={agentStatusOptions.find(
+                  (option) => option.value === status
+                )}
                 onChange={selectChangeOfStatus}
-              >
-                <option value="Free">Free</option>
-                <option value="Busy">Busy</option>
-                <option value="Inactive">Inactive</option>
-              </select>
+                className="rounded-lg w-full focus:outline-none mt-4 outline-none"
+                placeholder="Select agent status"
+                isSearchable={false}
+                isMulti={false}
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
+              />
+
               <input
                 type="search"
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 p-2 w-full focus:outline-none"

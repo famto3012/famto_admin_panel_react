@@ -1,9 +1,11 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal, Spin } from "antd";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import CropImage from "../../CropImage";
+import Select from "react-select";
+import { promoCodeModeOptions } from "../../../utils/DefaultData";
 
 const EditPromoCodeModal = ({
   handleCancel,
@@ -42,11 +44,9 @@ const EditPromoCodeModal = ({
   const [imgSrc, setImgSrc] = useState("");
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
-
-  // api call for get the promoCode details
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,10 +68,9 @@ const EditPromoCodeModal = ({
             }),
           ]);
         if (response.status === 200) {
-
           const formData = response.data.data;
-          formData.fromDate = formatDate(formData.fromDate)
-          formData.toDate = formatDate(formData.toDate)
+          formData.fromDate = formatDate(formData.fromDate);
+          formData.toDate = formatDate(formData.toDate);
 
           setFormData(formData);
         }
@@ -93,7 +92,15 @@ const EditPromoCodeModal = ({
     }
   }, [token, currentPromoEdit, BASE_URL]);
 
-  //API to edit the promo codes..
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const merchantOptions = merchant?.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,45 +156,29 @@ const EditPromoCodeModal = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const promoCodeImageChange = (e) => {
-  //   e.preventDefault();
-  //   const file = e.target.files[0];
-  //   setPromoImageFile(file);
-  //   setPromoPreviewURL(URL.createObjectURL(file));
-  // };
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-     // Helper function to format date to "yyyy-MM-dd"
-     const formatDate = (dateString) => {
-      if (!dateString) return "";
-      const date = new Date(dateString);
-      const year = date.getUTCFullYear();
-      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-      const day = String(date.getUTCDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
-
-    function onSelectFile(e) {
-      if (e.target.files && e.target.files.length > 0) {
-        setIsInnerVisible(true);
-        setCrop(null); // Makes crop preview update between images.
-        const reader = new FileReader();
-        reader.addEventListener("load", () =>
-          setImgSrc(reader.result?.toString() || "")
-        );
-        reader.readAsDataURL(e.target.files[0]);
-        setImg(e.target.files[0])
-      }
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsInnerVisible(true);
+      setCrop(null); // Makes crop preview update between images.
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setImgSrc(reader.result?.toString() || "")
+      );
+      reader.readAsDataURL(e.target.files[0]);
+      setImg(e.target.files[0]);
     }
-  
-    const handleCropComplete = (croppedFile) => {
-      setCroppedFile(croppedFile); 
-      // setSelectedFile(croppedFile)// Get the cropped image file
-      console.log("Cropped image file:", croppedFile);
-    };
-  
-    const handleModalClose = () => {
-      // setSelectedFile(null); // Reset the selected file to allow new selection
-    };
+  }
+
+  const handleCropComplete = (croppedFile) => setCroppedFile(croppedFile);
 
   return (
     <Modal
@@ -195,25 +186,28 @@ const EditPromoCodeModal = ({
       title="Edit Promo Code"
       open={isVisible}
       className="w-[1000px]"
-      // onOk={handleOkEdit}
       onCancel={handleCancel}
       footer={null}
     >
       <div className="flex flex-col p-2 justify-between">
         <form onSubmit={handleSubmit} className="h-[30rem] overflow-auto">
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Code<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              Code<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="text"
               name="promoCode"
               className="border-2 border-gray-300 rounded p-2 w-2/3 focus:outline-none"
               value={formData.promoCode}
-              placeholder={dataLoading ?"Loading data..." : ""}
+              placeholder={dataLoading ? "Loading data..." : ""}
               onChange={handleChange}
             />
           </div>
           <div className="flex mt-5">
-            <label className="w-1/2 text-gray-500">Promotion Type<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              Promotion Type<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="radio"
               name="promoType"
@@ -234,7 +228,9 @@ const EditPromoCodeModal = ({
             Percentage discount
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Discount<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              Discount<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="text"
               name="discount"
@@ -257,7 +253,9 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">From<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              From<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="date"
               name="fromDate"
@@ -268,7 +266,9 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">To<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              To<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="date"
               name="toDate"
@@ -281,21 +281,27 @@ const EditPromoCodeModal = ({
             <label className="w-1/2 text-gray-500">
               Promo Application Mode<span className="text-red-600 ml-2">*</span>
             </label>
-            <select
-              name="applicationMode"
-              value={formData.applicationMode}
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              onChange={handleChange}
-            >
-              <option defaultValue={""} hidden>
-                Select Application Mode
-              </option>
-              <option value="Public">Public</option>
-              <option value="Hidden">Hidden</option>
-            </select>
+            <Select
+              options={promoCodeModeOptions}
+              value={promoCodeModeOptions.find(
+                (option) => option.value === formData.applicationMode
+              )}
+              onChange={(option) =>
+                setFormData({
+                  ...formData,
+                  applicationMode: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-2/3"
+              placeholder="Select merchant"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Max discount value<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              Max discount value<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="number"
               name="maxDiscountValue"
@@ -305,7 +311,9 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Minimum order amount<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              Minimum order amount<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="text"
               name="minOrderAmount"
@@ -316,7 +324,8 @@ const EditPromoCodeModal = ({
           </div>
           <div className="flex gap-4 mt-5">
             <label className="w-1/2 text-gray-500">
-              Maximum number of allowed users<span className="text-red-600 ml-2">*</span>
+              Maximum number of allowed users
+              <span className="text-red-600 ml-2">*</span>
             </label>
             <input
               type="number"
@@ -327,7 +336,9 @@ const EditPromoCodeModal = ({
             />
           </div>
           <div className="flex mt-5">
-            <label className="w-1/2 text-gray-500">Applied on<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/2 text-gray-500">
+              Applied on<span className="text-red-600 ml-2">*</span>
+            </label>
             <input
               type="radio"
               name="appliedOn"
@@ -348,46 +359,55 @@ const EditPromoCodeModal = ({
             Delivery charge
           </div>
           <div className="flex gap-4 mt-5">
-            <label className="w-1/2 text-gray-500">Assign Merchant<span className="text-red-600 ml-2">*</span></label>
-            <select
-              name="merchantId"
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              value={formData.merchantId}
-              onChange={handleChange}
-            >
-              <option defaultValue={"Select merchant"} hidden>
-                Select Merchant
-              </option>
-              {merchant.map((data) => (
-                <option value={data._id} key={data._id}>
-                  {data.merchantName}
-                </option>
-              ))}
-            </select>
+            <label className="w-1/2 text-gray-500">
+              Assign Merchant<span className="text-red-600 ml-2">*</span>
+            </label>
+
+            <Select
+              options={merchantOptions}
+              value={merchantOptions.find(
+                (option) => option.value === formData.merchantId
+              )}
+              onChange={(option) =>
+                setFormData({
+                  ...formData,
+                  merchantId: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-2/3"
+              placeholder="Select merchant"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
           <div className="flex gap-4 mt-5 ">
-            <label className="w-1/2 text-gray-500">Geofence<span className="text-red-600 ml-2">*</span></label>
-            <select
-              name="geofenceId"
-              id="geofenceId"
-              value={formData.geofenceId}
-              className="border-2 border-gray-300 rounded focus:outline-none p-2 w-2/3"
-              onChange={handleChange}
-            >
-              <option defaultValue={"Select geofence"} hidden>
-                Select Geofence
-              </option>
-              {geofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+            <label className="w-1/2 text-gray-500">
+              Geofence<span className="text-red-600 ml-2">*</span>
+            </label>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === formData.geofenceId
+              )}
+              onChange={(option) =>
+                setFormData({
+                  ...formData,
+                  geofenceId: option.value,
+                })
+              }
+              className="border-gray-100 rounded focus:outline-none w-2/3"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+            />
           </div>
           <div className="flex">
-            <label className="mt-16">Image (342px x 160px)<span className="text-red-600 ml-2">*</span></label>
+            <label className="mt-16">
+              Image (342px x 160px)<span className="text-red-600 ml-2">*</span>
+            </label>
             <div className=" flex items-center gap-[20px]">
-            {!croppedFile && (
+              {!croppedFile && (
                 <img
                   className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[38px] ml-[210px]"
                   src={formData.imageUrl}
@@ -406,7 +426,7 @@ const EditPromoCodeModal = ({
                         width: "66px",
                         height: "66px",
                         marginTop: "38px",
-                        marginLeft: "210px"
+                        marginLeft: "210px",
                       }}
                     />
                   </div>

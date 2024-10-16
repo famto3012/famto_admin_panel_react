@@ -420,20 +420,18 @@ const AgentPayout = () => {
                   )}
                 </div>
 
-                <div>
+                {/* <div>
                   <FilterAltOutlined className="text-gray-400" />
-                </div>
+                </div> */}
 
-                <div className="relative w-full">
-                  <div>
-                    <input
-                      type="search"
-                      className="bg-gray-100 relative p-2 px-4 w-64 rounded-2xl outline-none focus:outline-none cursor-pointer"
-                      placeholder="Search agent name"
-                      value={searchFilter}
-                      onChange={onSearchChange}
-                    />
-                  </div>
+                <div className="w-full">
+                  <input
+                    type="search"
+                    className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
+                    placeholder="Search agent"
+                    value={searchFilter}
+                    onChange={onSearchChange}
+                  />
                 </div>
               </div>
             </div>

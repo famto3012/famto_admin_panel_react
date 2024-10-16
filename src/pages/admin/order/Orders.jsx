@@ -494,7 +494,7 @@ const Orders = () => {
         </nav>
 
         <div className="flex justify-between items-center px-[30px] ">
-          <div className="relative w-64 border-2 border-black rounded-full ">
+          <div className="relative w-fit border-2 border-black rounded-full ">
             <label
               htmlFor="Toggle"
               className="inline-flex items-center p-1 outline-2 outline-gray-500 rounded-3xl border-gray-700 bg-gray-100 cursor-pointer"
@@ -507,14 +507,14 @@ const Orders = () => {
                 onChange={handleToggle}
               />
               <span
-                className={`px-4 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
+                className={`px-3 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
                   deliveryOption ? "bg-teal-800 text-white" : "bg-gray-100"
                 }`}
               >
                 Orders
               </span>
               <span
-                className={`px-4 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
+                className={`px-3 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
                   deliveryOption ? "bg-gray-100" : "bg-teal-800 text-white"
                 }`}
               >

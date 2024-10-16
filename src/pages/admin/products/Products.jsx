@@ -71,7 +71,7 @@ const Products = () => {
     const getAllMerchants = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}/merchants/admin/all-merchants`,
+          `${BASE_URL}/merchants/admin/all-merchant-drop-down`,
           {
             withCredentials: true,
             headers: {
