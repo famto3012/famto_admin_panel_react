@@ -29,6 +29,7 @@ import { BsPersonLinesFill } from "react-icons/bs";
 import { LuFolderCog } from "react-icons/lu";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { UserContext } from "../context/UserContext";
+import { AiOutlineGift } from "react-icons/ai";
 
 const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -211,7 +212,7 @@ const Sidebar = () => {
               selectedLink === "/discount" ? "selected-link" : ""
             }`}
           >
-            <HomeOutlinedIcon className="m-2" />
+            <AiOutlineGift className="m-2" size={"25px"}/>
             Discount
           </Link>
 

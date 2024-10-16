@@ -1,7 +1,13 @@
+import { EncryptStorage } from "encrypt-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import secureLocalStorage from "react-secure-storage";
 export const SocketContext = createContext();
+
+const secretKey = import.meta.env.VITE_APP_LOCALSTORAGE_KEY
+// Initialize encrypt-storage
+const encryptStorage = new EncryptStorage(secretKey, {
+  prefix: "FAMTO", // Optional prefix to namespace your storage
+});
 
 export const useSocket = () => {
   return useContext(SocketContext);
@@ -9,17 +15,17 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
   const [userId, setUserId] = useState(
-    secureLocalStorage.getItem("userId") || null
+    encryptStorage.getItem("userId") || null
   );
   const [fcmToken, setFcmToken] = useState(
-    secureLocalStorage.getItem("fcmToken") || null
+    encryptStorage.getItem("fcmToken") || null
   );
   const [socket, setSocket] = useState(null);
   // https://api.famto.in
   // http://localhost:8080
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io("http://localhost:8080", {
+      const newSocket = io("https://api.famto.in", {
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,
