@@ -1,13 +1,18 @@
 // src/context/SoundContext.js
 import axios from "axios";
+import { EncryptStorage } from "encrypt-storage";
 import { createContext, useContext, useEffect, useState } from "react";
-import secureLocalStorage from "react-secure-storage";
 
 const SoundContext = createContext();
 
 export const useSoundContext = () => useContext(SoundContext);
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+const secretKey = import.meta.env.VITE_APP_LOCALSTORAGE_KEY
+// Initialize encrypt-storage
+const encryptStorage = new EncryptStorage(secretKey, {
+  prefix: "FAMTO", // Optional prefix to namespace your storage
+});
 
 export const SoundProvider = ({ children }) => {
 
@@ -28,7 +33,7 @@ export const SoundProvider = ({ children }) => {
   const [orderRejected, setOrderRejected] = useState("");
   const [scheduledOrder, setScheduledOrder] = useState("");
   const [notification, setNotification] = useState([]);
-  const [token, setToken] = useState(secureLocalStorage.getItem("token") || null);
+  const [token, setToken] = useState(encryptStorage.getItem("token") || null);
 
   useEffect(() => {
     console.log(token);

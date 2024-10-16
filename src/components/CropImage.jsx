@@ -246,6 +246,7 @@ export default function CropImage({
         footer={null}
         centered
         width="500px"
+        maskClosable={false}
       >
         <div>
           {!!imgSrc && (

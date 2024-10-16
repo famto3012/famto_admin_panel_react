@@ -88,6 +88,7 @@ const Adbanner = () => {
   }, []);
 
   const handleEditBanner = useCallback((data) => {
+    console.log("Edited data", data);
     setAllBanner((prev) =>
       prev.map((banner) => (banner?._id === data?._id ? data : banner))
     );
@@ -317,7 +318,7 @@ const Adbanner = () => {
                         centered
                       >
                         <p className="font-semibold text-[18px] mb-5">
-                          Are you sure you want to delete this tax?
+                          Are you sure you want to delete this ?
                         </p>
                         <div className="flex justify-end">
                           <button
@@ -448,7 +449,7 @@ const Adbanner = () => {
                         centered
                       >
                         <p className="font-semibold text-[18px] mb-5">
-                          Are you sure you want to delete this tax?
+                          Are you sure you want to delete this ?
                         </p>
 
                         <div className="flex justify-end">
@@ -463,9 +464,7 @@ const Adbanner = () => {
                           </button>
                           <button
                             className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                            onClick={() =>
-                              handleIndBannerDelete(currentIndBanner)
-                            }
+                            onClick={() => handleDelete(currentIndBanner, true)}
                           >
                             Delete
                           </button>

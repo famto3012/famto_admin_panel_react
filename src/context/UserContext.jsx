@@ -1,32 +1,35 @@
 import { createContext, useEffect, useState } from "react";
-import secureLocalStorage from "react-secure-storage";
+import { EncryptStorage } from "encrypt-storage";
 
 export const UserContext = createContext();
+const secretKey = import.meta.env.VITE_APP_LOCALSTORAGE_KEY
+// Initialize encrypt-storage
+const encryptStorage = new EncryptStorage(secretKey, {
+  prefix: "FAMTO", // Optional prefix to namespace your storage
+});
 
 const UserProvider = ({ children }) => {
-  const [token, setToken] = useState(
-    secureLocalStorage.getItem("token") || null
-  );
-  const [role, setRole] = useState(secureLocalStorage.getItem("role") || null);
+  const [token, setToken] = useState(encryptStorage.getItem("token") || null);
+  const [role, setRole] = useState(encryptStorage.getItem("role") || null);
   const [username, setUsername] = useState(
-    secureLocalStorage.getItem("username") || null
+    encryptStorage.getItem("username") || null
   );
   const [userId, setUserId] = useState(
-    secureLocalStorage.getItem("userId") || null
+    encryptStorage.getItem("userId") || null
   );
   const [fcmToken, setFcmToken] = useState(
-    secureLocalStorage.getItem("fcmToken") || null
+    encryptStorage.getItem("fcmToken") || null
   );
   const [signUp, setSignUp] = useState({});
   const [verification, setVerification] = useState("");
 
   useEffect(() => {
-    const storedToken = secureLocalStorage.getItem("token");
-    const storedRole = secureLocalStorage.getItem("role");
-    const storedUsername = secureLocalStorage.getItem("username");
-    const storedUserId = secureLocalStorage.getItem("userId");
-    const storedFcmToken = secureLocalStorage.getItem("fcmToken");
-  
+    const storedToken = encryptStorage.getItem("token");
+    const storedRole = encryptStorage.getItem("role");
+    const storedUsername = encryptStorage.getItem("username");
+    const storedUserId = encryptStorage.getItem("userId");
+    const storedFcmToken = encryptStorage.getItem("fcmToken");
+
     if (storedToken && storedRole) {
       setToken(storedToken);
       setRole(storedRole);
@@ -35,21 +38,20 @@ const UserProvider = ({ children }) => {
       setFcmToken(storedFcmToken);
     }
   }, []);
-  
 
   useEffect(() => {
     if (token && role) {
-      secureLocalStorage.setItem("token", token);
-      secureLocalStorage.setItem("role", role);
-      secureLocalStorage.setItem("userId", userId);
-      secureLocalStorage.setItem("fcmToken", fcmToken);
-      secureLocalStorage.setItem("username", username);
+      encryptStorage.setItem("token", token);
+      encryptStorage.setItem("role", role);
+      encryptStorage.setItem("userId", userId);
+      encryptStorage.setItem("fcmToken", fcmToken);
+      encryptStorage.setItem("username", username);
     } else {
-      secureLocalStorage.removeItem("token");
-      secureLocalStorage.removeItem("role");
-      secureLocalStorage.removeItem("userId");
-      secureLocalStorage.removeItem("fcmToken");
-      secureLocalStorage.removeItem("username");
+      encryptStorage.removeItem("token");
+      encryptStorage.removeItem("role");
+      encryptStorage.removeItem("userId");
+      encryptStorage.removeItem("fcmToken");
+      encryptStorage.removeItem("username");
     }
   }, [token, role, userId, fcmToken, username]);
 
