@@ -692,18 +692,17 @@ const Orders = () => {
                     }`}
                   >
                     <td
-                      className={` ${
-                        deliveryOption && `underline underline-offset-2`
-                      } p-4 text-[14px]`}
+                      className={`underline underline-offset-2
+                      p-4 text-[14px]`}
                     >
                       {deliveryOption ? (
                         <Link to={`/order-details/${order._id}`}>
                           #{order._id}
                         </Link>
                       ) : (
-                        // <Link to={`/order-details/${order._id}`}>
-                        <>#{order._id}</>
-                        // </Link>
+                        <Link to={`/order-details/${order._id}`}>
+                          #{order._id}
+                        </Link>
                       )}
                     </td>
                     <td className="p-4 w-[120px]">
@@ -834,7 +833,30 @@ const Orders = () => {
                           </>
                         )}
 
-                        {!deliveryOption && order.orderStatus}
+                        {!deliveryOption && (
+                          <>
+                            {order.orderStatus === "Completed" && (
+                              <p className=" text-green-500 font-[600] text-[14px]">
+                                Completed
+                              </p>
+                            )}
+                            {order.orderStatus === "Cancelled" && (
+                              <p className=" text-red-500 font-[600] text-[14px]">
+                                Cancelled
+                              </p>
+                            )}
+                            {order?.orderStatus === "On-going" && (
+                              <p className="text-orange-500 font-[600] text-[14px]">
+                                On-going
+                              </p>
+                            )}
+                            {order.orderStatus === "Pending" && (
+                              <p className="text-yellow-400 font-[600] text-[14px]">
+                                Pending
+                              </p>
+                            )}
+                          </>
+                        )}
                       </div>
                     </td>
                     <td className="py-4 w-[200px] text-center text-[14px]">
