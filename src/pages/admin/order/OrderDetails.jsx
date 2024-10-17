@@ -330,33 +330,60 @@ const OrderDetails = () => {
     }
 
     const getOrderDetail = async () => {
-      try {
-        setIsLoading(true);
-        const endpoint =
-          role === "Admin"
-            ? `${BASE_URL}/orders/admin/${orderId}`
-            : `${BASE_URL}/orders/${orderId}`;
+      if (orderId.charAt(0) === "O") {
+        try {
+          setIsLoading(true);
+          const endpoint =
+            role === "Admin"
+              ? `${BASE_URL}/orders/admin/${orderId}`
+              : `${BASE_URL}/orders/${orderId}`;
 
-        const response = await axios.get(endpoint, {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          const response = await axios.get(endpoint, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-        if (response.status === 200) {
-          const { data } = response.data;
-          setOrderDetail(data);
-          setBillData(data.billDetail);
+          if (response.status === 200) {
+            const { data } = response.data;
+            setOrderDetail(data);
+            setBillData(data.billDetail);
+          }
+        } catch (err) {
+          toast({
+            title: "Error",
+            description: `Error getting order detail`,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        } finally {
+          setIsLoading(false);
         }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description: `Error getting order detail`,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } finally {
-        setIsLoading(false);
+      } else {
+        try {
+          setIsLoading(true);
+          const endpoint = `${BASE_URL}/orders/scheduled-order/${orderId}`;
+
+          const response = await axios.get(endpoint, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (response.status === 200) {
+            setOrderDetail(response.data.data);
+            setBillData(response.data.data.billDetail);
+          }
+        } catch (err) {
+          toast({
+            title: "Error",
+            description: `Error getting order detail`,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -365,26 +392,28 @@ const OrderDetails = () => {
 
   useEffect(() => {
     if (orderDetail && mapObject) {
-      const coordinates = orderDetail.agentLocation;
-      showAgentLocationOnMap(
-        coordinates,
-        orderDetail.deliveryAgentDetail.name,
-        orderDetail.deliveryAgentDetail._id,
-        orderDetail.deliveryAgentDetail.phoneNumber
-      );
-      const shopCoordinates = orderDetail.pickUpLocation;
-      showShopLocationOnMap(
-        shopCoordinates,
-        orderDetail.merchantDetail.name,
-        orderDetail.merchantDetail._id
-      );
-      const deliveryLocation = orderDetail.deliveryLocation;
-      showDeliveryLocationOnMap(
-        deliveryLocation,
-        orderDetail.customerDetail.name,
-        "",
-        orderDetail.customerDetail.address.phoneNumber
-      );
+      if (orderId.charAt(0) === "O") {
+        const coordinates = orderDetail.agentLocation;
+        showAgentLocationOnMap(
+          coordinates,
+          orderDetail.deliveryAgentDetail.name,
+          orderDetail.deliveryAgentDetail._id,
+          orderDetail.deliveryAgentDetail.phoneNumber
+        );
+        const shopCoordinates = orderDetail.pickUpLocation;
+        showShopLocationOnMap(
+          shopCoordinates,
+          orderDetail.merchantDetail.name,
+          orderDetail.merchantDetail._id
+        );
+        const deliveryLocation = orderDetail.deliveryLocation;
+        showDeliveryLocationOnMap(
+          deliveryLocation,
+          orderDetail.customerDetail.name,
+          "",
+          orderDetail.customerDetail.address.phoneNumber
+        );
+      }
     }
 
     let mappedSteps = [];
@@ -667,14 +696,16 @@ const OrderDetails = () => {
               </p>
             </p>
           </div>
-          <div>
-            <button
-              onClick={downloadOrderBill}
-              className="bg-blue-100 px-4 p-2 rounded-md"
-            >
-              <DownloadOutlined /> Bill
-            </button>
-          </div>
+          {orderId.charAt[0] === "O" && (
+            <div>
+              <button
+                onClick={downloadOrderBill}
+                className="bg-blue-100 px-4 p-2 rounded-md"
+              >
+                <DownloadOutlined /> Bill
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex bg-white mx-5 rounded-lg mt-5 gap-16 p-5">
           <div className="w-1/3">
@@ -723,25 +754,48 @@ const OrderDetails = () => {
                 {orderDetail.deliveryOption}
               </p>
             </div>
+            {orderId.charAt(0) === "O" ? (
+              <>
+                <div className="flex justify-between mb-[10px]">
+                  <label className="text-[14px] text-gray-500 w-3/5">
+                    Vehicle Type
+                  </label>
+                  <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                    {orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}
+                  </p>
+                </div>
+                <div className="flex justify-between mb-[10px]">
+                  <label className="text-[14px] text-gray-500 w-3/5">
+                    Order Time
+                  </label>
+                  <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                    {orderDetail.orderTime}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between mb-[10px]">
+                  <label className="text-[14px] text-gray-500 w-3/5">
+                    Order From
+                  </label>
+                  <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                    {orderDetail?.orderTime?.split("||")[0]}
+                  </p>
+                </div>
+                <div className="flex justify-between mb-[10px]">
+                  <label className="text-[14px] text-gray-500 w-3/5">
+                    Order To
+                  </label>
+                  <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
+                    {orderDetail?.orderTime?.split("||")[1]}
+                  </p>
+                </div>
+              </>
+            )}
             <div className="flex justify-between mb-[10px]">
               <label className="text-[14px] text-gray-500 w-3/5">
-                Vehicle Type
-              </label>
-              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
-                {orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}
-              </p>
-            </div>
-            <div className="flex justify-between mb-[10px]">
-              <label className="text-[14px] text-gray-500 w-3/5">
-                Order Time
-              </label>
-              <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
-                {orderDetail.orderTime}
-              </p>
-            </div>
-            <div className="flex justify-between mb-[10px]">
-              <label className="text-[14px] text-gray-500 w-3/5">
-                Delivery Time
+                Next Delivery Time
               </label>
               <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
                 {orderDetail.deliveryTime}
@@ -803,7 +857,6 @@ const OrderDetails = () => {
                     </small>
                   </div>
                 </td>
-
                 <td>
                   <div className="flex flex-col">
                     <small>
@@ -820,7 +873,6 @@ const OrderDetails = () => {
                     </small>
                   </div>
                 </td>
-
                 <td>
                   <div className="flex flex-col">
                     <small>
@@ -877,65 +929,66 @@ const OrderDetails = () => {
                 <td>{orderDetail?.merchantDetail?.instructionsByCustomer}</td>
                 <td>{orderDetail?.merchantDetail?.merchantEarnings}</td>
                 <td>{orderDetail?.merchantDetail?.famtoEarnings}</td>
-                <td></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div className="mt-10">
-          <h1 className="text-[18px] font-semibold ml-5 mb-5">
-            Delivery Agent Details
-          </h1>
-          <table className="w-full">
-            <thead>
-              <tr>
-                {[
-                  "Id",
-                  "Name",
-                  "Team Name",
-                  "Instruction by Customer",
-                  "Time taken",
-                  "Distance travelled",
-                  "Delayed by",
-                ].map((header) => (
-                  <th
-                    key={header}
-                    className="bg-teal-800 text-white h-[70px] text-center"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="text-center bg-white h-20">
-                <td className="underline underline-offset-2">
-                  <Link
-                    to={`/agent-detail/${orderDetail?.deliveryAgentDetail?._id}`}
-                  >
-                    #{orderDetail?.deliveryAgentDetail?._id}
-                  </Link>
-                </td>
-                <td>{orderDetail?.deliveryAgentDetail?.name}</td>
-                <td>{orderDetail?.deliveryAgentDetail?.team}</td>
-                <td>
-                  {orderDetail?.deliveryAgentDetail?.instructionsByCustomer}
-                </td>
-                <td>{orderDetail?.deliveryAgentDetail?.timeTaken}</td>
-                <td>{orderDetail?.deliveryAgentDetail?.distanceTravelled}</td>
-                <td>{orderDetail?.deliveryAgentDetail?.delayedBy}</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        {orderId.charAt(0) === "O" && (
+          <div className="mt-10">
+            <h1 className="text-[18px] font-semibold ml-5 mb-5">
+              Delivery Agent Details
+            </h1>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  {[
+                    "Id",
+                    "Name",
+                    "Team Name",
+                    "Instruction by Customer",
+                    "Time taken",
+                    "Distance travelled",
+                    "Delayed by",
+                  ].map((header) => (
+                    <th
+                      key={header}
+                      className="bg-teal-800 text-white h-[70px] text-center"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="text-center bg-white h-20">
+                  <td className="underline underline-offset-2">
+                    <Link
+                      to={`/agent-detail/${orderDetail?.deliveryAgentDetail?._id}`}
+                    >
+                      #{orderDetail?.deliveryAgentDetail?._id}
+                    </Link>
+                  </td>
+                  <td>{orderDetail?.deliveryAgentDetail?.name}</td>
+                  <td>{orderDetail?.deliveryAgentDetail?.team}</td>
+                  <td>
+                    {orderDetail?.deliveryAgentDetail?.instructionsByCustomer}
+                  </td>
+                  <td>{orderDetail?.deliveryAgentDetail?.timeTaken}</td>
+                  <td>{orderDetail?.deliveryAgentDetail?.distanceTravelled}</td>
+                  <td>{orderDetail?.deliveryAgentDetail?.delayedBy}</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <h1 className="text-[18px] font-semibold m-5">Order Details</h1>
 
         {/* Pick and Drop */}
         {orderDetail.deliveryMode === "Pick and Drop" && (
           <div>
-            <table className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
+            <table className="w-[96%] ms-[20px] me-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items Type", "Dimensions", "Weight Range"].map(
@@ -968,7 +1021,7 @@ const OrderDetails = () => {
         {/* Custom Order */}
         {orderDetail.deliveryMode === "Custom Order" && (
           <div>
-            <table className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
+            <table className="w-[96%] ms-[20px] me-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items", "Quantity", "Unit", "Image"].map((header) => (
@@ -999,7 +1052,7 @@ const OrderDetails = () => {
         {(orderDetail.deliveryMode === "Take Away" ||
           orderDetail.deliveryMode === "Home Delivery") && (
           <div>
-            <table className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
+            <table className="w-[96%] ms-[20px] me-auto border-2 border-gray-600">
               <thead>
                 <tr>
                   {["Items", "Quantity", "Amount"].map((header) => (
@@ -1024,10 +1077,9 @@ const OrderDetails = () => {
             </table>
           </div>
         )}
-
-        <div>
+        <div className={`${orderId.charAt(0) === "O" ? "" : "mb-5"}`}>
           <h1 className="text-[18px] font-semibold m-5">Bill Summary</h1>
-          <div className="w-[60%] ms-[20px] me-auto border-2 border-gray-600">
+          <div className="w-[96%] ms-[20px] me-auto border-2 border-gray-600">
             <div className="flex justify-between mx-5 m-3">
               <label>Price</label>
               <p>
@@ -1061,88 +1113,99 @@ const OrderDetails = () => {
               <p>{orderDetail?.billDetail?.taxAmount}</p>
             </div>
           </div>
-          <div className="bg-teal-800 flex justify-between p-5 text-white text-[16px] font-semibold w-[60%] ms-[20px] me-auto">
+          <div className="bg-teal-800 flex justify-between p-5 text-white text-[16px] font-semibold w-[96%] ms-[20px] me-auto">
             <label>Net Payable Amount</label>
             <p>{orderDetail?.billDetail?.grandTotal}</p>
           </div>
         </div>
-
-        <h1 className="text-[18px] font-semibold m-5">Order Activity log</h1>
-        <div className="bg-white mx-5 p-5 rounded-lg flex justify-between gap-20 items-center">
-          <div className="bg-gray-200 rounded-full w-[60px] h-[60px]">
-            <img
-              src={orderDetail?.deliveryAgentDetail?.avatar}
-              className=" rounded-full w-[60px] h-[60px]"
-              alt=""
-            />
-          </div>
-          <div className="flex justify-around w-1/4">
-            <label className="text-gray-500">Agent Name</label>
-            <p className="text-gray-900 font-[500]">
-              {orderDetail?.deliveryAgentDetail?.name}
-            </p>
-          </div>
-          <div className="flex justify-around w-1/4">
-            <label className="text-gray-500">Total Distance</label>
-            <p className="text-gray-900 font-[500]">
-              {orderDetail?.deliveryAgentDetail?.distanceTravelled}
-            </p>
-          </div>
-          <div className="flex justify-around w-1/4 ">
-            <label className="text-gray-500">Total Time</label>
-            <p className="text-gray-900 font-[500]">
-              {orderDetail?.deliveryAgentDetail?.timeTaken}
-            </p>
-          </div>
-        </div>
-        <div className="flex m-5 mx-10 ">
-          <div className="w-1/2 ">
-            {activeStepIndex !== null && (
-              <Stepper
-                index={activeStep}
-                orientation="vertical"
-                height="800px"
-                colorScheme="teal"
-                m="20px"
-                gap="0"
-              >
-                {steps?.map((step, index) => (
-                  <Step key={index}>
-                    <StepIndicator>
-                      <StepStatus
-                        complete={<StepIcon />}
-                        incomplete={<StepNumber />}
-                        active={<StepNumber />}
-                      />
-                    </StepIndicator>
-
-                    <Box flexShrink="0">
-                      <StepTitle>{step?.title}</StepTitle>
-                      <div className="flex items-center gap-4">
-                        <StepDescription>{step?.description}</StepDescription>
-                        <StepDescription>#ID {step?.id}</StepDescription>
-                      </div>
-                      <StepDescription className="mt-2">
-                        {step?.time}
-                      </StepDescription>
-                    </Box>
-
-                    <StepSeparator />
-                  </Step>
-                ))}
-              </Stepper>
-            )}
-          </div>
-          <div className="w-3/4 bg-white h-[820px]">
-            <div
-              id="map"
-              ref={mapContainerRef}
-              style={{ width: "99%", height: "810px", display: "inline-block" }}
-            >
-              {isMapLoaded && <PolylineComponent map={mapObject} />}
+        {orderId.charAt(0) === "O" && (
+          <>
+            <h1 className="text-[18px] font-semibold m-5">
+              Order Activity log
+            </h1>
+            <div className="bg-white mx-5 p-5 rounded-lg flex justify-between gap-20 items-center">
+              <div className="bg-gray-200 rounded-full w-[60px] h-[60px]">
+                <img
+                  src={orderDetail?.deliveryAgentDetail?.avatar}
+                  className=" rounded-full w-[60px] h-[60px]"
+                  alt=""
+                />
+              </div>
+              <div className="flex justify-around w-1/4">
+                <label className="text-gray-500">Agent Name</label>
+                <p className="text-gray-900 font-[500]">
+                  {orderDetail?.deliveryAgentDetail?.name}
+                </p>
+              </div>
+              <div className="flex justify-around w-1/4">
+                <label className="text-gray-500">Total Distance</label>
+                <p className="text-gray-900 font-[500]">
+                  {orderDetail?.deliveryAgentDetail?.distanceTravelled}
+                </p>
+              </div>
+              <div className="flex justify-around w-1/4 ">
+                <label className="text-gray-500">Total Time</label>
+                <p className="text-gray-900 font-[500]">
+                  {orderDetail?.deliveryAgentDetail?.timeTaken}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
+            <div className="flex m-5 mx-10 ">
+              <div className="w-1/2 ">
+                {activeStepIndex !== null && (
+                  <Stepper
+                    index={activeStep}
+                    orientation="vertical"
+                    height="800px"
+                    colorScheme="teal"
+                    m="20px"
+                    gap="0"
+                  >
+                    {steps?.map((step, index) => (
+                      <Step key={index}>
+                        <StepIndicator>
+                          <StepStatus
+                            complete={<StepIcon />}
+                            incomplete={<StepNumber />}
+                            active={<StepNumber />}
+                          />
+                        </StepIndicator>
+
+                        <Box flexShrink="0">
+                          <StepTitle>{step?.title}</StepTitle>
+                          <div className="flex items-center gap-4">
+                            <StepDescription>
+                              {step?.description}
+                            </StepDescription>
+                            <StepDescription>#ID {step?.id}</StepDescription>
+                          </div>
+                          <StepDescription className="mt-2">
+                            {step?.time}
+                          </StepDescription>
+                        </Box>
+
+                        <StepSeparator />
+                      </Step>
+                    ))}
+                  </Stepper>
+                )}
+              </div>
+              <div className="w-3/4 bg-white h-[820px]">
+                <div
+                  id="map"
+                  ref={mapContainerRef}
+                  style={{
+                    width: "99%",
+                    height: "810px",
+                    display: "inline-block",
+                  }}
+                >
+                  {isMapLoaded && <PolylineComponent map={mapObject} />}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

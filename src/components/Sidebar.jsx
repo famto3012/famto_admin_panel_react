@@ -212,7 +212,7 @@ const Sidebar = () => {
               selectedLink === "/discount" ? "selected-link" : ""
             }`}
           >
-            <AiOutlineGift className="m-2" size={"25px"}/>
+            <AiOutlineGift className="me-2 ms-2 mb-1" size={"25px"}/>
             Discount
           </Link>
 
