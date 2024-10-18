@@ -241,20 +241,17 @@ const AccountLogs = () => {
                 </div>
               )}
             </div>
-            <p className="mt-2">
+            {/* <p className="mt-2">
               <FilterAltOutlinedIcon className="text-gray-400" />
-            </p>
+            </p> */}
             <input
               type="search"
               name="search"
               placeholder="Search user name"
               value={search}
               onChange={onSearchChange}
-              className="bg-gray-100 h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
+              className="bg-gray-100 h-10 ps-4 rounded-full text-[14px] focus:outline-none"
             />
-            <button type="submit" className="absolute right-16 mt-2">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
           </div>
         </div>
         <table className="w-full">

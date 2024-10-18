@@ -32,7 +32,7 @@ const orderStatusOption = [
 
 const paymentModeOption = [
   { value: "all", label: "All" },
-  { value: "Cash-on-delivery", label: "Cash on delivery" },
+  { value: "Cash-on-delivery", label: "Pay on delivery" },
   { value: "Online-payment", label: "Online payment" },
   { value: "Famto-cash", label: "Famto cash" },
 ];
@@ -109,6 +109,11 @@ const promoCodeModeOptions = [
   { value: "Hidden", label: "Hidden" },
 ];
 
+const paymentOptions = [
+  { value: "Online-payment", label: "Online payment" },
+  { value: "Cash-on-delivery", label: "Pay on delivery" },
+];
+
 export {
   itemTypes,
   unitOptions,
@@ -126,4 +131,5 @@ export {
   agentTagOptions,
   taskStatusOptions,
   promoCodeModeOptions,
+  paymentOptions,
 };

@@ -58,6 +58,9 @@ const DeleteAgentSurgeModal = ({
       confirmLoading={confirmLoading}
       footer={null}
       centered
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
       <p>Are you sure you want to delete ?</p>
 

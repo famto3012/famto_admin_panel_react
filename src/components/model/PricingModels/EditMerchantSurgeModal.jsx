@@ -16,7 +16,7 @@ const EditMerchantSurgeModal = ({
   const toast = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmLoading,setConfirmLoading] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [merchantSurge, setMerchantSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -32,7 +32,6 @@ const EditMerchantSurgeModal = ({
     }
 
     const fetchData = async () => {
-      
       try {
         const [addResponse] = await Promise.all([
           axios.get(`${BASE_URL}/admin/merchant-surge/${currentEdit}`, {
@@ -53,7 +52,7 @@ const EditMerchantSurgeModal = ({
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } 
+      }
     };
 
     if (currentEdit) {
@@ -101,7 +100,7 @@ const EditMerchantSurgeModal = ({
       });
       console.log(`Error in fetching data:${err}`);
     } finally {
-    setConfirmLoading(false);
+      setConfirmLoading(false);
     }
     console.log(merchantSurge);
   };
@@ -112,6 +111,9 @@ const EditMerchantSurgeModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
       <form onSubmit={formSubmit}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">

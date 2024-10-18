@@ -1,7 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+import Select from "react-select";
+import { vehicleTypeOptions } from "../../../utils/DefaultData";
 
 const AddCustomerPricingModal = ({
   isVisible,
@@ -29,16 +31,28 @@ const AddCustomerPricingModal = ({
     deliveryMode: "Home Delivery",
     businessCategoryId: null,
   });
+
   const handleRadioChange = (e) => {
     const { value } = e.target;
     setCustomerPricing({ ...customerPricing, deliveryMode: value });
   };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerPricing({ ...customerPricing, [name]: value });
   };
 
-  const submitAction = async (e) => {
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const businessOptions = business?.map((business) => ({
+    label: business.title,
+    value: business._id,
+  }));
+
+  const handleAddPricing = async (e) => {
     e.preventDefault();
     try {
       console.log("customerPricing", customerPricing);
@@ -84,8 +98,11 @@ const AddCustomerPricingModal = ({
       width="700px"
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
-      <form onSubmit={submitAction}>
+      <form onSubmit={handleAddPricing}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
@@ -272,24 +289,35 @@ const AddCustomerPricingModal = ({
                 className="w-1/3 text-gray-500"
                 htmlFor="businessCategoryId"
               ></label>
-              <select
-                name="businessCategoryId"
-                value={customerPricing?.businessCategoryId}
-                onChange={handleInputChange}
-                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              >
-                <option hidden defaultValue="Select Business Category">
-                  Select Business Category
-                </option>
-                {business.map((businessCategory) => (
-                  <option
-                    key={businessCategory._id}
-                    value={businessCategory._id}
-                  >
-                    {businessCategory.title}
-                  </option>
-                ))}
-              </select>
+
+              <Select
+                options={businessOptions}
+                value={businessOptions.find(
+                  (option) =>
+                    option.value === customerPricing?.businessCategoryId
+                )}
+                onChange={(option) =>
+                  setCustomerPricing({
+                    ...customerPricing,
+                    businessCategoryId: option.value,
+                  })
+                }
+                className="rounded outline-none focus:outline-none w-2/3"
+                placeholder="Select business category"
+                isSearchable={true}
+                isMulti={false}
+                menuPlacement="top"
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
+              />
             </div>
           )}
           {customerPricing.deliveryMode === "Pick and Drop" && (
@@ -298,40 +326,68 @@ const AddCustomerPricingModal = ({
                 className="w-1/3 text-gray-500"
                 htmlFor="vehicleType"
               ></label>
-              <select
-                id="vehicleType"
-                name="vehicleType"
-                value={customerPricing?.vehicleType}
-                onChange={handleInputChange}
-                className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              >
-                <option defaultValue={"Select vehicle type"} hidden>
-                  Select vehicle type
-                </option>
-                <option value="Scooter">Scooter</option>
-                <option value="Bike">Bike</option>
-              </select>
+
+              <Select
+                options={vehicleTypeOptions}
+                value={vehicleTypeOptions.find(
+                  (option) => option.value === customerPricing?.vehicleType
+                )}
+                onChange={(option) =>
+                  setCustomerPricing({
+                    ...customerPricing,
+                    vehicleType: option.value,
+                  })
+                }
+                className="rounded outline-none focus:outline-none w-2/3"
+                placeholder="Select vehicle type"
+                isSearchable={true}
+                isMulti={false}
+                menuPlacement="top"
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
+              />
             </div>
           )}
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="geofence">
               Geofence <span className="text-red-500">*</span>
             </label>
-            <select
-              name="geofenceId"
-              value={customerPricing.geofenceId}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              onChange={handleInputChange}
-            >
-              <option hidden defaultValue={"Select geofence"}>
-                Select geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === customerPricing.geofenceId
+              )}
+              onChange={(option) =>
+                setCustomerPricing({
+                  ...customerPricing,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded outline-none focus:outline-none w-2/3"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPlacement="auto"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
         </div>
         <div className="flex justify-end gap-4 mt-6">

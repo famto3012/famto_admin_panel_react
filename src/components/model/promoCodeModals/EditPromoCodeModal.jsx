@@ -293,7 +293,7 @@ const EditPromoCodeModal = ({
                 })
               }
               className="border-gray-100 rounded focus:outline-none w-2/3"
-              placeholder="Select merchant"
+              placeholder="Select application mode"
               isSearchable={true}
               isMulti={false}
             />
@@ -378,6 +378,7 @@ const EditPromoCodeModal = ({
               placeholder="Select merchant"
               isSearchable={true}
               isMulti={false}
+              menuPlacement="top"
             />
           </div>
           <div className="flex gap-4 mt-5 ">
@@ -400,6 +401,7 @@ const EditPromoCodeModal = ({
               placeholder="Select geofence"
               isSearchable={true}
               isMulti={false}
+              menuPlacement="top"
             />
           </div>
           <div className="flex">

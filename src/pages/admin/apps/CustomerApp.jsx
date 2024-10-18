@@ -242,7 +242,7 @@ const CustomerApp = () => {
                 )}
               </div>
             </div>
-            <div className="flex mx-5 mt-10 gap-10  border-b-2 border-gray-200 pb-5">
+            <div className="flex mx-5 mt-10 gap-10 pb-5">
               <div className="w-[42rem]">Sign up and Sign in Settings</div>
               <div className="text-gray-500">
                 Control sign-up of Customer on your platform. Here you are given
@@ -349,34 +349,7 @@ const CustomerApp = () => {
               </div>
             </div>
 
-            <ServiceCategory />
-
-            <BusinessCategory />
-
-            {/* // Customer Login Restriction */}
-
-            {/* <div className="mt-10 justify-between flex mx-5 border-b-2 pb-10 mb-5 border-gray-200">
-          <h1>Customer login Restriction</h1>
-          <p className="w-[43rem] text-gray-500">
-            Enable this, to restrict Customer from accessing the platform
-            without logging in into the platform. (Make sure your apps are
-            updated).
-          </p>
-          <Switch />
-        </div> */}
-
-            <CustomOrder />
-
-            <PickAndDrop />
-
-            <div className="flex justify-end p-10 gap-4">
-              <button
-                className="bg-gray-300 rounded-lg px-6 py-2 font-semibold justify-end"
-                // onClick={handleCancelEdit}
-                type="submit"
-              >
-                Cancel
-              </button>
+            <div className="flex justify-end p-10 gap-4 border-b-2 border-gray-200">
               <button
                 className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
                 onClick={submitAction}
@@ -385,6 +358,26 @@ const CustomerApp = () => {
                 {isSaveLoading ? "Saving..." : "Save Changes"}
               </button>
             </div>
+
+            <ServiceCategory />
+
+            <BusinessCategory />
+
+            {/* // Customer Login Restriction */}
+
+            {/* <div className="mt-10 justify-between flex mx-5 border-b-2 pb-10 mb-5 border-gray-200">
+              <h1>Customer login Restriction</h1>
+              <p className="w-[43rem] text-gray-500">
+                Enable this, to restrict Customer from accessing the platform
+                without logging in into the platform. (Make sure your apps are
+                updated).
+              </p>
+              <Switch />
+            </div> */}
+
+            <CustomOrder />
+
+            <PickAndDrop />
           </div>
         </>
       )}

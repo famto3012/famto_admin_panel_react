@@ -13,6 +13,7 @@ import EditPromoCodeModal from "../../../components/model/promoCodeModals/EditPr
 import GIFLoader from "../../../components/GIFLoader";
 import { useToast } from "@chakra-ui/react";
 import { formatDate } from "../../../utils/formatter";
+import { useDraggable } from "../../../hooks/useDraggable";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -27,6 +28,9 @@ const PromoCode = () => {
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [status, setStatus] = useState("");
+
+  const { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove } =
+    useDraggable();
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -230,8 +234,14 @@ const PromoCode = () => {
                 />
               </div>
             </div>
-            <div className="overflow-x-auto overflow-element">
-              <table className="p-5 w-full">
+            <div
+              className="overflow-x-auto overflow-element cursor-grab"
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+            >
+              <table className="p-5 w-full draggable-table">
                 <thead>
                   <tr className="p-10 w-full">
                     {[
@@ -258,7 +268,7 @@ const PromoCode = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allPromocode?.map((data, index) => (
+                  {allPromocode?.map((data) => (
                     <tr
                       className="text-center odd:bg-white w-fit px-24 h-20"
                       key={data._id}
@@ -289,7 +299,6 @@ const PromoCode = () => {
                             >
                               <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                             </button>
-
                             <EditPromoCodeModal
                               handleCancel={handleCancel}
                               isVisible={isModalVisibleEdit}
@@ -306,7 +315,6 @@ const PromoCode = () => {
                           >
                             <RiDeleteBinLine className="bg-red-100 text-red-600 mr-3 p-2 text-[35px] rounded-lg" />
                           </button>
-
                           <Modal
                             onCancel={handleCancel}
                             footer={null}

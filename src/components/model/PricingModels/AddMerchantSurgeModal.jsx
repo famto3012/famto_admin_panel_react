@@ -12,7 +12,7 @@ const AddMerchantSurgeModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
-  const [confirmLoading,setConfirmLoading]= useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [merchantsurge, setMerchantSurge] = useState({
     ruleName: "",
     baseFare: "",
@@ -29,7 +29,7 @@ const AddMerchantSurgeModal = ({
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
-      setConfirmLoading(true)
+      setConfirmLoading(true);
       console.log("merchantsurge", merchantsurge);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/merchant-surge/add-merchant-surge`,
@@ -64,7 +64,7 @@ const AddMerchantSurgeModal = ({
         isClosable: true,
       });
     } finally {
-      setConfirmLoading(false)
+      setConfirmLoading(false);
     }
     console.log(merchantsurge);
   };
@@ -75,6 +75,9 @@ const AddMerchantSurgeModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
       <form onSubmit={formSubmit}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
@@ -181,7 +184,7 @@ const AddMerchantSurgeModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-           {confirmLoading ? "Adding..." : "Add"}
+            {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

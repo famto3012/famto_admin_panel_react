@@ -4,6 +4,7 @@ import axios from "axios";
 import { MdCameraAlt } from "react-icons/md";
 import { useToast } from "@chakra-ui/react";
 import CropImage from "../../CropImage";
+import Select from "react-select";
 
 const AddBannerModal = ({
   isVisible,
@@ -25,9 +26,8 @@ const AddBannerModal = ({
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
-
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,6 +41,10 @@ const AddBannerModal = ({
     }));
   };
 
+  const geofenceOptions = allGeofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   const handleAddBanner = async (e) => {
     try {
@@ -109,20 +113,19 @@ const AddBannerModal = ({
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0])
+      setImg(e.target.files[0]);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
-    setSelectedFile(croppedFile)// Get the cropped image file
+    setCroppedFile(croppedFile);
+    setSelectedFile(croppedFile); // Get the cropped image file
     console.log("Cropped image file:", croppedFile);
   };
 
   const handleModalClose = () => {
     setSelectedFile(null); // Reset the selected file to allow new selection
   };
-
 
   return (
     <Modal
@@ -168,27 +171,33 @@ const AddBannerModal = ({
             <label htmlFor="geofenceId" className="w-1/3">
               Geofence<span className="text-red-600 ml-2">*</span>
             </label>
-            <select
-              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="geofenceId"
-              value={bannerData.geofenceId}
-              onChange={handleInputChange}
-            >
-              <option value="Select geofence" hidden>
-                Select geofence
-              </option>
-              {allGeofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === bannerData.geofenceId
+              )}
+              onChange={(option) =>
+                setBannerData({
+                  ...bannerData,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded w-2/3 outline-none focus:outline-none"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPlacement="auto"
+            />
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3">Banner Image (390px x 400px)<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/3">
+              Banner Image <span className="text-red-600 ml-2">*</span> <br />{" "}
+              (342px x 160px)
+            </label>
             <div className="flex items-center gap-[30px]">
-            {!croppedFile && (
+              {!croppedFile && (
                 <div className="h-[85px] w-[175px] bg-gray-200 rounded-md mt-[14px]"></div>
               )}
               {!!croppedFile && (

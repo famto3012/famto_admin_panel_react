@@ -4,6 +4,7 @@ import { MdCameraAlt } from "react-icons/md";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import CropImage from "../../CropImage";
+import Select from "react-select";
 
 const EditIndividualModal = ({
   isVisible,
@@ -29,11 +30,15 @@ const EditIndividualModal = ({
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState(null);
   const [isInnerVisible, setIsInnerVisible] = useState(false);
-  const [img, setImg] = useState(null)
+  const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
 
-
   const toast = useToast();
+
+  const geofenceOptions = allGeofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   useEffect(() => {
     if (!selectedIndividualBanner) return;
@@ -91,11 +96,6 @@ const EditIndividualModal = ({
         formData.append("bannerImage", selectedFile);
       }
 
-      // console.log("FormData contents:");
-      // for (let pair of formData.entries()) {
-      //   console.log(pair[0] + ", " + pair[1]);
-      // }
-
       const response = await axios.put(
         `${BASE_URL}/admin/banner/edit-banner/${selectedIndividualBanner}`,
         formData,
@@ -149,13 +149,13 @@ const EditIndividualModal = ({
         setImgSrc(reader.result?.toString() || "")
       );
       reader.readAsDataURL(e.target.files[0]);
-      setImg(e.target.files[0])
+      setImg(e.target.files[0]);
     }
   }
 
   const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile); 
-    setSelectedFile(croppedFile)// Get the cropped image file
+    setCroppedFile(croppedFile);
+    setSelectedFile(croppedFile); // Get the cropped image file
     console.log("Cropped image file:", croppedFile);
   };
 
@@ -165,11 +165,14 @@ const EditIndividualModal = ({
 
   return (
     <Modal
-      title="Edit Banner"
+      title="Edit individual Banner"
       open={isVisible}
       onCancel={onCancel}
       footer={null}
       centered
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+      }}
     >
       <form onSubmit={handleEditBanner}>
         <div className="flex flex-col gap-4">
@@ -207,27 +210,34 @@ const EditIndividualModal = ({
             <label htmlFor="geofenceId" className="w-1/3">
               Geofence<span className="text-red-600 ml-2">*</span>
             </label>
-            <select
-              className="border-2 border-gray-300  rounded p-2 w-2/3 outline-none focus:outline-none"
-              name="geofenceId"
-              value={bannerData.geofenceId}
-              onChange={handleInputChange}
-            >
-              <option value="Select geofence" hidden>
-                Select geofence
-              </option>
-              {allGeofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === bannerData.geofenceId
+              )}
+              onChange={(option) =>
+                setBannerData({
+                  ...bannerData,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded w-2/3 outline-none focus:outline-none"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPlacement="auto"
+            />
           </div>
 
           <div className="flex items-center">
-            <label className="w-1/3">Banner Image (390px x 400px)<span className="text-red-600 ml-2">*</span></label>
+            <label className="w-1/3">
+              Banner Image <span className="text-red-600 ml-2">*</span> <br />{" "}
+              (390px x 120px)
+            </label>
+
             <div className="flex items-center gap-[30px]">
-            {!croppedFile && (
+              {!croppedFile && (
                 <img
                   src={bannerData?.imageUrl}
                   alt="Banner preview"

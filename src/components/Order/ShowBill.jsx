@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 import { UserContext } from "../../context/UserContext";
 
 import { useToast } from "@chakra-ui/react";
 
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { paymentOptions } from "../../utils/DefaultData";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -129,20 +131,19 @@ const ShowBill = ({ data }) => {
     <>
       <div className="flex items-center">
         <label className="w-1/3 px-6" htmlFor="paymentType">
-          Payment Type
+          Payment Types
         </label>
-        <select
-          name="paymentMode"
-          value={paymentMode}
-          className="w-1/2 py-2 ps-3 outline-none focus:outline-none border-2"
-          onChange={(e) => setPaymentMode(e.target.value)}
-        >
-          <option defaultValue="Select payment mode" hidden>
-            Select payment mode
-          </option>
-          <option value="Online-payment">Online payment</option>
-          <option value="Cash-on-delivery">Cash on delivery</option>
-        </select>
+
+        <Select
+          options={paymentOptions}
+          value={paymentOptions.find((option) => option.value === paymentMode)}
+          onChange={(option) => setPaymentMode(option.value)}
+          className="w-1/2 outline-none focus:outline-none "
+          placeholder="Select payment mode"
+          isSearchable={true}
+          isMulti={false}
+          menuPlacement="auto"
+        />
       </div>
 
       <div className="flex mt-5">
