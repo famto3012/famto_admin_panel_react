@@ -8,6 +8,7 @@ import { UserContext } from "../../context/UserContext";
 import { useToast } from "@chakra-ui/react";
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -61,6 +62,11 @@ const ServiceCategory = () => {
     };
     fetchData();
   }, [token]);
+
+  const geofenceOptions = allGeofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   const handleAddBanner = (newCategory) => {
     setAllServiceCategory((prevBanners) => {
@@ -124,7 +130,6 @@ const ServiceCategory = () => {
     setSelectedServiceId(null);
   };
 
-  // Re arrage Categories
   const handleReorderServiceCategory = async () => {
     try {
       const categoryClone = [...allServiceCategory];
@@ -428,21 +433,34 @@ const ServiceCategory = () => {
           </div>
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500">Geofence</label>
-            <select
-              name="geofenceId"
-              value={service.geofenceId}
-              onChange={handleServiceChange}
-              className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-            >
-              <option value="select" hidden selected>
-                Geofence
-              </option>
-              {allGeofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === service.geofenceId
+              )}
+              onChange={(option) =>
+                setService({
+                  ...service,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded focus:outline-none w-2/3"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPlacement="auto"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
           <div className="flex">
             <label className="mt-5">Image (342px x 160px)</label>
@@ -514,18 +532,33 @@ const ServiceCategory = () => {
           </div>
           <div className="flex mt-5  gap-4">
             <label className="w-1/2 text-gray-500">Geofence</label>
-            <select
-              name="geofenceId"
-              value={service.geofenceId}
-              onChange={handleServiceChange}
-              className="border-2 border-gray-300 rounded p-2 focus:outline-none w-2/3"
-            >
-              {allGeofence.map((geofence) => (
-                <option key={geofence._id} value={geofence._id}>
-                  {geofence.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === service.geofenceId
+              )}
+              onChange={(option) =>
+                setService({
+                  ...service,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded focus:outline-none w-2/3"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPlacement="auto"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
           <div className="flex">
             <label className="mt-5">Image (342px x 160px)</label>

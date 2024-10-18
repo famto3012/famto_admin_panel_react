@@ -1,8 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 const EditCustomerSurgeModal = ({
   isVisible,
@@ -24,6 +25,7 @@ const EditCustomerSurgeModal = ({
     waitingTime: "",
     geofenceId: "",
   });
+
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -59,14 +61,20 @@ const EditCustomerSurgeModal = ({
     }
   }, [token, navigate, currentEdit, BASE_URL]);
 
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
   const inputChange = (e) => {
     setCustomerSurge({ ...customerSurge, [e.target.name]: e.target.value });
   };
-  const formSubmit = async (e) => {
+
+  const handleEditSurge = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
-      console.log("customerSurge", customerSurge);
+
       const editResponse = await axios.put(
         `${BASE_URL}/admin/customer-surge/edit-customer-surge/${currentEdit}`,
         customerSurge,
@@ -102,8 +110,8 @@ const EditCustomerSurgeModal = ({
     } finally {
       setConfirmLoading(false);
     }
-    console.log(customerSurge);
   };
+
   return (
     <Modal
       title="Edit Customer Surge"
@@ -111,8 +119,11 @@ const EditCustomerSurgeModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
-      <form onSubmit={formSubmit}>
+      <form onSubmit={handleEditSurge}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
@@ -188,21 +199,34 @@ const EditCustomerSurgeModal = ({
             <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
               Geofence <span className="text-red-500">*</span>
             </label>
-            <select
-              name="geofenceId"
-              value={customerSurge.geofenceId}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              onChange={inputChange}
-            >
-              <option hidden value="">
-                Geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={geofenceOptions.find(
+                (option) => option.value === customerSurge.geofenceId
+              )}
+              isMulti={false}
+              isClearable={true}
+              isSearchable={true}
+              onChange={(option) =>
+                setCustomerSurge({
+                  ...customerSurge,
+                  geofenceId: option.value,
+                })
+              }
+              options={geofenceOptions}
+              placeholder="Select geofence"
+              menuPortalTarget={document.body}
+              menuPlacement="top"
+              menuPosition="fixed"
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                menu: (provided) => ({
+                  ...provided,
+                  maxHeight: "300px",
+                  overflowY: "auto",
+                }),
+              }}
+            />
           </div>
         </div>
         <div className="flex justify-end gap-4 mt-6">

@@ -1,7 +1,8 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
+import Select from "react-select";
 
 const AddCustomerSurgeModal = ({
   isVisible,
@@ -26,7 +27,12 @@ const AddCustomerSurgeModal = ({
     setCustomerSurge({ ...customerSurge, [e.target.name]: e.target.value });
   };
 
-  const formSubmit = async (e) => {
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const handleAddSurge = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
@@ -74,8 +80,11 @@ const AddCustomerSurgeModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
-      <form onSubmit={formSubmit}>
+      <form onSubmit={handleAddSurge}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
@@ -151,21 +160,34 @@ const AddCustomerSurgeModal = ({
             <label className="w-1/3 text-gray-500" htmlFor="geofenceId">
               Geofence <span className="text-red-500">*</span>
             </label>
-            <select
-              name="geofenceId"
-              value={customerSurge.geofenceId}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              onChange={inputChange}
-            >
-              <option hidden value="">
-                Geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-2/3 outline-none focus:outline-none"
+              value={geofenceOptions.find(
+                (option) => option.value === customerSurge.geofenceId
+              )}
+              isMulti={false}
+              isClearable={true}
+              isSearchable={true}
+              onChange={(option) =>
+                setCustomerSurge({
+                  ...customerSurge,
+                  geofenceId: option.value,
+                })
+              }
+              options={geofenceOptions}
+              placeholder="Select geofence"
+              menuPortalTarget={document.body}
+              menuPlacement="top"
+              menuPosition="fixed"
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                menu: (provided) => ({
+                  ...provided,
+                  maxHeight: "300px",
+                  overflowY: "auto",
+                }),
+              }}
+            />
           </div>
         </div>
         <div className="flex justify-end gap-4 mt-6">

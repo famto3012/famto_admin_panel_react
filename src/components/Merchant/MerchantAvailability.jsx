@@ -1,3 +1,6 @@
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 const MerchantAvailability = ({ detail, onDataChange }) => {
   const daysOfWeek = [
     "monday",
@@ -164,7 +167,36 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                   {availability?.specificDays?.[day]?.specificTime && (
                     <>
                       <td>
-                        <input
+                        <DatePicker
+                          selected={
+                            availability?.specificDays?.[day]?.startTime
+                              ? new Date(
+                                  `1970-01-01T${availability.specificDays[day].startTime}:00`
+                                )
+                              : null
+                          }
+                          onChange={(time) =>
+                            handleTimeChange(
+                              day,
+                              "startTime",
+                              time
+                                ? time.toLocaleTimeString("en-US", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false,
+                                  })
+                                : ""
+                            )
+                          }
+                          showTimeSelect
+                          showTimeSelectOnly
+                          timeIntervals={15}
+                          timeCaption="Time"
+                          dateFormat="h:mm aa"
+                          placeholderText="Start time"
+                          className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
+                        />
+                        {/* <input
                           type="time"
                           name={`startTime`}
                           value={
@@ -174,10 +206,40 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                             handleTimeChange(day, "startTime", e.target.value)
                           }
                           className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:outline-none block w-full p-2.5"
-                        />
+                        /> */}
                       </td>
                       <td>
-                        <input
+                        <DatePicker
+                          selected={
+                            availability?.specificDays?.[day]?.endTime
+                              ? new Date(
+                                  `1970-01-01T${availability.specificDays[day].endTime}:00`
+                                )
+                              : null
+                          }
+                          onChange={(time) =>
+                            handleTimeChange(
+                              day,
+                              "endTime",
+                              time
+                                ? time.toLocaleTimeString("en-US", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false,
+                                  })
+                                : ""
+                            )
+                          }
+                          showTimeSelect
+                          showTimeSelectOnly
+                          timeIntervals={15}
+                          timeCaption="Time"
+                          dateFormat="h:mm aa"
+                          placeholderText="End time"
+                          className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit"
+                        />
+
+                        {/* <input
                           type="time"
                           name={`endTime`}
                           value={
@@ -187,7 +249,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                             handleTimeChange(day, "endTime", e.target.value)
                           }
                           className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:outline-none block w-full p-2.5"
-                        />
+                        /> */}
                       </td>
                     </>
                   )}

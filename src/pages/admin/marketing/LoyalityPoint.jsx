@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { Switch } from "antd";
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import { RiEqualFill } from "react-icons/ri";
 import CurrencyRupeeOutlined from "@mui/icons-material/CurrencyRupeeOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
@@ -10,13 +8,17 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import GIFLoader from "../../../components/GIFLoader";
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const LoyalityPoint = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
   const toast = useToast();
+
   const [loyaltyData, setLoyaltyData] = useState({
     earningCriteriaRupee: "",
     earningCriteriaPoint: "",
@@ -44,10 +46,7 @@ const LoyalityPoint = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.status === 200) {
-          setLoyaltyData(response.data.data);
-          console.log(response.data.data);
-        }
+        if (response.status === 200) setLoyaltyData(response.data.data);
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
       } finally {
@@ -61,10 +60,11 @@ const LoyalityPoint = () => {
     setLoyaltyData({ ...loyaltyData, [e.target.name]: e.target.value });
   };
 
-  const formSubmit = async (e) => {
+  const handleUpdateLoyalty = async (e) => {
     e.preventDefault();
     try {
-      console.log("loyaltyData", loyaltyData);
+      setIsConfirming(true);
+
       const updateResponse = await axios.post(
         `${BASE_URL}/admin/loyalty-point/add-loyalty-point`,
         loyaltyData,
@@ -77,7 +77,6 @@ const LoyalityPoint = () => {
       );
 
       if (updateResponse.status === 201) {
-        console.log("update data", updateResponse.data.message);
         toast({
           title: "Success",
           description: "Updated successfully.",
@@ -87,9 +86,16 @@ const LoyalityPoint = () => {
         });
       }
     } catch (err) {
-      console.error(`Error in fetching data: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in updating loyalty criteria",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsConfirming(false);
     }
-    console.log(loyaltyData);
   };
 
   const handleCancel = () => {
@@ -107,12 +113,9 @@ const LoyalityPoint = () => {
     });
   };
 
-  // Updated status function
-
-  const onChange = async (name, checked) => {
-    setLoyaltyData({ ...loyaltyData, [name]: checked });
+  const changeStatus = async () => {
     try {
-      const statusResponse = await axios.patch(
+      const response = await axios.patch(
         `${BASE_URL}/admin/loyalty-point`,
         {},
         {
@@ -120,11 +123,29 @@ const LoyalityPoint = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (statusResponse.status == 200) {
-        setLoyaltyData(statusResponse.data.data);
+
+      if (response.status == 200) {
+        setLoyaltyData({
+          ...loyaltyData,
+          status: response.data.data,
+        });
+
+        toast({
+          title: "Success",
+          description: "Status updated successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch {
-      console.error(`Error in fetching data: ${err}`);
+      toast({
+        title: "Error",
+        description: "Error in updating status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -142,7 +163,7 @@ const LoyalityPoint = () => {
             <div className="flex items-center justify-between mx-10 mt-5">
               <h1 className="text-xl font-semibold">Loyality Point</h1>
               <Switch
-                onChange={(checked) => onChange("status", checked)}
+                onChange={changeStatus}
                 name="status"
                 checked={loyaltyData?.status || false}
               />
@@ -155,7 +176,7 @@ const LoyalityPoint = () => {
               amount above which loyalty points can be applied and many more.
             </p>
             <div className="bg-white p-10 rounded-lg mx-11 mt-7">
-              <form onSubmit={formSubmit}>
+              <form onSubmit={handleUpdateLoyalty}>
                 <div className="flex flex-col gap-6">
                   <div className="flex items-center relative">
                     <label
@@ -258,8 +279,9 @@ const LoyalityPoint = () => {
                       name="redemptionCriteriaPoint"
                       onChange={handleInputChange}
                     />
-                     <span className="ml-3 font-bold">points</span><span className="ml-3 mr-3 font-bold">=</span>
-                     <span className=" text-black rounded-md me-4">
+                    <span className="ml-3 font-bold">points</span>
+                    <span className="ml-3 mr-3 font-bold">=</span>
+                    <span className=" text-black rounded-md me-4">
                       <CurrencyRupeeOutlined />
                     </span>
                     <input
@@ -335,7 +357,7 @@ const LoyalityPoint = () => {
                       className="bg-teal-700 text-white py-2 px-10 rounded-md outline-none focus:outline-none"
                       type="submit"
                     >
-                      Save
+                      {isConfirming ? `Saving...` : `Save`}
                     </button>
                   </div>
                 </div>

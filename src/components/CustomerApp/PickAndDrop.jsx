@@ -317,7 +317,7 @@ const PickAndDrop = () => {
   };
 
   return (
-    <div>
+    <div className="pb-[30px]">
       <div className="mt-10 justify-between flex mx-5">
         <h1>Pick and drop banners (info)</h1>
         <p className="w-[45rem] text-gray-500">

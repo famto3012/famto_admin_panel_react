@@ -1,17 +1,21 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import { ArrowBack, FilterAltOutlined } from "@mui/icons-material";
-import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Modal } from "antd";
-import GIFLoader from "../../../components/GIFLoader";
-import { FaCalendarAlt } from "react-icons/fa";
 import Select from "react-select";
+import { Modal } from "antd";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useToast } from "@chakra-ui/react";
+
+import { BellOutlined, SearchOutlined } from "@ant-design/icons";
+import { ArrowBack } from "@mui/icons-material";
+import { FaCalendarAlt } from "react-icons/fa";
+
+import Sidebar from "../../../components/Sidebar";
+import { UserContext } from "../../../context/UserContext";
+import GIFLoader from "../../../components/GIFLoader";
 import { formatDate } from "../../../utils/formatter";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -37,75 +41,95 @@ const Subscriptioncustomer = () => {
 
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const customerButtonRef = useRef(null);
   const merchantButtonRef = useRef(null);
 
   const navigate = useNavigate();
+  const toast = useToast();
   const { token, role } = useContext(UserContext);
 
   useEffect(() => {
-    if (!token || role !== "Admin") {
+    if (!token) {
       navigate("/auth/login");
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
+    if (role === "Merchant") setSelectedOption("Merchant");
 
-        const [merchantResponse, customerResponse, allmerchantResponse] =
-          await Promise.all([
-            axios.get(
-              `${BASE_URL}/admin/subscription-payment/merchant-subscription-log`,
-              {
-                withCredentials: true,
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            ),
-            axios.get(
-              `${BASE_URL}/admin/subscription-payment/customer-subscription-log`,
-              {
-                withCredentials: true,
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            ),
-            axios.get(`${BASE_URL}/merchants/admin/all-merchant-drop-down`, {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
+    fetchMerchantLog();
 
-        if (merchantResponse.status === 200) {
-          setMerchantlog(merchantResponse.data.subscriptionLogs || []);
-          console.log("Merchant", merchantResponse.data);
-        }
-        if (customerResponse.status === 200) {
-          setCustomerlog(customerResponse.data.subscriptionLogs || []);
-          console.log("Customer", customerResponse.data);
-        }
-        if (allmerchantResponse.status === 200) {
-          setMerchants(allmerchantResponse.data.data);
-        }
-      } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
+    if (role === "Admin") {
+      fetchCustomerLog();
+      fetchAllMerchants();
+    }
   }, [token, role, navigate]);
+
+  const fetchMerchantLog = async () => {
+    try {
+      console.log("Fetching logs");
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/subscription-payment/merchant-subscription-log`
+          : `${BASE_URL}/merchant/subscription-payment/merchant-subscription-log/${userId}`;
+
+      const response = await axios.get(endPoint, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        setMerchantlog(response.data.data || []);
+        console.log("Merchant", response.data);
+      }
+    } catch (err) {
+      console.error(`Error in fetching merchant log: ${err}`);
+    }
+  };
+
+  const fetchCustomerLog = async () => {
+    try {
+      console.log("Fetching cus logs");
+      const response = await axios.get(
+        `${BASE_URL}/admin/subscription-payment/customer-subscription-log`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setCustomerlog(response.data.data || []);
+        console.log("Customer", response.data);
+      }
+    } catch (err) {
+      console.error(`Error in fetching customer log: ${err}`);
+    }
+  };
+
+  const fetchAllMerchants = async () => {
+    try {
+      console.log("Fetching all merchnats");
+      const response = await axios.get(
+        `${BASE_URL}/merchants/admin/all-merchant-drop-down`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        setMerchants(response.data.data);
+      }
+    } catch (err) {
+      console.error(`Error in fetching all merchants: ${err}`);
+    }
+  };
 
   const merchantOptions = merchant?.map((merchant) => ({
     label: merchant.merchantName,
     value: merchant._id,
   }));
 
-  // const handleToggle = () => setIsSubscription(!isSubscription);
-  const handleToggle = (value) => {
-    setSelectedOption(value);
-  };
+  const handleToggle = (value) => setSelectedOption(value);
 
   const onSearchCustomerChange = (e) => {
     const searchService = e.target.value;
@@ -190,11 +214,9 @@ const Subscriptioncustomer = () => {
         );
         if (response.status === 200) {
           setMerchantlog(response.data.data);
-          console.log(response.data.data);
         }
       } catch (err) {
         console.log(`Error in fetching data`, err);
-        setMerchantlog([]);
       }
     };
 
@@ -225,7 +247,7 @@ const Subscriptioncustomer = () => {
         }
       );
       if (response.status === 200) {
-        setMerchantlog(response.data.combinedData);
+        setMerchantlog(response.data.data);
       }
     } catch (err) {
       console.log(`Error in fetching data`, err);
@@ -239,7 +261,7 @@ const Subscriptioncustomer = () => {
     if (searchService !== "") {
       handleSearchMerchantChangeFilter(searchService);
     } else {
-      setMerchantlog([]);
+      fetchMerchantLog();
     }
   };
 
@@ -255,6 +277,7 @@ const Subscriptioncustomer = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (searchResponse.status === 200) {
         setMerchantlog(searchResponse.data || []);
       }
@@ -273,6 +296,8 @@ const Subscriptioncustomer = () => {
 
   const handleChange = async (id) => {
     try {
+      setIsConfirming(true);
+
       const response = await axios.put(
         `${BASE_URL}/admin/subscription-payment/merchant-subscription-status-update/${id}`,
         {},
@@ -293,9 +318,24 @@ const Subscriptioncustomer = () => {
               : merchant
           )
         );
+        toast({
+          title: "Success",
+          description: `Payment approved successfully`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
-      console.error(`Error in handleApprove: ${err.message}`);
+      toast({
+        title: "Error",
+        description: `Error in approving payment`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -335,7 +375,7 @@ const Subscriptioncustomer = () => {
 
             <div className="mx-3 mt-5">
               <div className="flex justify-between items-center gap-3 ml-2 ">
-                <div>
+                {role === "Admin" && (
                   <label className="inline-flex outline-none cursor-pointer bg-transparent border-2 border-black p-1 rounded-full">
                     <span
                       onClick={() => handleToggle("Customer")}
@@ -357,10 +397,10 @@ const Subscriptioncustomer = () => {
                       Merchant
                     </span>
                   </label>
-                </div>
+                )}
 
                 {selectedOption === "Customer" ? (
-                  <div className="flex gap-7">
+                  <div className="flex gap-7 items-center">
                     <div className="relative flex items-center">
                       <button
                         ref={customerButtonRef}
@@ -388,7 +428,7 @@ const Subscriptioncustomer = () => {
                       )}
                     </div>
 
-                    <div className="relative flex justify-end">
+                    <div className="flex justify-end">
                       <input
                         type="search"
                         name="search"
@@ -397,28 +437,24 @@ const Subscriptioncustomer = () => {
                         value={searchCustomer}
                         onChange={onSearchCustomerChange}
                       />
-                      <button
-                        type="submit"
-                        className="absolute right-0 mt-2 mr-4 "
-                      >
-                        <SearchOutlined className="text-xl text-gray-500" />
-                      </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex gap-7">
-                    <Select
-                      className="w-[200px] px-2 py-2 rounded-lg outline-none focus:outline-none "
-                      value={merchantOptions.find(
-                        (option) => option.value === merchantFilter
-                      )}
-                      isMulti={false}
-                      isSearchable={true}
-                      onChange={(option) => onMerchantChange(option)}
-                      options={merchantOptions}
-                      placeholder="Select Merchant"
-                      isClearable={false}
-                    />
+                  <div className="flex gap-7 items-center">
+                    {role === "Admin" && (
+                      <Select
+                        className="w-[200px] px-2 py-2 rounded-lg outline-none focus:outline-none "
+                        value={merchantOptions.find(
+                          (option) => option.value === merchantFilter
+                        )}
+                        isMulti={false}
+                        isSearchable={true}
+                        onChange={(option) => onMerchantChange(option)}
+                        options={merchantOptions}
+                        placeholder="Select Merchant"
+                        isClearable={false}
+                      />
+                    )}
 
                     <div className="relative flex items-center">
                       <button
@@ -447,31 +483,27 @@ const Subscriptioncustomer = () => {
                       )}
                     </div>
 
-                    <div className="relative flex justify-end">
-                      <input
-                        type="search"
-                        name="search"
-                        placeholder="Search merchant name"
-                        className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
-                        value={searchMerchant}
-                        onChange={onSearchMerchantChange}
-                      />
-                      <button
-                        type="submit"
-                        className="absolute right-0 mt-2 mr-4 "
-                      >
-                        <SearchOutlined className="text-xl text-gray-500" />
-                      </button>
-                    </div>
+                    {role === "Admin" && (
+                      <div className="flex justify-end">
+                        <input
+                          type="search"
+                          name="search"
+                          placeholder="Search merchant name"
+                          className="bg-white h-10 p-3 rounded-full w-60 text-sm focus:outline-none "
+                          value={searchMerchant}
+                          onChange={onSearchMerchantChange}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
             {selectedOption === "Customer" ? (
-              <div className="overflow-auto mt-[40px]">
+              <div className="overflow-auto mt-[40px] max-h-[31rem]">
                 <table className="text-start w-full ">
-                  <thead>
+                  <thead className=" sticky top-0 left-0">
                     <tr>
                       {[
                         "Customer Name",
@@ -498,6 +530,7 @@ const Subscriptioncustomer = () => {
                         </td>
                       </tr>
                     )}
+
                     {!isTableLoading && customerlog?.length === 0 && (
                       <tr>
                         <td colSpan={6}>
@@ -507,12 +540,12 @@ const Subscriptioncustomer = () => {
                         </td>
                       </tr>
                     )}
+
                     {!isTableLoading &&
                       customerlog?.map((customerlog) => (
                         <tr
                           key={customerlog._id}
-                          className="align-middle border-b border-gray-300 text-center h-2092.3
-                    "
+                          className="align-middle border-b border-gray-300 text-center even:bg-white h-[70px]"
                         >
                           <td className="p-3">{customerlog.user}</td>
                           <td>{customerlog.userId}</td>
@@ -528,9 +561,9 @@ const Subscriptioncustomer = () => {
                 </table>
               </div>
             ) : (
-              <div className="overflow-auto mt-[40px]  pl-[10px]">
+              <div className="overflow-auto mt-[40px] pl-[10px] max-h-[31rem]">
                 <table className="text-start w-full ">
-                  <thead>
+                  <thead className=" sticky top-0 left-0">
                     <tr>
                       {[
                         "Merchant Name",
@@ -570,7 +603,7 @@ const Subscriptioncustomer = () => {
                       merchantlog?.map((merchantlog) => (
                         <tr
                           key={merchantlog._id}
-                          className="align-middle border-b border-gray-300 text-center h-20"
+                          className="align-middle border-b border-gray-300 text-center even:bg-white h-[70px]"
                         >
                           <td>{merchantlog.user}</td>
                           <td>{merchantlog.plan}</td>
@@ -590,6 +623,11 @@ const Subscriptioncustomer = () => {
                             )}
 
                             <Modal
+                              title={
+                                <span className="font-[500] text-[16px]">
+                                  Confirm?
+                                </span>
+                              }
                               onCancel={handleCancel}
                               footer={null}
                               open={
@@ -597,19 +635,18 @@ const Subscriptioncustomer = () => {
                               }
                               centered
                             >
-                              <p className="font-semibold text-[18px] mb-5">
-                                Are you sure you want to confirm?
+                              <p className="text-[14px] my-3">
+                                Do you want to confirm?
                               </p>
                               <div className="flex justify-end">
                                 <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold">
-                                  NO
+                                  Cancel
                                 </button>
                                 <button
                                   className="bg-teal-900 px-5 py-1 rounded-md ml-3 text-white"
                                   onClick={() => handleChange(merchantlog._id)}
                                 >
-                                  {" "}
-                                  YES
+                                  {isConfirming ? `Confirming...` : `Confirm`}
                                 </button>
                               </div>
                             </Modal>

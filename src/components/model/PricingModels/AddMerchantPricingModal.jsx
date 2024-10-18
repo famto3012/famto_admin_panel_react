@@ -12,7 +12,7 @@ const AddMerchantPricingModal = ({
   BASE_URL,
 }) => {
   const toast = useToast();
-  const [confirmLoading,setConfirmLoading]= useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [merchantPricing, setMerchantPricing] = useState({
     ruleName: "",
     baseFare: "",
@@ -32,7 +32,7 @@ const AddMerchantPricingModal = ({
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      setConfirmLoading(true)
+      setConfirmLoading(true);
       console.log("merchantpricing", merchantPricing);
       const addResponse = await axios.post(
         `${BASE_URL}/admin/merchant-pricing/add-merchant-pricing`,
@@ -67,7 +67,7 @@ const AddMerchantPricingModal = ({
         isClosable: true,
       });
     } finally {
-      setConfirmLoading(false)
+      setConfirmLoading(false);
     }
 
     console.log(merchantPricing);
@@ -79,6 +79,9 @@ const AddMerchantPricingModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
       <form onSubmit={submitAction}>
         <div className="flex flex-col gap-4  max-h-[30rem] overflow-auto">
@@ -251,7 +254,7 @@ const AddMerchantPricingModal = ({
             className="bg-teal-700 text-white py-2 px-4 rounded-md"
             type="submit"
           >
-           {confirmLoading ? "Adding..." : "Add"}
+            {confirmLoading ? "Adding..." : "Add"}
           </button>
         </div>
       </form>

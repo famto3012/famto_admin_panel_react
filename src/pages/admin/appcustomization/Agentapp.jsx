@@ -80,8 +80,6 @@ const Agentapp = () => {
   const submitAction = async (e) => {
     e.preventDefault();
     try {
-      console.log("formData", formData);
-
       setConfirmLoading(true);
       const dataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
@@ -133,13 +131,12 @@ const Agentapp = () => {
     } finally {
       setConfirmLoading(false);
     }
-    console.log(formData);
   };
 
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setIsInnerVisible(true);
-      setCrop(null); // Makes crop preview update between images.
+      setCrop(null);
       const reader = new FileReader();
       reader.addEventListener("load", () =>
         setImgSrc(reader.result?.toString() || "")
@@ -149,15 +146,7 @@ const Agentapp = () => {
     }
   }
 
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    // setSelectedFile(croppedFile)// Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
-
-  const handleModalClose = () => {
-    // setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  const handleCropComplete = (croppedFile) => setCroppedFile(croppedFile);
 
   return (
     <div>
@@ -238,6 +227,7 @@ const Agentapp = () => {
                 )}
               </div>
             </div>
+
             <div className="flex justify-between mt-10 mx-10">
               <h1 className="w-[350px]">Sign up and Sign in settings</h1>
               <div className="flex flex-col ">
@@ -347,26 +337,22 @@ const Agentapp = () => {
                 </div>
               </div>
             </div>
+
             {/* <div className="flex justify-between mt-16 border-t-2 border-gray-200 pt-10">
-          <h1 className="mx-10">Agent login restriction</h1>
-          <p className="text-gray-500 mr-[70px]">
-            Enable this, to restrict Agent from accessing the platform without
-            logging in into the{" "}
-            <span className="flex justtify-start">
-              platform. (Make sure your apps are updated).
-            </span>
-          </p>
-          <div className="mx-10">
-            <Switch />
-          </div>
-        </div> */}
+              <h1 className="mx-10">Agent login restriction</h1>
+              <p className="text-gray-500 mr-[70px]">
+                Enable this, to restrict Agent from accessing the platform
+                without logging in into the{" "}
+                <span className="flex justtify-start">
+                  platform. (Make sure your apps are updated).
+                </span>
+              </p>
+              <div className="mx-10">
+                <Switch />
+              </div>
+            </div> */}
+
             <div className="flex justify-end gap-4 mt-14 px-10 bg-gray-100">
-              <button
-                className="bg-cyan-50 py-2 px-4 rounded-md my-10"
-                type="button"
-              >
-                Cancel
-              </button>
               <button
                 className="bg-teal-800 text-white py-2 px-4 rounded-md my-10"
                 type="submit"

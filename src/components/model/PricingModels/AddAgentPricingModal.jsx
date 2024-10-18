@@ -1,7 +1,8 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
+import Select from "react-select";
 
 const AddAgentPricingModal = ({
   isVisible,
@@ -26,11 +27,17 @@ const AddAgentPricingModal = ({
     fareAfterMinOrderNumber: "",
     geofenceId: "",
   });
+
   const handleInputChange = (e) => {
     setAgentPricing({ ...agentPricing, [e.target.name]: e.target.value });
   };
 
-  const submitAction = async (e) => {
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
+
+  const handleAddPricing = async (e) => {
     e.preventDefault();
     try {
       setConfirmLoading(true);
@@ -78,8 +85,11 @@ const AddAgentPricingModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
+      styles={{
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
+      }}
     >
-      <form onSubmit={submitAction}>
+      <form onSubmit={handleAddPricing}>
         <div className="flex flex-col max-h-[30rem] overflow-auto gap-4">
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="ruleName">
@@ -249,21 +259,34 @@ const AddAgentPricingModal = ({
             <label className="w-1/3 text-gray-500" htmlFor="geofence">
               Geofence <span className="text-red-500">*</span>
             </label>
-            <select
-              name="geofenceId"
-              value={agentPricing.geofenceId}
-              className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
-              onChange={handleInputChange}
-            >
-              <option hidden value="">
-                Geofence
-              </option>
-              {geofence.map((geoFence) => (
-                <option value={geoFence._id} key={geoFence._id}>
-                  {geoFence.name}
-                </option>
-              ))}
-            </select>
+
+            <Select
+              options={geofenceOptions}
+              value={geofenceOptions.find(
+                (option) => option.value === agentPricing.geofenceId
+              )}
+              onChange={(option) =>
+                setAgentPricing({
+                  ...agentPricing,
+                  geofenceId: option.value,
+                })
+              }
+              className="rounded outline-none focus:outline-none w-2/3"
+              placeholder="Select geofence"
+              isSearchable={true}
+              isMulti={false}
+              menuPlacement="auto"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
         </div>
 

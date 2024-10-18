@@ -454,7 +454,7 @@ const AlertNotification = () => {
             <div>
               <p className="font-bold mt-5 mx-[30px]">Alert Notification log</p>
               <div className="bg-white mx-9 rounded-lg mt-5 flex p-8 justify-between">
-              <Select
+                <Select
                   options={userTypeOptions}
                   value={userTypeOptions.find(
                     (option) => option.value === searchType
@@ -476,20 +476,16 @@ const AlertNotification = () => {
                   }}
                 />
                 <div>
-                  <FilterAltOutlinedIcon className="text-gray-500" />
                   <input
                     type="search"
                     name="search"
                     placeholder="Search alert notification name"
-                    className="bg-gray-100 h-10 px-5 pr-10 rounded-full ml-5 w-72 text-sm focus:outline-none"
+                    className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px] ml-5 w-72"
                     onChange={handleTitleChange}
                   />
-                  <button type="submit" className="absolute right-20 mt-2">
-                    <SearchOutlined className="text-xl text-gray-600" />
-                  </button>
                 </div>
               </div>
-              <table className="w-full mt-5">
+              <table className="w-full mt-5 ">
                 <thead>
                   <tr>
                     {["Title", "ID", "Description", "Image", "Action"].map(
@@ -531,13 +527,18 @@ const AlertNotification = () => {
                             <RiDeleteBinLine className="text-red-700 rounded-lg bg-red-100 p-2 text-[35px]" />
                           </button>
                           <Modal
+                            title={
+                              <span className="font-[500] text-[16px]">
+                                Delete?
+                              </span>
+                            }
                             onCancel={() => showModalCancelTask(alertItem._id)}
                             open={visibleTaskModal[alertItem._id] || false}
                             footer={null}
                             centered
                           >
-                            <p className="font-semibold text-[18px] mb-5">
-                              Are you sure you want to delete?
+                            <p className="text-[14px] mb-5">
+                              Do you want to delete?
                             </p>
                             <div className="flex justify-end">
                               <button

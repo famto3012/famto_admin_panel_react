@@ -12,7 +12,10 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import { Spinner, useToast } from "@chakra-ui/react";
 import CropImage from "../../../components/CropImage";
-import { userTypeForPushNotificationOptions, userTypeOptions } from "../../../utils/DefaultData";
+import {
+  userTypeForPushNotificationOptions,
+  userTypeOptions,
+} from "../../../utils/DefaultData";
 import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -90,6 +93,11 @@ const PushNotification = () => {
 
     fetchData();
   }, [token, role, navigate]);
+
+  const geofenceOptions = geofence?.map((geofence) => ({
+    label: geofence.name,
+    value: geofence._id,
+  }));
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -380,22 +388,30 @@ const PushNotification = () => {
               <label className="mt-10 ml-10">
                 Geofence<span className="text-red-500 ms-2">*</span>
               </label>
-              <select
-                name="geofenceId"
-                value={formData.geofenceId}
-                className="border-2 border-gray-300 rounded ml-52 mt-10  w-96 p-2 focus:outline-none"
-                onChange={handleInputChange}
-              >
-                <option hidden value="">
-                  {" "}
-                  Geofence
-                </option>
-                {geofence?.map((geoFence) => (
-                  <option value={geoFence._id} key={geoFence._id}>
-                    {geoFence.name}
-                  </option>
-                ))}
-              </select>
+
+              <Select
+                options={geofenceOptions}
+                value={geofenceOptions.find(
+                  (option) => option.value === formData.geofenceId
+                )}
+                onChange={(option) =>
+                  setFormData({ ...formData, geofenceId: option.value })
+                }
+                className=" rounded ml-52 mt-10 w-96 focus:outline-none"
+                placeholder="Select geofence"
+                isSearchable={true}
+                isMulti={false}
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
+              />
             </div>
             <div className="flex">
               <label className="mt-16 ml-10">
@@ -507,18 +523,14 @@ const PushNotification = () => {
             }}
           />
           <div>
-            <FilterAltOutlined className="text-gray-500" />
             <input
               type="search"
               name="search"
-              placeholder="search push notification name"
-              className="bg-gray-100 h-10 px-5 pr-10 rounded-full ml-5 w-72 text-sm focus:outline-none"
+              placeholder="Search push notification name"
+              className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px] ml-5 w-72"
               value={searchFilter}
               onChange={onSearchChange}
             />
-            <button type="submit" className="absolute right-16 mt-2">
-              <SearchOutlined className="text-xl text-gray-600" />
-            </button>
           </div>
         </div>
         <table className="w-full mt-10 mb-24">

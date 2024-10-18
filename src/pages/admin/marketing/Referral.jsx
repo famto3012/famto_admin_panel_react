@@ -298,7 +298,8 @@ const Referral = () => {
 
               <div className="flex">
                 <label className="mt-10 w-1/2">
-                  Referee discount<span className="text-red-600 ml-2">*</span>
+                  Referee description
+                  <span className="text-red-600 ml-2">*</span>
                 </label>
                 <input
                   type="text"

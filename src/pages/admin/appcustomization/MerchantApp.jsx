@@ -350,26 +350,20 @@ const MerchantApp = () => {
             </div>
 
             {/* <div className="flex justify-between mt-16 border-t-2 pt-10 border-gray-300">
-          <h1 className="mx-10">Merchant login restriction</h1>
-          <p className="text-gray-500 mr-[100px]">
-            Enable this, to restrict Agent from accessing the platform without
-            logging in into the{" "}
-            <span className="flex justtify-start">
-              platform. (Make sure your apps are updated).
-            </span>
-          </p>
-          <div className="mx-10">
-            <Switch />
-          </div>
-        </div> */}
+              <h1 className="mx-10">Merchant login restriction</h1>
+              <p className="text-gray-500 mr-[100px]">
+                Enable this, to restrict Agent from accessing the platform
+                without logging in into the{" "}
+                <span className="flex justtify-start">
+                  platform. (Make sure your apps are updated).
+                </span>
+              </p>
+              <div className="mx-10">
+                <Switch />
+              </div>
+            </div> */}
 
             <div className="flex justify-end gap-4 mt-16 px-10 bg-gray-100">
-              <button
-                className="bg-cyan-50 py-2 px-4 rounded-md my-10"
-                type="button"
-              >
-                Cancel
-              </button>
               <button
                 className="bg-teal-700 text-white py-2 px-4 rounded-md my-10"
                 type="submit"
