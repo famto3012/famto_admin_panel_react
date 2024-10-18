@@ -5,14 +5,13 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { Pagination } from "@mui/material";
-import { Spinner, useToast } from "@chakra-ui/react";
+import { Badge, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { useSocket } from "../../../context/SocketContext";
 import { Modal } from "antd";
 import Select from "react-select";
@@ -42,6 +41,7 @@ const Orders = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
+  const [unSeenCount, setUnSeenCount] = useState(0);
 
   const { token, role } = useContext(UserContext);
   const { socket } = useSocket();
@@ -126,6 +126,10 @@ const Orders = () => {
         setOrders(response.data.data);
         console.log("Order", response.data.data);
         setPagination(response.data.pagination);
+        if (role === "Merchant" && deliveryOption === false) {
+          setUnSeenCount(response.data.notSeen);
+          console.log("Unseen", response.data.notSeen);
+        }
       }
     } catch (err) {
       toast({
@@ -492,36 +496,49 @@ const Orders = () => {
         <nav className="p-5">
           <GlobalSearch />
         </nav>
-
         <div className="flex justify-between items-center px-[30px] ">
-          <div className="relative w-fit border-2 border-black rounded-full ">
-            <label
-              htmlFor="Toggle"
-              className="inline-flex items-center p-1 outline-2 outline-gray-500 rounded-3xl border-gray-700 bg-gray-100 cursor-pointer"
-            >
-              <input
-                id="Toggle"
-                type="checkbox"
-                className="hidden peer rounded-3xl"
-                checked={deliveryOption}
-                onChange={handleToggle}
-              />
-              <span
-                className={`px-3 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
-                  deliveryOption ? "bg-teal-800 text-white" : "bg-gray-100"
-                }`}
+          <Stack direction="row">
+            <div className="relative w-fit border-2 border-black rounded-full">
+              {/* Toggle Switch */}
+              <label
+                htmlFor="Toggle"
+                className="inline-flex items-center p-1 outline-2 outline-gray-500 rounded-3xl border-gray-700 bg-gray-100 cursor-pointer relative"
               >
-                Orders
-              </span>
-              <span
-                className={`px-3 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
-                  deliveryOption ? "bg-gray-100" : "bg-teal-800 text-white"
-                }`}
-              >
-                Scheduled Orders
-              </span>
-            </label>
-          </div>
+                <input
+                  id="Toggle"
+                  type="checkbox"
+                  className="hidden peer rounded-3xl"
+                  checked={deliveryOption}
+                  onChange={handleToggle}
+                />
+                <span
+                  className={`px-3 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
+                    deliveryOption ? "bg-teal-800 text-white" : "bg-gray-100"
+                  }`}
+                >
+                  Orders
+                </span>
+                <span
+                  className={`px-3 py-2 rounded-3xl transition-all duration-900 ease-in-out ${
+                    deliveryOption ? "bg-gray-100" : "bg-teal-800 text-white"
+                  }`}
+                >
+                  Scheduled Orders
+                </span>
+              </label>
+
+              {/* Badge positioned absolutely inside this div */}
+              {!deliveryOption && role === "Merchant" && unSeenCount !== 0 && (
+                <Badge
+                  variant="solid"
+                  colorScheme="red"
+                  className="absolute top-[-8px] right-[-4px] z-10 h-[21px] w-[21px] rounded-full flex justify-center items-center"
+                >
+                  <span className="text-[16px]">{unSeenCount}</span>
+                </Badge>
+              )}
+            </div>
+          </Stack>
 
           <div className="flex space-x-2 justify-end">
             <button
@@ -686,9 +703,15 @@ const Orders = () => {
                   <tr
                     key={order._id}
                     className={`align-middle border-b border-gray-300 ${
-                      order.orderStatus === "Pending" && deliveryOption
-                        ? "bg-red-500 text-white"
-                        : "text-black"
+                      deliveryOption
+                        ? order.orderStatus === "Pending"
+                          ? "bg-red-500 text-white"
+                          : "text-black"
+                        : (order.isViewed &&
+                            order.deliveryMode === "Home Delivery") ||
+                          (order.isViewed && order.deliveryMode === "Take Away")
+                        ? "text-black"
+                        : "bg-red-500 text-white"
                     }`}
                   >
                     <td

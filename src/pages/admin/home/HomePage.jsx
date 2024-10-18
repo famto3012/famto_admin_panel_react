@@ -178,6 +178,7 @@ const HomePage = () => {
         if (response.status === 200) {
           if (role === "Admin") {
             setSales(convertRevenueDataToSalesChartFormat(response.data));
+            setData(convertRevenueDataToSalesChartFormat(response.data));
             setMerchants(
               convertRevenueDataToMerchantChartFormat(response.data)
             );
@@ -189,6 +190,7 @@ const HomePage = () => {
             );
           } else {
             setSales(convertRevenueDataToSalesChartFormat(response.data));
+            setData(convertRevenueDataToSalesChartFormat(response.data));
             setCommission(
               convertRevenueDataToCommissionChartFormat(response.data)
             );

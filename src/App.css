@@ -147,3 +147,7 @@ input[type="radio"] {
   -moz-user-select: none; /* For Firefox */
   -ms-user-select: none; /* For Internet Explorer/Edge */
 }
+
+.react-tel-input .flag-dropdown {
+  display: none !important; /* Hide the dropdown */
+}
