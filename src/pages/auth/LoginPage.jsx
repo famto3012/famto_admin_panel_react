@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import VisibilityIcon from "@mui/icons-material/Visibility"; // Import visibility icon
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
@@ -20,10 +22,14 @@ const LoginPage = () => {
     general: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  const { token, setToken, setRole, setUserId, setUsername } = useContext(UserContext);
-
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const { token, setToken, setRole, setUserId, setUsername } =
+    useContext(UserContext);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleInputChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -48,7 +54,7 @@ const LoginPage = () => {
         setToken(token);
         setRole(role);
         setUserId(_id);
-        setUsername(fullName)
+        setUsername(fullName);
         navigate("/home");
       }
     } catch (err) {
@@ -137,21 +143,28 @@ const LoginPage = () => {
                 </small>
               )}
             </div>
-
             <div className="mb-3">
               <div className="mb-2 relative inset-y-0 left-0 flex items-center">
                 <div className="absolute text-teal-700">
                   <LockOutlinedIcon />
                 </div>
                 <input
-                  className={`input ${errors.email && `input-error`}`}
+                  className={`input ${errors.password ? "input-error" : ""}`} // Add padding to prevent overlap with icon
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Toggle between text and password
                   placeholder="Password"
                   value={loginData.password}
                   onChange={handleInputChange}
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-2 text-teal-700" // Position the button on the right
+                >
+                  {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}{" "}
+                  {/* Toggle icons */}
+                </button>
               </div>
               {errors.password && (
                 <small className="text-red-500 text-start">
