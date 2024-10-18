@@ -73,7 +73,7 @@ const Signup = () => {
 
     try {
       setIsButtonDisabled(true);
-      console.log(auth)
+      console.log(auth);
       const confirmation = await signInWithPhoneNumber(
         auth,
         signUpData.phoneNumber,
@@ -166,28 +166,24 @@ const Signup = () => {
                 />
               </div>
               <div>
-                {/* <input
-                  className="input1"
-                  type="tel"
-                  placeholder="Phone Number"
-                  value={signUpData.phoneNumber}
-                  id="phone"
-                  name="phoneNumber"
-                  onChange={handleInputChange}
-                /> */}
                 <PhoneInput
                   country={"in"}
                   value={signUpData.phoneNumber}
                   onChange={handlePhoneInputChange}
                   placeholder="+91 xxxxx-xxxxx"
-                  className="mobile"
+                  className="mobile ml-[-40px]"
                   name="phoneNumber"
+                  disableDropdown={true}
+                  enableAreaCodes={false}
+                  enableSearch={false}
+                  countryCodeEditable={false}
+                  onlyCountries={["in"]}
                 />
               </div>
 
               <div className="relative inset-y-0 right-0 flex items-center justify-end">
                 <input
-                  className="input1"
+                  className="input1 pt-4 border-t-2 border-gray-300 focus:outline-none"
                   type={showpassword ? "text" : "password"}
                   placeholder="Password"
                   value={signUpData.password}

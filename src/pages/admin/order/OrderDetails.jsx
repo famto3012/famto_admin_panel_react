@@ -39,7 +39,7 @@ const OrderDetails = () => {
   const [authToken, setAuthToken] = useState("");
 
   const toast = useToast();
-  const { token, role } = useContext(UserContext);
+  const { token, role, userId } = useContext(UserContext);
   const { socket } = useSocket();
   const navigate = useNavigate();
 
@@ -324,6 +324,34 @@ const OrderDetails = () => {
     }, [coordinates]);
   };
 
+  const markScheduledOrderAsViewed = async () => {
+    try {
+      console.log("Token mark", token);
+      const endpoint = `${BASE_URL}/orders/scheduled-order-view/${orderId}/${userId}`;
+      const response = await axios.put(
+        endpoint,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Marked successfully");
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error marking seen.`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      console.log(err.message);
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       navigate("/auth/login");
@@ -375,6 +403,11 @@ const OrderDetails = () => {
           if (response.status === 200) {
             setOrderDetail(response.data.data);
             setBillData(response.data.data.billDetail);
+            console.log("Scheduled order detail", response.data.data);
+          }
+
+          if (role === "Merchant" && !response.data.data.isViewed) {
+            await markScheduledOrderAsViewed();
           }
         } catch (err) {
           toast({
@@ -384,14 +417,12 @@ const OrderDetails = () => {
             duration: 3000,
             isClosable: true,
           });
-        } finally {
-          setIsLoading(false);
         }
       }
     };
 
     getOrderDetail();
-  }, [token, orderId]);
+  }, [token, orderId, userId]);
 
   useEffect(() => {
     if (orderDetail && mapObject) {
@@ -696,8 +727,14 @@ const OrderDetails = () => {
               <ArrowLeftOutlined onClick={() => navigate("/all-orders")} />
               <p className="font-[600] mb-0">
                 Order information #{orderDetail?._id}{" "}
-                {orderDetail?.scheduledOrderId &&
-                  `of [ #${orderDetail?.scheduledOrderId} ]`}
+                {orderDetail?.scheduledOrderId && (
+                  <>
+                    <span className="text-black me-2">of</span>
+                    <span className="text-gray-500">
+                      [ #{orderDetail?.scheduledOrderId} ]
+                    </span>
+                  </>
+                )}
               </p>
             </p>
           </div>
