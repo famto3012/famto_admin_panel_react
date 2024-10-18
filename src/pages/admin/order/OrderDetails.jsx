@@ -362,7 +362,10 @@ const OrderDetails = () => {
       } else {
         try {
           setIsLoading(true);
-          const endpoint = `${BASE_URL}/orders/scheduled-order/${orderId}`;
+          const endpoint =
+            role === "Admin"
+              ? `${BASE_URL}/orders/admin/scheduled-order/${orderId}`
+              : `${BASE_URL}/orders/scheduled-order/${orderId}`;
 
           const response = await axios.get(endpoint, {
             withCredentials: true,
@@ -692,11 +695,13 @@ const OrderDetails = () => {
             <p className="flex gap-[20px] mb-0">
               <ArrowLeftOutlined onClick={() => navigate("/all-orders")} />
               <p className="font-[600] mb-0">
-                Order information #{orderDetail?._id}
+                Order information #{orderDetail?._id}{" "}
+                {orderDetail?.scheduledOrderId &&
+                  `of [ #${orderDetail?.scheduledOrderId} ]`}
               </p>
             </p>
           </div>
-          {orderId.charAt[0] === "O" && (
+          {orderId.charAt(0) === "O" && (
             <div>
               <button
                 onClick={downloadOrderBill}
@@ -761,7 +766,7 @@ const OrderDetails = () => {
                     Vehicle Type
                   </label>
                   <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
-                    {orderDetail.vehicleType ? orderDetail.vehicleType : "N/A"}
+                    {orderDetail?.vehicleType}
                   </p>
                 </div>
                 <div className="flex justify-between mb-[10px]">
@@ -795,7 +800,9 @@ const OrderDetails = () => {
             )}
             <div className="flex justify-between mb-[10px]">
               <label className="text-[14px] text-gray-500 w-3/5">
-                Next Delivery Time
+                {orderId.charAt(0) === "O"
+                  ? "Delivery Time"
+                  : "Next Delivery Time"}
               </label>
               <p className="text-[14px] text-gray-900 font-[500] text-left w-2/5">
                 {orderDetail.deliveryTime}
