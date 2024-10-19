@@ -1,6 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { IoMdLogOut } from "react-icons/io";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useSoundContext } from "../context/SoundContext";
@@ -8,8 +8,10 @@ import { initializeApp } from "firebase/app";
 import { getMessaging, onMessage } from "firebase/messaging";
 import { Avatar, AvatarBadge } from "@chakra-ui/react";
 import { BellIcon } from "@chakra-ui/icons";
+import { Modal } from "antd";
 
 const GlobalSearch = () => {
+  const [isVisible, setIsVisible] = useState(false)
   const { setToken, setRole } = useContext(UserContext);
   const {
     playNewOrderNotificationSound,
@@ -29,6 +31,14 @@ const GlobalSearch = () => {
 
     navigate("/auth/login");
   };
+
+  const handleOpen = ()=>{
+    setIsVisible(true);
+  }
+
+  const onCancel = ()=>{
+    setIsVisible(false);
+  }
 
   const handleNotificationLog = () => {
     navigate("/notification-log");
@@ -92,7 +102,7 @@ const GlobalSearch = () => {
             color={"gray.400"}
             boxSize="1em"
             onClick={handleNotificationLog}
-            style={{ cursor: "pointer", marginRight: "5px"}}
+            style={{ cursor: "pointer", marginRight: "5px" }}
           />
         }
         bg={"blue.30"}
@@ -120,7 +130,34 @@ const GlobalSearch = () => {
           <SearchOutlined className="text-xl text-gray-500" />
         </button>
       </div>
-      <IoMdLogOut size={24} onClick={handleLogout} />
+      <IoMdLogOut size={24} onClick={handleOpen} />
+      <Modal
+        title={<span className="font-bold text-[16px]">Logout?</span>}
+        open={isVisible}
+        onCancel={onCancel}
+        footer={null}
+        centered
+      >
+        <>
+          <p className="text-[16px] py-2">Do you want to Logout ?</p>
+
+          <div className="flex justify-end gap-4 mt-5">
+            <button
+              className="bg-cyan-100 text-black  py-2 px-4 rounded-md"
+              type="button"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-600 text-white py-2 px-4 rounded-md"
+              onClick={handleLogout}
+            >
+              Confirm
+            </button>
+          </div>
+        </>
+      </Modal>
     </div>
   );
 };

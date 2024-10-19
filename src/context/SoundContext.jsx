@@ -33,10 +33,10 @@ export const SoundProvider = ({ children }) => {
   const [orderRejected, setOrderRejected] = useState("");
   const [scheduledOrder, setScheduledOrder] = useState("");
   const [notification, setNotification] = useState([]);
-  const [token, setToken] = useState(encryptStorage.getItem("token") || null);
+  // const [token, setToken] = useState(encryptStorage.getItem("token") || null);
 
   useEffect(() => {
-    console.log(token);
+    const token = encryptStorage.getItem("token");
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -70,7 +70,7 @@ export const SoundProvider = ({ children }) => {
     };
 
     fetchData();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     console.log("Notification", notification);
