@@ -335,10 +335,10 @@ const HomePage = () => {
         </nav>
         <div className="flex justify-between mx-5 mt-5">
           <div>
-            <p>
+            <p className="text-[25px] text-teal-800 capitalize">
               Hi <span>{username}</span>
             </p>
-            <p className="text-[25px] text-gray-500 capitalize">{role}</p>
+            {/* <p className="text-[25px] text-gray-500 capitalize">{role}</p> */}
           </div>
 
           <div className="flex items-center gap-[30px] ">
