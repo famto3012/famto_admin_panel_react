@@ -56,7 +56,7 @@ const Signup = () => {
     setRecaptcha(recaptchaVerifier);
   }, []);
 
-  const sendOTP = async () => {
+  const sendOTP = () => {
     if (signUpData.phoneNumber == "") {
       toast({
         title: "Please enter a number",
@@ -71,55 +71,54 @@ const Signup = () => {
       return;
     }
 
-    try {
       setIsButtonDisabled(true);
       console.log(auth);
-      const confirmation = await signInWithPhoneNumber(
+      signInWithPhoneNumber(
         auth,
         signUpData.phoneNumber,
         recaptcha
-      );
-
-      setSignUp(signUpData);
-      setVerification(confirmation);
-      toast({
-        title: "OTP send successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
+      ).then((confirmationResult) => {
+        setVerification(confirmationResult);
+        toast({
+          title: "OTP send successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        setShowCaptcha(false);
+        navigate("/auth/verify");
+        // ...
+      }).catch((error) => {
+        switch (error.code) {
+          case "auth/too-many-requests":
+            toast({
+              title: "Too many requests",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+          case "auth/invalid-phone-number":
+            toast({
+              title: "Phone number is invalid",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+          default:
+            toast({
+              title: "Something went wrong, Please try again later",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+        }
+        setIsButtonDisabled(false);
       });
-      setShowCaptcha(false);
-      navigate("/auth/verify");
-    } catch (error) {
-      switch (error.code) {
-        case "auth/too-many-requests":
-          toast({
-            title: "Too many requests",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-        case "auth/invalid-phone-number":
-          toast({
-            title: "Phone number is invalid",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-        default:
-          toast({
-            title: "Something went wrong, Please try again later",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-      }
-    } finally {
-      setIsButtonDisabled(false);
-    }
+      // console.log("confirmation", confirmation)
+      setSignUp(signUpData);
   };
 
   return (
