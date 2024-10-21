@@ -32,7 +32,7 @@ const Merchant = () => {
   const [geofence, setGeofence] = useState("");
   const [businessCategory, setBusinessCategory] = useState("");
   const [search, setSearch] = useState("");
-
+  const [selectedMerchantId, setSelectedMerchantId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
@@ -464,8 +464,14 @@ const Merchant = () => {
   }, [search]);
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
-  const handleApprovedModal = () => setIsConfirmModal(true);
-  const showModalReject = () => setIsModalReject(true);
+  const handleApprovedModal = (merchantId) => {
+    setSelectedMerchantId(merchantId);
+    setIsConfirmModal(true);
+  };
+  const showModalReject = (merchantId) => {
+    setSelectedMerchantId(merchantId);
+    setIsModalReject(true);
+  };
   const showCSVModal = () => setIsCSVModalVisible(true);
 
   const handleCancel = () => {
@@ -879,7 +885,9 @@ const Merchant = () => {
                                 <>
                                   <CheckCircleOutlined
                                     className="text-2xl cursor-pointer text-green-500"
-                                    onClick={handleApprovedModal}
+                                    onClick={() =>
+                                      handleApprovedModal(data._id)
+                                    }
                                     // onClick={() => handleApprove(data._id)}
                                   />
                                   <Modal
@@ -887,10 +895,11 @@ const Merchant = () => {
                                     onCancel={handleCancel}
                                     centered
                                     footer={null}
+                                    key={data._id}
                                   >
                                     <form
                                       onSubmit={(e) =>
-                                        handleApprove(e, data._id)
+                                        handleApprove(e, selectedMerchantId)
                                       }
                                     >
                                       <p className="font-semibold text-[18px] p-2">
@@ -917,7 +926,7 @@ const Merchant = () => {
                                   </Modal>
                                   <CloseCircleOutlined
                                     className="text-2xl cursor-pointer text-red-500"
-                                    onClick={showModalReject}
+                                    onClick={() => showModalReject(data._id)}
                                   />
                                   <Modal
                                     title={
@@ -932,7 +941,7 @@ const Merchant = () => {
                                   >
                                     <form
                                       onSubmit={(e) =>
-                                        handleReject(e, data._id)
+                                        handleReject(e, selectedMerchantId)
                                       }
                                     >
                                       <p className="text-[16px] py-2">

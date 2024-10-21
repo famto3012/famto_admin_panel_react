@@ -48,52 +48,50 @@ const Verification = () => {
       return;
     }
 
-    try {
       setIsButtonDisabled(true);
-      const confirmation = await signInWithPhoneNumber(
+      signInWithPhoneNumber(
         auth,
         signUp.phoneNumber,
         recaptcha
-      );
-      toast({
-        title: "Otp sended successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
+      ).then((confirmationResult) => {
+        setVerification(confirmationResult);
+        toast({
+          title: "OTP send successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        // ...
+      }).catch((error) => {
+        switch (error.code) {
+          case "auth/too-many-requests":
+            toast({
+              title: "Too many requests. Please try again later.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+          case "auth/invalid-phone-number":
+            toast({
+              title: "The phone number is invalid.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+          default:
+            toast({
+              title: "Something went wrong. Please try again later.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+        }
+        setOtpTime(40);
+        setIsButtonDisabled(false);
       });
-      setVerification(confirmation);
-      setOtpTime(40);
-    } catch (error) {
-      switch (error.code) {
-        case "auth/too-many-requests":
-          toast({
-            title: "Too many requests. Please try again later.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-        case "auth/invalid-phone-number":
-          toast({
-            title: "The phone number is invalid.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-        default:
-          toast({
-            title: "Something went wrong. Please try again later.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-      }
-      console.log(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
   };
 
   // const verificationOfOtp = (data) => {
@@ -104,15 +102,14 @@ const Verification = () => {
   //   }
   // };
 
-  const verifyOTP = async () => {
+  const verifyOTP = () => {
     if (isVerifyButtonDisabled) {
       return;
     }
 
     setIsVerifyButtonDisabled(true);
-    try {
-      const data = verification.confirm(otp);
-      if (data) {
+      verification.confirm(otp).then((result) => {
+        // User signed in successfully.
         toast({
           title: "Otp verified successfully",
           status: "success",
@@ -121,45 +118,35 @@ const Verification = () => {
         });
         // Navigate to dashboard page
         navigate("/auth/success");
-      } else {
-        toast({
-          title: "Invalid Otp",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      switch (error.code) {
-        case "auth/invalid-verification-code":
-          toast({
-            title: "The verification code is invalid.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-        case "auth/code-expired":
-          toast({
-            title: "The verification code is expired.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-        default:
-          toast({
-            title: "Something went wrong. Please try again later.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-          break;
-      }
-      console.log(error);
-    } finally {
-      setIsVerifyButtonDisabled(false);
-    }
+      }).catch((error) => {
+        switch (error.code) {
+          case "auth/invalid-verification-code":
+            toast({
+              title: "The verification code is invalid.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+          case "auth/code-expired":
+            toast({
+              title: "The verification code is expired.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+          default:
+            toast({
+              title: "Something went wrong. Please try again later.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            break;
+        }
+        setIsVerifyButtonDisabled(false);
+      });
   };
 
   return (
@@ -182,11 +169,11 @@ const Verification = () => {
               Verify Account
             </h2>
             <p className="text-zinc-500 mt-5 font-poppins">
-              An OTP has been send to the number xxxxxxx{signUp.phoneNumber}{" "}
+              An OTP has been send to the number xxxxxxxx{signUp?.phoneNumber?.slice(-4)}{" "}
               Enter the OTP to verify your mobile number.
             </p>
           </div>
-          <div className="max-w-md mx-auto  rounded">
+          <div className="max-w-md mx-auto  rounded"> 
             <form className="p-4 py-6">
               <div className="flex justify-center gap-4 mb-3 w-full">
                 <OtpInput
