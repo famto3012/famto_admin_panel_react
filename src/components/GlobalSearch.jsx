@@ -11,7 +11,7 @@ import { BellIcon } from "@chakra-ui/icons";
 import { Modal } from "antd";
 
 const GlobalSearch = () => {
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
   const { setToken, setRole } = useContext(UserContext);
   const {
     playNewOrderNotificationSound,
@@ -32,13 +32,13 @@ const GlobalSearch = () => {
     navigate("/auth/login");
   };
 
-  const handleOpen = ()=>{
+  const handleOpen = () => {
     setIsVisible(true);
-  }
+  };
 
-  const onCancel = ()=>{
+  const onCancel = () => {
     setIsVisible(false);
-  }
+  };
 
   const handleNotificationLog = () => {
     navigate("/notification-log");
