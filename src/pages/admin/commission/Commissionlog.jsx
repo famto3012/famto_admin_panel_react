@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import { ArrowBack, FilterAltOutlined } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
@@ -16,10 +16,10 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Commissionlog = () => {
   const [commissionlog, setCommissionlog] = useState([]);
-  const [merchant, setMerchants] = useState([]);
+  const [allMerchants, setAllMerchants] = useState([]);
+  const [selectedMerchant, setSelectedMerchant] = useState(null);
 
-  const [searchFilter, setSearchFilter] = useState("");
-  const [merchantFilter, setMerchantFilter] = useState("");
+  const [search, setSearch] = useState("");
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
@@ -33,155 +33,41 @@ const Commissionlog = () => {
 
   const navigate = useNavigate();
   const buttonRef = useRef(null);
-  const { token, role } = useContext(UserContext);
+  const { token, role, userId } = useContext(UserContext);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-      return;
+    if (role === "Admin") {
+      getAllMerchants();
+      getAllMerchantsLogs();
     }
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [commissionResponse, merchantResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/commission/all-commission-log`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/merchants/admin/all-merchant-drop-down`, {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        if (commissionResponse.status === 200) {
-          setCommissionlog(commissionResponse.data.data.commissionLogs);
-          console.log(commissionResponse.data.data);
-        }
-
-        if (merchantResponse.status === 200) {
-          setMerchants(merchantResponse.data.data);
-          console.log(merchantResponse.data.data);
-        }
-      } catch (err) {
-        console.error(`Error in fetching data: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [token, role, navigate]);
-
-  const merchantOptions = merchant?.map((merchant) => ({
-    label: merchant.merchantName,
-    value: merchant._id,
-  }));
-
-  const onSearchChange = (e) => {
-    const searchService = e.target.value;
-    setSearchFilter(searchService);
-    if (searchService !== "") {
-      handleSearchChangeFilter(searchService);
-    } else {
-      setCommissionlog([]);
-    }
-  };
-
-  const handleSearchChangeFilter = async (searchService) => {
-    try {
-      setIsTableLoading(true);
-      console.log(token);
-      const searchResponse = await axios.get(
-        `${BASE_URL}/admin/commission/commission-log-name`,
-        {
-          params: { merchantName: searchService },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (searchResponse.status === 200) {
-        setCommissionlog(searchResponse.data.data.commissionLogs);
-      }
-    } catch (err) {
-      console.log(`Error in fetching data`, err);
-      setCommissionlog([]);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+    if (role === "Merchant") getSingleMerchantLogs();
+  }, []);
 
   useEffect(() => {
-    const handleDateChangeFilter = async () => {
-      try {
-        setIsTableLoading(true);
+    getSingleMerchantLogs();
+  }, [selectedMerchant]);
 
-        const dateResponse = await axios.get(
-          `${BASE_URL}/admin/commission/commission-log-date`,
-          {
-            params: { date: selectedDate },
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (dateResponse.status === 200) {
-          setCommissionlog(dateResponse.data.data);
-        }
-      } catch (err) {
-        console.log(`Error in fetching data`, err);
-      } finally {
-        setIsTableLoading(false);
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      if (search !== "") {
+        searchMerchantLogs();
+      } else {
+        getAllMerchantsLogs();
       }
-    };
+    }, 500);
 
-    handleDateChangeFilter();
-  }, [selectedDate]);
+    return () => clearTimeout(debounceTimeout);
+  }, [search]);
 
-  // API Function  for Merchant Filter
-  const onMerchantChange = (merchant) => {
-    setMerchantFilter(merchant.label);
-    if (merchant.value !== "") {
-      handleMerchantChangeFilter(merchant.value);
-    } else {
-      setMerchantlog([]);
-    }
-  };
+  useEffect(() => {
+    getLogsByDate();
+  }, [selectedMerchant, selectedDate]);
 
-  const handleMerchantChangeFilter = async (searchMerchant) => {
+  const getAllMerchants = async () => {
     try {
-      setIsTableLoading(true);
       const response = await axios.get(
-        `${BASE_URL}/admin/commission/commission-log/${searchMerchant}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.status === 200) {
-        setCommissionlog(response.data.data.commissionLogs);
-      }
-    } catch (err) {
-      console.log(`Error in fetching data`, err);
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
-
-  // Modal Function
-  const showModal = (id) => {
-    setCurrentId(id);
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => setIsModalVisible(false);
-
-  const handleChange = async (id) => {
-    try {
-      const response = await axios.put(
-        `${BASE_URL}/admin/commission/commission-log/${id}`,
-        {},
+        `${BASE_URL}/merchants/admin/all-merchant-drop-down`,
         {
           withCredentials: true,
           headers: {
@@ -190,29 +76,126 @@ const Commissionlog = () => {
         }
       );
 
-      if (response.status === 200) {
-        handleCancel();
-        setCommissionlog((prev) =>
-          prev.map((commission) =>
-            commission._id === id
-              ? { ...commissionlog, status: "Paid" }
-              : commissionlog
-          )
-        );
-      } else {
-        console.log(`Unexpected response status: ${response.status}`);
-      }
+      if (response.status === 200) setAllMerchants(response.data.data);
     } catch (err) {
-      console.error(`Error in handleApprove: ${err.message}`);
+      console.log(`Error in fetching all merchants : ${err}`);
     }
   };
 
-  const openDatePicker = () => {
-    setIsPickerOpen(true);
+  const getAllMerchantsLogs = async () => {
+    try {
+      setIsTableLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/commission/all-commission-log`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200)
+        setCommissionlog(response.data.data.commissionLogs);
+    } catch (err) {
+      console.log(`Error in fetching all merchants logs : ${err}`);
+    } finally {
+      setIsTableLoading(false);
+    }
   };
 
+  const getSingleMerchantLogs = async () => {
+    try {
+      setIsTableLoading(true);
+
+      const merchantId = role === "Admin" ? selectedMerchant : userId;
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/commission/commission-log/${merchantId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200)
+        setCommissionlog(response.data.data.commissionLogs);
+    } catch (err) {
+      console.log(`Error in fetching single merchants logs : ${err}`);
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
+  const searchMerchantLogs = async () => {
+    try {
+      setIsTableLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/commission/commission-log-name?merchantName=${search}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200)
+        setCommissionlog(response.data.data.commissionLogs);
+    } catch (err) {
+      console.log(`Error in searching merchant logs : ${err}`);
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
+  const getLogsByDate = async () => {
+    try {
+      setIsTableLoading(true);
+
+      const merchantId = role === "Admin" ? selectedMerchant : userId;
+
+      const response = await axios.get(
+        `${BASE_URL}/admin/commission/commission-log-date`,
+        {
+          params: { date: selectedDate, merchantId },
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) setCommissionlog(response.data.data);
+    } catch (err) {
+      console.log(`Error in filtering by date : ${err}`);
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
+  const merchantOptions = allMerchants?.map((merchant) => ({
+    label: merchant.merchantName,
+    value: merchant._id,
+  }));
+
+  const showModal = (id) => {
+    setCurrentId(id);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => setIsModalVisible(false);
+
+  const openDatePicker = () => setIsPickerOpen(true);
+
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    const formattedDate = date ? date.toLocaleDateString("en-CA") : null;
+
+    setSelectedDate(formattedDate);
     setIsPickerOpen(false);
   };
 
@@ -252,19 +235,25 @@ const Commissionlog = () => {
                 </div>
               </div>
             </div>
-            <div className="mx-11 rounded-lg mt-5 flex justify-between">
-              <Select
-                className="w-[200px] px-2 py-2 rounded-lg outline-none focus:outline-none "
-                value={merchantOptions.find(
-                  (option) => option.value === merchantFilter
-                )}
-                isMulti={false}
-                isSearchable={true}
-                onChange={(option) => onMerchantChange(option)}
-                options={merchantOptions}
-                placeholder="Select Merchant"
-                isClearable={true}
-              />
+            <div
+              className={`mx-11 rounded-lg mt-5 flex ${
+                role === "Admin" ? "justify-between" : "justify-end"
+              } `}
+            >
+              {role === "Admin" && (
+                <Select
+                  className="w-[200px] px-2 py-2 rounded-lg outline-none focus:outline-none "
+                  value={merchantOptions.find(
+                    (option) => option.value === selectedMerchant
+                  )}
+                  isMulti={false}
+                  isSearchable={true}
+                  onChange={(option) => setSelectedMerchant(option.value)}
+                  options={merchantOptions}
+                  placeholder="Select Merchant"
+                  isClearable={false}
+                />
+              )}
 
               <div className="flex items-center ">
                 <div className="relative flex items-center">
@@ -281,7 +270,7 @@ const Commissionlog = () => {
                       style={{
                         position: "absolute",
                         top: buttonRef.current?.offsetHeight + 5,
-                        left: 0,
+                        ...(role === "Merchant" ? { right: 0 } : { left: 0 }),
                         zIndex: 50,
                       }}
                     >
@@ -295,19 +284,16 @@ const Commissionlog = () => {
                   )}
                 </div>
 
-                <FilterAltOutlined className="text-gray-400 mx-7" />
-
-                <input
-                  type="search"
-                  name="search"
-                  placeholder="Search merchant name"
-                  className="bg-white h-10 px-5 pr-2 rounded-full  w-72 text-sm focus:outline-none"
-                  value={searchFilter}
-                  onChange={onSearchChange}
-                />
-                <button type="submit" className="absolute right-14 mt-2 ">
-                  <SearchOutlined className="text-xl text-gray-500 " />
-                </button>
+                {role === "Admin" && (
+                  <input
+                    type="search"
+                    name="search"
+                    placeholder="Search merchant name"
+                    className="bg-white p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px] ms-3"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                )}
               </div>
             </div>
             <div className="overflow-auto mt-[40px] w-full pl-[10px]">
@@ -350,33 +336,29 @@ const Commissionlog = () => {
                     </tr>
                   )}
                   {!isTableLoading &&
-                    commissionlog?.map((commissionlog) => (
+                    commissionlog?.map((log) => (
                       <tr
-                        key={commissionlog._id}
+                        key={log._id}
                         className="align-middle border-b border-gray-300 text-center h-20"
                       >
                         <td>
                           <Link
-                            to={`/order-details/${commissionlog?.orderId}`}
+                            to={`/order-details/${log?.orderId}`}
                             className="underline underline-offset-4 px-4"
                           >
-                            {commissionlog?.orderId}
+                            {log?.orderId}
                           </Link>
                         </td>
-                        <td className="px-4">{commissionlog.merchantName}</td>
-                        <td className="px-4">{commissionlog.paymentMode}</td>
-                        <td className="px-4">{commissionlog.totalAmount}</td>
-                        <td className="px-4">
-                          {commissionlog.payableAmountToMerchant}
-                        </td>
-                        <td className="px-4">
-                          {commissionlog.payableAmountToFamto}
-                        </td>
+                        <td className="px-4">{log.merchantName}</td>
+                        <td className="px-4">{log.paymentMode}</td>
+                        <td className="px-4">{log.totalAmount}</td>
+                        <td className="px-4">{log.payableAmountToMerchant}</td>
+                        <td className="px-4">{log.payableAmountToFamto}</td>
                         <td className="flex items-center gap-6 px-[15px] py-4">
-                          {commissionlog.status === "Unpaid" ? (
+                          {log.status === "Unpaid" ? (
                             <button
                               className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
-                              onClick={() => showModal(commissionlog._id)}
+                              onClick={() => showModal(log._id)}
                             >
                               Set as paid
                             </button>
@@ -401,9 +383,8 @@ const Commissionlog = () => {
                               </button>
                               <button
                                 className="bg-teal-900 px-5 py-1 rounded-md ml-3 text-white"
-                                onClick={() => handleChange(commissionlog._id)}
+                                onClick={() => {}}
                               >
-                                {" "}
                                 YES
                               </button>
                             </div>
