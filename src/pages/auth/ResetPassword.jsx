@@ -81,14 +81,14 @@ const ResetPassword = () => {
   };
 
   return (
-    <section className="flex w-screen font-poppins h-screen ">
-      <figure className="h-full w-full md:w-1/2">
+    <section className="flex w-screen font-poppins h-screen md:flex justify-center items-center">
+      <figure className="h-full w-full hidden md:block md:w-1/2">
         <img
           className="h-full w-full object-cover"
           src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FLoginImage.svg?alt=media&token=c7452bf9-0b3a-4358-bef0-cd1bfa57e80f"
         />
       </figure>
-      <div className=" flex justify-center h-full w-1/2 items-center ">
+      <div className=" flex justify-center h-full w-1/2 items-center m-4">
         <div className="min-w-screen bg-gray-100 h-auto w-[400px] rounded-2xl border-2 border-teal-700 p-10">
           <div className="text-center mt-5 ">
             <img

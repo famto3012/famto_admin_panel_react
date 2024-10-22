@@ -208,7 +208,7 @@ const Sidebar = () => {
         <ul className="ul-side">
           <Link
             to="/discount"
-            className={`ps-4 side ${
+            className={`ps-4 side pt-1 pb-1 ${
               selectedLink === "/discount" ? "selected-link" : ""
             }`}
           >
