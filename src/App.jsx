@@ -1,5 +1,11 @@
 import { lazy, Suspense, useContext, useEffect, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import GIFLoader from "./components/GIFLoader";
 import AgentPayout from "./pages/admin/agents/AgentPayout";
 import { UserContext } from "./context/UserContext";
@@ -75,6 +81,80 @@ const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
 const playStoreLink = import.meta.env.VITE_APP_PLAYSTORE_LINK;
 const appStoreLink = import.meta.env.VITE_APP_APPSTORE_LINK;
 
+function MobileAppPrompt() {
+  const location = useLocation();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenWidth = () => {
+      setIsSmallScreen(window.innerWidth < 1080);
+    };
+
+    checkScreenWidth();
+
+    window.addEventListener("resize", checkScreenWidth);
+
+    return () => {
+      window.removeEventListener("resize", checkScreenWidth);
+    };
+  }, []);
+
+  if (location.pathname === "/auth/reset-password") {
+    console.log("Excluding MobileAppPrompt for reset-password page");
+    return (
+      <ResetPassword />
+    ) 
+  }
+ 
+
+  if (isSmallScreen) {
+    return (
+      <div>
+        <figure
+          className="w-full h-[50%] flex justify-center"
+          style={{
+            background: "linear-gradient(to bottom, #909090, #f0f0f0)",
+          }}
+        >
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2Fhome-app.png?alt=media&token=dd07156a-19a0-4f36-98ab-53bbcf59531b"
+            className=" h-[24rem] w-auto"
+            alt="Famto app"
+          />
+        </figure>
+
+        <form className="flex flex-col gap-[20px] items-center mx-8 md:mx-0">
+          <p className="flex justify-center items-center text-center max-w-[100%] text-[20px] font-bold sm:text-[25px] md:text-[28px] lg:text-[30px] w-[80%] mt-5">
+            For a better experience, Please download our app from Playstore / App Store.
+          </p>
+          <div className="mt-5 gap-2 ">
+            <p className="flex justify-center text-[20px]">Download from</p>
+
+            <div className="flex justify-center gap-3 mt-5 ">
+              <a href={playStoreLink}>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2Fplay-store.png?alt=media&token=c94ca732-53fa-4343-87c8-39f138fdf36f"
+                  className=" md:border-gray-800 rounded-lg border-white h-12"
+                  alt="Play Store"
+                />
+              </a>
+              <a href={appStoreLink}>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2Fapp-store.png?alt=media&token=0c68fe33-2a2e-42b7-9859-ee921a9e9cae"
+                  className=" md:border-gray-800 rounded-lg border-white h-12"
+                  alt="App Store"
+                />
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  return null; 
+}
+
 function App() {
   const { role } = useContext(UserContext);
 
@@ -97,132 +177,99 @@ function App() {
     };
   }, []);
 
-  if (isSmallScreen) {
-    return (
-      <>
-        <div>
-          <figure
-            className="w-full h-[50%] flex justify-center"
-            style={{
-              background: "linear-gradient(to bottom, #909090, #f0f0f0)",
-            }}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2Fhome-app.png?alt=media&token=dd07156a-19a0-4f36-98ab-53bbcf59531b"
-              className=" h-[24rem] w-auto"
-              alt="Famto app"
-            />
-          </figure>
-
-          <form className="flex flex-col gap-[20px] items-center mx-8 md:mx-0">
-            <p className="flex justify-center items-center text-center max-w-[100%] text-[20px] font-bold sm:text-[25px] md:text-[28px] lg:text-[30px] w-[80%] mt-5">
-              For a better experience, Please download our app from Playstore /
-              App Store.
-            </p>
-            <div className="mt-5 gap-2 ">
-              <p className="flex justify-center text-[20px]">Download from</p>
-
-              <div className="flex justify-center gap-3 mt-5 ">
-                <a href="">
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2Fplay-store.png?alt=media&token=c94ca732-53fa-4343-87c8-39f138fdf36f"
-                    className=" md:border-gray-800 rounded-lg border-white h-12"
-                  />
-                </a>
-                <a href="">
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2Fapp-store.png?alt=media&token=0c68fe33-2a2e-42b7-9859-ee921a9e9cae"
-                    className=" md:border-gray-800 rounded-lg border-white h-12"
-                  />
-                </a>
-              </div>
-            </div>
-          </form>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <BrowserRouter>
         <Suspense fallback={<GIFLoader />}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
+          {isSmallScreen ? (
+            <MobileAppPrompt />
+          ) : (
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
 
-            {/* Auth Routes */}
-            <Route path="/auth">
-              <Route path="login" element={<LoginPage />} />
-              <Route path="sign-up" element={<Signup />} />
-              <Route path="success" element={<Success />} />
-              <Route path="verify" element={<Verification />} />
-              <Route path="reset-password" element={<ResetPassword />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-            </Route>
-            <Route path="/all-orders" element={<Orders />} />
-            <Route path="/order-details/:orderId" element={<OrderDetails />} />
-            <Route path="/all-merchants" element={<Merchant />} />
-            <Route
-              path="/merchant-detail/:merchantId"
-              element={<MerchantDetails />}
-            />
-            <Route path="/add-manager" element={<AddManager />} />
-            {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
-            <Route
-              path="/update-manager/:managerId"
-              element={<UpdateManager />}
-            />
+              {/* Auth Routes */}
+              <Route path="/auth">
+                <Route path="login" element={<LoginPage />} />
+                <Route path="sign-up" element={<Signup />} />
+                <Route path="success" element={<Success />} />
+                <Route path="verify" element={<Verification />} />
+                <Route path="reset-password" element={<ResetPassword />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+              </Route>
+              <Route path="/all-orders" element={<Orders />} />
+              <Route
+                path="/order-details/:orderId"
+                element={<OrderDetails />}
+              />
+              <Route path="/all-merchants" element={<Merchant />} />
+              <Route
+                path="/merchant-detail/:merchantId"
+                element={<MerchantDetails />}
+              />
+              <Route path="/add-manager" element={<AddManager />} />
+              {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
+              <Route
+                path="/update-manager/:managerId"
+                element={<UpdateManager />}
+              />
 
-            <Route
-              path="/settings"
-              element={role === "Admin" ? <Settings /> : <MerchantDetails />}
-            />
+              <Route
+                path="/settings"
+                element={role === "Admin" ? <Settings /> : <MerchantDetails />}
+              />
 
-            <Route path="/all-tax" element={<Tax />} />
-            <Route path="/account-logs" element={<AccountLogs />} />
-            <Route path="/all-managers" element={<Managers />} />
-            <Route path="/push-notification" element={<PushNotification />} />
-            <Route path="/alert-notification" element={<AlertNotification />} />
-            <Route
-              path="/notification-settings"
-              element={<NotificationSettings />}
-            />
-            <Route path="/loyality-point" element={<LoyalityPoint />} />
-            <Route path="/ad-banner" element={<Adbanner />} />
-            <Route path="/agent-app" element={<Agentapp />} />
-            <Route path="/notification-log" element={<Notificationlog />} />
-            <Route path="/merchant-app" element={<MerchantApp />} />
-            <Route path="/promo-code" element={<PromoCode />} />
-            <Route path="/referral" element={<Referral />} />
-            <Route path="/discount" element={<Discount />} />
-            <Route path="/customer-app" element={<CustomerApp />} />
-            <Route path="/customers" element={<Customers />} />
-            <Route
-              path="/customer-detail/:customerId"
-              element={<CustomerDetails />}
-            />
-            <Route path="/view-commission" element={<Commissionlog />} />
-            <Route
-              path="/view-subscription"
-              element={<Subscriptioncustomer />}
-            />
-            <Route path="/create-order" element={<CreateOrder />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/commission" element={<Commission />} />
-            <Route path="/home" index element={<HomePage />} />
-            <Route path="/all-agents" element={<DeliveryAgent />} />
-            <Route path="/agent-details/:agentId" element={<AgentDetails />} />
+              <Route path="/all-tax" element={<Tax />} />
+              <Route path="/account-logs" element={<AccountLogs />} />
+              <Route path="/all-managers" element={<Managers />} />
+              <Route path="/push-notification" element={<PushNotification />} />
+              <Route
+                path="/alert-notification"
+                element={<AlertNotification />}
+              />
+              <Route
+                path="/notification-settings"
+                element={<NotificationSettings />}
+              />
+              <Route path="/loyality-point" element={<LoyalityPoint />} />
+              <Route path="/ad-banner" element={<Adbanner />} />
+              <Route path="/agent-app" element={<Agentapp />} />
+              <Route path="/notification-log" element={<Notificationlog />} />
+              <Route path="/merchant-app" element={<MerchantApp />} />
+              <Route path="/promo-code" element={<PromoCode />} />
+              <Route path="/referral" element={<Referral />} />
+              <Route path="/discount" element={<Discount />} />
+              <Route path="/customer-app" element={<CustomerApp />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route
+                path="/customer-detail/:customerId"
+                element={<CustomerDetails />}
+              />
+              <Route path="/view-commission" element={<Commissionlog />} />
+              <Route
+                path="/view-subscription"
+                element={<Subscriptioncustomer />}
+              />
+              <Route path="/create-order" element={<CreateOrder />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/commission" element={<Commission />} />
+              <Route path="/home" index element={<HomePage />} />
+              <Route path="/all-agents" element={<DeliveryAgent />} />
+              <Route
+                path="/agent-details/:agentId"
+                element={<AgentDetails />}
+              />
 
-            <Route path="/products" element={<Products />} />
-            <Route path="/geofence" element={<Geofence />} />
-            <Route path="/add-geofence" element={<AddGeofence />} />
-            <Route path="/edit-geofence" element={<EditGeofence />} />
-            <Route
-              path="/delivery-management"
-              element={<DeliveryManagement />}
-            />
-            <Route path="/agent-payout" element={<AgentPayout />} />
-          </Routes>
+              <Route path="/products" element={<Products />} />
+              <Route path="/geofence" element={<Geofence />} />
+              <Route path="/add-geofence" element={<AddGeofence />} />
+              <Route path="/edit-geofence" element={<EditGeofence />} />
+              <Route
+                path="/delivery-management"
+                element={<DeliveryManagement />}
+              />
+              <Route path="/agent-payout" element={<AgentPayout />} />
+            </Routes>
+          )}
         </Suspense>
       </BrowserRouter>
     </>
