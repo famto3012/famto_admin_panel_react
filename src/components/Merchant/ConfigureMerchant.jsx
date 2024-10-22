@@ -201,11 +201,14 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
 
           <Switch
             name="preOrderStatus"
-            checked={detail?.merchantDetail?.preOrderStatus}
+            checked={
+              detail?.merchantDetail?.preOrderStatus &&
+              detail?.merchantDetail?.deliveryOption !== "On-demand"
+            }
             onChange={(checked) =>
               togglePreOrderStatus(checked, "preOrderStatus")
             }
-            className=""
+            disabled={detail?.merchantDetail?.deliveryOption === "On-demand"}
           />
         </div>
       </div>
