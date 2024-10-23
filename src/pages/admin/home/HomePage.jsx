@@ -34,6 +34,8 @@ const HomePage = () => {
   const [data, setData] = useState([]);
   const [commission, setCommission] = useState([]);
   const [subscription, setSubscription] = useState([]);
+  const [merchantAvailability, setMerchantAvailability] = useState()
+  const [isAvailable, setIsAvailable] = useState(false)
 
   const [dateRange, setDateRange] = useState([
     new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -70,10 +72,8 @@ const HomePage = () => {
       payload.notification.title === orderRejected ||
       payload.notification.title === scheduledOrder
     ) {
-      console.log("New order sound");
       playNewOrderNotificationSound();
     } else {
-      console.log("New Notification sound");
       playNewNotificationSound();
     }
     // addNotificationToTable(payload.notification);
@@ -86,9 +86,129 @@ const HomePage = () => {
 
   socket?.on("connect_error", (err) => {
     console.log(err.message);
-    console.log(err.description);
-    console.log(err.context);
   });
+
+  const getMerchantProfile = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/merchants/profile`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setMerchantAvailability(response.data.data.merchantDetail.availability);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error in getting merchant profile`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const getCurrentDayAndTime = () => {
+    const currentDay = new Date().toLocaleString("en-us", { weekday: "long" }).toLowerCase();
+    const currentTime = new Date().toLocaleTimeString("en-US", {
+      hour12: false, // 24-hour format
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return { currentDay, currentTime };
+  };
+
+  const handleChangeMerchantStatusToggle = async (status) => {
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/change-status-toggle`,
+        {status},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // toast({
+        //   title: "Success",
+        //   description: "Merchant status updated successfully!",
+        //   status: "success",
+        //   duration: 3000,
+        //   isClosable: true,
+        // });
+      }
+    } catch (err) {
+      console.log(err);
+      // toast({
+      //   title: "Error",
+      //   description: "Error in changing merchant status",
+      //   status: "error",
+      //   duration: 3000,
+      //   isClosable: true,
+      // });
+    }
+  };
+
+  const checkAvailability = async () => {
+    try {
+      // Fetch the merchant's availability data
+      const { currentDay, currentTime } = getCurrentDayAndTime();
+      const todayAvailability = merchantAvailability?.specificDays[currentDay];
+      if (!todayAvailability) {
+        // setErrorMessage("No availability data found for today.");
+        setIsAvailable(false);
+        return;
+      }
+
+      // Handle openAllDay
+      if (todayAvailability.openAllDay) {
+        setIsAvailable(true);
+        handleChangeMerchantStatusToggle(true)
+        return;
+      }
+
+      // Handle closedAllDay
+      if (todayAvailability.closedAllDay) {
+        setIsAvailable(false);
+        handleChangeMerchantStatusToggle(false)
+        // setErrorMessage("Merchant is closed all day.");
+        return;
+      }
+
+      // Handle specificTime
+      if (todayAvailability.specificTime) {
+        const { startTime, endTime } = todayAvailability;
+        if (currentTime >= startTime && currentTime <= endTime) {
+          setIsAvailable(true);
+          handleChangeMerchantStatusToggle(true)
+        } else {
+          setIsAvailable(false);
+          handleChangeMerchantStatusToggle(false)
+          // setErrorMessage("Merchant is not available at the current time.");
+        }
+        return;
+      }
+
+      // Default case: If no condition is met
+      setIsAvailable(false);
+    } catch (error) {
+      console.error("Error fetching availability", error);
+      // setErrorMessage("Error fetching availability data.");
+    }
+  };
+
+  useEffect(() => {
+    checkAvailability();
+
+    const intervalId = setInterval(checkAvailability, 60000); 
+    return () => clearInterval(intervalId); 
+  }, [merchantAvailability]);
 
   useEffect(() => {
     if (!token) {
@@ -97,23 +217,22 @@ const HomePage = () => {
 
     socket?.on("realTimeDataCount", (dataCount) => {
       setTimeout(() => {
-        console.log(dataCount);
         setRealTimeDataCount(dataCount);
       }, 1000);
     });
 
     if (role === "Admin") {
       socket?.emit("getRealTimeDataOnRefresh", "");
-    } else {
+    } else if(role === "Merchant"){
       const data = {
         id: userId,
         role: role,
       };
       socket?.emit("getRealTimeDataOnRefreshMerchant", data);
+      getMerchantProfile()
     }
 
     const unsubscribe = onMessage(messaging, (payload) => {
-      console.log("Message received:", payload);
       handleNotification(payload);
       const { title, body } = payload.notification;
       if (Notification.permission === "granted") {
@@ -130,15 +249,12 @@ const HomePage = () => {
   const requestPermission = async () => {
     try {
       const permission = await Notification.requestPermission();
-      console.log("Permission:", permission);
       if (permission === "granted") {
         const token = await getToken(messaging, {
           vapidKey:
             "BGgnJ6sB5-CVQCHLuNYw_MtcrUA0gJpS-MtLbpHMxAjzTEz1NegR_xyzYaLbGPGn832jFO0crtSjkspqQMcSZ28",
         });
-        console.log("Token generated");
         if (token) {
-          console.log("FCM Token:", token);
           setFcmToken(token);
           // Send the token to your server and update the UI if necessary
         } else {
@@ -147,7 +263,13 @@ const HomePage = () => {
           );
         }
       } else {
-        console.log("Notification permission not granted");
+        toast({
+            title: "Error",
+            description: "Notification permission not granted",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
       }
     } catch (err) {
       console.error("Error retrieving token:", err);
@@ -278,12 +400,6 @@ const HomePage = () => {
     });
   }
 
-  useEffect(() => {
-    console.log("sales", sales);
-    console.log("merchants", merchants);
-    console.log("commission", commission);
-    console.log("subscription", subscription);
-  }, [sales, merchants, commission, subscription]);
 
   const valueFormatter = (value) => {
     return new Intl.NumberFormat("en-IN", {
@@ -317,14 +433,18 @@ const HomePage = () => {
         });
       }
     } catch (err) {
-      console.log(err);
-      toast({
-        title: "Error",
-        description: "Error in changing merchant status",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      
+      if (err.response && err.response.data && err.response.data.message) {
+        const { message } = err.response.data;
+
+        toast({
+          title: "Error",
+          description: message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     }
   };
 
@@ -347,7 +467,7 @@ const HomePage = () => {
             {role === "Merchant" && (
               <p className="flex flex-col items-center justify-center">
                 <Switch
-                  value
+                  value={isAvailable}
                   onChange={handleChangeMerchantStatus}
                   className="w-fit"
                 />

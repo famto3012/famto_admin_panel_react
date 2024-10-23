@@ -63,106 +63,73 @@ const PlaceSearchPlugin = ({ map }) => {
   return null;
 };
 
-const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
-  const { map, setMap, setMapTwo, setCoordinatesTwo, setCoordinates } =
+const MapModal = ({
+  isVisible,
+  onClose,
+  BASE_URL,
+  token,
+  location,
+  modalId,
+}) => {
+  const { map, setMap, setCoordinates, setCoordinatesTwo, coordinates } =
     useMap(); // Use the context
   const markerRefOne = useRef(null);
-  const markerRefTwo = useRef(null);
   const mapContainerRef = useRef(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [authToken, setAuthToken] = useState(null);
 
-  // Assuming the map object stores the container reference under a property like `_container`
-  function getContainer(map) {
-    if (!map) {
-      throw new Error("Map instance is not available.");
+  // Function to clean up map resources
+  const cleanupMap = () => {
+    if (markerRefOne.current) {
+      markerRefOne.current.remove();
+      markerRefOne.current = null;
     }
-
-    // Check if the map object has a method or property to get the container
-    if (map._container) {
-      return map._container; // Assuming the container is stored in a property named `_container`
-    } else if (typeof map.getContainer === "function") {
-      return map.getContainer(); // If there's an existing getContainer method provided by the API
-    } else {
-      throw new Error("Unable to determine the container element.");
+    if (map) {
+      map.removeLayer(); // This method removes the map and clears its associated resources
+      setMap(null); // Reset the map state in your context
     }
-  }
+  };
 
   const initializeMap = () => {
-    if (map) {
-      try {
-        const currentContainer = getContainer(map);
+    // Cleanup existing map before initializing a new one
+    cleanupMap();
 
-        if (currentContainer !== mapContainerRef.current) {
-          var container = document.getElementById(mapContainerRef.current.id);
-          container.parentNode.replaceChild(currentContainer, container);
+    mapplsClassObject.initialize(
+      authToken,
+      { map: true, plugins: ["search"] },
+      () => {
+        const newMap = mapplsClassObject.Map({
+          id: `map-container-${modalId}`, // Ensure each modal has a unique id
+          properties: {
+            center:
+              location?.length === 2
+                ? [location[0], location[1]]
+                : [8.5892862, 76.8773566],
+            draggable: true,
+            zoom: 12,
+            backgroundColor: "#fff",
+            heading: 100,
+            traffic: true,
+            geolocation: false,
+            disableDoubleClickZoom: true,
+            fullscreenControl: true,
+            scrollWheel: true,
+            scrollZoom: true,
+            rotateControl: true,
+            scaleControl: true,
+            zoomControl: true,
+            clickableIcons: true,
+            indoor: true,
+            indoor_position: "bottom-left",
+            tilt: 30,
+          },
+        });
 
-          // Reattach map to the correct container if it's not already attached
-          //map.setContainer(currentContainer);
-        }
-      } catch (error) {
-        console.error("Error getting map container:", error.message);
-      }
+        if (newMap && typeof newMap.on === "function") {
+          setMap(newMap); // Save the map instance in context
+          setIsMapLoaded(true);
 
-      setIsMapLoaded(true);
-    } else {
-      // Initialize a new map instance if none exists
-      mapplsClassObject.initialize(
-        authToken,
-        { map: true, plugins: ["search"] },
-        () => {
-          const newMap = mapplsClassObject.Map({
-            id: mapContainerRef.current.id, // Use the ref's id for initialization
-            properties: {
-              center: [8.5892862, 76.8773566],
-              draggable: true,
-              zoom: 12,
-              backgroundColor: "#fff",
-              heading: 100,
-              traffic: true,
-              geolocation: false,
-              disableDoubleClickZoom: true,
-              fullscreenControl: true,
-              scrollWheel: true,
-              scrollZoom: true,
-              rotateControl: true,
-              scaleControl: true,
-              zoomControl: true,
-              clickableIcons: true,
-              indoor: true,
-              indoor_position: "bottom-left",
-              tilt: 30,
-            },
-          });
-          const newMapTwo = mapplsClassObject.Map({
-            id: "map1", // Use the ref's id for initialization
-            properties: {
-              center: [8.5892862, 76.8773566],
-              draggable: true,
-              zoom: 12,
-              backgroundColor: "#fff",
-              heading: 100,
-              traffic: true,
-              geolocation: false,
-              disableDoubleClickZoom: true,
-              fullscreenControl: true,
-              scrollWheel: true,
-              scrollZoom: true,
-              rotateControl: true,
-              scaleControl: true,
-              zoomControl: true,
-              clickableIcons: true,
-              indoor: true,
-              indoor_position: "bottom-left",
-              tilt: 30,
-            },
-          });
-
-          if (newMap && typeof newMap.on === "function") {
-            setMapTwo(newMapTwo);
-            setMap(newMap); // Save the map instance in context
-            setIsMapLoaded(true);
-
+          newMap.on("load", () => {
             if (location) {
               mapplsClassObject.Marker({
                 map: newMap,
@@ -170,75 +137,62 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
                 draggable: false,
               });
             }
+          });
 
-            newMapTwo.on("click", (event) => {
-              const { lat, lng } = event.lngLat;
+          newMap.on("click", (event) => {
+            const { lat, lng } = event.lngLat;
 
-              if (markerRefTwo.current) {
-                markerRefTwo.current.remove();
-              }
+            if (markerRefOne.current) {
+              markerRefOne.current.remove();
+            }
 
-              const newMarker = mapplsClassObject.Marker({
-                map: newMapTwo,
-                position: { lat, lng },
-                draggable: false,
-              });
-
-              markerRefTwo.current = newMarker;
-              setCoordinatesTwo({ latitude: lat, longitude: lng });
+            const newMarker = mapplsClassObject.Marker({
+              map: newMap,
+              position: { lat, lng },
+              draggable: false,
+              icon: "https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Flocation.png?alt=media&token=a3af3a58-a2c9-4eb1-8566-b06df5f14edb",
+              width: 35,
+              height: 35,
             });
 
-            newMap.on("click", (event) => {
-              const { lat, lng } = event.lngLat;
-
-              if (markerRefOne.current) {
-                markerRefOne.current.remove();
-              }
-
-              const newMarker = mapplsClassObject.Marker({
-                map: newMap,
-                position: { lat, lng },
-                draggable: false,
-              });
-
-              markerRefOne.current = newMarker;
+            markerRefOne.current = newMarker;
+            if (!coordinates) {
               setCoordinates({ latitude: lat, longitude: lng });
-            });
-          }
+            } else {
+              setCoordinatesTwo({ latitude: lat, longitude: lng });
+            }
+          });
         }
-      );
-    }
+      }
+    );
   };
 
   useEffect(() => {
-    if (isVisible) {
-      const getAuthToken = async () => {
-        try {
-          const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+    const getAuthToken = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/token/get-auth-token`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-          if (response.status === 200) {
-            setAuthToken(response.data.data);
-          }
-        } catch (err) {
-          console.log(`Error in getting auth token`);
+        if (response.status === 200) {
+          setAuthToken(response.data.data);
         }
-      };
-
-      getAuthToken();
-      initializeMap(); // Initialize map when modal is visible
-    }
-
-    return () => {
-      if (!isVisible && map) {
-        setIsMapLoaded(false);
+      } catch (err) {
+        console.log(`Error in getting auth token`);
       }
     };
-  }, [isVisible, map]);
+
+    getAuthToken();
+    if (isVisible) initializeMap();
+
+    return () => {
+      cleanupMap(); // Clean up the map when the modal is closed
+      setIsMapLoaded(false);
+    };
+  }, [isVisible]);
 
   return (
     <Modal
@@ -249,7 +203,11 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
       width="50%"
       centered
     >
-      <div id="map" className="h-[500px] relative" ref={mapContainerRef}>
+      <div
+        id={`map-container-${modalId}`}
+        className="h-[500px] relative"
+        ref={mapContainerRef}
+      >
         <input
           type="text"
           id="auto"
@@ -261,12 +219,12 @@ const MapModal = ({ isVisible, onClose, BASE_URL, token, location }) => {
         {isMapLoaded && <PlaceSearchPlugin map={map} />}
       </div>
       {!isMapLoaded && (
-        <>
-          <Button onClick={initializeMap} className="mt-2 bg-teal-600">
-            Initialize Map
-          </Button>
-          <div id="map1" className="h-[500px] relative"></div>
-        </>
+        <Button
+          onClick={initializeMap}
+          className="mt-2 bg-teal-600 text-[15px] font-bold text-white"
+        >
+          Initialize Map
+        </Button>
       )}
     </Modal>
   );

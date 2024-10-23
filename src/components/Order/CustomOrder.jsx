@@ -14,7 +14,6 @@ import {
   uploadFileToFirebase,
 } from "../../utils/fileOperation";
 import ShowBill from "./ShowBill";
-import MapModalTwo from "./MapModalTwo";
 import NewAddressTwo from "./NewAddressTwo";
 import { useMap } from "../../context/MapContext";
 import Select from "react-select";
@@ -95,12 +94,21 @@ const CustomOrder = ({ data }) => {
     setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
 
-  const handleItemChange = (index, option) => {
+  const handleItemChange = (index, eventOrOption) => {
     const updatedItems = [...customOrderData.items];
-    updatedItems[index] = { ...updatedItems[index], unit: option.value };
+  
+    // Handle input field changes
+    if (eventOrOption.target) {
+      const { name, value } = eventOrOption.target;
+      updatedItems[index] = { ...updatedItems[index], [name]: value };
+    } else {
+      // Handle Select dropdown changes (unit)
+      updatedItems[index] = { ...updatedItems[index], unit: eventOrOption.value };
+    }
+  
     setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
-
+  
   const handleImageChange = async (index, e) => {
     const file = e.target.files[0];
     if (file) {
@@ -274,6 +282,7 @@ const CustomOrder = ({ data }) => {
                 setCoordinates={setCoordinates}
                 BASE_URL={BASE_URL}
                 token={token}
+                modelId={1}
               />
             </div>
           </div>
