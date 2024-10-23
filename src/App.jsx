@@ -12,6 +12,7 @@ import { UserContext } from "./context/UserContext";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import "./fonts.css";
 import "./App.css";
+import ActivityLog from "./pages/admin/ActivityLog/ActivityLog";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -101,11 +102,8 @@ function MobileAppPrompt() {
 
   if (location.pathname === "/auth/reset-password") {
     console.log("Excluding MobileAppPrompt for reset-password page");
-    return (
-      <ResetPassword />
-    ) 
+    return <ResetPassword />;
   }
- 
 
   if (isSmallScreen) {
     return (
@@ -125,7 +123,8 @@ function MobileAppPrompt() {
 
         <form className="flex flex-col gap-[20px] items-center mx-8 md:mx-0">
           <p className="flex justify-center items-center text-center max-w-[100%] text-[20px] font-bold sm:text-[25px] md:text-[28px] lg:text-[30px] w-[80%] mt-5">
-            For a better experience, Please download our app from Playstore / App Store.
+            For a better experience, Please download our app from Playstore /
+            App Store.
           </p>
           <div className="mt-5 gap-2 ">
             <p className="flex justify-center text-[20px]">Download from</p>
@@ -152,7 +151,7 @@ function MobileAppPrompt() {
     );
   }
 
-  return null; 
+  return null;
 }
 
 function App() {
@@ -196,6 +195,8 @@ function App() {
                 <Route path="reset-password" element={<ResetPassword />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
               </Route>
+
+              <Route path="/activity-logs" element={<ActivityLog />} />
               <Route path="/all-orders" element={<Orders />} />
               <Route
                 path="/order-details/:orderId"
