@@ -190,6 +190,7 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
                   onClose={() => setModalVisible(false)}
                   BASE_URL={BASE_URL}
                   token={token}
+                  modelId={1}
                 />
               </div>
 

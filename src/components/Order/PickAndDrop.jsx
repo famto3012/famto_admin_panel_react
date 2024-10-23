@@ -65,23 +65,41 @@ const PickAndDrop = ({ data }) => {
     });
   };
 
-  const handleItemChange = (index, option) => {
+  const handleItemChange = (index, eventOrOption) => {
     setPickAndDropData((prevData) => {
       const items = [...prevData.items];
-      items[index] = { ...items[index], itemName: option.value };
+  
+      // Handle input field changes (length, width, height, weight)
+      if (eventOrOption.target) {
+        const { name, value } = eventOrOption.target;
+        items[index] = {
+          ...items[index],
+          [name]: value, // Update the specific input field (e.g., length, width, etc.)
+        };
+      } else {
+        // Handle Select dropdown changes (itemType)
+        items[index] = {
+          ...items[index],
+          itemName: eventOrOption.value, // Set the itemName when a dropdown option is selected
+        };
+      }
+  
       return {
         ...prevData,
         items,
       };
     });
   };
+  
+  
 
   const handleAddItem = () => {
     setPickAndDropData((prevData) => ({
       ...prevData,
       items: [
         ...prevData.items,
-        { type: "", length: "", width: "", height: "", weight: "", unit: "cm" },
+        { length: "", width: "", height: "", weight: "", unit: "cm" },
+        // type: "",
       ],
     }));
   };

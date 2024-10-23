@@ -372,6 +372,7 @@ const MerchantData = ({
             location={detail?.merchantDetail?.location}
             BASE_URL={BASE_URL}
             token={token}
+            modelId={1}
           />
           {detail?.merchantDetail?.locationImage && (
             <img

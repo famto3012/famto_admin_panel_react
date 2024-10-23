@@ -24,7 +24,7 @@ const SidebarDelivery = () => {
     <div className="fixed w-[4rem] h-full bg-gradient-to-b from-[#016B6C] to-[#000] bg-[length:100%_150%] bg-top font-poppins overflow-y-auto">
       <div className="flex gap-3 ml-[18px] mt-[30px] w-[30px]">
         <img
-          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FNew%20logo%20(28).svg?alt=media&token=75cc0c6a-e462-4a06-b01f-fc7e0b5df5a5"
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fwhitelogo.svg?alt=media&token=a7436647-2de7-4fee-8e3a-5c637bd0bc61"
           alt="Logo"
         />
       </div>

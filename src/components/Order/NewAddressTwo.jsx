@@ -1,7 +1,7 @@
 import { useState } from "react";
-import MapModalTwo from "./MapModalTwo";
 import { useMap } from "../../context/MapContext";
 import { useToast } from "@chakra-ui/react";
+import MapModal from "./MapModal";
 
 const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const { coordinatesTwo } = useMap();
@@ -34,7 +34,13 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!type || !fullName || !phoneNumber || !flat || !area) {
+    if (
+      !addressData.type ||
+      !addressData.fullName ||
+      !addressData.phoneNumber ||
+      !addressData.flat ||
+      !addressData.area
+    ) {
       toast({
         title: "Error",
         description: "Please fill up all fields",
@@ -179,11 +185,12 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
                     : `Mark location`}
                 </button>
 
-                <MapModalTwo
+                <MapModal
                   isVisible={modalVisible}
                   onClose={() => setModalVisible(false)}
                   BASE_URL={BASE_URL}
                   token={token}
+                  modelId={2}
                 />
               </div>
 
