@@ -30,6 +30,7 @@ import { LuFolderCog } from "react-icons/lu";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { UserContext } from "../context/UserContext";
 import { AiOutlineGift } from "react-icons/ai";
+import { IoMdTime } from "react-icons/io";
 
 const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -212,7 +213,7 @@ const Sidebar = () => {
               selectedLink === "/discount" ? "selected-link" : ""
             }`}
           >
-            <AiOutlineGift className="me-2 ms-2 mb-1" size={"25px"}/>
+            <AiOutlineGift className="me-2 ms-2 mb-1" size={"25px"} />
             Discount
           </Link>
 
@@ -424,15 +425,27 @@ const Sidebar = () => {
       {openDropdown === "account" && (
         <ul className="ul-side">
           {role === "Admin" && (
-            <Link
-              to="/account-logs"
-              className={`ps-4 side ${
-                selectedLink === "/account-logs" ? "selected-link" : ""
-              }`}
-            >
-              <AppBlockingOutlinedIcon className="m-2" />
-              Account logs
-            </Link>
+            <>
+              <Link
+                to="/activity-logs"
+                className={`ps-4 side ${
+                  selectedLink === "/activity-logs" ? "selected-link" : ""
+                }`}
+              >
+                <IoMdTime className="m-2" size={24} />
+                Activity logs
+              </Link>
+
+              <Link
+                to="/account-logs"
+                className={`ps-4 side ${
+                  selectedLink === "/account-logs" ? "selected-link" : ""
+                }`}
+              >
+                <AppBlockingOutlinedIcon className="m-2" />
+                Account logs
+              </Link>
+            </>
           )}
 
           <Link

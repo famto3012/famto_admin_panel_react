@@ -168,8 +168,18 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                     <>
                       <td>
                         <DatePicker
+                          // selected={
+                          //   availability?.specificDays?.[day]?.startTime
+                          //     ? new Date(
+                          //         `1970-01-01T${availability?.specificDays[day]?.startTime}:00`
+                          //       )
+                          //     : null
+                          // }
                           selected={
-                            availability?.specificDays?.[day]?.startTime
+                            availability?.specificDays?.[day]?.startTime &&
+                            /^\d{2}:\d{2}$/.test(
+                              availability.specificDays[day].startTime
+                            )
                               ? new Date(
                                   `1970-01-01T${availability.specificDays[day].startTime}:00`
                                 )
@@ -210,8 +220,18 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
                       </td>
                       <td>
                         <DatePicker
+                          // selected={
+                          //   availability?.specificDays?.[day]?.endTime
+                          //     ? new Date(
+                          //         `1970-01-01T${availability?.specificDays[day]?.endTime}:00`
+                          //       )
+                          //     : null
+                          // }
                           selected={
-                            availability?.specificDays?.[day]?.endTime
+                            availability?.specificDays?.[day]?.endTime &&
+                            /^\d{2}:\d{2}$/.test(
+                              availability.specificDays[day].endTime
+                            )
                               ? new Date(
                                   `1970-01-01T${availability.specificDays[day].endTime}:00`
                                 )
