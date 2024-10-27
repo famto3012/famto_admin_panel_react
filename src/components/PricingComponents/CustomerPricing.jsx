@@ -353,31 +353,12 @@ const CustomerPricing = () => {
                         >
                           <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                         </button>
-                        <EditCustomerPricingModal
-                          isVisible={isModalVisibleEditRule}
-                          handleCancel={handleCancel}
-                          token={token}
-                          currentEdit={currentEditRule}
-                          BASE_URL={BASE_URL}
-                          geofence={geofence}
-                          business={business}
-                          onEditRule={handleEditRule}
-                        />
                       </div>
                       <button
                         onClick={() => showModalDeleteRule(customerpricing._id)}
                       >
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
-                      <DeleteCustomerPricingModal
-                        isVisible={isModalVisibleDeleteRule}
-                        handleCancel={handleCancel}
-                        handleConfirmDelete={handleConfirmDeleteRule}
-                        currentDelete={currentDeleteRule}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        remove={removeRule}
-                      />
                     </div>
                   </td>
                 </tr>
@@ -385,6 +366,27 @@ const CustomerPricing = () => {
           </tbody>
         </table>
       </div>
+
+      <EditCustomerPricingModal
+        isVisible={isModalVisibleEditRule}
+        handleCancel={handleCancel}
+        token={token}
+        currentEdit={currentEditRule}
+        BASE_URL={BASE_URL}
+        geofence={geofence}
+        business={business}
+        onEditRule={handleEditRule}
+      />
+
+      <DeleteCustomerPricingModal
+        isVisible={isModalVisibleDeleteRule}
+        handleCancel={handleCancel}
+        handleConfirmDelete={handleConfirmDeleteRule}
+        currentDelete={currentDeleteRule}
+        token={token}
+        BASE_URL={BASE_URL}
+        remove={removeRule}
+      />
 
       <div className="flex items-center justify-between mx-9 mt-8">
         <h1 className="text-md">Surge</h1>
@@ -473,30 +475,12 @@ const CustomerPricing = () => {
                         >
                           <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                         </button>
-                        <EditCustomerSurgeModal
-                          isVisible={isModalVisibleEditSurge}
-                          handleCancel={handleCancel}
-                          token={token}
-                          currentEdit={currentEditSurge}
-                          BASE_URL={BASE_URL}
-                          geofence={geofence}
-                          onEditSurge={handleEditSurge}
-                        />
                       </div>
                       <button
                         onClick={() => showModalDeleteSurge(customersurge._id)}
                       >
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
-                      <DeleteCustomerSurgeModal
-                        isVisible={isModalVisibleDeleteSurge}
-                        handleCancel={handleCancel}
-                        handleConfirmDelete={handleConfirmDeleteSurge}
-                        currentDelete={currentDeleteSurge}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        remove={removeSurge}
-                      />
                     </div>
                   </td>
                 </tr>
@@ -504,6 +488,26 @@ const CustomerPricing = () => {
           </tbody>
         </table>
       </div>
+
+      <EditCustomerSurgeModal
+        isVisible={isModalVisibleEditSurge}
+        handleCancel={handleCancel}
+        token={token}
+        currentEdit={currentEditSurge}
+        BASE_URL={BASE_URL}
+        geofence={geofence}
+        onEditSurge={handleEditSurge}
+      />
+
+      <DeleteCustomerSurgeModal
+        isVisible={isModalVisibleDeleteSurge}
+        handleCancel={handleCancel}
+        handleConfirmDelete={handleConfirmDeleteSurge}
+        currentDelete={currentDeleteSurge}
+        token={token}
+        BASE_URL={BASE_URL}
+        remove={removeSurge}
+      />
     </>
   );
 };

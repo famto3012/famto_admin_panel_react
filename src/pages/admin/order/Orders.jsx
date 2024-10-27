@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   PlusOutlined,
   ArrowDownOutlined,
@@ -20,12 +20,16 @@ import {
   paymentModeOption,
   deliveryModeOption,
 } from "../../../utils/DefaultData";
+import { FaCalendarAlt } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [deliveryOption, setDeliveryOption] = useState(true);
+  const [allMerchants, setAllMerchants] = useState([]);
 
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
@@ -33,11 +37,16 @@ const Orders = () => {
   const [orderActionLoading, setOrderActionLoading] = useState({});
   const [isModalReject, setIsModalReject] = useState(false);
 
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
   const [orderStatus, setOrderStatus] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [deliveryMode, setDeliveryMode] = useState("");
+  const [selectedMerchant, setSelectedMerchant] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [search, setSearch] = useState("");
 
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
@@ -47,13 +56,18 @@ const Orders = () => {
   const { socket } = useSocket();
   const toast = useToast();
   const navigate = useNavigate();
+  const buttonRef = useRef(null);
 
   const onSearch = (e) => {
     let text = e.target.value;
     setSearch(text);
   };
 
-  const showModalReject = () => setIsModalReject(true);
+  const showModalReject = (orderId) => {
+    setSelectedOrder(orderId);
+    setIsModalReject(true);
+  };
+
   const handleCancel = () => {
     setIsModalReject(false);
   };
@@ -99,6 +113,8 @@ const Orders = () => {
     }
 
     getAllOrders();
+
+    if (role === "Admin") getAllMerchants();
   }, [token, page, limit, role, deliveryOption]);
 
   const getAllOrders = async () => {
@@ -144,8 +160,35 @@ const Orders = () => {
     }
   };
 
+  const getAllMerchants = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/merchants/admin/all-merchant-drop-down`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setAllMerchants(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    if (!orderStatus && !paymentMode && !deliveryMode) return;
+    if (
+      !orderStatus &&
+      !paymentMode &&
+      !deliveryMode &&
+      !selectedMerchant &&
+      !selectedDate
+    )
+      return;
     const filterHandler = async () => {
       try {
         setIsTableLoading(true);
@@ -165,6 +208,8 @@ const Orders = () => {
         if (orderStatus) params.push(`status=${orderStatus}`);
         if (paymentMode) params.push(`paymentMode=${paymentMode}`);
         if (deliveryMode) params.push(`deliveryMode=${deliveryMode}`);
+        if (selectedMerchant) params.push(`merchantId=${selectedMerchant}`);
+        if (selectedDate) params.push(`date=${selectedDate}`);
 
         if (params.length > 0) {
           endPoint += `?${params.join("&")}`;
@@ -194,7 +239,17 @@ const Orders = () => {
     };
 
     filterHandler();
-  }, [orderStatus, paymentMode, deliveryMode, token, role, page, limit]);
+  }, [
+    orderStatus,
+    paymentMode,
+    deliveryMode,
+    selectedMerchant,
+    selectedDate,
+    token,
+    role,
+    page,
+    limit,
+  ]);
 
   useEffect(() => {
     const searchOrder = async () => {
@@ -209,7 +264,7 @@ const Orders = () => {
               : `${BASE_URL}/orders/admin/search-scheduled-order?query=${search}`;
           } else if (role === "Merchant") {
             endPoint = deliveryOption
-              ? `${BASE_URL}/orders/search?query=${search}`
+              ? `${BASE_URL}/orders/search-order?query=${search}`
               : `${BASE_URL}/orders/search-scheduled-order?query=${search}`;
           }
 
@@ -257,6 +312,14 @@ const Orders = () => {
         )
       : deliveryModeOption;
 
+  const merchantOptions = [
+    { label: "All", value: "all" },
+    ...allMerchants?.map((merchant) => ({
+      label: merchant.merchantName,
+      value: merchant._id,
+    })),
+  ];
+
   const handleConfirmOrder = async (orderId) => {
     try {
       setOrderActionLoading((prevLoading) => ({
@@ -303,18 +366,21 @@ const Orders = () => {
     }
   };
 
-  const handleRejectOrder = async (orderId) => {
+  const handleRejectOrder = async (e) => {
     try {
+      e.preventDefault();
+
       setOrderActionLoading((prevLoading) => ({
         ...prevLoading,
-        [orderId]: true,
+        [selectedOrder]: true,
       }));
+
       setRejectLoading(true);
 
       const endpoint =
         role === "Admin"
-          ? `${BASE_URL}/orders/admin/reject-order/${orderId}`
-          : `${BASE_URL}/orders/reject-order/${orderId}`;
+          ? `${BASE_URL}/orders/admin/reject-order/${selectedOrder}`
+          : `${BASE_URL}/orders/reject-order/${selectedOrder}`;
 
       const response = await axios.put(
         endpoint,
@@ -328,7 +394,7 @@ const Orders = () => {
       if (response.status === 200) {
         setOrders((prevOrders) =>
           prevOrders.map((order) =>
-            order._id === orderId
+            order._id === selectedOrder
               ? { ...order, orderStatus: "Cancelled" }
               : order
           )
@@ -347,7 +413,7 @@ const Orders = () => {
     } finally {
       setOrderActionLoading((prevLoading) => ({
         ...prevLoading,
-        [orderId]: false,
+        [selectedOrder]: false,
       }));
     }
   };
@@ -375,6 +441,15 @@ const Orders = () => {
 
   const handleToggle = () => setDeliveryOption(!deliveryOption);
 
+  const openDatePicker = () => setIsPickerOpen(true);
+
+  const handleDateChange = (date) => {
+    const formattedDate = date ? date.toLocaleDateString("en-CA") : null;
+
+    setSelectedDate(formattedDate);
+    setIsPickerOpen(false);
+  };
+
   const handleDownloadCSV = async (e) => {
     try {
       setCSVDownloadLoading(true);
@@ -385,7 +460,14 @@ const Orders = () => {
           : `${BASE_URL}/orders/download-csv`;
 
       const response = await axios.get(endPoint, {
-        params: { orderStatus, paymentMode, deliveryMode, query: search },
+        params: {
+          orderStatus,
+          paymentMode,
+          deliveryMode,
+          merchantId: selectedMerchant,
+          date: selectedDate,
+          query: search,
+        },
         responseType: "blob",
         withCredentials: true,
         headers: {
@@ -632,12 +714,60 @@ const Orders = () => {
                 }),
               }}
             />
+
+            {role === "Admin" && (
+              <Select
+                options={merchantOptions}
+                value={merchantOptions.find(
+                  (option) => option.value === selectedMerchant
+                )}
+                onChange={(option) => setSelectedMerchant(option.value)}
+                className=" bg-cyan-50 w-[10rem]"
+                placeholder="Merchant"
+                isSearchable={true}
+                isMulti={false}
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
+              />
+            )}
           </div>
 
           <div className="flex items-center gap-[20px]">
-            {/* <div>
-              <FilterAltOutlinedIcon className="mt-2 text-gray-400" />
-            </div> */}
+            <button
+              ref={buttonRef}
+              onClick={openDatePicker}
+              className="flex items-center justify-center"
+            >
+              <FaCalendarAlt className="text-gray-400 text-xl" />
+            </button>
+
+            {isPickerOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top:
+                    buttonRef.current?.offsetTop +
+                    buttonRef.current?.offsetHeight,
+                  left: buttonRef.current?.offsetLeft,
+                  zIndex: 50,
+                }}
+              >
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  inline
+                  maxDate={new Date()}
+                />
+              </div>
+            )}
 
             <div>
               <input
@@ -810,45 +940,8 @@ const Orders = () => {
                                     />
                                     <CloseCircleOutlined
                                       className="text-2xl cursor-pointer text-white"
-                                      onClick={showModalReject}
+                                      onClick={() => showModalReject(order._id)}
                                     />
-                                    <Modal
-                                      title={
-                                        <span className="font-bold text-[16px]">
-                                          Reject?
-                                        </span>
-                                      }
-                                      open={isModalReject}
-                                      onCancel={handleCancel}
-                                      centered
-                                      footer={null}
-                                    >
-                                      <form>
-                                        <p className=" text-[16px] py-2">
-                                          Do you want to Reject?
-                                        </p>
-                                        <div className="flex justify-end mt-5 gap-6">
-                                          <button
-                                            type="button"
-                                            className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
-                                            onClick={handleCancel}
-                                          >
-                                            Cancel
-                                          </button>
-                                          <button
-                                            type="submit"
-                                            className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
-                                            onClick={() =>
-                                              handleRejectOrder(order._id)
-                                            }
-                                          >
-                                            {rejectLoading
-                                              ? `Rejecting...`
-                                              : `Reject`}
-                                          </button>
-                                        </div>
-                                      </form>
-                                    </Modal>
                                   </>
                                 )}
                               </>
@@ -913,6 +1006,34 @@ const Orders = () => {
             </tbody>
           </table>
         </div>
+
+        <Modal
+          title={<span className="font-bold text-[16px]">Reject?</span>}
+          open={isModalReject}
+          onCancel={handleCancel}
+          centered
+          footer={null}
+        >
+          <form>
+            <p className="text-[16px] py-2">Do you want to Reject?</p>
+            <div className="flex justify-end mt-5 gap-6">
+              <button
+                type="button"
+                className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="button" // Changed to "button" to prevent form submission
+                className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                onClick={handleRejectOrder} // Handles the rejection
+              >
+                {rejectLoading ? `Rejecting...` : `Reject`}
+              </button>
+            </div>
+          </form>
+        </Modal>
 
         <div className="my-[30px] flex justify-center">
           <Pagination

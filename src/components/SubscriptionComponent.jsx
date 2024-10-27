@@ -388,6 +388,7 @@ const SubscriptionComponent = () => {
     setIsModalMerchantDelete(false);
     setIsModalVisibleCustomer(false);
     setIsModalVisibleCustomerEdit(false);
+    setIsModalCustomerDelete(false);
   };
 
   const handleUpdateSubscription = (data) => {
@@ -493,10 +494,10 @@ const SubscriptionComponent = () => {
                               {subscription?.taxId?.taxName || "-"}
                             </span>
                           </p>
+
+                          <p className="">{subscription.description}</p>
                         </>
                       )}
-
-                      <p className="">{subscription.description}</p>
                     </div>
 
                     {role === "Admin" && (
@@ -509,14 +510,6 @@ const SubscriptionComponent = () => {
                         >
                           <BiEdit className="text-[22px] mr-1" /> Edit
                         </button>
-                        <EditSubMerchantModal
-                          isVisible={isModalVisibleMerchantEdit}
-                          handleCancel={handleCancel}
-                          currentEditMerchant={currentEditMerchant}
-                          token={token}
-                          tax={tax}
-                          BASE_URL={BASE_URL}
-                        />
 
                         <button
                           className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
@@ -527,17 +520,6 @@ const SubscriptionComponent = () => {
                           <RiDeleteBinLine className="text-[20px] mr-1" />
                           Delete
                         </button>
-                        <DeleteSubMerchantModal
-                          isVisible={deleteModalMerchant}
-                          handleCancel={handleCancel}
-                          handleConfirmDeleteMerchant={
-                            handleConfirmDeleteMerchant
-                          }
-                          currentDeleteMerchant={currentDeleteMerchant}
-                          token={token}
-                          BASE_URL={BASE_URL}
-                          removeMerchant={removeMerchant}
-                        />
                       </div>
                     )}
                   </div>
@@ -554,6 +536,25 @@ const SubscriptionComponent = () => {
                 </div>
               ))}
             </div>
+
+            <EditSubMerchantModal
+              isVisible={isModalVisibleMerchantEdit}
+              handleCancel={handleCancel}
+              currentEditMerchant={currentEditMerchant}
+              token={token}
+              tax={tax}
+              BASE_URL={BASE_URL}
+            />
+
+            <DeleteSubMerchantModal
+              isVisible={deleteModalMerchant}
+              handleCancel={handleCancel}
+              handleConfirmDeleteMerchant={handleConfirmDeleteMerchant}
+              currentDeleteMerchant={currentDeleteMerchant}
+              token={token}
+              BASE_URL={BASE_URL}
+              removeMerchant={removeMerchant}
+            />
           </div>
 
           {role === "Admin" && (
@@ -693,15 +694,7 @@ const SubscriptionComponent = () => {
                         >
                           <BiEdit className="text-[22px] mr-1" /> Edit
                         </button>
-                        <EditSubCustomerModal
-                          isVisible={isModalVisibleCustomerEdit}
-                          handleCancel={handleCancel}
-                          currentEditCustomer={currentEditCustomer}
-                          token={token}
-                          tax={tax}
-                          BASE_URL={BASE_URL}
-                          onEditSubscription={handleUpdateSubscription}
-                        />
+
                         <button
                           className="bg-teal-800 flex items-center rounded-3xl p-3 text-white ml-3 px-8 mt-5"
                           onClick={() =>
@@ -711,17 +704,6 @@ const SubscriptionComponent = () => {
                           <RiDeleteBinLine className="text-[20px] mr-1" />
                           Delete
                         </button>
-                        <DeleteSubCustomerModal
-                          isVisible={deleteModalCustomer}
-                          handleCancel={handleCancel}
-                          handleConfirmDeleteCustomer={
-                            handleConfirmDeleteCustomer
-                          }
-                          currentDeleteCustomer={currentDeleteCustomer}
-                          token={token}
-                          BASE_URL={BASE_URL}
-                          removeCustomer={removeCustomer}
-                        />
                       </div>
                     </div>
                     <div className=" ml-auto rounded-lg w-14 flex items-center justify-center">
@@ -737,6 +719,26 @@ const SubscriptionComponent = () => {
                   </div>
                 ))}
               </div>
+
+              <EditSubCustomerModal
+                isVisible={isModalVisibleCustomerEdit}
+                handleCancel={handleCancel}
+                currentEditCustomer={currentEditCustomer}
+                token={token}
+                tax={tax}
+                BASE_URL={BASE_URL}
+                onEditSubscription={handleUpdateSubscription}
+              />
+
+              <DeleteSubCustomerModal
+                isVisible={deleteModalCustomer}
+                handleCancel={handleCancel}
+                handleConfirmDeleteCustomer={handleConfirmDeleteCustomer}
+                currentDeleteCustomer={currentDeleteCustomer}
+                token={token}
+                BASE_URL={BASE_URL}
+                removeCustomer={removeCustomer}
+              />
             </div>
 
             <div className="flex mt-5 items-center">

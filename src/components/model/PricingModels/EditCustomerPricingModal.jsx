@@ -135,9 +135,6 @@ const EditCustomerPricingModal = ({
       width="700px"
       onCancel={handleCancel}
       footer={null}
-      styles={{
-        mask: { backgroundColor: "rgba(0, 0, 0, 0.2)" }, // Custom mask background color
-      }}
     >
       <form onSubmit={handleEditPricing}>
         <div className="flex flex-col  max-h-[30rem] overflow-auto gap-4 ">

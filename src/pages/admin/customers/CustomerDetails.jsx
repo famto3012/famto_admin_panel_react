@@ -14,6 +14,7 @@ import AddMoneyModal from "../../../components/model/Customer/AddMoneyModal";
 import DeductMoneyModal from "../../../components/model/Customer/DeductMoneyModal";
 import { useToast } from "@chakra-ui/react";
 import AddressModal from "../../../components/model/Customer/AddressModal";
+import { useDraggable } from "../../../hooks/useDraggable";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -25,6 +26,13 @@ const CustomerDetails = () => {
   const navigate = useNavigate();
 
   const toast = useToast();
+  const {
+    isDragging,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseUp,
+    handleMouseMove,
+  } = useDraggable();
 
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [showDeductModeyModal, setShowDeducMoneyModal] = useState(false);
@@ -393,7 +401,16 @@ const CustomerDetails = () => {
 
           <div className="mt-10">
             <h4 className="text-gray-700 mx-11 font-bold">Address</h4>
-            <div className="flex gap-[30px] ms-11 my-5 max-w-[800px] overflow-x-auto overflow-element">
+
+            <div
+              className={`flex gap-[30px] ms-11 my-5 max-w-[800px] overflow-x-auto overflow-element ${
+                isDragging ? "cursor-grabbing" : "cursor-grab"
+              }`}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+            >
               <div className="min-w-[180px] px-2 group relative">
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold bg-gray-200 py-1 px-2 rounded-md">

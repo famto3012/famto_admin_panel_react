@@ -120,9 +120,6 @@ const AddDiscountModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
-      styles={{
-        mask: { backgroundColor: "rgba(0, 0, 0, 0.3)" }, // Custom mask background color
-      }}
     >
       <form>
         <div className="flex flex-col gap-4 pt-[30px] max-h-[30rem] overflow-auto justify-between">

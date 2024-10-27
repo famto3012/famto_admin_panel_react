@@ -23,7 +23,7 @@ const LoyalityPoint = () => {
     earningCriteriaRupee: "",
     earningCriteriaPoint: "",
     minOrderAmountForEarning: "",
-    maxEarningPoint: "",
+    maxEarningPointPerOrder: "",
     expiryDuration: "",
     redemptionCriteriaPoint: "",
     redemptionCriteriaRupee: "",
@@ -103,7 +103,7 @@ const LoyalityPoint = () => {
       earningCriteriaRupee: "",
       earningCriteriaPoint: "",
       minOrderAmountForEarning: "",
-      maxEarningPoint: "",
+      maxEarningPointPerOrder: "",
       expiryDuration: "",
       redemptionCriteriaPoint: "",
       redemptionCriteriaRupee: "",
@@ -231,7 +231,7 @@ const LoyalityPoint = () => {
                   <div className="flex items-center">
                     <label
                       className="w-1/3 text-gray-500"
-                      htmlFor="maxEarningPoint"
+                      htmlFor="maxEarningPointPerOrder"
                     >
                       Maximum Earning Points
                       <span className="text-red-600 ml-2">*</span>
@@ -239,9 +239,9 @@ const LoyalityPoint = () => {
                     <input
                       className="border-2 border-gray-300 rounded p-2 pl-3 outline-none focus:outline-none w-2/3 "
                       type="text"
-                      value={loyaltyData?.maxEarningPoint}
-                      id="maxEarningPoint"
-                      name="maxEarningPoint"
+                      value={loyaltyData?.maxEarningPointPerOrder}
+                      id="maxEarningPointPerOrder"
+                      name="maxEarningPointPerOrder"
                       onChange={handleInputChange}
                     />
                   </div>

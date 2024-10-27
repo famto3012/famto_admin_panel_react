@@ -802,7 +802,7 @@ const Merchant = () => {
             </div>
 
             <div className="overflow-auto mt-[20px] w-full">
-              <table className="text-start w-full">
+              <table className="text-start w-full bg-white">
                 <thead>
                   <tr className="">
                     {[
@@ -827,7 +827,7 @@ const Merchant = () => {
                 </thead>
                 <tbody>
                   {isTableLoading && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td
                         colSpan={9}
                         className="text-center py-[20px] bg-gray-50"
@@ -838,7 +838,7 @@ const Merchant = () => {
                   )}
 
                   {!isTableLoading && allMerchants.length === 0 && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td
                         colSpan={9}
                         className="text-center py-[20px] bg-gray-50"
@@ -852,7 +852,7 @@ const Merchant = () => {
                     allMerchants.map((data) => (
                       <tr
                         key={data._id}
-                        className="align-middle text-center even:bg-gray-200"
+                        className="align-middle text-center even:bg-gray-200 h-[70px]"
                       >
                         <td className="p-4 underline underline-offset-4">
                           <Link to={`/merchant-detail/${data._id}`}>
@@ -890,82 +890,11 @@ const Merchant = () => {
                                     }
                                     // onClick={() => handleApprove(data._id)}
                                   />
-                                  <Modal
-                                    open={isConfirmModal}
-                                    onCancel={handleCancel}
-                                    centered
-                                    footer={null}
-                                    key={data._id}
-                                  >
-                                    <form
-                                      onSubmit={(e) =>
-                                        handleApprove(e, selectedMerchantId)
-                                      }
-                                    >
-                                      <p className="font-semibold text-[18px] p-2">
-                                        Are you sure want to Approve ?
-                                      </p>
-                                      <div className="flex justify-end mt-5 gap-6">
-                                        <button
-                                          type="button"
-                                          className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
-                                          onClick={handleCancel}
-                                        >
-                                          Cancel
-                                        </button>
-                                        <button
-                                          type="submit"
-                                          className="bg-teal-800 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
-                                        >
-                                          {approveLoading
-                                            ? "Approving..."
-                                            : "Approve"}
-                                        </button>
-                                      </div>
-                                    </form>
-                                  </Modal>
+
                                   <CloseCircleOutlined
                                     className="text-2xl cursor-pointer text-red-500"
                                     onClick={() => showModalReject(data._id)}
                                   />
-                                  <Modal
-                                    title={
-                                      <span className="font-bold text-[16px]">
-                                        Reject?
-                                      </span>
-                                    }
-                                    open={isModalReject}
-                                    onCancel={handleCancel}
-                                    centered
-                                    footer={null}
-                                  >
-                                    <form
-                                      onSubmit={(e) =>
-                                        handleReject(e, selectedMerchantId)
-                                      }
-                                    >
-                                      <p className="text-[16px] py-2">
-                                        Do you want to Reject ?
-                                      </p>
-                                      <div className="flex justify-end mt-5 gap-6">
-                                        <button
-                                          type="button"
-                                          className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
-                                          onClick={handleCancel}
-                                        >
-                                          Cancel
-                                        </button>
-                                        <button
-                                          type="submit"
-                                          className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
-                                        >
-                                          {rejectLoading
-                                            ? `Rejecting...`
-                                            : `Reject`}
-                                        </button>
-                                      </div>
-                                    </form>
-                                  </Modal>
                                 </>
                               )}
                             </>
@@ -976,6 +905,61 @@ const Merchant = () => {
                 </tbody>
               </table>
             </div>
+
+            <Modal
+              open={isConfirmModal}
+              onCancel={handleCancel}
+              centered
+              footer={null}
+            >
+              <form onSubmit={(e) => handleApprove(e, selectedMerchantId)}>
+                <p className="font-semibold text-[18px] p-2">
+                  Are you sure want to Approve ?
+                </p>
+                <div className="flex justify-end mt-5 gap-6">
+                  <button
+                    type="button"
+                    className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-teal-800 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                  >
+                    {approveLoading ? "Approving..." : "Approve"}
+                  </button>
+                </div>
+              </form>
+            </Modal>
+
+            <Modal
+              title={<span className="font-bold text-[16px]">Reject?</span>}
+              open={isModalReject}
+              onCancel={handleCancel}
+              centered
+              footer={null}
+            >
+              <form onSubmit={(e) => handleReject(e, selectedMerchantId)}>
+                <p className="text-[16px] py-2">Do you want to Reject ?</p>
+                <div className="flex justify-end mt-5 gap-6">
+                  <button
+                    type="button"
+                    className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-red-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                  >
+                    {rejectLoading ? `Rejecting...` : `Reject`}
+                  </button>
+                </div>
+              </form>
+            </Modal>
 
             <div className="my-[30px] flex justify-center">
               <Pagination

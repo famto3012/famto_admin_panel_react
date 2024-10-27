@@ -357,6 +357,7 @@ const PushNotification = () => {
           <GlobalSearch />
         </div>
         <header className="font-bold ml-5">Push Notifications</header>
+
         <div className="bg-white text-[16px] mx-5 rounded-lg mt-5 text-gray-700">
           <form onSubmit={submitAction}>
             <div className="flex">
@@ -499,7 +500,9 @@ const PushNotification = () => {
             </div>
           </form>
         </div>
+
         <p className="font-bold ml-5">Push Notification log</p>
+
         <div className="bg-white mx-5 rounded-lg mt-5 flex p-8 justify-between">
           <Select
             options={userTypeForPushNotificationOptions}
@@ -533,7 +536,8 @@ const PushNotification = () => {
             />
           </div>
         </div>
-        <table className="w-full mt-10 mb-24">
+
+        <table className="w-full mt-10 mb-24 bg-white">
           <thead>
             <tr>
               {[
@@ -556,7 +560,7 @@ const PushNotification = () => {
           </thead>
           <tbody>
             {isLoading && (
-              <tr>
+              <tr className="bg-gray-200">
                 <td colSpan={7} className="text-center text-[16px] py-6">
                   Loading Data... <Spinner size={"sm"} />
                 </td>
@@ -564,7 +568,7 @@ const PushNotification = () => {
             )}
 
             {!isLoading && data?.length === 0 && (
-              <tr>
+              <tr className="bg-gray-200">
                 <td colSpan={7} className="text-center py-3">
                   No Data available
                 </td>
@@ -573,7 +577,10 @@ const PushNotification = () => {
 
             {!isLoading &&
               data?.map((data) => (
-                <tr key={data._id} className="text-center bg-white h-20">
+                <tr
+                  key={data._id}
+                  className="text-center h-20 even:bg-gray-200"
+                >
                   <td>
                     {data.customer && data.driver && data.merchant
                       ? "All"

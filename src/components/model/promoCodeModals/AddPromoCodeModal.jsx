@@ -400,25 +400,25 @@ const AddPromoCodeModal = ({
               {!croppedFile && (
                 <div className="h-[66px] w-[66px] bg-gray-200 rounded-md mt-[38px] ml-[210px]"></div>
               )}
+
               {!!croppedFile && (
-                <>
-                  <div>
-                    <img
-                      ref={previewCanvasRef}
-                      src={URL.createObjectURL(croppedFile)}
-                      style={{
-                        border: "1px solid white",
-                        borderRadius: "5px",
-                        objectFit: "contain",
-                        width: "66px",
-                        height: "66px",
-                        marginTop: "38px",
-                        marginLeft: "210px",
-                      }}
-                    />
-                  </div>
-                </>
+                <div>
+                  <img
+                    ref={previewCanvasRef}
+                    src={URL.createObjectURL(croppedFile)}
+                    style={{
+                      border: "1px solid white",
+                      borderRadius: "5px",
+                      objectFit: "contain",
+                      width: "66px",
+                      height: "66px",
+                      marginTop: "38px",
+                      marginLeft: "210px",
+                    }}
+                  />
+                </div>
               )}
+
               <input
                 type="file"
                 name="imageUrl"
@@ -427,18 +427,20 @@ const AddPromoCodeModal = ({
                 accept="image/*"
                 onChange={onSelectFile}
               />
+
               <label htmlFor="imageUrl" className="cursor-pointer ">
                 <MdCameraAlt
                   className=" bg-teal-800  text-[40px] text-white p-6 h-16 w-16 mt-10 rounded"
                   size={30}
                 />
               </label>
+
               {imgSrc && (
                 <CropImage
                   selectedImage={img}
-                  aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                  aspectRatio={1 / 1}
                   onCropComplete={handleCropComplete}
-                  onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                  onClose={handleModalClose}
                 />
               )}
             </div>

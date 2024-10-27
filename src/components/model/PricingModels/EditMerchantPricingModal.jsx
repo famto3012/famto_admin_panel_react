@@ -116,9 +116,6 @@ const EditMerchantPricingModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
-      styles={{
-        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
-      }}
     >
       <form onSubmit={submitAction}>
         <div className="flex flex-col gap-4  max-h-[30rem] overflow-auto">
