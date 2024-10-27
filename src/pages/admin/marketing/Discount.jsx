@@ -118,9 +118,6 @@ const Discount = () => {
         const merchantId =
           role === "Admin" ? selectedMerchant?.merchantId : userId;
 
-        console.log("merchantId", merchantId);
-        console.log("selectedMerchant", selectedMerchant);
-
         const merchantDiscountEndPoint =
           role === "Admin"
             ? `${BASE_URL}/admin/shop-discount/get-merchant-discount-admin/${merchantId}`
@@ -544,16 +541,6 @@ const Discount = () => {
                         >
                           <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                         </button>
-
-                        <EditDiscountModal
-                          isVisible={isModalVisibleEdit}
-                          token={token}
-                          geofence={geofence}
-                          currentDiscount={currentDiscount}
-                          BASE_URL={BASE_URL}
-                          handleCancel={handleCancel}
-                          onEditDiscount={handleEditMerchantDiscount}
-                        />
                       </div>
                       <button
                         onClick={() => showModalDelete1(merchantDiscounts._id)}
@@ -561,32 +548,6 @@ const Discount = () => {
                       >
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
-                      <Modal
-                        onCancel={handleCancel}
-                        footer={null}
-                        open={isShowModalDelete1}
-                        centered
-                      >
-                        <p className="font-semibold text-[18px] mb-5">
-                          Are you sure you want to delete?
-                        </p>
-                        <div className="flex justify-end">
-                          <button
-                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                            onClick={handleCancel}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                            onClick={() =>
-                              confirmDeleteDiscount(currentDiscountDelete)
-                            }
-                          >
-                            {confirmLoading ? `Deleting...` : `Delete`}
-                          </button>
-                        </div>
-                      </Modal>
                     </div>
                   </td>
                   <td className="border-b border-gray-300"></td>
@@ -595,6 +556,41 @@ const Discount = () => {
             </tbody>
           </table>
         </div>
+
+        <EditDiscountModal
+          isVisible={isModalVisibleEdit}
+          token={token}
+          geofence={geofence}
+          currentDiscount={currentDiscount}
+          BASE_URL={BASE_URL}
+          handleCancel={handleCancel}
+          onEditDiscount={handleEditMerchantDiscount}
+        />
+
+        <Modal
+          onCancel={handleCancel}
+          footer={null}
+          open={isShowModalDelete1}
+          centered
+        >
+          <p className="font-semibold text-[18px] mb-5">
+            Are you sure you want to delete?
+          </p>
+          <div className="flex justify-end">
+            <button
+              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+              onClick={() => confirmDeleteDiscount(currentDiscountDelete)}
+            >
+              {confirmLoading ? `Deleting...` : `Delete`}
+            </button>
+          </div>
+        </Modal>
 
         <div className="flex justify-between mt-10">
           <h1 className="font-bold text-[20px] ms-4">Product Discount</h1>
@@ -617,6 +613,7 @@ const Discount = () => {
             onAddProduct={handleAddProductDiscount}
           />
         </div>
+
         <div className="w-full">
           <table className="bg-teal-800 mt-[45px] text-center w-full">
             <thead>
@@ -697,17 +694,6 @@ const Discount = () => {
                           >
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
-
-                          <EditProductModal
-                            isVisible={isModalVisibleProductEdit}
-                            token={token}
-                            geofence={geofence}
-                            merchant={merchant}
-                            currentProduct={currentProduct}
-                            BASE_URL={BASE_URL}
-                            onEditProduct={handleEditProductDiscount}
-                            handleCancel={handleCancel}
-                          />
                         </div>
                         <button
                           onClick={() => showModalDelete2(discount._id)}
@@ -715,35 +701,6 @@ const Discount = () => {
                         >
                           <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                         </button>
-                        <Modal
-                          onCancel={handleCancel}
-                          footer={null}
-                          open={isShowModalDelete2}
-                          centered
-                        >
-                          <p className="font-semibold text-[18px] mb-5">
-                            <Spin spinning={confirmLoading}>
-                              Are you sure want to delete?
-                            </Spin>
-                          </p>
-                          <div className="flex justify-end">
-                            <button
-                              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                              onClick={handleCancel}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                              onClick={() =>
-                                confirmDeleteProduct(currentProductDelete)
-                              }
-                            >
-                              {" "}
-                              Delete
-                            </button>
-                          </div>
-                        </Modal>
                       </div>
                     </td>
                     <td className="border-b border-gray-300"></td>
@@ -752,6 +709,43 @@ const Discount = () => {
             </tbody>
           </table>
         </div>
+
+        <EditProductModal
+          isVisible={isModalVisibleProductEdit}
+          token={token}
+          geofence={geofence}
+          merchant={merchant}
+          currentProduct={currentProduct}
+          BASE_URL={BASE_URL}
+          onEditProduct={handleEditProductDiscount}
+          handleCancel={handleCancel}
+        />
+
+        <Modal
+          onCancel={handleCancel}
+          footer={null}
+          open={isShowModalDelete2}
+          centered
+        >
+          <p className="font-semibold text-[18px] mb-5">
+            <Spin spinning={confirmLoading}>Are you sure want to delete?</Spin>
+          </p>
+          <div className="flex justify-end">
+            <button
+              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+              onClick={() => confirmDeleteProduct(currentProductDelete)}
+            >
+              {" "}
+              Delete
+            </button>
+          </div>
+        </Modal>
       </div>
     </>
   );

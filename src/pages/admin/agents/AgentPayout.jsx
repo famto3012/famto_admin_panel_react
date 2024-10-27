@@ -436,7 +436,7 @@ const AgentPayout = () => {
               </div>
             </div>
             <div className="overflow-auto mt-[20px] w-full">
-              <table className="w-full">
+              <table className="w-full bg-white">
                 <thead>
                   <tr>
                     {[
@@ -464,7 +464,7 @@ const AgentPayout = () => {
                 </thead>
                 <tbody>
                   {isTableLoading && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td colSpan={11} className="text-center h-20">
                         Loading Data...
                       </td>
@@ -472,7 +472,7 @@ const AgentPayout = () => {
                   )}
 
                   {!isTableLoading && allPayout?.length === 0 && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td colSpan={11}>
                         <p className="flex items-center justify-center h-20">
                           No data available
@@ -485,7 +485,7 @@ const AgentPayout = () => {
                     allPayout.map((payout) => (
                       <tr
                         key={payout?._id}
-                        className="align-middle even:bg-gray-200 text-center h-20"
+                        className="align-middle even:bg-gray-200 text-center h-[70px]"
                       >
                         <td>
                           <Link

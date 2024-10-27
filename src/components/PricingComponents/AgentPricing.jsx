@@ -82,7 +82,6 @@ const AgentPricing = () => {
   }, [token, role, navigate]);
 
   // Function to add the agent rule in the list
-
   const handleAddRule = (newRule) => {
     setAgentPricing((prevRules) => [...prevRules, newRule]);
     setModalVisibleAddRule(false);
@@ -266,7 +265,7 @@ const AgentPricing = () => {
   return (
     <>
       <h1 className="px-9 mt-5 font-bold p-3 bg-gray-300">Agent</h1>
-      <div className="flex items-center justify-between mx-9 mt-5">
+      <div className="flex items-center justify-between mx-9 mt-5 mb-[20px]">
         <h1 className="text-md">Pricing</h1>
         <div>
           <button
@@ -288,8 +287,8 @@ const AgentPricing = () => {
       </div>
 
       <div className="overflow-auto w-full max-h-[30rem]">
-        <table className="w-full mt-[20px] ">
-          <thead className="sticky top-0 bg-teal-700 text-white">
+        <table className="w-full">
+          <thead className="sticky top-0 bg-teal-700 text-white z-20">
             <tr>
               {[
                 "Rule Name",
@@ -372,7 +371,7 @@ const AgentPricing = () => {
                   </td>
                   <td className="p-4 w">
                     <div className="flex justify-center items-center gap-3">
-                      <div>
+                      <div className="z-10">
                         <Switch
                           checked={agentpricing.status}
                           onChange={() => handleToggleRule(agentpricing._id)}
@@ -384,30 +383,12 @@ const AgentPricing = () => {
                         >
                           <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 outline-none focus:outline-none text-[35px]" />
                         </button>
-                        <EditAgentPricingModal
-                          isVisible={isModalVisibleEditRule}
-                          handleCancel={handleCancel}
-                          token={token}
-                          currentEdit={currentEditRule}
-                          BASE_URL={BASE_URL}
-                          geofence={geofence}
-                          onEditRule={handleEditRule}
-                        />
                       </div>
                       <button
                         onClick={() => showModalDeleteRule(agentpricing._id)}
                       >
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
-                      <DeleteAgentPricingModal
-                        isVisible={isModalVisibleDeleteRule}
-                        handleCancel={handleCancel}
-                        handleConfirmDelete={handleConfirmDeleteRule}
-                        currentDelete={currentDeleteRule}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        remove={removeRule}
-                      />
                     </div>
                   </td>
                 </tr>
@@ -415,6 +396,26 @@ const AgentPricing = () => {
           </tbody>
         </table>
       </div>
+
+      <EditAgentPricingModal
+        isVisible={isModalVisibleEditRule}
+        handleCancel={handleCancel}
+        token={token}
+        currentEdit={currentEditRule}
+        BASE_URL={BASE_URL}
+        geofence={geofence}
+        onEditRule={handleEditRule}
+      />
+
+      <DeleteAgentPricingModal
+        isVisible={isModalVisibleDeleteRule}
+        handleCancel={handleCancel}
+        handleConfirmDelete={handleConfirmDeleteRule}
+        currentDelete={currentDeleteRule}
+        token={token}
+        BASE_URL={BASE_URL}
+        remove={removeRule}
+      />
 
       <div className="flex items-center justify-between mx-9 mt-8">
         <h1 className="text-md">Surge</h1>
@@ -503,30 +504,12 @@ const AgentPricing = () => {
                         >
                           <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                         </button>
-                        <EditAgentSurgeModal
-                          isVisible={isModalVisibleEditSurge}
-                          handleCancel={handleCancel}
-                          token={token}
-                          currentEdit={currentEditSurge}
-                          BASE_URL={BASE_URL}
-                          geofence={geofence}
-                          onEditSurge={handleEditSurge}
-                        />
                       </div>
                       <button
                         onClick={() => showModalDeleteSurge(agentsurge._id)}
                       >
                         <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                       </button>
-                      <DeleteAgentSurgeModal
-                        isVisible={isModalVisibleDeleteSurge}
-                        handleCancel={handleCancel}
-                        handleConfirmDelete={handleConfirmDeleteSurge}
-                        currentDelete={currentDeleteSurge}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        remove={removeSurge}
-                      />
                     </div>
                   </td>
                 </tr>
@@ -534,6 +517,25 @@ const AgentPricing = () => {
           </tbody>
         </table>
       </div>
+
+      <EditAgentSurgeModal
+        isVisible={isModalVisibleEditSurge}
+        handleCancel={handleCancel}
+        token={token}
+        currentEdit={currentEditSurge}
+        BASE_URL={BASE_URL}
+        geofence={geofence}
+        onEditSurge={handleEditSurge}
+      />
+      <DeleteAgentSurgeModal
+        isVisible={isModalVisibleDeleteSurge}
+        handleCancel={handleCancel}
+        handleConfirmDelete={handleConfirmDeleteSurge}
+        currentDelete={currentDeleteSurge}
+        token={token}
+        BASE_URL={BASE_URL}
+        remove={removeSurge}
+      />
     </>
   );
 };

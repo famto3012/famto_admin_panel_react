@@ -138,14 +138,16 @@ const Customers = () => {
         if (search.trim() !== "") {
           setIsTableLoading(true);
 
-          const response = await axios.get(
-            `${BASE_URL}/admin/customers/search`,
-            {
-              params: { query: search, page, limit },
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const endPoint =
+            role === "Admin"
+              ? `${BASE_URL}/admin/customers/search`
+              : `${BASE_URL}/admin/customers/search-customer-of-merchant`;
+
+          const response = await axios.get(endPoint, {
+            params: { query: search, page, limit },
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
           if (response.status === 200) {
             setCustomers(response.data.data);
@@ -354,6 +356,7 @@ const Customers = () => {
               >
                 <ArrowDownOutlined /> <span>CSV</span>
               </button>
+
               <Modal
                 open={isCSVModalVisible}
                 footer={null}
@@ -405,6 +408,7 @@ const Customers = () => {
                 </div>
               </Modal>
             </div>
+
             <div className="mx-8 rounded-lg mt-5 flex p-6 bg-white justify-between">
               <Select
                 options={geofenceOptions}
@@ -439,8 +443,9 @@ const Customers = () => {
                 </div>
               </div>
             </div>
+
             <div className="overflow-auto mt-[20px] w-full">
-              <table className="text-start w-full">
+              <table className="text-start w-full bg-white">
                 <thead className=" sticky top-0 left-0">
                   <tr>
                     {[
@@ -463,7 +468,7 @@ const Customers = () => {
                 </thead>
                 <tbody>
                   {isTableLoading && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td colSpan={7} className="text-center h-20">
                         Loading Data <Spinner size="sm" className="ms-2" />
                       </td>
@@ -471,7 +476,7 @@ const Customers = () => {
                   )}
 
                   {!isTableLoading && customers?.length === 0 && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td colSpan={7}>
                         <p className="flex items-center justify-center h-20">
                           No data available
@@ -484,7 +489,7 @@ const Customers = () => {
                     customers.map((customer) => (
                       <tr
                         key={customer._id}
-                        className="align-middle even:bg-gray-200 text-center"
+                        className="align-middle even:bg-gray-200 text-center h-[70px]"
                       >
                         <td className="p-4">
                           {role === "Admin" ? (

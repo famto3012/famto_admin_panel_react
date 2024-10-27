@@ -1,7 +1,8 @@
 import { useToast } from "@chakra-ui/react";
 import { Modal } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
+import Select from "react-select";
 
 const AddSubCustomerModal = ({
   isVisible,
@@ -24,6 +25,14 @@ const AddSubCustomerModal = ({
   const handleInputChange = (e) => {
     setCustomerData({ ...customerData, [e.target.name]: e.target.value });
   };
+
+  const taxOptions = [
+    { label: "No Tax", value: null },
+    ...tax.map((tax) => ({
+      label: tax.taxName,
+      value: tax.taxId,
+    })),
+  ];
 
   const addSubPlanHandler = async (e) => {
     e.preventDefault();
@@ -123,7 +132,7 @@ const AddSubCustomerModal = ({
             <label className="w-1/3 text-gray-500" htmlFor="taxId">
               Tax name
             </label>
-            <select
+            {/* <select
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               value={customerData.taxId}
@@ -139,7 +148,31 @@ const AddSubCustomerModal = ({
                   {tax.taxName}
                 </option>
               ))}
-            </select>
+            </select> */}
+
+            <Select
+              options={taxOptions}
+              value={taxOptions.find(
+                (option) => option.value === customerData.taxId
+              )}
+              onChange={(option) =>
+                setCustomerData({ ...customerData, taxId: option.value })
+              }
+              className="rounded w-2/3 focus:outline-none"
+              placeholder="Select Tax"
+              isSearchable={true}
+              isMulti={false}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  paddingRight: "",
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: "10px",
+                }),
+              }}
+            />
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="renewalReminder">
@@ -186,7 +219,6 @@ const AddSubCustomerModal = ({
               onClick={handleCancel}
               type="submit"
             >
-              {" "}
               Cancel
             </button>
             <button

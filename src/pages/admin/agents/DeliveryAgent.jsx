@@ -573,7 +573,7 @@ const DeliveryAgent = () => {
             </div>
 
             <div className="overflow-auto mt-[20px] w-full max-h-[30rem]">
-              <table className="text-start w-full mb-24">
+              <table className="text-start w-full mb-24 bg-white">
                 <thead className=" sticky top-0 left-0">
                   <tr className="">
                     {[
@@ -597,7 +597,7 @@ const DeliveryAgent = () => {
                 </thead>
                 <tbody>
                   {isTableLoading && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td colSpan={8} className="text-center h-20">
                         Loading Data...
                       </td>
@@ -605,7 +605,7 @@ const DeliveryAgent = () => {
                   )}
 
                   {!isTableLoading && agent?.length === 0 && (
-                    <tr>
+                    <tr className="bg-gray-200">
                       <td colSpan={8}>
                         <p className="flex items-center justify-center h-20">
                           No data available
@@ -618,7 +618,7 @@ const DeliveryAgent = () => {
                     agent.map((agent) => (
                       <tr
                         key={agent._id}
-                        className="align-middle even:bg-gray-200 text-center"
+                        className="align-middle even:bg-gray-200 text-center h-[70px]"
                       >
                         <td className="p-4 text-center">
                           <Link

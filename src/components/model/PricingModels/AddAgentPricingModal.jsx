@@ -85,9 +85,6 @@ const AddAgentPricingModal = ({
       centered
       onCancel={handleCancel}
       footer={null}
-      styles={{
-        mask: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Custom mask background color
-      }}
     >
       <form onSubmit={handleAddPricing}>
         <div className="flex flex-col max-h-[30rem] overflow-auto gap-4">

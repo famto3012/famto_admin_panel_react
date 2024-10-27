@@ -251,28 +251,12 @@ const NotificationSettings = () => {
                           >
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
-                          <EditNotificatioModal
-                            isVisible={isModalVisibleEdit}
-                            handleCancel={handleCancel}
-                            token={token}
-                            onEditNewData={onEditNewData}
-                            currentEdit={currentEdit}
-                            BASE_URL={BASE_URL}
-                          />
+
                           <button
                             onClick={() => showModalDelete(notification._id)}
                           >
                             <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />
                           </button>
-                          <DeleteNotificationModal
-                            isVisible={deleteModalVisible}
-                            handleCancel={handleCancel}
-                            handleConfirmDelete={handleConfirmDelete}
-                            currentDelete={currentDelete}
-                            token={token}
-                            BASE_URL={BASE_URL}
-                            remove={remove}
-                          />
                         </div>
                       </td>
                     </tr>
@@ -280,6 +264,24 @@ const NotificationSettings = () => {
                 </tbody>
               </table>
             </div>
+
+            <EditNotificatioModal
+              isVisible={isModalVisibleEdit}
+              handleCancel={handleCancel}
+              token={token}
+              onEditNewData={onEditNewData}
+              currentEdit={currentEdit}
+              BASE_URL={BASE_URL}
+            />
+            <DeleteNotificationModal
+              isVisible={deleteModalVisible}
+              handleCancel={handleCancel}
+              handleConfirmDelete={handleConfirmDelete}
+              currentDelete={currentDelete}
+              token={token}
+              BASE_URL={BASE_URL}
+              remove={remove}
+            />
           </div>
         </>
       )}

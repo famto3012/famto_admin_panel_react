@@ -246,19 +246,21 @@ const ConfigureMerchant = ({ detail, allBusinessCategory, onDataChange }) => {
               <span className="text-[15px]">
                 Mention a radius around the central location of my merchant.
                 Your store will serve within a this radius around your central
-                location. Note: Serving radius 0 means that the Restaurant can
-                serve anywhere.
+                location.
               </span>
             </label>
           </div>
           {detail?.merchantDetail?.servingArea === "Mention-radius" && (
             <input
-              type="text"
+              type="number"
               name="servingRadius"
               value={detail?.merchantDetail?.servingRadius}
               onChange={handleInputChange}
               className="mt-6 p-2 w-[20rem] border rounded-md outline-none focus:outline-none"
               placeholder="Serving Radius (in km)"
+              min={1}
+              max={99}
+              step={1} // This ensures only whole numbers are accepted
             />
           )}
         </div>
