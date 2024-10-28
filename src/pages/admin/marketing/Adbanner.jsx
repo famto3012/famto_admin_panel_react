@@ -292,15 +292,6 @@ const Adbanner = () => {
                       >
                         <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                       </button>
-                      <EditBannerModal
-                        isVisible={modals.editBanner}
-                        onCancel={() => toggleModal("editBanner", false)}
-                        allGeofence={allGeofence}
-                        selectedBanner={currentBanner}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        onEditBanner={handleEditBanner}
-                      />
 
                       <button>
                         <RiDeleteBinLine
@@ -311,33 +302,6 @@ const Adbanner = () => {
                           }}
                         />
                       </button>
-                      <Modal
-                        open={modals.deleteBanner}
-                        onCancel={() => toggleModal("deleteBanner", false)}
-                        footer={null}
-                        centered
-                      >
-                        <p className="font-semibold text-[18px] mb-5">
-                          Are you sure you want to delete this ?
-                        </p>
-                        <div className="flex justify-end">
-                          <button
-                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                            onClick={() => {
-                              currentBanner(null);
-                              toggleModal("deleteBanner", false);
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                            onClick={() => handleDelete(currentBanner)}
-                          >
-                            {confirmLoading ? `Deleting...` : `Delete`}
-                          </button>
-                        </div>
-                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -345,7 +309,42 @@ const Adbanner = () => {
             </tbody>
           </table>
         </div>
-
+        <EditBannerModal
+          isVisible={modals.editBanner}
+          onCancel={() => toggleModal("editBanner", false)}
+          allGeofence={allGeofence}
+          selectedBanner={currentBanner}
+          token={token}
+          BASE_URL={BASE_URL}
+          onEditBanner={handleEditBanner}
+        />
+        <Modal
+          open={modals.deleteBanner}
+          onCancel={() => toggleModal("deleteBanner", false)}
+          footer={null}
+          centered
+        >
+          <p className="font-semibold text-[18px] mb-5">
+            Are you sure you want to delete this ?
+          </p>
+          <div className="flex justify-end">
+            <button
+              className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+              onClick={() => {
+                currentBanner(null);
+                toggleModal("deleteBanner", false);
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+              onClick={() => handleDelete(currentBanner)}
+            >
+              {confirmLoading ? `Deleting...` : `Delete`}
+            </button>
+          </div>
+        </Modal>
         {/* Individual Banner */}
         <div className="flex items-center justify-between mx-10 mt-10">
           <h1 className="text-lg font-bold outline-none focus:outline-none">
@@ -391,7 +390,7 @@ const Adbanner = () => {
               </tr>
             </thead>
             <tbody>
-              {individualBanner?.map((individualBanner, index) => (
+              {individualBanner?.map((individualBanner) => (
                 <tr
                   className="text-center bg-white h-20 even:bg-[#e9e9e9]"
                   key={individualBanner?._id}
@@ -423,16 +422,6 @@ const Adbanner = () => {
                       >
                         <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                       </button>
-
-                      <EditIndividualModal
-                        isVisible={modals.editIndividual}
-                        onCancel={() => toggleModal("editIndividual", false)}
-                        allGeofence={allGeofence}
-                        selectedIndividualBanner={currentIndBanner}
-                        token={token}
-                        BASE_URL={BASE_URL}
-                        onEditIndBanner={handleEditIndividualBanner}
-                      />
                       <button>
                         <RiDeleteBinLine
                           className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]"
@@ -442,34 +431,6 @@ const Adbanner = () => {
                           }}
                         />
                       </button>
-                      <Modal
-                        onCancel={() => toggleModal("deleteIndividual", false)}
-                        footer={null}
-                        open={modals.deleteIndividual}
-                        centered
-                      >
-                        <p className="font-semibold text-[18px] mb-5">
-                          Are you sure you want to delete this ?
-                        </p>
-
-                        <div className="flex justify-end">
-                          <button
-                            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
-                            onClick={() => {
-                              setCurrentIndBanner(null);
-                              toggleModal("deleteIndividual", false);
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
-                            onClick={() => handleDelete(currentIndBanner, true)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </Modal>
                     </div>
                   </td>
                 </tr>
@@ -478,6 +439,43 @@ const Adbanner = () => {
           </table>
         </div>
       </div>
+      <EditIndividualModal
+        isVisible={modals.editIndividual}
+        onCancel={() => toggleModal("editIndividual", false)}
+        allGeofence={allGeofence}
+        selectedIndividualBanner={currentIndBanner}
+        token={token}
+        BASE_URL={BASE_URL}
+        onEditIndBanner={handleEditIndividualBanner}
+      />
+      <Modal
+        onCancel={() => toggleModal("deleteIndividual", false)}
+        footer={null}
+        open={modals.deleteIndividual}
+        centered
+      >
+        <p className="font-semibold text-[18px] mb-5">
+          Are you sure you want to delete this ?
+        </p>
+
+        <div className="flex justify-end">
+          <button
+            className="bg-cyan-100 px-5 py-1 rounded-md font-semibold"
+            onClick={() => {
+              setCurrentIndBanner(null);
+              toggleModal("deleteIndividual", false);
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className="bg-red-100 px-5 py-1 rounded-md ml-3 text-red-700"
+            onClick={() => handleDelete(currentIndBanner, true)}
+          >
+            {confirmLoading ? `Deleting...` : `Delete`}
+          </button>
+        </div>
+      </Modal>
     </>
   );
 };
