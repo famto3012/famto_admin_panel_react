@@ -94,7 +94,7 @@ const Messages = ({ messages, onReplyClick }) => {
               text: msg.text,
               date: msg.date,
               type: msg.type,
-              data: msg.data
+              data: msg.data,
             })
           }
         />

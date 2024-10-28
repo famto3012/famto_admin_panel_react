@@ -31,6 +31,7 @@ import { FaIndianRupeeSign } from "react-icons/fa6";
 import { UserContext } from "../context/UserContext";
 import { AiOutlineGift } from "react-icons/ai";
 import { IoMdTime } from "react-icons/io";
+import { FaWhatsapp } from "react-icons/fa";
 
 const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -196,6 +197,15 @@ const Sidebar = () => {
         >
           <PercentOutlinedIcon className="flex mr-[3px] m-2" />
           Commission/Subscription
+        </Link>
+        <Link
+          to="/chat"
+          className={`ps-4 side ${
+            selectedLink === "/chat" ? "selected-link" : ""
+          }`}
+        >
+          <FaWhatsapp className="m-[7px] text-[25px]" />
+          Whatsapp
         </Link>
       </ul>
 
