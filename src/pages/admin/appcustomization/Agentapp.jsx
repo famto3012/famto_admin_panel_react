@@ -220,9 +220,8 @@ const Agentapp = () => {
                 {imgSrc && (
                   <CropImage
                     selectedImage={img}
-                    aspectRatio={9 / 16} // Optional, set aspect ratio (1:1 here)
+                    aspectRatio={9 / 16}
                     onCropComplete={handleCropComplete}
-                    onClose={handleModalClose} // Pass the handler to close the modal and reset the state
                   />
                 )}
               </div>

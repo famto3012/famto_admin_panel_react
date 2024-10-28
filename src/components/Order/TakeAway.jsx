@@ -6,6 +6,9 @@ import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import { paymentOptions } from "../../utils/DefaultData";
+import { useDraggable } from "../../hooks/useDraggable";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -34,6 +37,13 @@ const TakeAway = ({ data }) => {
   const [paymentMode, setPaymentMode] = useState("");
 
   const { token, role, userId } = useContext(UserContext);
+  const {
+    isDragging,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseUp,
+    handleMouseMove,
+  } = useDraggable();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -448,11 +458,11 @@ const TakeAway = ({ data }) => {
               )}
 
               {productResults.length > 0 && (
-                <ul className="absolute bg-white border w-full mt-1 z-50">
+                <ul className="absolute bg-white border w-full mt-1 z-50 max-h-[20rem] overflow-auto">
                   {productResults.map((result) => (
                     <li
                       key={result.id}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      className="p-2 py-3 hover:bg-gray-200 cursor-pointer"
                       onClick={() => selectProduct(result)}
                     >
                       {result.productName}
@@ -465,7 +475,15 @@ const TakeAway = ({ data }) => {
 
           <div className="flex items-center">
             <label className="w-1/3 px-6">Selected Products</label>
-            <div className="relative w-[50%] flex gap-4 overflow-x-auto">
+            <div
+              className={`relative w-[50%] flex gap-4 overflow-x-auto ${
+                isDragging ? "cursor-grabbing" : "cursor-grab"
+              }`}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+            >
               {takeAwayData.items.map((item) => (
                 <div
                   key={item.productId}
@@ -555,19 +573,20 @@ const TakeAway = ({ data }) => {
         <>
           <div className="flex my-5">
             <h1 className="px-6 w-1/3 font-semibold">Payment mode</h1>
+
             <div className=" w-1/2">
-              <select
-                name="paymentMode"
-                value={paymentMode}
-                className="w-full py-2 ps-3 outline-none focus:outline-none border-2"
-                onChange={(e) => setPaymentMode(e.target.value)}
-              >
-                <option defaultValue="Select payment mode" hidden>
-                  Select payment mode
-                </option>
-                <option value="Online-payment">Online payment</option>
-                <option value="Cash-on-delivery">Cash on delivery</option>
-              </select>
+              <Select
+                options={paymentOptions}
+                value={paymentOptions.find(
+                  (option) => option.value === paymentMode
+                )}
+                onChange={(option) => setPaymentMode(option.value)}
+                className="w-ful outline-none focus:outline-none"
+                placeholder="Select payment mode"
+                isSearchable={true}
+                isMulti={false}
+                menuPlacement="auto"
+              />
             </div>
           </div>
 
