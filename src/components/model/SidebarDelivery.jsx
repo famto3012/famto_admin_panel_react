@@ -8,13 +8,12 @@ import TwoWheelerOutlinedIcon from "@mui/icons-material/TwoWheelerOutlined";
 import PercentOutlinedIcon from "@mui/icons-material/PercentOutlined";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { FaWhatsapp } from "react-icons/fa";
 
 const SidebarDelivery = () => {
-
   const [selectedLink, setSelectedLink] = useState("");
 
   const location = useLocation();
-
 
   useEffect(() => {
     setSelectedLink(location.pathname);
@@ -46,18 +45,32 @@ const SidebarDelivery = () => {
         <Link to="/customers" className="side">
           <GroupsOutlinedIcon className="m-2" />
         </Link>
-        <Link to="/all-agents" className={`side ${
-                selectedLink === "/agent-payout" ? "selected-link" : ""
-              }`}>
+        <Link
+          to="/all-agents"
+          className={`side ${
+            selectedLink === "/agent-payout" ? "selected-link" : ""
+          }`}
+        >
           <AssignmentIndOutlinedIcon className="m-2" />
         </Link>
-        <Link to="/delivery-management" className={` side ${
-                selectedLink === "/delivery-management" ? "selected-link" : ""
-              }`}>
+        <Link
+          to="/delivery-management"
+          className={` side ${
+            selectedLink === "/delivery-management" ? "selected-link" : ""
+          }`}
+        >
           <TwoWheelerOutlinedIcon className="m-2" />
         </Link>
         <Link to="/commission" className="side">
           <PercentOutlinedIcon className="flex mr-[3px] m-2" />
+        </Link>
+        <Link
+          to="/chat"
+          className={` side ${
+            selectedLink === "/chat" ? "selected-link" : ""
+          }`}
+        >
+          <FaWhatsapp className="m-[7px] text-[25px]" />
         </Link>
       </ul>
     </div>
