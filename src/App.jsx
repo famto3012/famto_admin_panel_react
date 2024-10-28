@@ -13,6 +13,8 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import "./fonts.css";
 import "./App.css";
 import ActivityLog from "./pages/admin/ActivityLog/ActivityLog";
+import MaintenancePage from "./pages/auth/MaintenancePage";
+import Chat from "./pages/admin/chats/Chat";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -103,6 +105,10 @@ function MobileAppPrompt() {
   if (location.pathname === "/auth/reset-password") {
     console.log("Excluding MobileAppPrompt for reset-password page");
     return <ResetPassword />;
+  }
+
+  if(location.pathname === "/maintenance"){
+    return <MaintenancePage/>
   }
 
   if (isSmallScreen) {
@@ -226,6 +232,14 @@ function App() {
               <Route
                 path="/alert-notification"
                 element={<AlertNotification />}
+              />
+              <Route
+                path="/maintenance"
+                element={<MaintenancePage />}
+              />
+              <Route
+                path="/chat"
+                element={<Chat />}
               />
               <Route
                 path="/notification-settings"

@@ -73,12 +73,6 @@ const EditIndividualModal = ({
     }));
   };
 
-  const handleSelectImage = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setPreviewURL(URL.createObjectURL(file));
-  };
 
   const handleEditBanner = async (e) => {
     try {
@@ -92,8 +86,8 @@ const EditIndividualModal = ({
       formData.append("merchantId", bannerData.merchantId);
       formData.append("geofenceId", bannerData.geofenceId);
 
-      if (selectedFile) {
-        formData.append("bannerImage", selectedFile);
+      if (croppedFile) {
+        formData.append("bannerImage", croppedFile);
       }
 
       const response = await axios.put(
@@ -109,7 +103,7 @@ const EditIndividualModal = ({
       );
 
       if (response.status === 200) {
-        onEditIndBanner(response.data.data);
+        onEditIndBanner(response.data.banner);
         setBannerData({
           name: "",
           merchantId: "",
