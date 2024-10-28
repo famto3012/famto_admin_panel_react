@@ -133,13 +133,15 @@ const CommissionComponent = () => {
         });
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "An error occurred while creating the commission.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      if (err?.response?.data?.message) {
+        toast({
+          title: "Error",
+          description: err?.response?.data?.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } finally {
       setIsLoading(false);
     }

@@ -445,7 +445,7 @@ const OrderDetails = () => {
           deliveryLocation,
           orderDetail.customerDetail.name,
           "",
-          orderDetail.customerDetail.address.phoneNumber
+          orderDetail?.customerDetail?.address?.phoneNumber
         );
       }
     }

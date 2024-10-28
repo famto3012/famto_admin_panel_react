@@ -35,7 +35,7 @@ const Subscriptioncustomer = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
-  const [currentId, setCurrentId] = useState(null);
+  const [logId, setLogId] = useState(null);
 
   const [selectedOption, setSelectedOption] = useState("Merchant");
 
@@ -326,6 +326,46 @@ const Subscriptioncustomer = () => {
     }
   };
 
+  const handleSetAsPaid = async () => {
+    try {
+      setIsConfirming(true);
+
+      const response = await axios.put(
+        `${BASE_URL}/admin/subscription-payment/merchant-subscription-status-update/${logId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setMerchantlog((prevLogs) =>
+          prevLogs.map((log) =>
+            log._id === logId ? { ...log, paymentStatus: "Paid" } : log
+          )
+        );
+        setLogId(null);
+        handleCancel();
+        toast({
+          title: "Success",
+          duration: 3000,
+          description: "Marked as paid",
+          status: "success",
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        duration: 3000,
+        description: "Error in marking as paid",
+        status: "error",
+      });
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
   const merchantOptions = merchant?.map((merchant) => ({
     label: merchant.merchantName,
     value: merchant._id,
@@ -338,7 +378,7 @@ const Subscriptioncustomer = () => {
   const handleCancel = () => setIsModalVisible(false);
 
   const showModal = (id) => {
-    setCurrentId(id);
+    setLogId(id);
     setIsModalVisible(true);
   };
 
@@ -606,44 +646,27 @@ const Subscriptioncustomer = () => {
                           <td>{formatDate(merchantlog.startDate)}</td>
                           <td className="flex justify-center px-[15px] pt-5">
                             {merchantlog.paymentStatus === "Unpaid" ? (
-                              <button
-                                className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center "
-                                onClick={() => showModal(merchantlog._id)}
-                              >
-                                Set as paid
-                              </button>
-                            ) : (
-                              <p className="text-green-400">Paid</p>
-                            )}
-
-                            <Modal
-                              title={
-                                <span className="font-[500] text-[16px]">
-                                  Confirm?
-                                </span>
-                              }
-                              onCancel={handleCancel}
-                              footer={null}
-                              open={
-                                isModalVisible && currentId === merchantlog._id
-                              }
-                              centered
-                            >
-                              <p className="text-[14px] my-3">
-                                Do you want to confirm?
-                              </p>
-                              <div className="flex justify-end">
-                                <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold">
-                                  Cancel
-                                </button>
+                              role === "Admin" ? (
                                 <button
-                                  className="bg-teal-900 px-5 py-1 rounded-md ml-3 text-white"
-                                  onClick={() => handleChange(merchantlog._id)}
+                                  className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center"
+                                  onClick={() => showModal(merchantlog._id)}
                                 >
-                                  {isConfirming ? `Confirming...` : `Confirm`}
+                                  Set as paid
                                 </button>
-                              </div>
-                            </Modal>
+                              ) : (
+                                <p className="text-red-500">Unpaid</p>
+                              )
+                            ) : (
+                              <p
+                                className={` ${
+                                  merchantlog.paymentStatus === "Unpaid"
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                } `}
+                              >
+                                {merchantlog.paymentStatus}
+                              </p>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -652,6 +675,27 @@ const Subscriptioncustomer = () => {
               </div>
             )}
           </div>
+
+          <Modal
+            title={<span className="font-[500] text-[16px]">Confirm?</span>}
+            onCancel={handleCancel}
+            footer={null}
+            open={isModalVisible}
+            centered
+          >
+            <p className="text-[14px] my-3">Do you want to confirm?</p>
+            <div className="flex justify-end">
+              <button className="bg-cyan-100 px-5 py-1 rounded-md font-semibold">
+                Cancel
+              </button>
+              <button
+                className="bg-teal-900 px-5 py-1 rounded-md ml-3 text-white"
+                onClick={handleSetAsPaid}
+              >
+                {isConfirming ? `Confirming...` : `Confirm`}
+              </button>
+            </div>
+          </Modal>
         </>
       )}
     </div>

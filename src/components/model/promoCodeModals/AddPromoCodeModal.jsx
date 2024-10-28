@@ -440,7 +440,7 @@ const AddPromoCodeModal = ({
                   selectedImage={img}
                   aspectRatio={1 / 1}
                   onCropComplete={handleCropComplete}
-                  onClose={handleModalClose}
+                  onClose={() => {}}
                 />
               )}
             </div>

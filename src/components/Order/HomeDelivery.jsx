@@ -333,21 +333,6 @@ const HomeDelivery = ({ data }) => {
         });
       }
     } catch (err) {
-      // if (err.response && err.response.data && err.response.data.errors) {
-      //   const { errors } = err.response.data;
-
-      //   const formattedErrors = Object.entries(errors)
-      //     .map(([field, message]) => "• " + message + <br />)
-      //     .join("\n");
-
-      //   toast({
-      //     title: "Error",
-      //     description: formattedErrors,
-      //     status: "error",
-      //     duration: 4000,
-      //     isClosable: true,
-      //   });
-      // } else {
       toast({
         title: "Error",
         description: "Error in creating invoice",
@@ -355,7 +340,6 @@ const HomeDelivery = ({ data }) => {
         duration: 3000,
         isClosable: true,
       });
-      // }
     } finally {
       setIsInvoiceLoading(false);
     }
@@ -457,11 +441,11 @@ const HomeDelivery = ({ data }) => {
               )}
 
               {productResults.length > 0 && (
-                <ul className="absolute bg-white border w-full mt-1 z-50">
+                <ul className="absolute bg-white border w-full mt-1 z-50 max-h-[25rem] overflow-auto">
                   {productResults.map((result, index) => (
                     <li
                       key={index}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      className="p-2 py-2 hover:bg-gray-200 cursor-pointer"
                       onClick={() => selectProduct(result)}
                     >
                       {result.productName}
@@ -475,7 +459,15 @@ const HomeDelivery = ({ data }) => {
           {homeDeliveryData.items.length > 0 && (
             <div className="flex items-center">
               <label className="w-1/3 px-6">Selected Products</label>
-              <div className="relative w-[50%] flex gap-4 overflow-x-scroll">
+              <div
+                className={`relative w-[50%] flex gap-4 overflow-x-scroll ${
+                  isDragging ? "cursor-grabbing" : "cursor-grab"
+                }`}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+              >
                 {homeDeliveryData.items.map((item) => (
                   <div
                     key={item._id}
