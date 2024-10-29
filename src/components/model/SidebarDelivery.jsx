@@ -7,11 +7,13 @@ import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined
 import TwoWheelerOutlinedIcon from "@mui/icons-material/TwoWheelerOutlined";
 import PercentOutlinedIcon from "@mui/icons-material/PercentOutlined";
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
+import { UserContext } from "../../context/UserContext";
 
 const SidebarDelivery = () => {
   const [selectedLink, setSelectedLink] = useState("");
+  const { role } = useContext(UserContext);
 
   const location = useLocation();
 
@@ -64,14 +66,16 @@ const SidebarDelivery = () => {
         <Link to="/commission" className="side">
           <PercentOutlinedIcon className="flex mr-[3px] m-2" />
         </Link>
-        <Link
-          to="/chat"
-          className={` side ${
-            selectedLink === "/chat" ? "selected-link" : ""
-          }`}
-        >
-          <FaWhatsapp className="m-[7px] text-[25px]" />
-        </Link>
+        {role === "Admin" && (
+          <Link
+            to="/chat"
+            className={` side ${
+              selectedLink === "/chat" ? "selected-link" : ""
+            }`}
+          >
+            <FaWhatsapp className="m-[7px] text-[25px]" />
+          </Link>
+        )}
       </ul>
     </div>
   );
