@@ -134,7 +134,7 @@ const Signup = () => {
         <div className="min-w-sm md:border-2  border-teal-700 p-2 md:p-10 md:rounded-xl rounded-tl-[100px] bg-white w-full md:max-w-md">
           <img
             className="mx-auto hidden lg:flex h-20 w-20"
-            src="https://firebasestorage.googleapis.com/v0/b/famtowebsite.appspot.com/o/images%2FNew%20logo%20(25).svg?alt=media&token=2a2625e5-884d-4241-8bef-ac2c767389ba"
+            src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427320755.svg?alt=media&token=02f2a096-b50a-4618-b9fb-a333f0c2aac0"
           />
           <h1 className="text-teal-700 md:text-[20px] mt-4 mb-6 text-center md:text-black ">
             Sign Up

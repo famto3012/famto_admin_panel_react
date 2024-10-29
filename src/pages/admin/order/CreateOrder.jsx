@@ -87,7 +87,7 @@ const CreateOrder = () => {
       } catch (err) {
         toast({
           title: "Error",
-          description: "An error occoured while searching the cuatomer",
+          description: "An error occoured while searching the customer",
           status: "error",
           duration: 3000,
           isClosable: true,
