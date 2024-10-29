@@ -91,7 +91,7 @@ const Sidebar = () => {
     <div className="fixed w-[300px] h-full bg-gradient-to-b from-[#016B6C] to-[#000] bg-[length:100%_150%] bg-top font-poppins overflow-y-auto pb-[50px] z-20 overflow-element">
       <div className="flex gap-3 ml-[10px] mt-[30px]">
         <img
-          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FAsset%205.svg?alt=media&token=017cbae8-518a-47bc-bab3-3bc4cfb0dbed"
+          src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FAsset%206.svg?alt=media&token=a611c00b-b1de-4968-9bb2-5e9440f55945"
           alt="Logo"
           className="w-[140px]"
         />
