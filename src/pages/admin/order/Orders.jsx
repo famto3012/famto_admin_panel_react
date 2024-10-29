@@ -112,53 +112,54 @@ const Orders = () => {
       navigate("/auth/login");
     }
 
-    getAllOrders();
+    // getAllOrders();
+    filterHandler()
 
     if (role === "Admin") getAllMerchants();
   }, [token, page, limit, role, deliveryOption]);
 
-  const getAllOrders = async () => {
-    try {
-      setIsTableLoading(true);
-      let endpoint;
+  // const getAllOrders = async () => {
+  //   try {
+  //     setIsTableLoading(true);
+  //     let endpoint;
 
-      if (role === "Admin" && deliveryOption === true) {
-        endpoint = `${BASE_URL}/orders/admin/all-orders`;
-      } else if (role === "Admin" && deliveryOption === false) {
-        endpoint = `${BASE_URL}/orders/admin/all-scheduled-orders`;
-      } else if (role === "Merchant" && deliveryOption === true) {
-        endpoint = `${BASE_URL}/orders/all-orders`;
-      } else if (role === "Merchant" && deliveryOption === false) {
-        endpoint = `${BASE_URL}/orders/all-scheduled-orders`;
-      }
+  //     if (role === "Admin" && deliveryOption === true) {
+  //       endpoint = `${BASE_URL}/orders/admin/all-orders`;
+  //     } else if (role === "Admin" && deliveryOption === false) {
+  //       endpoint = `${BASE_URL}/orders/admin/all-scheduled-orders`;
+  //     } else if (role === "Merchant" && deliveryOption === true) {
+  //       endpoint = `${BASE_URL}/orders/all-orders`;
+  //     } else if (role === "Merchant" && deliveryOption === false) {
+  //       endpoint = `${BASE_URL}/orders/all-scheduled-orders`;
+  //     }
 
-      const response = await axios.get(endpoint, {
-        params: { page, limit },
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  //     const response = await axios.get(endpoint, {
+  //       params: { page, limit },
+  //       withCredentials: true,
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-      if (response.status === 200) {
-        setOrders(response.data.data);
-        console.log("Order", response.data.data);
-        setPagination(response.data.pagination);
-        if (role === "Merchant" && deliveryOption === false) {
-          setUnSeenCount(response.data.notSeen);
-          console.log("Unseen", response.data.notSeen);
-        }
-      }
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "An error occoured while getting all orders",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+  //     if (response.status === 200) {
+  //       setOrders(response.data.data);
+  //       console.log("Order", response.data.data);
+  //       setPagination(response.data.pagination);
+  //       if (role === "Merchant" && deliveryOption === false) {
+  //         setUnSeenCount(response.data.notSeen);
+  //         console.log("Unseen", response.data.notSeen);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     toast({
+  //       title: "Error",
+  //       description: "An error occoured while getting all orders",
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setIsTableLoading(false);
+  //   }
+  // };
 
   const getAllMerchants = async () => {
     try {
@@ -180,6 +181,55 @@ const Orders = () => {
     }
   };
 
+  const filterHandler = async () => {
+    try {
+      setIsTableLoading(true);
+
+      let endPoint;
+      if (role === "Admin") {
+        endPoint = deliveryOption
+          ? `${BASE_URL}/orders/admin/filter`
+          : `${BASE_URL}/orders/admin/filter-scheduled`;
+      } else if (role === "Merchant") {
+        endPoint = deliveryOption
+          ? `${BASE_URL}/orders/filter`
+          : `${BASE_URL}/orders/filter-scheduled`;
+      }
+
+      const params = [];
+      if (orderStatus) params.push(`status=${orderStatus}`);
+      if (paymentMode) params.push(`paymentMode=${paymentMode}`);
+      if (deliveryMode) params.push(`deliveryMode=${deliveryMode}`);
+      if (selectedMerchant) params.push(`merchantId=${selectedMerchant}`);
+      if (selectedDate) params.push(`date=${selectedDate}`);
+
+      if (params.length > 0) {
+        endPoint += `?${params.join("&")}`;
+      }
+
+      const response = await axios.get(endPoint, {
+        params: { page, limit },
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        setOrders(response.data.data);
+        setPagination(response.data.pagination);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An error occoured while filtering the orders",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (
       !orderStatus &&
@@ -189,54 +239,7 @@ const Orders = () => {
       !selectedDate
     )
       return;
-    const filterHandler = async () => {
-      try {
-        setIsTableLoading(true);
-
-        let endPoint;
-        if (role === "Admin") {
-          endPoint = deliveryOption
-            ? `${BASE_URL}/orders/admin/filter`
-            : `${BASE_URL}/orders/admin/filter-scheduled`;
-        } else if (role === "Merchant") {
-          endPoint = deliveryOption
-            ? `${BASE_URL}/orders/filter`
-            : `${BASE_URL}/orders/filter-scheduled`;
-        }
-
-        const params = [];
-        if (orderStatus) params.push(`status=${orderStatus}`);
-        if (paymentMode) params.push(`paymentMode=${paymentMode}`);
-        if (deliveryMode) params.push(`deliveryMode=${deliveryMode}`);
-        if (selectedMerchant) params.push(`merchantId=${selectedMerchant}`);
-        if (selectedDate) params.push(`date=${selectedDate}`);
-
-        if (params.length > 0) {
-          endPoint += `?${params.join("&")}`;
-        }
-
-        const response = await axios.get(endPoint, {
-          params: { page, limit },
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.status === 200) {
-          setOrders(response.data.data);
-          setPagination(response.data.pagination);
-        }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description: "An error occoured while filtering the orders",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } finally {
-        setIsTableLoading(false);
-      }
-    };
+   
 
     filterHandler();
   }, [
@@ -279,7 +282,7 @@ const Orders = () => {
             setPagination(response.data.pagination);
           }
         } else {
-          getAllOrders();
+          filterHandler();
         }
       } catch (err) {
         toast({

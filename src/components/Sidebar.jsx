@@ -198,15 +198,17 @@ const Sidebar = () => {
           <PercentOutlinedIcon className="flex mr-[3px] m-2" />
           Commission/Subscription
         </Link>
-        <Link
-          to="/chat"
-          className={`ps-4 side ${
-            selectedLink === "/chat" ? "selected-link" : ""
-          }`}
-        >
-          <FaWhatsapp className="m-[7px] text-[25px]" />
-          Whatsapp
-        </Link>
+        {role === "Admin" && (
+          <Link
+            to="/chat"
+            className={`ps-4 side ${
+              selectedLink === "/chat" ? "selected-link" : ""
+            }`}
+          >
+            <FaWhatsapp className="m-[7px] text-[25px]" />
+            Whatsapp
+          </Link>
+        )}
       </ul>
 
       <div className="dropside" onClick={toggleSidebar("marketing")}>
