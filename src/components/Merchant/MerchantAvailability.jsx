@@ -14,16 +14,40 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
 
   const handleAvailabilityTypeChange = (e) => {
     const { value } = e.target;
-    onDataChange({
+    // onDataChange({
+    //   ...detail,
+    //   merchantDetail: {
+    //     ...detail.merchantDetail,
+    //     availability: {
+    //       ...detail.merchantDetail.availability,
+    //       type: value,
+    //     },
+    //   },
+    // });
+    const updatedDetail = {
       ...detail,
       merchantDetail: {
         ...detail.merchantDetail,
         availability: {
           ...detail.merchantDetail.availability,
           type: value,
+          specificDays:
+            value === "Full-time"
+              ? {
+                  sunday: { openAllDay: true },
+                  monday: { openAllDay: true },
+                  tuesday: { openAllDay: true },
+                  wednesday: { openAllDay: true },
+                  thursday: { openAllDay: true },
+                  friday: { openAllDay: true },
+                  saturday: { openAllDay: true },
+                }
+              : detail.merchantDetail.availability.specificDays,
         },
       },
-    });
+    };
+
+    onDataChange(updatedDetail);
   };
 
   const handleSpecificDayChange = (day, field, value) => {

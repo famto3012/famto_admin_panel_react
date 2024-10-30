@@ -49,7 +49,6 @@ const Notificationlog = () => {
   }, [page, limit, role]);
 
   const handleNotification = (payload) => {
-
     if (
       payload.notification.title === newOrder ||
       payload.notification.title === orderRejected ||
@@ -212,7 +211,11 @@ const Notificationlog = () => {
                   </td>
                   <td className="mt-2">
                     <span className="font-bold block">{table.title}</span>
-                    <span className="block">{table.description}</span>
+                    <span className="block">
+                      {table.description.length > 30
+                        ? `${table.description.substring(0, 30)}...`
+                        : table.description}
+                    </span>
                   </td>
                   <td>
                     {`${formatDate(table.createdAt)} ${formatTime(

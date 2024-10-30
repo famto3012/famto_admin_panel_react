@@ -33,7 +33,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
-  agentStatusOptions,
+  agentDeliveryManagementStatusOptions,
   taskStatusOptions,
 } from "../../../utils/DefaultData";
 
@@ -1462,8 +1462,8 @@ const DeliveryManagement = () => {
 
             <div className="w-full p-2 bg-white ">
               <Select
-                options={agentStatusOptions}
-                value={agentStatusOptions.find(
+                options={agentDeliveryManagementStatusOptions}
+                value={agentDeliveryManagementStatusOptions.find(
                   (option) => option.value === status
                 )}
                 onChange={selectChangeOfStatus}
@@ -1487,7 +1487,7 @@ const DeliveryManagement = () => {
                 type="search"
                 className="border-2 border-zinc-200 bg-white rounded-lg mt-5 p-2 w-full focus:outline-none"
                 name="search"
-                placeholder="Search agents"
+                placeholder="Search agent name"
                 onChange={(e) => {
                   handleAgentSearch(e?.target?.value);
                 }}
