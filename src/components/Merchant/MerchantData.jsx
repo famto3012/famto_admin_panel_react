@@ -101,7 +101,7 @@ const MerchantData = ({
   const handleCropComplete = (croppedFile) => {
     setCroppedFile(croppedFile);
     // setSelectedFile(croppedFile)// Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
+
     onDataChange({ merchantImage: croppedFile });
   };
 
@@ -341,7 +341,7 @@ const MerchantData = ({
         )}
 
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
-          <label className=" text-gray-700 text-[16px] w-1/3">Pricing</label>
+          <label className="text-gray-700 text-[16px] w-1/3">Pricing</label>
 
           {detail?.merchantDetail?.pricing ? (
             <p className="w-2/3 bg-transparent rounded-md p-2 text-left  me-[95px]">
@@ -351,7 +351,9 @@ const MerchantData = ({
                 : `${detail?.merchantDetail?.pricing?.detail?.value}`}
             </p>
           ) : (
-            <p>-</p>
+            <p className="w-2/3 text-red-600 font-[500] rounded-md text-left me-[95px]">
+              Inactive
+            </p>
           )}
         </div>
 

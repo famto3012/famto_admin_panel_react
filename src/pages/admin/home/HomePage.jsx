@@ -34,8 +34,8 @@ const HomePage = () => {
   const [data, setData] = useState([]);
   const [commission, setCommission] = useState([]);
   const [subscription, setSubscription] = useState([]);
-  const [merchantAvailability, setMerchantAvailability] = useState()
-  const [isAvailable, setIsAvailable] = useState(false)
+  const [merchantAvailability, setMerchantAvailability] = useState();
+  const [isAvailable, setIsAvailable] = useState(false);
 
   const [dateRange, setDateRange] = useState([
     new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -112,7 +112,9 @@ const HomePage = () => {
   };
 
   const getCurrentDayAndTime = () => {
-    const currentDay = new Date().toLocaleString("en-us", { weekday: "long" }).toLowerCase();
+    const currentDay = new Date()
+      .toLocaleString("en-us", { weekday: "long" })
+      .toLowerCase();
     const currentTime = new Date().toLocaleTimeString("en-US", {
       hour12: false, // 24-hour format
       hour: "2-digit",
@@ -125,7 +127,7 @@ const HomePage = () => {
     try {
       const response = await axios.patch(
         `${BASE_URL}/merchants/change-status-toggle`,
-        {status},
+        { status },
         {
           withCredentials: true,
           headers: {
@@ -169,14 +171,14 @@ const HomePage = () => {
       // Handle openAllDay
       if (todayAvailability.openAllDay) {
         setIsAvailable(true);
-        handleChangeMerchantStatusToggle(true)
+        handleChangeMerchantStatusToggle(true);
         return;
       }
 
       // Handle closedAllDay
       if (todayAvailability.closedAllDay) {
         setIsAvailable(false);
-        handleChangeMerchantStatusToggle(false)
+        handleChangeMerchantStatusToggle(false);
         // setErrorMessage("Merchant is closed all day.");
         return;
       }
@@ -186,10 +188,10 @@ const HomePage = () => {
         const { startTime, endTime } = todayAvailability;
         if (currentTime >= startTime && currentTime <= endTime) {
           setIsAvailable(true);
-          handleChangeMerchantStatusToggle(true)
+          handleChangeMerchantStatusToggle(true);
         } else {
           setIsAvailable(false);
-          handleChangeMerchantStatusToggle(false)
+          handleChangeMerchantStatusToggle(false);
           // setErrorMessage("Merchant is not available at the current time.");
         }
         return;
@@ -206,8 +208,8 @@ const HomePage = () => {
   useEffect(() => {
     checkAvailability();
 
-    const intervalId = setInterval(checkAvailability, 60000); 
-    return () => clearInterval(intervalId); 
+    const intervalId = setInterval(checkAvailability, 60000);
+    return () => clearInterval(intervalId);
   }, [merchantAvailability]);
 
   useEffect(() => {
@@ -223,13 +225,13 @@ const HomePage = () => {
 
     if (role === "Admin") {
       socket?.emit("getRealTimeDataOnRefresh", "");
-    } else if(role === "Merchant"){
+    } else if (role === "Merchant") {
       const data = {
         id: userId,
         role: role,
       };
       socket?.emit("getRealTimeDataOnRefreshMerchant", data);
-      getMerchantProfile()
+      getMerchantProfile();
     }
 
     const unsubscribe = onMessage(messaging, (payload) => {
@@ -264,12 +266,12 @@ const HomePage = () => {
         }
       } else {
         toast({
-            title: "Error",
-            description: "Notification permission not granted",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
+          title: "Error",
+          description: "Notification permission not granted",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error("Error retrieving token:", err);
@@ -400,15 +402,12 @@ const HomePage = () => {
     });
   }
 
-
   const valueFormatter = (value) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
     }).format(value);
   };
-
-  
 
   const handleChangeMerchantStatus = async () => {
     try {
@@ -433,7 +432,6 @@ const HomePage = () => {
         });
       }
     } catch (err) {
-      
       if (err.response && err.response.data && err.response.data.message) {
         const { message } = err.response.data;
 

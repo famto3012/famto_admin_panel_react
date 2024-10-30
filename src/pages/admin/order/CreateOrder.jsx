@@ -75,8 +75,8 @@ const CreateOrder = () => {
       try {
         const endPoint =
           role === "Admin"
-            ? `${BASE_URL}/admin/customers/search?query=${query}`
-            : `${BASE_URL}/admin/customers/search-customer-of-merchant?query=${query}`;
+            ? `${BASE_URL}/admin/customers/search-for-order?query=${query}`
+            : `${BASE_URL}/admin/customers/search-customer-of-merchant-for-order?query=${query}`;
 
         const response = await axios.get(endPoint, {
           withCredentials: true,
