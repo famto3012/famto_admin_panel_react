@@ -70,6 +70,12 @@ const agentStatusOptions = [
   { value: "Inactive", label: "Inactive" },
 ];
 
+const agentDeliveryManagementStatusOptions = [
+  { value: "Free", label: "Free" },
+  { value: "Busy", label: "Busy" },
+  { value: "Inactive", label: "Inactive" },
+];
+
 const agentVehicleOptions = [
   { value: "all", label: "All" },
   { value: "Bike", label: "Bike" },
@@ -132,4 +138,5 @@ export {
   taskStatusOptions,
   promoCodeModeOptions,
   paymentOptions,
+  agentDeliveryManagementStatusOptions,
 };

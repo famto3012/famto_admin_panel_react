@@ -374,7 +374,7 @@ const PushNotification = () => {
             </div>
             <div className="flex">
               <label className="mt-10 ml-10 w-48">
-                Description (This note will be shown in notification.)
+                Description (This note will be shown in notification. <span className="text-red-500">[Visibility 30 characters]</span>)
                 <span className="text-red-500 ms-2">*</span>
               </label>
               <input
@@ -586,7 +586,12 @@ const PushNotification = () => {
                       ? "All"
                       : type}
                   </td>
-                  <td>{data.description}</td>
+                  <td>
+                    {" "}
+                    {data.description.length > 30
+                      ? `${data.description.substring(0, 30)}...`
+                      : data.description}
+                  </td>
                   <td className=" flex items-center justify-center p-3">
                     <figure className="h-[70px] w-[100px]">
                       <img

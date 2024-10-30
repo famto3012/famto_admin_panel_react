@@ -346,7 +346,7 @@ const AlertNotification = () => {
                       htmlFor="description"
                       className="w-[215px] text-gray-500"
                     >
-                      Description (This note will be shown in Notification)
+                      Description (This note will be shown in notification. <span className="text-red-500">[Visibility 30 characters]</span>)
                       <span className="text-red-500 ms-2">*</span>
                     </label>
                     <textarea
@@ -509,7 +509,12 @@ const AlertNotification = () => {
                       >
                         <td>{alertItem.title}</td>
                         <td>{alertItem._id}</td>
-                        <td>{alertItem.description}</td>
+                        <td>
+                          {" "}
+                          {alertItem.description.length > 30
+                            ? `${alertItem.description.substring(0, 30)}...`
+                            : alertItem.description}
+                        </td>
                         <td className="flex items-center justify-center p-3">
                           <figure className="h-[70px] w-[100px]">
                             <img

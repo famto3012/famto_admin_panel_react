@@ -30,12 +30,13 @@ const HomePage = () => {
   const [realTimeDataCount, setRealTimeDataCount] = useState({});
 
   const [sales, setSales] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [merchants, setMerchants] = useState([]);
   const [data, setData] = useState([]);
   const [commission, setCommission] = useState([]);
   const [subscription, setSubscription] = useState([]);
-  const [merchantAvailability, setMerchantAvailability] = useState()
-  const [isAvailable, setIsAvailable] = useState(false)
+  const [merchantAvailability, setMerchantAvailability] = useState();
+  const [isAvailable, setIsAvailable] = useState(false);
 
   const [dateRange, setDateRange] = useState([
     new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -55,6 +56,8 @@ const HomePage = () => {
       setData(subscription);
     } else if (event.target.value === "commission") {
       setData(commission);
+    } else if (event.target.value === "order") {
+      setData(orders);
     }
   };
 
@@ -112,7 +115,9 @@ const HomePage = () => {
   };
 
   const getCurrentDayAndTime = () => {
-    const currentDay = new Date().toLocaleString("en-us", { weekday: "long" }).toLowerCase();
+    const currentDay = new Date()
+      .toLocaleString("en-us", { weekday: "long" })
+      .toLowerCase();
     const currentTime = new Date().toLocaleTimeString("en-US", {
       hour12: false, // 24-hour format
       hour: "2-digit",
@@ -125,7 +130,7 @@ const HomePage = () => {
     try {
       const response = await axios.patch(
         `${BASE_URL}/merchants/change-status-toggle`,
-        {status},
+        { status },
         {
           withCredentials: true,
           headers: {
@@ -169,14 +174,14 @@ const HomePage = () => {
       // Handle openAllDay
       if (todayAvailability.openAllDay) {
         setIsAvailable(true);
-        handleChangeMerchantStatusToggle(true)
+        handleChangeMerchantStatusToggle(true);
         return;
       }
 
       // Handle closedAllDay
       if (todayAvailability.closedAllDay) {
         setIsAvailable(false);
-        handleChangeMerchantStatusToggle(false)
+        handleChangeMerchantStatusToggle(false);
         // setErrorMessage("Merchant is closed all day.");
         return;
       }
@@ -186,10 +191,10 @@ const HomePage = () => {
         const { startTime, endTime } = todayAvailability;
         if (currentTime >= startTime && currentTime <= endTime) {
           setIsAvailable(true);
-          handleChangeMerchantStatusToggle(true)
+          handleChangeMerchantStatusToggle(true);
         } else {
           setIsAvailable(false);
-          handleChangeMerchantStatusToggle(false)
+          handleChangeMerchantStatusToggle(false);
           // setErrorMessage("Merchant is not available at the current time.");
         }
         return;
@@ -206,8 +211,8 @@ const HomePage = () => {
   useEffect(() => {
     checkAvailability();
 
-    const intervalId = setInterval(checkAvailability, 60000); 
-    return () => clearInterval(intervalId); 
+    const intervalId = setInterval(checkAvailability, 60000);
+    return () => clearInterval(intervalId);
   }, [merchantAvailability]);
 
   useEffect(() => {
@@ -223,13 +228,13 @@ const HomePage = () => {
 
     if (role === "Admin") {
       socket?.emit("getRealTimeDataOnRefresh", "");
-    } else if(role === "Merchant"){
+    } else if (role === "Merchant") {
       const data = {
         id: userId,
         role: role,
       };
       socket?.emit("getRealTimeDataOnRefreshMerchant", data);
-      getMerchantProfile()
+      getMerchantProfile();
     }
 
     const unsubscribe = onMessage(messaging, (payload) => {
@@ -264,12 +269,12 @@ const HomePage = () => {
         }
       } else {
         toast({
-            title: "Error",
-            description: "Notification permission not granted",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
+          title: "Error",
+          description: "Notification permission not granted",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (err) {
       console.error("Error retrieving token:", err);
@@ -304,6 +309,7 @@ const HomePage = () => {
             setMerchants(
               convertRevenueDataToMerchantChartFormat(response.data)
             );
+            setOrders(convertRevenueDataToOrdersChartFormat(response.data));
             setCommission(
               convertRevenueDataToCommissionChartFormat(response.data)
             );
@@ -316,12 +322,13 @@ const HomePage = () => {
             setCommission(
               convertRevenueDataToCommissionChartFormat(response.data)
             );
+            setOrders(convertRevenueDataToOrdersChartFormat(response.data));
           }
         }
       } catch (err) {
         toast({
           title: "Error",
-          description: "An error occoured while filtering the orders",
+          description: "An error while fetching graph detail.",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -340,11 +347,30 @@ const HomePage = () => {
       const formattedDate = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
+        year: "numeric",
       });
 
       return {
         date: formattedDate,
         Revenue: entry.sales, // Assuming sales corresponds to the Revenue in your chart
+      };
+    });
+  }
+
+  function convertRevenueDataToOrdersChartFormat(revenueData) {
+    return revenueData.map((entry) => {
+      const date = new Date(entry.createdAt);
+
+      // Format date as desired, e.g., "Jan 1"
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      return {
+        date: formattedDate,
+        Orders: entry.order, // Assuming sales corresponds to the Revenue in your chart
       };
     });
   }
@@ -357,11 +383,12 @@ const HomePage = () => {
       const formattedDate = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
+        year: "numeric",
       });
 
       return {
         date: formattedDate,
-        Revenue: entry.merchants, // Assuming sales corresponds to the Revenue in your chart
+        Logins: entry.merchants, // Assuming sales corresponds to the Revenue in your chart
       };
     });
   }
@@ -374,6 +401,7 @@ const HomePage = () => {
       const formattedDate = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
+        year: "numeric",
       });
 
       return {
@@ -391,6 +419,7 @@ const HomePage = () => {
       const formattedDate = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
+        year: "numeric",
       });
 
       return {
@@ -400,15 +429,12 @@ const HomePage = () => {
     });
   }
 
-
   const valueFormatter = (value) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
     }).format(value);
   };
-
-  
 
   const handleChangeMerchantStatus = async () => {
     try {
@@ -433,7 +459,6 @@ const HomePage = () => {
         });
       }
     } catch (err) {
-      
       if (err.response && err.response.data && err.response.data.message) {
         const { message } = err.response.data;
 
@@ -479,49 +504,68 @@ const HomePage = () => {
 
         <div className="bg-white mt-2 mx-5 pt-4">
           <div className="flex items-center mx-[20px] justify-between ">
-            <div className="flex item-center space-x-2 w-2/3 gap-3 mt-3 mb-3">
-              <input
-                type="radio"
-                id="sales"
-                name="sales"
-                value="sales"
-                onChange={handleOptionChange}
-                checked={selectedOption === "sales"}
-              />
-              <label htmlFor="sales">Sales</label>
+            <div className="flex items-center w-2/3 gap-3 mt-3 mb-3">
+              <div className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  id="sales"
+                  name="sales"
+                  value="sales"
+                  onChange={handleOptionChange}
+                  checked={selectedOption === "sales"}
+                />
+                <label htmlFor="sales">Sales(in ₹)</label>
+              </div>
               {role === "Admin" && (
                 <>
-                  <input
-                    type="radio"
-                    id="merchants"
-                    name="merchants"
-                    value="merchants"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "merchants"}
-                  />
-                  <label htmlFor="merchants">Merchants</label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      id="merchants"
+                      name="merchants"
+                      value="merchants"
+                      onChange={handleOptionChange}
+                      checked={selectedOption === "merchants"}
+                    />
+                    <label htmlFor="merchants">Merchants</label>
+                  </div>
                 </>
               )}
-              <input
-                type="radio"
-                id="commission"
-                name="commission"
-                value="commission"
-                onChange={handleOptionChange}
-                checked={selectedOption === "commission"}
-              />
-              <label htmlFor="commission">Commission (in ₹)</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  id="order"
+                  name="order"
+                  value="order"
+                  onChange={handleOptionChange}
+                  checked={selectedOption === "order"}
+                />
+                <label htmlFor="commission">Orders</label>
+              </div>
+              <div className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  id="commission"
+                  name="commission"
+                  value="commission"
+                  onChange={handleOptionChange}
+                  checked={selectedOption === "commission"}
+                />
+                <label htmlFor="commission">Commission(in ₹)</label>
+              </div>
               {role === "Admin" && (
                 <>
-                  <input
-                    type="radio"
-                    id="subscription"
-                    name="subscription"
-                    value="subscription"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "subscription"}
-                  />
-                  <label htmlFor="subscription">Subscription (in ₹)</label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      id="subscription"
+                      name="subscription"
+                      value="subscription"
+                      onChange={handleOptionChange}
+                      checked={selectedOption === "subscription"}
+                    />
+                    <label htmlFor="subscription">Subscription(in ₹)</label>
+                  </div>
                 </>
               )}
             </div>
@@ -547,6 +591,8 @@ const HomePage = () => {
                 <Heading as="h4" fontWeight="medium" size="md">
                   {selectedOption === "merchants"
                     ? "Logins over time"
+                    : selectedOption === "order"
+                    ? "Orders over time"
                     : "Revenue over time"}
                 </Heading>
               </CardHeader>
@@ -554,12 +600,28 @@ const HomePage = () => {
               <CardBody>
                 <LineChart
                   data={data}
-                  categories={["Revenue"]}
-                  valueFormatter={
-                    selectedOption === "merchants" ? "" : valueFormatter
+                  categories={
+                    selectedOption === "merchants"
+                      ? ["Logins"]
+                      : selectedOption === "order"
+                      ? ["Orders"]
+                      : ["Revenue"]
                   }
-                  yAxisWidth={80}
-                  height="300px"
+                  valueFormatter={
+                    selectedOption === "merchants"
+                      ? ""
+                      : selectedOption === "order"
+                      ? ""
+                      : valueFormatter
+                  }
+                  yAxisWidth={
+                    selectedOption === "merchants"
+                      ? 40
+                      : selectedOption === "order"
+                      ? 40
+                      : 90
+                  }
+                  height="360px"
                   colors={["#115e59"]}
                 />
               </CardBody>
