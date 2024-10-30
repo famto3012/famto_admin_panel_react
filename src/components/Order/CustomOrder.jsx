@@ -96,19 +96,22 @@ const CustomOrder = ({ data }) => {
 
   const handleItemChange = (index, eventOrOption) => {
     const updatedItems = [...customOrderData.items];
-  
+
     // Handle input field changes
     if (eventOrOption.target) {
       const { name, value } = eventOrOption.target;
       updatedItems[index] = { ...updatedItems[index], [name]: value };
     } else {
       // Handle Select dropdown changes (unit)
-      updatedItems[index] = { ...updatedItems[index], unit: eventOrOption.value };
+      updatedItems[index] = {
+        ...updatedItems[index],
+        unit: eventOrOption.value,
+      };
     }
-  
+
     setCustomOrderData({ ...customOrderData, items: updatedItems });
   };
-  
+
   const handleImageChange = async (index, e) => {
     const file = e.target.files[0];
     if (file) {
@@ -235,13 +238,16 @@ const CustomOrder = ({ data }) => {
         });
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Error in creating invoice",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      if (err.response) {
+        toast({
+          title: "Error",
+          description:
+            err?.response?.data?.message || `Error in creating invoice`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } finally {
       setIsInvoiceLoading(false);
     }
