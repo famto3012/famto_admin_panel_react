@@ -113,7 +113,7 @@ const Orders = () => {
     }
 
     // getAllOrders();
-    filterHandler()
+    filterHandler();
 
     if (role === "Admin") getAllMerchants();
   }, [token, page, limit, role, deliveryOption]);
@@ -239,7 +239,6 @@ const Orders = () => {
       !selectedDate
     )
       return;
-   
 
     filterHandler();
   }, [

@@ -284,8 +284,10 @@ const Products = () => {
     setCsvModal(false);
   };
 
-  const handleAddCategory = (category) =>
+  const handleAddCategory = (category) => {
+    console.log(category);
     setAllCategories([...allCategories, category]);
+  };
 
   const handleAddCSVData = (category) => {
     setAllCategories(category);
@@ -622,7 +624,7 @@ const Products = () => {
                       )
                     }
                     className={` ${
-                      selectedCategory.categoryName === category.categoryName
+                      selectedCategory?.categoryName === category?.categoryName
                         ? "bg-gray-200"
                         : ""
                     } text-start ps-[20px] py-[20px] text-[16px] cursor-pointer hover:bg-gray-100 font-[400] capitalize`}
