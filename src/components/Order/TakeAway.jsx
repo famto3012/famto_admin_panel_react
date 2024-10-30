@@ -348,14 +348,16 @@ const TakeAway = ({ data }) => {
         });
       }
     } catch (err) {
-      console.log(`Error in creating Take away invoice: ${err}`);
-      toast({
-        title: "Error",
-        description: "Error in creating invoice",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      if (err.response) {
+        toast({
+          title: "Error",
+          description:
+            err?.response?.data?.message || `Error in creating invoice`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } finally {
       setIsInvoiceLoading(false);
     }

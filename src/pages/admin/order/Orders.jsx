@@ -20,9 +20,10 @@ import {
   paymentModeOption,
   deliveryModeOption,
 } from "../../../utils/DefaultData";
-import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
+import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
+import { formatDateForDateSelect } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -43,10 +44,10 @@ const Orders = () => {
   const [paymentMode, setPaymentMode] = useState("");
   const [deliveryMode, setDeliveryMode] = useState("");
   const [selectedMerchant, setSelectedMerchant] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
   const [search, setSearch] = useState("");
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
 
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
@@ -196,16 +197,29 @@ const Orders = () => {
           : `${BASE_URL}/orders/filter-scheduled`;
       }
 
-      const params = [];
-      if (orderStatus) params.push(`status=${orderStatus}`);
-      if (paymentMode) params.push(`paymentMode=${paymentMode}`);
-      if (deliveryMode) params.push(`deliveryMode=${deliveryMode}`);
-      if (selectedMerchant) params.push(`merchantId=${selectedMerchant}`);
-      if (selectedDate) params.push(`date=${selectedDate}`);
+      const formatedStartDate = startDate
+        ? startDate.toLocaleDateString("en-CA")
+        : null;
+      const formatedEndDate = endDate
+        ? endDate.toLocaleDateString("en-CA")
+        : null;
 
-      if (params.length > 0) {
-        endPoint += `?${params.join("&")}`;
+      const params = [];
+      params.push(`status=${orderStatus || "all"}`);
+      params.push(`paymentMode=${paymentMode || "all"}`);
+      params.push(`deliveryMode=${deliveryMode || "all"}`);
+      params.push(`merchantId=${selectedMerchant || "all"}`);
+      params.push(`startDate=${formatedStartDate}`);
+      params.push(`endDate=${formatedEndDate}`);
+
+      // Remove any parameters that are 'status=null' or similar
+      const filteredParams = params.filter((param) => !param.includes("=null"));
+
+      if (filteredParams.length > 0) {
+        endPoint += `?${filteredParams.join("&")}`;
       }
+
+      console.log(filteredParams);
 
       const response = await axios.get(endPoint, {
         params: { page, limit },
@@ -236,7 +250,8 @@ const Orders = () => {
       !paymentMode &&
       !deliveryMode &&
       !selectedMerchant &&
-      !selectedDate
+      !startDate &&
+      !endDate
     )
       return;
 
@@ -246,7 +261,8 @@ const Orders = () => {
     paymentMode,
     deliveryMode,
     selectedMerchant,
-    selectedDate,
+    startDate,
+    endDate,
     token,
     role,
     page,
@@ -443,15 +459,6 @@ const Orders = () => {
 
   const handleToggle = () => setDeliveryOption(!deliveryOption);
 
-  const openDatePicker = () => setIsPickerOpen(true);
-
-  const handleDateChange = (date) => {
-    const formattedDate = date ? date.toLocaleDateString("en-CA") : null;
-
-    setSelectedDate(formattedDate);
-    setIsPickerOpen(false);
-  };
-
   const handleDownloadCSV = async (e) => {
     try {
       setCSVDownloadLoading(true);
@@ -467,7 +474,8 @@ const Orders = () => {
           paymentMode,
           deliveryMode,
           merchantId: selectedMerchant,
-          date: selectedDate,
+          startDate: startDate && startDate.toLocaleDateString("en-CA"),
+          endDate: endDate && endDate.toLocaleDateString("en-CA"),
           query: search,
         },
         responseType: "blob",
@@ -743,33 +751,24 @@ const Orders = () => {
           </div>
 
           <div className="flex items-center gap-[20px]">
-            <button
-              ref={buttonRef}
-              onClick={openDatePicker}
-              className="flex items-center justify-center"
-            >
-              <FaCalendarAlt className="text-gray-400 text-xl" />
-            </button>
-
-            {isPickerOpen && (
-              <div
-                style={{
-                  position: "absolute",
-                  top:
-                    buttonRef.current?.offsetTop +
-                    buttonRef.current?.offsetHeight,
-                  left: buttonRef.current?.offsetLeft,
-                  zIndex: 50,
-                }}
-              >
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={handleDateChange}
-                  inline
-                  maxDate={new Date()}
-                />
-              </div>
-            )}
+            <DatePicker
+              selectsRange={true}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => {
+                setDateRange(update);
+              }}
+              dateFormat="yyyy/MM/dd"
+              withPortal
+              className="cursor-pointer "
+              customInput={
+                <span>
+                  <FaCalendarAlt className="text-gray-400 text-xl" />
+                </span>
+              }
+              placeholderText="Select Date range"
+              maxDate={new Date()}
+            />
 
             <div>
               <input
