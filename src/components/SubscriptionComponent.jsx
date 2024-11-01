@@ -39,6 +39,11 @@ const SubscriptionComponent = () => {
     paymentMode: "",
   });
 
+  const [applying, setApplying] = useState({
+    merchant: false,
+    customer: false,
+  });
+
   const [customer, setCustomer] = useState({
     planId: "",
     userId: "",
@@ -142,6 +147,7 @@ const SubscriptionComponent = () => {
     e.preventDefault();
 
     try {
+      setApplying({ ...applying, customer: true });
       if (!customer.planId || !customer.userId || !customer.paymentMode) {
         toast({
           title: "Error",
@@ -182,7 +188,15 @@ const SubscriptionComponent = () => {
         }
       }
     } catch (err) {
-      console.log(`Error in fetching data:${err}`);
+      toast({
+        title: "Error",
+        description: err?.response?.message || `Error in applying subscription`,
+        duration: 3000,
+        isClosable: true,
+        status: "error",
+      });
+    } finally {
+      setApplying({ ...applying, customer: false });
     }
   };
 
@@ -190,6 +204,7 @@ const SubscriptionComponent = () => {
     e.preventDefault();
 
     try {
+      setApplying({ ...applying, merchant: true });
       if (role === "Admin") {
         if (!merchant.planId || !merchant.userId || !merchant.paymentMode) {
           toast({
@@ -204,8 +219,6 @@ const SubscriptionComponent = () => {
           return;
         }
       }
-
-      setIsLoading(true);
 
       let initiateEndpoint =
         role === "Admin"
@@ -240,7 +253,15 @@ const SubscriptionComponent = () => {
         }
       }
     } catch (err) {
-      console.log(`Error in fetching data:${err}`);
+      toast({
+        title: "Error",
+        description: err?.response?.message || `Error in applying subscription`,
+        duration: 3000,
+        isClosable: true,
+        status: "error",
+      });
+    } finally {
+      setApplying({ ...applying, merchant: false });
     }
   };
 
@@ -601,7 +622,7 @@ const SubscriptionComponent = () => {
             className="bg-teal-800 w-1/3 p-2 text-white rounded-lg mt-5 ml-[33%]"
             onClick={handleApplyMerchantSubscription}
           >
-            Apply Subscription
+            {applying.merchant ? `Applying...` : `Apply Subscription`}
           </button>
         </div>
       </div>
@@ -774,7 +795,7 @@ const SubscriptionComponent = () => {
               className="bg-teal-800 w-1/3 p-2 text-white rounded-lg mt-5 ml-[33%]"
               onClick={handleApplyCustomerSubscription}
             >
-              Apply Subscription
+              {applying.customer ? `Applying...` : `Apply Subscription`}
             </button>
           </div>
         </div>

@@ -343,7 +343,7 @@ const MerchantData = ({
         <div className="mb-[20px] flex items-center justify-between gap-[30px]">
           <label className="text-gray-700 text-[16px] w-1/3">Pricing</label>
 
-          {detail?.merchantDetail?.pricing ? (
+          {detail?.merchantDetail?.pricing?.modelId ? (
             <p className="w-2/3 bg-transparent rounded-md p-2 text-left  me-[95px]">
               {detail?.merchantDetail?.pricing?.modelType} |{" "}
               {detail?.merchantDetail?.pricing?.detail?.type === "Percentage"
