@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMap } from "../../context/MapContext";
 import { useToast } from "@chakra-ui/react";
 import MapModal from "./MapModal";
+import MapModalTwo from "./MapModalTwo";
 
 const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
   const { coordinatesTwo } = useMap();
@@ -185,7 +186,7 @@ const NewAddressTwo = ({ onAddCustomerAddress, BASE_URL, token }) => {
                     : `Mark location`}
                 </button>
 
-                <MapModal
+                <MapModalTwo
                   isVisible={modalVisible}
                   onClose={() => setModalVisible(false)}
                   BASE_URL={BASE_URL}
