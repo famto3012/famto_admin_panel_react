@@ -73,7 +73,6 @@ const EditIndividualModal = ({
     }));
   };
 
-
   const handleEditBanner = async (e) => {
     try {
       e.preventDefault();
@@ -153,9 +152,7 @@ const EditIndividualModal = ({
     console.log("Cropped image file:", croppedFile);
   };
 
-  const handleModalClose = () => {
-    setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  const handleModalClose = () => setSelectedFile(null);
 
   return (
     <Modal
@@ -164,9 +161,6 @@ const EditIndividualModal = ({
       onCancel={onCancel}
       footer={null}
       centered
-      styles={{
-        mask: { backgroundColor: "rgba(0, 0, 0, 0.1)" },
-      }}
     >
       <form onSubmit={handleEditBanner}>
         <div className="flex flex-col gap-4">
