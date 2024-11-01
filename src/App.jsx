@@ -107,8 +107,8 @@ function MobileAppPrompt() {
     return <ResetPassword />;
   }
 
-  if(location.pathname === "/maintenance"){
-    return <MaintenancePage/>
+  if (location.pathname === "/maintenance") {
+    return <MaintenancePage />;
   }
 
   if (isSmallScreen) {
@@ -233,14 +233,8 @@ function App() {
                 path="/alert-notification"
                 element={<AlertNotification />}
               />
-              <Route
-                path="/maintenance"
-                element={<MaintenancePage />}
-              />
-              <Route
-                path="/chat"
-                element={<Chat />}
-              />
+              <Route path="/maintenance" element={<MaintenancePage />} />
+              <Route path="/chat" element={<Chat />} />
               <Route
                 path="/notification-settings"
                 element={<NotificationSettings />}

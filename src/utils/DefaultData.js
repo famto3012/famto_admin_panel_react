@@ -89,7 +89,6 @@ const accountLogsOptions = [
 ];
 
 const payoutPaymentStatus = [
-  { value: "all", label: "All" },
   { value: "true", label: "Paid" },
   { value: "false", label: "Un-paid" },
 ];

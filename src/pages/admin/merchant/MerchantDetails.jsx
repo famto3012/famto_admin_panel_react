@@ -335,14 +335,15 @@ const MerchantDetails = () => {
                   token={token}
                   merchantId={merchantId}
                 />
+
+                <span>Status</span>
+                <Switch
+                  value={merchantData?.status}
+                  className="text-teal-700 ml-2"
+                  onChange={toggleMerchantStatus}
+                />
               </>
             )}
-            Status
-            <Switch
-              value={merchantData?.status}
-              className="text-teal-700 ml-2"
-              onChange={toggleMerchantStatus}
-            />
           </div>
         </div>
 

@@ -63,7 +63,7 @@ const AgentPayout = () => {
             params: {
               paymentStatus,
               agentId: selectedAgent,
-              date: selectedDate || new Date(),
+              date: selectedDate,
               geofence: selectedGeofence,
             },
             withCredentials: true,
@@ -473,7 +473,7 @@ const AgentPayout = () => {
 
                   {!isTableLoading && allPayout?.length === 0 && (
                     <tr className="bg-gray-200">
-                      <td colSpan={11}>
+                      <td colSpan={12}>
                         <p className="flex items-center justify-center h-20">
                           No data available
                         </p>
@@ -492,7 +492,7 @@ const AgentPayout = () => {
                             to={`/all-agents`}
                             className="underline underline-offset-4"
                           >
-                            {payout?._id}
+                            {payout?.agentId}
                           </Link>
                         </td>
                         <td>{payout?.fullName}</td>
