@@ -108,7 +108,7 @@ const ShowBill = ({ data }) => {
         navigate("/all-orders");
         toast({
           title: "Success",
-          description: response.data.message,
+          description: "Order created successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -117,7 +117,7 @@ const ShowBill = ({ data }) => {
     } catch (err) {
       toast({
         title: "Error",
-        description: "Error in creating order" + err,
+        description: err?.response?.data?.message || `Error in creating order`,
         status: "error",
         duration: 3000,
         isClosable: true,
