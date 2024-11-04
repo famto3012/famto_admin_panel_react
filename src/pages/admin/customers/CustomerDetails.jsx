@@ -592,6 +592,8 @@ const CustomerDetails = () => {
           </table>
         </div>
 
+        {/*  */}
+
         <div>
           <h1 className="text-md font-semibold mx-11 mt-[40px]">
             Order Details
