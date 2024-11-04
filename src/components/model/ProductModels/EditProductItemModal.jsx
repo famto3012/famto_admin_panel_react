@@ -313,19 +313,21 @@ const EditProductItemModal = ({
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex items-center">
-            <label className="w-1/3 text-gray-500" htmlFor="price">
-              Price <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
-              type="text"
-              name="price"
-              placeholder="Price"
-              value={productData.price}
-              onChange={handleInputChange}
-            />
-          </div>
+          {role === "Admin" && (
+            <div className="flex items-center">
+              <label className="w-1/3 text-gray-500" htmlFor="price">
+                Price <span className="text-red-600">*</span>
+              </label>
+              <input
+                className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                type="text"
+                name="price"
+                placeholder="Price"
+                value={productData.price}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="availableQuantity">
               Available Quantity

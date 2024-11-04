@@ -6,7 +6,7 @@ import { useToast } from "@chakra-ui/react";
 import { Tooltip } from "antd";
 import DeleteVariantTypeModal from "../model/ProductModels/DeleteVariantTypeModal";
 
-const ProductDetail = ({ detail, BASE_URL, token }) => {
+const ProductDetail = ({ detail, BASE_URL, token, role }) => {
   const [productDetail, setProductDetail] = useState(detail);
   const [newVariantData, setNewVariantData] = useState({
     variantName: "",
@@ -370,6 +370,15 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
                   }
                   className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
                 />
+                <input
+                  type="text"
+                  placeholder="Cost Price"
+                  value={type.costPrice || ""}
+                  onChange={(e) =>
+                    handleInputChange(index, "costPrice", e.target.value)
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
+                />
                 <button
                   type="button"
                   onClick={() => removeNewVariantType(index)}
@@ -447,7 +456,7 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
                         className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
                       />
                       <input
-                        type="text"
+                        type="number"
                         placeholder="Price"
                         value={type.price || ""}
                         onChange={(e) =>
@@ -459,6 +468,21 @@ const ProductDetail = ({ detail, BASE_URL, token }) => {
                         }
                         className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
                       />
+                      {role === "Admin" && (
+                        <input
+                          type="number"
+                          placeholder="Cost price"
+                          value={type.costPrice || ""}
+                          onChange={(e) =>
+                            handleChangeExistingVariant(
+                              index,
+                              "costPrice",
+                              e.target.value
+                            )
+                          }
+                          className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
+                        />
+                      )}
                       <button
                         type="button"
                         onClick={() =>
