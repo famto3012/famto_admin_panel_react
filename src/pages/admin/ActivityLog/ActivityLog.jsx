@@ -61,6 +61,13 @@ const ActivityLog = () => {
           <GlobalSearch />
         </nav>
 
+        <div className="py-4 flex items-center">
+          <p className="ps-4 text-[20px] font-[600]">
+            Account Logs{" "}
+            <span className="text-gray-400 text-[16px]">( Last 10 days )</span>
+          </p>
+        </div>
+
         <table className="w-full">
           <thead>
             <tr>

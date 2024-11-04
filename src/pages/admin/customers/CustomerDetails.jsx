@@ -597,7 +597,7 @@ const CustomerDetails = () => {
             Order Details
           </h1>
           <div className="overflow-auto mt-[20px] ml-2 w-full max-h-[30rem]">
-            <table className="text-start w-full mb-24">
+            <table className="text-start w-full">
               <thead className="sticky top-0 left-0">
                 <tr>
                   {[
@@ -633,7 +633,7 @@ const CustomerDetails = () => {
                 {customer?.orderDetails?.map((orderDetails) => (
                   <tr
                     key={orderDetails.orderId}
-                    className="align-middle even:bg-gray-300 text-center"
+                    className="align-middle even:bg-gray-300 text-center h-[70px]"
                   >
                     <td className="p-3">{orderDetails.orderId}</td>
                     <td className="p-3">{orderDetails.orderStatus}</td>

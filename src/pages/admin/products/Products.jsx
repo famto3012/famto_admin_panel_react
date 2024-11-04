@@ -868,6 +868,7 @@ const Products = () => {
                           detail={productDetail}
                           BASE_URL={BASE_URL}
                           token={token}
+                          role={role}
                         />
                       </div>
                     </>
