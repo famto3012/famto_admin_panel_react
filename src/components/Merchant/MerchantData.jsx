@@ -362,9 +362,9 @@ const MerchantData = ({
           <button
             type="button"
             onClick={toggleMapModal}
-            className="font-medium bg-teal-700 text-white text-start rounded-md py-2 w-2/3 flex items-center justify-center me-1"
+            className={`font-medium ${coordinates ? "bg-white text-teal-700 border-[2px] border-teal-700" : "bg-teal-700 text-white"} text-start rounded-md py-2 w-2/3 flex items-center justify-center me-1`}
           >
-            Mark location
+            {coordinates ? "Location selected" : "Mark location"}
             <LocationOnOutlinedIcon className="text-[18px] ms-2" />
           </button>
 

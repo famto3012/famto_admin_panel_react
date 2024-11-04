@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { paymentOptions } from "../../utils/DefaultData";
 import { useDraggable } from "../../hooks/useDraggable";
+import ShowBill from "./ShowBill";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -363,6 +364,49 @@ const TakeAway = ({ data }) => {
     }
   };
 
+  const downloadInvoiceBill = async (e) => {
+    try {
+      e.preventDefault();
+
+      const data = {
+        cartId: cartData.cartId,
+        deliveryMode: cartData.deliveryMode,
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/orders/download-invoice-bill`,
+        data,
+        {
+          responseType: "blob",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${cartData.deliveryMode}_invoice.pdf`);
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `Error downloading invoice`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <div className="bg-white mt-5 rounded">
       <form onSubmit={createInvoice}>
@@ -625,9 +669,11 @@ const TakeAway = ({ data }) => {
             <button
               className="bg-cyan-50 py-2 px-4 rounded-md text-lg"
               type="button"
+              onClick={downloadInvoiceBill}
             >
               <SaveAltIcon /> Bill
             </button>
+
             <button
               className="bg-teal-700 text-white py-2 px-4 rounded-md"
               type="submit"
