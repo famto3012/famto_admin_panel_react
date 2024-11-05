@@ -100,6 +100,25 @@ const CreateOrder = () => {
     }
   };
 
+  const isToday =
+    startDate && startDate.toDateString() === new Date().toDateString();
+
+  // Calculate the minimum selectable time as 1.5 hours from now
+  const minimumSelectableTime = new Date();
+  minimumSelectableTime.setMinutes(minimumSelectableTime.getMinutes() + 90);
+
+  const handleDateChange = (update) => {
+    setDateRange(update);
+    const [newStartDate] = update;
+
+    if (
+      newStartDate &&
+      newStartDate.toDateString() === new Date().toDateString()
+    ) {
+      setTime(minimumSelectableTime);
+    }
+  };
+
   const selectCustomer = (customer) => {
     setTopData((prevState) => ({
       ...prevState,
@@ -258,9 +277,7 @@ const CreateOrder = () => {
                     selectsRange={true}
                     startDate={startDate}
                     endDate={endDate}
-                    onChange={(update) => {
-                      setDateRange(update);
-                    }}
+                    onChange={handleDateChange}
                     dateFormat="yyyy/MM/dd"
                     withPortal
                     className="border-2 p-2 rounded-lg cursor-pointer mt-2 outline-none focus:outline-none"
@@ -278,6 +295,12 @@ const CreateOrder = () => {
                     showTimeCaption={false}
                     className="border-2 p-2 rounded-lg cursor-pointer mt-2 outline-none focus:outline-none"
                     placeholderText="Select Time"
+                    minTime={
+                      isToday
+                        ? minimumSelectableTime
+                        : new Date(new Date().setHours(0, 0, 0, 0))
+                    } // Apply minimum time if today
+                    maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
                   />
                 </div>
               </div>
