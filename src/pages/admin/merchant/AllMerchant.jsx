@@ -630,7 +630,7 @@ const Merchant = () => {
 
             <div className="flex justify-between items-center px-[30px]">
               <h1 className="text-[18px] font-semibold">Merchants</h1>
-              <div className="flex space-x-2 justify-end ">
+              <div className="flex space-x-3 justify-end ">
                 <button
                   className="bg-cyan-100 text-black rounded-md px-4 py-2 font-semibold flex items-center space-x-2"
                   onClick={showCSVModal}
@@ -697,21 +697,27 @@ const Merchant = () => {
                     </div>
                   </div>
                 </Modal>
-                <div>
-                  <button
-                    className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
-                    onClick={toggleModal}
-                  >
-                    <PlusOutlined /> <span>Add Merchant</span>
-                  </button>
-                  <AddMerchant
-                    isVisible={isModalVisible}
-                    onCancel={handleCancel}
-                    BASE_URL={BASE_URL}
-                    token={token}
-                    onAddMerchant={handleAddMerchant}
-                  />
-                </div>
+
+                <Link
+                  to={"/merchant/payout"}
+                  className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center"
+                >
+                  <p>Merchant payout</p>
+                </Link>
+
+                <button
+                  className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold  flex items-center space-x-1 "
+                  onClick={toggleModal}
+                >
+                  <PlusOutlined /> <span>Add Merchant</span>
+                </button>
+                <AddMerchant
+                  isVisible={isModalVisible}
+                  onCancel={handleCancel}
+                  BASE_URL={BASE_URL}
+                  token={token}
+                  onAddMerchant={handleAddMerchant}
+                />
               </div>
             </div>
 

@@ -116,7 +116,7 @@ const promoCodeModeOptions = [
 
 const paymentOptions = [
   { value: "Online-payment", label: "Online payment" },
-  { value: "Cash-on-delivery", label: "Pay on delivery" },
+  // { value: "Cash-on-delivery", label: "Pay on delivery" },
 ];
 
 export {

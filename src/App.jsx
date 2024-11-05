@@ -80,6 +80,9 @@ const DeliveryManagement = lazy(() =>
 );
 const Commission = lazy(() => import("./pages/admin/commission/Commission"));
 const HomePage = lazy(() => import("./pages/admin/home/HomePage"));
+const AllMerchantPayout = lazy(() =>
+  import("./pages/admin/merchant/AllMerchantPayout")
+);
 
 const playStoreLink = import.meta.env.VITE_APP_PLAYSTORE_LINK;
 const appStoreLink = import.meta.env.VITE_APP_APPSTORE_LINK;
@@ -213,6 +216,7 @@ function App() {
                 path="/merchant-detail/:merchantId"
                 element={<MerchantDetails />}
               />
+              <Route path="/merchant/payout" element={<AllMerchantPayout />} />
               <Route path="/add-manager" element={<AddManager />} />
               {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
               <Route

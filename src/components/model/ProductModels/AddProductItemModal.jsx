@@ -415,8 +415,8 @@ const AddProductItemModal = ({
                 placeholder="Select discount"
               />
             </div>
-
-            <div className="flex items-center">
+            //? Not in use right now
+            <div className="hidden items-center">
               <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
                 Often bought together
               </label>
@@ -434,7 +434,6 @@ const AddProductItemModal = ({
                 components={animatedComponents}
               />
             </div>
-
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="preparationTime">
                 Preparation Time
@@ -448,7 +447,6 @@ const AddProductItemModal = ({
                 onChange={handleInputChange}
               />
             </div>
-
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="searchTag">
                 Search Tag
@@ -483,7 +481,6 @@ const AddProductItemModal = ({
                 />
               </div>
             </div>
-
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="description">
                 Description
@@ -594,7 +591,6 @@ const AddProductItemModal = ({
                 )}
               </div>
             </div>
-
             <div className="flex justify-end gap-4 mt-6">
               <button
                 className="bg-cyan-50 py-2 px-4 rounded-md"
