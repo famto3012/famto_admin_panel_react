@@ -15,6 +15,7 @@ import "./App.css";
 import ActivityLog from "./pages/admin/ActivityLog/ActivityLog";
 import MaintenancePage from "./pages/auth/MaintenancePage";
 import Chat from "./pages/admin/chats/Chat";
+import MerchantPayoutDetail from "./pages/admin/merchant/MerchantPayoutDetail";
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const Signup = lazy(() => import("./pages/auth/SignUp"));
@@ -217,6 +218,7 @@ function App() {
                 element={<MerchantDetails />}
               />
               <Route path="/merchant/payout" element={<AllMerchantPayout />} />
+              <Route path="/merchant/payout-detail" element={<MerchantPayoutDetail />} />
               <Route path="/add-manager" element={<AddManager />} />
               {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
               <Route
