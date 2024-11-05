@@ -127,7 +127,8 @@ const Sidebar = () => {
             to="/all-merchants"
             className={`ps-4 side ${
               selectedLink === "/all-merchants" ||
-              /^\/merchant-detail\/[A-Za-z0-9]+$/.test(selectedLink)
+              /^\/merchant-detail\/[A-Za-z0-9]+$/.test(selectedLink) ||
+              selectedLink === "/merchant/payout"
                 ? "selected-link"
                 : ""
             }`}
