@@ -29,6 +29,9 @@ const AllMerchantPayout = () => {
   const [selectedGeofence, setSelectedGeofence] = useState(null);
   const [selectedMerchant, setSelectedMerchant] = useState(null);
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(null);
+  const [search, setSearch] = useState(null);
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
 
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
@@ -80,6 +83,7 @@ const AllMerchantPayout = () => {
             paymentStatus: selectedPaymentStatus,
             merchantId: selectedMerchant,
             geofenceId: selectedGeofence,
+            query: search,
           },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -93,7 +97,7 @@ const AllMerchantPayout = () => {
       }
     };
     filterPayouts();
-  }, [selectedGeofence, selectedMerchant, selectedPaymentStatus]);
+  }, [selectedGeofence, selectedMerchant, selectedPaymentStatus, search]);
 
   const geofenceOptions = [
     { label: "All", value: "all" },
@@ -110,6 +114,41 @@ const AllMerchantPayout = () => {
       value: merchant._id,
     })),
   ];
+
+  const handleSearchChange = (e) => setSearch(e.target.value);
+
+  const confirmPayment = async (merchantId, payoutId) => {
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/merchants/admin/payout/${merchantId}/${payoutId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setAllPayouts((prevData) =>
+          prevData.map((payout) =>
+            payout.payoutId === payoutId
+              ? { ...payout, isSettled: true }
+              : payout
+          )
+        );
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err?.response?.data?.message || `Error in getting data`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <>
@@ -218,7 +257,8 @@ const AllMerchantPayout = () => {
 
             <input
               type="search"
-              onChange={() => {}}
+              value={search}
+              onChange={handleSearchChange}
               className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
               placeholder="Search merchant"
             />
