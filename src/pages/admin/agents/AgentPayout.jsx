@@ -132,7 +132,7 @@ const AgentPayout = () => {
     try {
       setIsConfirmLoading(true);
 
-      const { _id: agentId, detailId } = selectedPayout;
+      const { agentId, detailId } = selectedPayout;
 
       const response = await axios.patch(
         `${BASE_URL}/admin/agents/approve-payout/${agentId}/${detailId}`,
@@ -147,7 +147,7 @@ const AgentPayout = () => {
         // Update the state to mark the selected payout as approved
         setAllPayout((prevPayouts) =>
           prevPayouts.map((payout) =>
-            payout._id === selectedPayout._id
+            payout.detailId === selectedPayout.detailId
               ? { ...payout, paymentSettled: true }
               : payout
           )

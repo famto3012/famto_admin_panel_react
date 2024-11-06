@@ -89,6 +89,8 @@ const AllMerchantPayout = () => {
             merchantId: selectedMerchant,
             geofenceId: selectedGeofence,
             query: search,
+            startDate: startDate ? startDate.toLocaleDateString("en-CA") : null,
+            endDate: endDate ? endDate.toLocaleDateString("en-CA") : null,
           },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -102,7 +104,14 @@ const AllMerchantPayout = () => {
       }
     };
     filterPayouts();
-  }, [selectedGeofence, selectedMerchant, selectedPaymentStatus, search]);
+  }, [
+    selectedGeofence,
+    selectedMerchant,
+    selectedPaymentStatus,
+    search,
+    startDate,
+    endDate,
+  ]);
 
   const geofenceOptions = [
     { label: "All", value: "all" },
@@ -197,7 +206,7 @@ const AllMerchantPayout = () => {
               onChange={(option) => setSelectedMerchant(option.value)}
               className=" bg-cyan-50 min-w-[10rem]"
               placeholder="Merchant"
-              isSearchable={false}
+              isSearchable={true}
               isMulti={false}
               styles={{
                 control: (provided) => ({
@@ -241,7 +250,7 @@ const AllMerchantPayout = () => {
               onChange={(option) => setSelectedGeofence(option.value)}
               className=" bg-cyan-50 min-w-[10rem]"
               placeholder="Geofence"
-              isSearchable={false}
+              isSearchable={true}
               isMulti={false}
               styles={{
                 control: (provided) => ({
@@ -259,9 +268,11 @@ const AllMerchantPayout = () => {
           <div className="flex items-center gap-5">
             <DatePicker
               selectsRange={true}
-              startDate={""}
-              endDate={""}
-              onChange={() => {}}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => {
+                setDateRange(update);
+              }}
               dateFormat="yyyy/MM/dd"
               withPortal
               className="cursor-pointer "
@@ -271,7 +282,7 @@ const AllMerchantPayout = () => {
                 </span>
               }
               placeholderText="Select Date range"
-              maxDate={new Date()}
+              maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
             />
 
             <input
@@ -383,6 +394,7 @@ const AllMerchantPayout = () => {
             </tbody>
           </table>
         </div>
+
         <Modal
           title={<span className="font-bold text-[16px]">Confirm?</span>}
           open={isModalConfirm}
@@ -390,7 +402,7 @@ const AllMerchantPayout = () => {
           centered
           footer={null}
         >
-          <form>
+          <div>
             <p className="text-[16px] py-2">Do you want to Confirm?</p>
             <div className="flex justify-end mt-5 gap-6">
               <button
@@ -401,8 +413,7 @@ const AllMerchantPayout = () => {
                 Cancel
               </button>
               <button
-                type="button" // Changed to "button" to prevent form submission
-                className="bg-green-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                className="bg-teal-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
                 onClick={() => {
                   confirmPayment(merchantId, payoutId);
                 }}
@@ -410,7 +421,7 @@ const AllMerchantPayout = () => {
                 {isPayoutLoading ? `Confirming...` : `Confirm`}
               </button>
             </div>
-          </form>
+          </div>
         </Modal>
       </div>
     </>

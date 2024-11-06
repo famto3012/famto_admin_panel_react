@@ -32,6 +32,7 @@ const MerchantPayoutDetail = () => {
             params: {
               date,
               merchantId,
+              timezoneOffset: 330,
             },
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
