@@ -415,6 +415,7 @@ const AddProductItemModal = ({
                 placeholder="Select discount"
               />
             </div>
+            {/*
             //? Not in use right now
             <div className="hidden items-center">
               <label className="w-1/3 text-gray-500" htmlFor="boughtTogether">
@@ -435,6 +436,7 @@ const AddProductItemModal = ({
               />
             </div>
             //?
+            */}
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="preparationTime">
                 Preparation Time
