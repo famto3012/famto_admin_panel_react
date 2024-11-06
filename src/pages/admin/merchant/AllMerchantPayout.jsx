@@ -18,6 +18,7 @@ import Sidebar from "../../../components/Sidebar";
 import { payoutPaymentStatus } from "../../../utils/DefaultData";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { Modal } from "antd";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -26,7 +27,11 @@ const AllMerchantPayout = () => {
   const [allGeofence, setAllGeofence] = useState([]);
   const [allPayouts, setAllPayouts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPayoutLoading, setIsPayoutLoading] = useState(false);
+  const [isModalConfirm, setIsModalConfirm] = useState(false);
   const [selectedGeofence, setSelectedGeofence] = useState(null);
+  const [merchantId, setMerchantId] = useState(null);
+  const [payoutId, setPayoutId] = useState(null);
   const [selectedMerchant, setSelectedMerchant] = useState(null);
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(null);
   const [search, setSearch] = useState(null);
@@ -115,9 +120,20 @@ const AllMerchantPayout = () => {
     })),
   ];
 
+  const showModalConfirm = (merchantId, payoutId) => {
+    setMerchantId(merchantId);
+    setPayoutId(payoutId);
+    setIsModalConfirm(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalConfirm(false);
+  };
+
   const handleSearchChange = (e) => setSearch(e.target.value);
 
   const confirmPayment = async (merchantId, payoutId) => {
+    setIsPayoutLoading(true);
     try {
       const response = await axios.patch(
         `${BASE_URL}/merchants/admin/payout/${merchantId}/${payoutId}`,
@@ -147,6 +163,9 @@ const AllMerchantPayout = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsPayoutLoading(false);
+      handleCancel();
     }
   };
 
@@ -339,12 +358,20 @@ const AllMerchantPayout = () => {
                           <IoCheckmarkOutline
                             className="text-teal-700 bg-teal-200 p-3 rounded-full cursor-pointer"
                             size={40}
+                            onClick={() => {
+                              showModalConfirm(
+                                payout.merchantId,
+                                payout.payoutId
+                              );
+                            }}
                           />
                         </p>
                       )}
                     </td>
                     <td className="py-2 px-4">
-                      <Link to={`/merchant/payout/${payout.merchantId}`}>
+                      <Link
+                        to={`/merchant/payout-detail/${payout.merchantId}/${payout.date}`}
+                      >
                         <FaAngleRight
                           size={35}
                           className="p-3 bg-gray-400 text-[#333] rounded-full"
@@ -356,6 +383,35 @@ const AllMerchantPayout = () => {
             </tbody>
           </table>
         </div>
+        <Modal
+          title={<span className="font-bold text-[16px]">Confirm?</span>}
+          open={isModalConfirm}
+          onCancel={handleCancel}
+          centered
+          footer={null}
+        >
+          <form>
+            <p className="text-[16px] py-2">Do you want to Confirm?</p>
+            <div className="flex justify-end mt-5 gap-6">
+              <button
+                type="button"
+                className="bg-cyan-100 px-5 py-1 rounded-md outline-none focus:outline-none font-semibold"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="button" // Changed to "button" to prevent form submission
+                className="bg-green-600 px-5 py-1 rounded-md outline-none focus:outline-none text-white"
+                onClick={() => {
+                  confirmPayment(merchantId, payoutId);
+                }}
+              >
+                {isPayoutLoading ? `Confirming...` : `Confirm`}
+              </button>
+            </div>
+          </form>
+        </Modal>
       </div>
     </>
   );

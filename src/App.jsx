@@ -218,7 +218,7 @@ function App() {
                 element={<MerchantDetails />}
               />
               <Route path="/merchant/payout" element={<AllMerchantPayout />} />
-              <Route path="/merchant/payout-detail" element={<MerchantPayoutDetail />} />
+              <Route path="/merchant/payout-detail/:merchantId/:date" element={<MerchantPayoutDetail />} />
               <Route path="/add-manager" element={<AddManager />} />
               {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
               <Route
