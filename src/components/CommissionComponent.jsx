@@ -226,13 +226,24 @@ const CommissionComponent = () => {
       )}
 
       {role === "Merchant" && (
-        <div className="ml-[250px] px-[30px] shadow-md bg-white h-fit py-4 w-fit flex justify-between gap-5 rounded">
-          <p className="w-[150px]">Commission value</p>
-          <p className="w-[150px] text-end">
-            {commissionDetail.commissionType === "Percentage"
-              ? `${commissionDetail.commissionValue} %`
-              : `₹${commissionDetail.commissionValue}`}
-          </p>
+        <div className="ml-[250px] px-[30px] w-full">
+          {commissionDetail?.commissionType &&
+          commissionDetail?.commissionValue ? (
+            <div className="shadow-md bg-white h-fit py-4 w-fit flex justify-between gap-5 rounded">
+              <p className="w-[150px]">Commission value</p>
+              <p className="w-[150px] text-end">
+                {commissionDetail?.commissionType === "Percentage"
+                  ? `${commissionDetail?.commissionValue} %`
+                  : `₹${commissionDetail?.commissionValue}`}
+              </p>
+            </div>
+          ) : (
+            <div className="flex">
+              <p className="text-[16px] font-[600] mx-auto mt-[50px]">
+                No Commission Available
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
