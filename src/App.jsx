@@ -106,7 +106,7 @@ function MobileAppPrompt() {
     };
   }, []);
 
-  if (location.pathname === "/auth/reset-password") {
+  if (location.pathname.startsWith("/auth/reset-password")) {
     console.log("Excluding MobileAppPrompt for reset-password page");
     return <ResetPassword />;
   }
@@ -218,7 +218,10 @@ function App() {
                 element={<MerchantDetails />}
               />
               <Route path="/merchant/payout" element={<AllMerchantPayout />} />
-              <Route path="/merchant/payout-detail/:merchantId/:date" element={<MerchantPayoutDetail />} />
+              <Route
+                path="/merchant/payout-detail/:merchantId/:date"
+                element={<MerchantPayoutDetail />}
+              />
               <Route path="/add-manager" element={<AddManager />} />
               {/* <Route path="/update-manager" element={<UpdateManager />} /> */}
               <Route
