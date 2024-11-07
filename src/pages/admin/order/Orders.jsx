@@ -219,8 +219,6 @@ const Orders = () => {
         endPoint += `?${filteredParams.join("&")}`;
       }
 
-      console.log(filteredParams);
-
       const response = await axios.get(endPoint, {
         params: { page, limit },
         withCredentials: true,
@@ -230,6 +228,7 @@ const Orders = () => {
       if (response.status === 200) {
         setOrders(response.data.data);
         setPagination(response.data.pagination);
+        setUnSeenCount(response.data.unSeenOrdersCount);
       }
     } catch (err) {
       toast({
@@ -295,6 +294,9 @@ const Orders = () => {
           if (response.status === 200) {
             setOrders(response.data.data);
             setPagination(response.data.pagination);
+            setUnSeenCount(response.data.unSeenOrdersCount);
+            console.log("Here");
+            console.log("Count", response.data.unSeenOrdersCount);
           }
         } else {
           filterHandler();
