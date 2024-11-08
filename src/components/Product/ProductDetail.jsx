@@ -145,7 +145,6 @@ const ProductDetail = ({ detail, BASE_URL, token, role }) => {
     e.preventDefault();
     try {
       setIsNewSaveLoading(true);
-
       const response = await axios.post(
         `${BASE_URL}/products/${productDetail._id}/add-variants`,
         newVariantData,
@@ -253,7 +252,7 @@ const ProductDetail = ({ detail, BASE_URL, token, role }) => {
           <input
             type="text"
             name="price"
-            value={productDetail?.price || "-"}
+            value={role === "Admin" ? productDetail?.price || "-" : productDetail?.costPrice || "-"}
             readOnly
             className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
           />
@@ -361,18 +360,20 @@ const ProductDetail = ({ detail, BASE_URL, token, role }) => {
                   }
                   className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
                 />
+                {role === "Admin" && (
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={type.price || ""}
+                    onChange={(e) =>
+                      handleInputChange(index, "price", e.target.value)
+                    }
+                    className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
+                  />
+                )}
                 <input
-                  type="text"
-                  placeholder="Price"
-                  value={type.price || ""}
-                  onChange={(e) =>
-                    handleInputChange(index, "price", e.target.value)
-                  }
-                  className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Cost Price"
+                  type="number"
+                  placeholder={role === "Admin" ? "Cost Price" : "Price"}
                   value={type.costPrice || ""}
                   onChange={(e) =>
                     handleInputChange(index, "costPrice", e.target.value)
@@ -455,34 +456,34 @@ const ProductDetail = ({ detail, BASE_URL, token, role }) => {
                         }
                         className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
                       />
-                      <input
-                        type="number"
-                        placeholder="Price"
-                        value={type.price || ""}
-                        onChange={(e) =>
-                          handleChangeExistingVariant(
-                            index,
-                            "price",
-                            e.target.value
-                          )
-                        }
-                        className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
-                      />
                       {role === "Admin" && (
                         <input
                           type="number"
-                          placeholder="Cost price"
-                          value={type.costPrice || ""}
+                          placeholder="Price"
+                          value={type.price || ""}
                           onChange={(e) =>
                             handleChangeExistingVariant(
                               index,
-                              "costPrice",
+                              "price",
                               e.target.value
                             )
                           }
                           className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
                         />
                       )}
+                      <input
+                        type="number"
+                        placeholder={role === "Admin" ? "Cost price" : "Price"}
+                        value={type.costPrice || ""}
+                        onChange={(e) =>
+                          handleChangeExistingVariant(
+                            index,
+                            "costPrice",
+                            e.target.value
+                          )
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-md mr-2 outline-none focus:outline-none"
+                      />
                       <button
                         type="button"
                         onClick={() =>

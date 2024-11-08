@@ -388,13 +388,14 @@ const EditProductItemModal = ({
           </div>
           <div className="flex items-center">
             <label className="w-1/3 text-gray-500" htmlFor="costPrice">
-              Cost Price <span className="text-red-600">*</span>
+              {role === "Admin" ? "Cost Price" : "Price"}
+              <span className="text-red-600 ml-1">*</span>
             </label>
             <input
               className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
               type="text"
               name="costPrice"
-              placeholder="Cost price"
+              placeholder={role === "Admin" ? "Cost Price" : "Price"}
               value={productData.costPrice}
               onChange={handleInputChange}
             />
