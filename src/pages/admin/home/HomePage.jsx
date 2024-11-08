@@ -22,6 +22,7 @@ import { formatDate } from "../../../utils/formatter";
 import { useSoundContext } from "../../../context/SoundContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { CronJob } from "cron";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -162,6 +163,7 @@ const HomePage = () => {
 
   const checkAvailability = async () => {
     try {
+      console.log("Checking availability...");
       // Fetch the merchant's availability data
       const { currentDay, currentTime } = getCurrentDayAndTime();
       const todayAvailability = merchantAvailability?.specificDays[currentDay];
@@ -174,14 +176,14 @@ const HomePage = () => {
       // Handle openAllDay
       if (todayAvailability.openAllDay) {
         setIsAvailable(true);
-        handleChangeMerchantStatusToggle(true);
+        await handleChangeMerchantStatusToggle(true);
         return;
       }
 
       // Handle closedAllDay
       if (todayAvailability.closedAllDay) {
         setIsAvailable(false);
-        handleChangeMerchantStatusToggle(false);
+        await handleChangeMerchantStatusToggle(false);
         // setErrorMessage("Merchant is closed all day.");
         return;
       }
@@ -191,10 +193,10 @@ const HomePage = () => {
         const { startTime, endTime } = todayAvailability;
         if (currentTime >= startTime && currentTime <= endTime) {
           setIsAvailable(true);
-          handleChangeMerchantStatusToggle(true);
+          await handleChangeMerchantStatusToggle(true);
         } else {
           setIsAvailable(false);
-          handleChangeMerchantStatusToggle(false);
+          await handleChangeMerchantStatusToggle(false);
           // setErrorMessage("Merchant is not available at the current time.");
         }
         return;
@@ -210,9 +212,6 @@ const HomePage = () => {
 
   useEffect(() => {
     checkAvailability();
-
-    const intervalId = setInterval(checkAvailability, 60000);
-    return () => clearInterval(intervalId);
   }, [merchantAvailability]);
 
   useEffect(() => {
@@ -284,6 +283,15 @@ const HomePage = () => {
   useEffect(() => {
     requestPermission();
   }, []);
+
+  new CronJob(
+    "0 */1 * * * *", // Runs every minute
+    async () => {
+      await checkAvailability(); // Your function to check availability
+    },
+    null, // onComplete
+    true // Starts the job immediately
+  );
 
   useEffect(() => {
     const formattedStartDate = formatDate(startDate);
@@ -438,6 +446,18 @@ const HomePage = () => {
 
   const handleChangeMerchantStatus = async () => {
     try {
+      await checkAvailability();
+      if (isAvailable) {
+        toast({
+          title: "Error",
+          description:
+            "As per your availability settings now is your working hours.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
       const response = await axios.patch(
         `${BASE_URL}/merchants/change-status`,
         {},
