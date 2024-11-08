@@ -114,7 +114,7 @@ const MerchantData = ({
       <div className="grid grid-cols-2 2xl:grid-cols-6 gap-4">
         {/* Merchant Image Section */}
         <div className="flex flex-col col-span-2 2xl:col-span-2 items-center order-1 2xl:order-2">
-          {!croppedFile && !detail?.merchantDetail?.merchantImageURL && (
+          {!croppedFile && !detail?.merchantDetail?.merchantImage && (
             <div className="bg-gray-400 w-[90%] h-[12rem] rounded-md relative">
               <label
                 htmlFor="merchantImage"
@@ -150,13 +150,13 @@ const MerchantData = ({
             </figure>
           )}
 
-          {!croppedFile && detail?.merchantDetail?.merchantImageURL && (
+          {!croppedFile && detail?.merchantDetail?.merchantImage && (
             <figure className="w-[90%] h-[12rem] rounded-md relative  z-10">
               <img
                 onClick={() =>
-                  handleImageClick(detail?.merchantDetail?.merchantImageURL)
+                  handleImageClick(detail?.merchantDetail?.merchantImage)
                 }
-                src={detail?.merchantDetail?.merchantImageURL}
+                src={detail?.merchantDetail?.merchantImage}
                 alt="profile"
                 className="w-full h-full rounded-md object-cover cursor-pointer"
               />
@@ -362,7 +362,11 @@ const MerchantData = ({
           <button
             type="button"
             onClick={toggleMapModal}
-            className={`font-medium ${coordinates ? "bg-white text-teal-700 border-[2px] border-teal-700" : "bg-teal-700 text-white"} text-start rounded-md py-2 w-2/3 flex items-center justify-center me-1`}
+            className={`font-medium ${
+              coordinates
+                ? "bg-white text-teal-700 border-[2px] border-teal-700"
+                : "bg-teal-700 text-white"
+            } text-start rounded-md py-2 w-2/3 flex items-center justify-center me-1`}
           >
             {coordinates ? "Location selected" : "Mark location"}
             <LocationOnOutlinedIcon className="text-[18px] ms-2" />

@@ -69,7 +69,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
 
         <div className="flex items-center gap-[30px]">
           {!previewURL?.pancardPreviewURL &&
-            !detail?.merchantDetail?.pancardImageURL && (
+            !detail?.merchantDetail?.pancardImage && (
               <div className="bg-gray-400 w-[65px] h-[65px] rounded-md" />
             )}
 
@@ -87,15 +87,15 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
           )}
 
           {!previewURL?.pancardPreviewURL &&
-            detail?.merchantDetail?.pancardImageURL && (
+            detail?.merchantDetail?.pancardImage && (
               <figure
                 onClick={() =>
-                  handleImageClick(detail?.merchantDetail?.pancardImageURL)
+                  handleImageClick(detail?.merchantDetail?.pancardImage)
                 }
                 className="w-[65px] h-[65px] rounded relative"
               >
                 <img
-                  src={detail?.merchantDetail?.pancardImageURL}
+                  src={detail?.merchantDetail?.pancardImage}
                   alt="pancard"
                   className="w-full rounded h-full object-cover"
                 />
@@ -132,7 +132,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
         />
         <div className="flex items-center gap-[30px]">
           {!previewURL?.gstPreviewURL &&
-            !detail?.merchantDetail?.GSTINImageURL && (
+            !detail?.merchantDetail?.gstinImage && (
               <div className="bg-gray-400 w-[65px] h-[65px] rounded-md" />
             )}
 
@@ -149,21 +149,20 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
             </figure>
           )}
 
-          {!previewURL?.gstPreviewURL &&
-            detail?.merchantDetail?.GSTINImageURL && (
-              <figure
-                onClick={() =>
-                  handleImageClick(detail?.merchantDetail?.GSTINImageURL)
-                }
-                className="w-[65px] h-[65px] rounded relative"
-              >
-                <img
-                  src={detail?.merchantDetail?.GSTINImageURL}
-                  alt="gst"
-                  className="w-full rounded h-full object-cover"
-                />
-              </figure>
-            )}
+          {!previewURL?.gstPreviewURL && detail?.merchantDetail?.gstinImage && (
+            <figure
+              onClick={() =>
+                handleImageClick(detail?.merchantDetail?.gstinImage)
+              }
+              className="w-[65px] h-[65px] rounded relative"
+            >
+              <img
+                src={detail?.merchantDetail?.gstinImage}
+                alt="gst"
+                className="w-full rounded h-full object-cover"
+              />
+            </figure>
+          )}
 
           <input
             type="file"
@@ -195,13 +194,13 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
         />
         <div className=" flex items-center gap-[30px]">
           {!previewURL?.fssaiPreviewURL &&
-            !detail?.merchantDetail?.FSSAIImageURL && (
+            !detail?.merchantDetail?.faasiImage && (
               <div className="bg-gray-400 w-[65px] h-[65px] rounded-md" />
             )}
 
           {previewURL?.fssaiPreviewURL && (
             <figure
-              onClick={() => handleImageClick(previewURL?.fssaiPreviewURLL)}
+              onClick={() => handleImageClick(previewURL?.fssaiPreviewURL)}
               className="w-[65px] h-[65px] rounded relative"
             >
               <img
@@ -213,15 +212,15 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
           )}
 
           {!previewURL?.fssaiPreviewURL &&
-            detail?.merchantDetail?.FSSAIImageURL && (
+            detail?.merchantDetail?.faasiImage && (
               <figure
                 onClick={() =>
-                  handleImageClick(detail?.merchantDetail?.FSSAIImageURL)
+                  handleImageClick(detail?.merchantDetail?.faasiImage)
                 }
                 className="w-[65px] h-[65px] rounded relative"
               >
                 <img
-                  src={detail?.merchantDetail?.FSSAIImageURL}
+                  src={detail?.merchantDetail?.faasiImage}
                   alt="profile"
                   className="w-full rounded h-full object-cover "
                 />
@@ -259,7 +258,7 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
         />
         <div className=" flex items-center gap-[30px]">
           {!previewURL?.aadharPreviewURL &&
-            !detail?.merchantDetail?.aadharImageURL && (
+            !detail?.merchantDetail?.aadharImage && (
               <div className="bg-gray-400 w-[65px] h-[65px] rounded-md" />
             )}
 
@@ -277,15 +276,15 @@ const MerchantDocuments = ({ detail, onDataChange }) => {
           )}
 
           {!previewURL?.aadharPreviewURL &&
-            detail?.merchantDetail?.aadharImageURL && (
+            detail?.merchantDetail?.aadharImage && (
               <figure
                 onClick={() =>
-                  handleImageClick(detail?.merchantDetail?.aadharImageURL)
+                  handleImageClick(detail?.merchantDetail?.aadharImage)
                 }
                 className="w-[65px] h-[65px] rounded relative"
               >
                 <img
-                  src={detail?.merchantDetail?.aadharImageURL}
+                  src={detail?.merchantDetail?.aadharImage}
                   alt="profile"
                   className="w-full rounded h-full object-cover "
                 />
