@@ -163,7 +163,6 @@ const HomePage = () => {
 
   const checkAvailability = async () => {
     try {
-      console.log("Checking availability...");
       // Fetch the merchant's availability data
       const { currentDay, currentTime } = getCurrentDayAndTime();
       const todayAvailability = merchantAvailability?.specificDays[currentDay];
