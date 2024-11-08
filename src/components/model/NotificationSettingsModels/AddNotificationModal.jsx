@@ -65,6 +65,10 @@ const AddNotificationModal = ({
       name: "Order ready (Customer)",
       value: "orderReadyCustomer",
     },
+    {
+      name: "Order completed",
+      value: "orderCompleted",
+    },
   ];
 
   const handleInputChange = (e) => {
@@ -176,7 +180,8 @@ const AddNotificationModal = ({
           </div>
           <div className="flex items-center mt-4">
             <label htmlFor="description" className="text-gray-500 w-1/3">
-              Description (This note will be shown in notification)<span className="text-red-500 ms-2">*</span>
+              Description (This note will be shown in notification)
+              <span className="text-red-500 ms-2">*</span>
             </label>
             <input
               type="text"
