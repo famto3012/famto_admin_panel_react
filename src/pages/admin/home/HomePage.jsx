@@ -38,6 +38,7 @@ const HomePage = () => {
   const [subscription, setSubscription] = useState([]);
   const [merchantAvailability, setMerchantAvailability] = useState();
   const [isAvailable, setIsAvailable] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
 
   const [dateRange, setDateRange] = useState([
     new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -284,14 +285,21 @@ const HomePage = () => {
     requestPermission();
   }, []);
 
+  // useEffect(() => {
   new CronJob(
     "0 */1 * * * *", // Runs every minute
     async () => {
+      // if (isFetching) return;
+      // setIsFetching(true);
+      // try {
       await checkAvailability(); // Your function to check availability
+      // } finally {
+      //   setIsFetching(false);
+      // }
     },
-    null, // onComplete
     true // Starts the job immediately
   );
+  // }, []);
 
   useEffect(() => {
     const formattedStartDate = formatDate(startDate);

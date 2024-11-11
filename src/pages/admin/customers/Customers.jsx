@@ -33,6 +33,7 @@ const Customers = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [pagination, setPagination] = useState({});
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
 
   const { token, role } = useContext(UserContext);
   const navigate = useNavigate();
@@ -253,9 +254,10 @@ const Customers = () => {
     setSelectedCSVFile(file);
   };
 
-  const handlUploadCSVFile = async (e) => {
+  const handleUploadCSVFile = async (e) => {
     try {
       e.preventDefault();
+      setIsUploadLoading(true);
 
       const csvToSend = new FormData();
 
@@ -275,6 +277,7 @@ const Customers = () => {
       );
 
       if (response.status === 200) {
+        setIsUploadLoading(false);
         setSelectedCSVFile(null);
         handleCancel();
         toast({
@@ -288,7 +291,7 @@ const Customers = () => {
     } catch (err) {
       toast({
         title: "Error",
-        description: "Erro while uploading the CSV file",
+        description: "Error while uploading the CSV file",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -365,7 +368,7 @@ const Customers = () => {
                 centered
               >
                 <div className="flex rounded-xl justify-between p-10">
-                  <div>
+                  <div className="flex flex-col">
                     <label
                       htmlFor="uploadCSV"
                       className="flex gap-2 p-3 w-fit bg-cyan-200 px-5 font-[500] rounded-xl border cursor-pointer"
@@ -385,6 +388,20 @@ const Customers = () => {
                     >
                       Download Sample CSV
                     </p>
+                    {selectedCSVFile && (
+                      <div className="flex items-center gap-4 mt-[20px]">
+                        <p>{selectedCSVFile.name}</p>
+                        {isUploadLoading ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          <AiOutlineCloudUpload
+                            size={25}
+                            onClick={handleUploadCSVFile}
+                            className="cursor-pointer  text-teal-600"
+                          />
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <button
@@ -402,9 +419,9 @@ const Customers = () => {
                     </button>
                   </div>
 
-                  {selectedCSVFile && (
-                    <p onClick={handlUploadCSVFile}>Upload</p>
-                  )}
+                  {/* {selectedCSVFile && (
+                    <p onClick={handleUploadCSVFile}>Upload</p>
+                  )} */}
                 </div>
               </Modal>
             </div>

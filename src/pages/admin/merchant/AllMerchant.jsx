@@ -522,7 +522,7 @@ const Merchant = () => {
     setSelectedCSVFile(file);
   };
 
-  const handlUploadCSVFile = async (e) => {
+  const handleUploadCSVFile = async (e) => {
     try {
       e.preventDefault();
 
@@ -676,7 +676,7 @@ const Merchant = () => {
                           ) : (
                             <AiOutlineCloudUpload
                               size={25}
-                              onClick={handlUploadCSVFile}
+                              onClick={handleUploadCSVFile}
                               className="cursor-pointer  text-teal-600"
                             />
                           )}

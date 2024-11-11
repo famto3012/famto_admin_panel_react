@@ -82,7 +82,7 @@ const EditDiscountModal = ({
       const endPoint =
         role === "Admin"
           ? `${BASE_URL}/admin/shop-discount/edit-merchant-discount-admin/${currentDiscount}`
-          : `${BASE_URL}/admin/discount/edit-merchant-discount/${currentDiscount}`;
+          : `${BASE_URL}/admin/shop-discount/edit-merchant-discount/${currentDiscount}`;
 
       const response = await axios.put(endPoint, merchantDiscount, {
         withCredentials: true,
@@ -215,7 +215,7 @@ const EditDiscountModal = ({
             />
           </div> */}
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               Valid From <span className="text-red-600">*</span>
             </label>
@@ -228,7 +228,7 @@ const EditDiscountModal = ({
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               Valid To <span className="text-red-600">*</span>
             </label>
@@ -243,7 +243,7 @@ const EditDiscountModal = ({
 
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
-              GeoFence <span className="text-red-600">*</span>
+              Geofence <span className="text-red-600">*</span>
             </label>
 
             <Select

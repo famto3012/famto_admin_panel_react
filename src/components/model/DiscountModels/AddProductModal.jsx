@@ -192,7 +192,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <div>
               <label className="w-1/2 text-gray-500">
                 Discount <span className="text-red-600">*</span>
@@ -221,7 +221,7 @@ const AddProductModal = ({
           <div>
             <input
               type="text"
-              className="border-2 border-gray-300 rounded ml-[280px] p-2 w-[357px] focus:outline-none"
+              className="border-2 border-gray-300 rounded ml-[288px] p-2 w-[360px] focus:outline-none"
               name="discountValue"
               value={productDiscount.discountValue}
               onChange={handleInputChangeBasic}
@@ -244,7 +244,7 @@ const AddProductModal = ({
             />
           </div> */}
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <label className="w-1/2 text-gray-500">
               Select Product <span className="text-red-600">*</span>
             </label>
@@ -262,7 +262,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex mt-2 gap-4">
+          <div className="flex mt-1 gap-4">
             <label className="w-1/2 text-gray-500">
               Max Amount <span className="text-red-600">*</span>
             </label>
@@ -276,7 +276,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               Valid From <span className="text-red-600">*</span>
             </label>
@@ -289,7 +289,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               Valid To <span className="text-red-600">*</span>
             </label>
@@ -302,7 +302,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <label className="w-1/2 text-gray-500">
               Geofence <span className="text-red-600">*</span>
             </label>
@@ -329,7 +329,7 @@ const AddProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 justify-between">
+          <div className="flex mt-1 justify-between">
             <label>Discount on add-on</label>
             <Switch
               value={productDiscount.onAddOn}
