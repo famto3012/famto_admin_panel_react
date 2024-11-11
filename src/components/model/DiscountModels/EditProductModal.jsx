@@ -1,9 +1,10 @@
 import { Switch, Modal } from "antd";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Select from "react-select";
 import { useToast } from "@chakra-ui/react";
 import { formatDateForDateSelect } from "../../../utils/formatter";
+import { UserContext } from "../../../context/UserContext";
 
 const EditProductModal = ({
   isVisible,
@@ -30,6 +31,7 @@ const EditProductModal = ({
   const [allProducts, setAllProducts] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const { role } = useContext(UserContext);
 
   const toast = useToast();
 
@@ -84,15 +86,15 @@ const EditProductModal = ({
 
     try {
       setIsLoading(true);
+      const endPoint =
+        role === "Admin"
+          ? `${BASE_URL}/admin/product-discount/edit-product-discount-admin/${currentProduct}`
+          : `${BASE_URL}/admin/product-discount/edit-product-discount/${currentProduct}`;
 
-      const response = await axios.put(
-        `${BASE_URL}/admin/product-discount/edit-product-discount-admin/${currentProduct}`,
-        productDiscount,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.put(endPoint, productDiscount, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.status === 200) {
         onEditProduct(response.data.data);
         handleCancel();
@@ -174,7 +176,7 @@ const EditProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <div>
               <label className="w-1/2 text-gray-500">
                 Discount <span className="text-red-600">*</span>
@@ -226,7 +228,7 @@ const EditProductModal = ({
             />
           </div> */}
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <label className="w-1/2 text-gray-500">
               Select Product <span className="text-red-600">*</span>
             </label>
@@ -242,7 +244,7 @@ const EditProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <label className="w-1/2 text-gray-500">
               Max Amount <span className="text-red-600">*</span>
             </label>
@@ -256,7 +258,7 @@ const EditProductModal = ({
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               Valid From <span className="text-red-600">*</span>
             </label>
@@ -269,7 +271,7 @@ const EditProductModal = ({
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               Valid To <span className="text-red-600">*</span>
             </label>
@@ -282,7 +284,7 @@ const EditProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 gap-4">
+          <div className="flex mt-1 gap-4">
             <label className="w-1/2 text-gray-500">
               Geofence <span className="text-red-600">*</span>
             </label>
@@ -309,7 +311,7 @@ const EditProductModal = ({
             />
           </div>
 
-          <div className="flex mt-5 justify-between">
+          <div className="flex mt-1 justify-between">
             <label>Discount on add-on</label>
             <Switch
               checked={productDiscount.onAddOn}

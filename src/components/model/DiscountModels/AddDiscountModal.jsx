@@ -223,7 +223,7 @@ const AddDiscountModal = ({
               onChange={handleInputChange}
             />
           </div> */}
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               From <span className="text-red-600">*</span>
             </label>
@@ -236,7 +236,7 @@ const AddDiscountModal = ({
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
+          <div className="flex gap-4 mt-1">
             <label className="w-1/2 text-gray-500">
               To <span className="text-red-600">*</span>
             </label>
@@ -251,7 +251,7 @@ const AddDiscountModal = ({
 
           <div className="flex gap-4">
             <label className="w-1/2 text-gray-500">
-              GeoFence <span className="text-red-600">*</span>
+              Geofence <span className="text-red-600">*</span>
             </label>
 
             <Select
