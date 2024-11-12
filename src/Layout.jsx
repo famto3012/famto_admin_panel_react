@@ -29,7 +29,6 @@ const Layout = () => {
       setIsSmallScreen(window.innerWidth < 1080);
     };
 
-    // Initial check
     checkScreenWidth();
 
     // Add event listener to check on window resize
@@ -46,11 +45,7 @@ const Layout = () => {
       {!noSidebar &&
         !isSmallScreen &&
         (showSmallSidebar ? <SidebarDelivery /> : <Sidebar />)}
-      <main
-      // className={`h-screen w-full ${
-      //   noSidebar ? "" : showSmallSidebar ? "ps-[4rem]" : "ps-[270px]"
-      // }`}
-      >
+      <main>
         <App />
       </main>
     </>
