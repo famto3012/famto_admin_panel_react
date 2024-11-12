@@ -4,7 +4,7 @@ import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
@@ -23,6 +23,8 @@ const EditGeofence = () => {
   const [mapObject, setMapObject] = useState(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const toast = useToast();
+  const navigate = useNavigate();
+
   let map, drawData, geoJSON, polyArray;
 
   const [authToken, setAuthToken] = useState("");
@@ -62,16 +64,14 @@ const EditGeofence = () => {
     setNewGeofence({ ...newGeofence, [e.target.name]: e.target.value });
   };
 
-  const signupAction = (e) => {
-    e.preventDefault();
-    const location = { geofences, color };
-  };
+  useEffect(() => {
+    getSingleGeofence();
+    getAuthToken();
+  }, []);
 
   useEffect(() => {
-    getAuthToken();
-
     const script = document.createElement("script");
-    script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
+    script.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
     script.async = true;
     document.body.appendChild(script);
 
@@ -118,10 +118,6 @@ const EditGeofence = () => {
       }
     };
   }, [authToken]);
-
-  useEffect(() => {
-    getSingleGeofence();
-  }, []);
 
   const getSingleGeofence = async () => {
     try {
@@ -294,7 +290,7 @@ const EditGeofence = () => {
             </form>
             <div className="flex flex-row gap-2 mt-6">
               <button
-                onClick={signupAction}
+                onClick={() => navigate("/geofence")}
                 className="w-1/2 bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 Cancel
@@ -307,22 +303,28 @@ const EditGeofence = () => {
                 Update
               </button>
             </div>
+            <p className="text-gray-600 mt-[25px]">
+              <span className="font-bold">Note:</span> After changing the
+              coordinates of the geofence. Double click on the marked area after
+              that click on the update button.
+            </p>
           </div>
           <div className="mt-8 p-6 bg-white rounded-lg shadow-sm w-2/3 me-10">
             <div
               ref={mapContainerRef}
               id="map"
               className="map-container w-full h-[600px]"
-            ></div>
-            {isMapLoaded &&
-              geofences.coordinates &&
-              Array.isArray(geofences.coordinates) && (
-                <GeoJsonComponent
-                  map={mapObject}
-                  geofences={geofences}
-                  color={color}
-                />
-              )}
+            >
+              {isMapLoaded &&
+                geofences.coordinates &&
+                Array.isArray(geofences.coordinates) && (
+                  <GeoJsonComponent
+                    map={mapObject}
+                    geofences={geofences}
+                    color={color}
+                  />
+                )}
+            </div>
           </div>
         </div>
       </div>

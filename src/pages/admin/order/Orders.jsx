@@ -119,49 +119,6 @@ const Orders = () => {
     if (role === "Admin") getAllMerchants();
   }, [token, page, limit, role, deliveryOption]);
 
-  // const getAllOrders = async () => {
-  //   try {
-  //     setIsTableLoading(true);
-  //     let endpoint;
-
-  //     if (role === "Admin" && deliveryOption === true) {
-  //       endpoint = `${BASE_URL}/orders/admin/all-orders`;
-  //     } else if (role === "Admin" && deliveryOption === false) {
-  //       endpoint = `${BASE_URL}/orders/admin/all-scheduled-orders`;
-  //     } else if (role === "Merchant" && deliveryOption === true) {
-  //       endpoint = `${BASE_URL}/orders/all-orders`;
-  //     } else if (role === "Merchant" && deliveryOption === false) {
-  //       endpoint = `${BASE_URL}/orders/all-scheduled-orders`;
-  //     }
-
-  //     const response = await axios.get(endpoint, {
-  //       params: { page, limit },
-  //       withCredentials: true,
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-
-  //     if (response.status === 200) {
-  //       setOrders(response.data.data);
-  //       console.log("Order", response.data.data);
-  //       setPagination(response.data.pagination);
-  //       if (role === "Merchant" && deliveryOption === false) {
-  //         setUnSeenCount(response.data.notSeen);
-  //         console.log("Unseen", response.data.notSeen);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     toast({
-  //       title: "Error",
-  //       description: "An error occoured while getting all orders",
-  //       status: "error",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //   } finally {
-  //     setIsTableLoading(false);
-  //   }
-  // };
-
   const getAllMerchants = async () => {
     try {
       const response = await axios.get(
