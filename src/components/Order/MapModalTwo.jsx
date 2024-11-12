@@ -10,15 +10,18 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const PlaceSearchPlugin = ({ map }) => {
   const placeSearchRef = useRef(null);
   const markerRef = useRef(null);
+
   useEffect(() => {
     if (map && placeSearchRef.current) {
       mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
     }
+
     const optional_config = {
       location: [28.61, 77.23],
       region: "IND",
       height: 300,
     };
+
     const callback = (data) => {
       if (data) {
         const dt = data[0];
@@ -34,7 +37,7 @@ const PlaceSearchPlugin = ({ map }) => {
             popupOptions: {
               openPopup: true,
             },
-            zoom: 5,
+            zoom: 10,
           },
           (data) => {
             markerRef.current = data;
@@ -45,18 +48,21 @@ const PlaceSearchPlugin = ({ map }) => {
       }
     };
     placeSearchRef.current = mapplsPluginObject.search(
-      document.getElementById("auto"),
+      document.getElementById("auto1"),
       optional_config,
       callback
     );
+
     return () => {
       if (map && placeSearchRef.current) {
         mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
       }
     };
   }, [map]);
+
   return null;
 };
+
 const MapModalTwo = ({ isVisible, onClose, authToken }) => {
   const { mapTwo, setMapTwo, setMap, setCoordinatesTwo, setCoordinates } =
     useMap(); // Use the context

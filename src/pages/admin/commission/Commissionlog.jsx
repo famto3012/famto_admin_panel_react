@@ -395,16 +395,16 @@ const Commissionlog = () => {
                       {log.status === "Unpaid" ? (
                         role === "Admin" ? (
                           <button
-                            className="bg-teal-700 text-white px-3 py-2 rounded-md text-sm flex items-center"
+                            className="bg-teal-700 text-white px-3 py-2 ms-3 rounded-md text-sm flex items-center"
                             onClick={() => showModal(log._id)}
                           >
                             Set as paid
                           </button>
                         ) : (
-                          <p>Unpaid</p>
+                          <p className="text-red-500 font-semibold">Unpaid</p>
                         )
                       ) : (
-                        <p>{log.status}</p>
+                        <p className="text-green-500 font-semibold">{log.status}</p>
                       )}
                     </td>
                   </tr>

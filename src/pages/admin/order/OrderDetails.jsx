@@ -426,23 +426,23 @@ const OrderDetails = () => {
   useEffect(() => {
     if (orderDetail && mapObject) {
       if (orderId.charAt(0) === "O") {
-        const coordinates = orderDetail.agentLocation;
+        const coordinates = orderDetail?.agentLocation;
         showAgentLocationOnMap(
           coordinates,
-          orderDetail.deliveryAgentDetail.name,
-          orderDetail.deliveryAgentDetail._id,
-          orderDetail.deliveryAgentDetail.phoneNumber
+          orderDetail?.deliveryAgentDetail?.name,
+          orderDetail?.deliveryAgentDetail?._id,
+          orderDetail?.deliveryAgentDetail?.phoneNumber
         );
-        const shopCoordinates = orderDetail.pickUpLocation;
+        const shopCoordinates = orderDetail?.pickUpLocation;
         showShopLocationOnMap(
           shopCoordinates,
-          orderDetail.merchantDetail.name,
-          orderDetail.merchantDetail._id
+          orderDetail?.merchantDetail?.name,
+          orderDetail?.merchantDetail?._id
         );
-        const deliveryLocation = orderDetail.deliveryLocation;
+        const deliveryLocation = orderDetail?.deliveryLocation;
         showDeliveryLocationOnMap(
           deliveryLocation,
-          orderDetail.customerDetail.name,
+          orderDetail?.customerDetail?.name,
           "",
           orderDetail?.customerDetail?.address?.phoneNumber
         );
