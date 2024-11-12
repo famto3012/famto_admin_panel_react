@@ -1,37 +1,102 @@
-import { useContext, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../App.css";
 
-import {
-  HomeOutlined as HomeOutlinedIcon,
-  BookOutlined as BookOutlinedIcon,
-  StorefrontOutlined as StorefrontOutlinedIcon,
-  ListAltOutlined as ListAltOutlinedIcon,
-  GroupsOutlined as GroupsOutlinedIcon,
-  AssignmentIndOutlined as AssignmentIndOutlinedIcon,
-  TwoWheelerOutlined as TwoWheelerOutlinedIcon,
-  PercentOutlined as PercentOutlinedIcon,
-  AppBlockingOutlined as AppBlockingOutlinedIcon,
-  SettingsOutlined as SettingsOutlinedIcon,
-  ManageAccountsOutlined as ManageAccountsOutlinedIcon,
-  NotificationsNoneOutlined as NotificationsNoneOutlinedIcon,
-  NotificationImportantOutlined as NotificationImportantOutlinedIcon,
-  EditNotificationsOutlined as EditNotificationsOutlinedIcon,
-  CrisisAlertOutlined as CrisisAlertOutlinedIcon,
-  CampaignOutlined as CampaignOutlinedIcon,
-  RedeemOutlined as RedeemOutlinedIcon,
-  HubOutlined as HubOutlinedIcon,
-  LoyaltyOutlined as LoyaltyOutlinedIcon,
-  ShareLocationOutlined as ShareLocationOutlinedIcon,
-} from "@mui/icons-material";
-import { CaretRightOutlined } from "@ant-design/icons";
-import { BsPersonLinesFill } from "react-icons/bs";
-import { LuFolderCog } from "react-icons/lu";
-import { FaIndianRupeeSign } from "react-icons/fa6";
+// Import specific icons from Material UI with individual imports
+import React from "react";
+
+// Lazy load Material UI icons
+const HomeOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/HomeOutlined")
+);
+const BookOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/BookOutlined")
+);
+const StorefrontOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/StorefrontOutlined")
+);
+const ListAltOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/ListAltOutlined")
+);
+const GroupsOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/GroupsOutlined")
+);
+const AssignmentIndOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/AssignmentIndOutlined")
+);
+const TwoWheelerOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/TwoWheelerOutlined")
+);
+const PercentOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/PercentOutlined")
+);
+const AppBlockingOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/AppBlockingOutlined")
+);
+const SettingsOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/SettingsOutlined")
+);
+const ManageAccountsOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/ManageAccountsOutlined")
+);
+const NotificationsNoneOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/NotificationsNoneOutlined")
+);
+const NotificationImportantOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/NotificationImportantOutlined")
+);
+const EditNotificationsOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/EditNotificationsOutlined")
+);
+const CrisisAlertOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/CrisisAlertOutlined")
+);
+const CampaignOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/CampaignOutlined")
+);
+const RedeemOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/RedeemOutlined")
+);
+const HubOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/HubOutlined")
+);
+const LoyaltyOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/LoyaltyOutlined")
+);
+const ShareLocationOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/ShareLocationOutlined")
+);
+
+// Lazy load Ant Design icon
+const CaretRightOutlined = React.lazy(() =>
+  import("@ant-design/icons/CaretRightOutlined")
+);
+
+// Lazy load react-icons
+const BsPersonLinesFill = React.lazy(() =>
+  import("react-icons/bs").then((module) => ({
+    default: module.BsPersonLinesFill,
+  }))
+);
+const LuFolderCog = React.lazy(() =>
+  import("react-icons/lu").then((module) => ({ default: module.LuFolderCog }))
+);
+const FaIndianRupeeSign = React.lazy(() =>
+  import("react-icons/fa6").then((module) => ({
+    default: module.FaIndianRupeeSign,
+  }))
+);
+const AiOutlineGift = React.lazy(() =>
+  import("react-icons/ai").then((module) => ({ default: module.AiOutlineGift }))
+);
+const IoMdTime = React.lazy(() =>
+  import("react-icons/io").then((module) => ({ default: module.IoMdTime }))
+);
+const FaWhatsapp = React.lazy(() =>
+  import("react-icons/fa").then((module) => ({ default: module.FaWhatsapp }))
+);
 import { UserContext } from "../context/UserContext";
-import { AiOutlineGift } from "react-icons/ai";
-import { IoMdTime } from "react-icons/io";
-import { FaWhatsapp } from "react-icons/fa";
+import { Skeleton } from "@chakra-ui/react";
 
 const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -106,20 +171,20 @@ const Sidebar = () => {
             selectedLink === "/home" ? "selected-link" : ""
           }`}
         >
-          <HomeOutlinedIcon className="m-2 " />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <HomeOutlinedIcon className="m-2" />
+          </Suspense>
           Home
         </Link>
         <Link
           to="/all-orders"
           className={`ps-4 side ${
-            selectedLink === "/all-orders" ||
-            selectedLink === "/create-order" ||
-            /^\/order-details\/[A-Za-z0-9]+$/.test(selectedLink)
-              ? "selected-link"
-              : ""
+            selectedLink === "/all-orders" ? "selected-link" : ""
           }`}
         >
-          <BookOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <BookOutlinedIcon className="m-2" />
+          </Suspense>
           Orders
         </Link>
         {role === "Admin" && (
@@ -133,7 +198,9 @@ const Sidebar = () => {
                 : ""
             }`}
           >
-            <StorefrontOutlinedIcon className="m-2" />
+            <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+              <StorefrontOutlinedIcon className="m-2" />
+            </Suspense>
             Merchants
           </Link>
         )}
@@ -143,7 +210,9 @@ const Sidebar = () => {
             selectedLink === "/products" ? "selected-link" : ""
           }`}
         >
-          <ListAltOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <ListAltOutlinedIcon className="m-2" />
+          </Suspense>
           Products
         </Link>
         <Link
@@ -155,7 +224,9 @@ const Sidebar = () => {
               : ""
           }`}
         >
-          <GroupsOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <GroupsOutlinedIcon className="m-2" />
+          </Suspense>
           Customers
         </Link>
 
@@ -170,7 +241,9 @@ const Sidebar = () => {
                   : ""
               }`}
             >
-              <AssignmentIndOutlinedIcon className="m-2" />
+              <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                <AssignmentIndOutlinedIcon className="m-2" />
+              </Suspense>
               Delivery Agents
             </Link>
 
@@ -180,7 +253,9 @@ const Sidebar = () => {
                 selectedLink === "/delivery-management" ? "selected-link" : ""
               }`}
             >
-              <TwoWheelerOutlinedIcon className="m-2" />
+              <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                <TwoWheelerOutlinedIcon className="m-2" />
+              </Suspense>
               Delivery Management
             </Link>
           </>
@@ -196,7 +271,9 @@ const Sidebar = () => {
               : ""
           }`}
         >
-          <PercentOutlinedIcon className="flex mr-[3px] m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <PercentOutlinedIcon className="flex mr-[3px] m-2" />
+          </Suspense>
           Commission/Subscription
         </Link>
         {role === "Admin" && (
@@ -206,7 +283,9 @@ const Sidebar = () => {
               selectedLink === "/chat" ? "selected-link" : ""
             }`}
           >
-            <FaWhatsapp className="m-[7px] text-[25px]" />
+            <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+              <FaWhatsapp className="m-[7px] text-[25px]" />
+            </Suspense>
             Whatsapp
           </Link>
         )}
@@ -226,7 +305,9 @@ const Sidebar = () => {
               selectedLink === "/discount" ? "selected-link" : ""
             }`}
           >
-            <AiOutlineGift className="me-2 ms-2 mb-1" size={"25px"} />
+            <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+              <AiOutlineGift className="me-2 ms-2 mb-1" size={"25px"} />
+            </Suspense>
             Discount
           </Link>
 
@@ -238,7 +319,9 @@ const Sidebar = () => {
                   selectedLink === "/ad-banner" ? "selected-link" : ""
                 }`}
               >
-                <CampaignOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <CampaignOutlinedIcon className="m-2" />
+                </Suspense>
                 Ad banner
               </Link>
 
@@ -248,7 +331,9 @@ const Sidebar = () => {
                   selectedLink === "/loyality-point" ? "selected-link" : ""
                 }`}
               >
-                <LoyaltyOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <LoyaltyOutlinedIcon className="m-2" />
+                </Suspense>
                 Loyality Point
               </Link>
 
@@ -258,7 +343,9 @@ const Sidebar = () => {
                   selectedLink === "/promo-code" ? "selected-link" : ""
                 }`}
               >
-                <RedeemOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <RedeemOutlinedIcon className="m-2" />
+                </Suspense>
                 Promo code
               </Link>
 
@@ -268,7 +355,9 @@ const Sidebar = () => {
                   selectedLink === "/referral" ? "selected-link" : ""
                 }`}
               >
-                <HubOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <HubOutlinedIcon className="m-2" />
+                </Suspense>
                 Referral
               </Link>
             </>
@@ -290,7 +379,9 @@ const Sidebar = () => {
               selectedLink === "/notification-log" ? "selected-link" : ""
             }`}
           >
-            <NotificationsNoneOutlinedIcon className="m-2" />
+            <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+              <NotificationsNoneOutlinedIcon className="m-2" />
+            </Suspense>
             Notification log
           </Link>
 
@@ -302,7 +393,9 @@ const Sidebar = () => {
                   selectedLink === "/push-notification" ? "selected-link" : ""
                 }`}
               >
-                <NotificationImportantOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <NotificationImportantOutlinedIcon className="m-2" />
+                </Suspense>
                 Push Notification
               </Link>
 
@@ -314,7 +407,9 @@ const Sidebar = () => {
                     : ""
                 }`}
               >
-                <EditNotificationsOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <EditNotificationsOutlinedIcon className="m-2" />
+                </Suspense>
                 Notification Settings
               </Link>
 
@@ -324,7 +419,9 @@ const Sidebar = () => {
                   selectedLink === "/alert-notification" ? "selected-link" : ""
                 }`}
               >
-                <CrisisAlertOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <CrisisAlertOutlinedIcon className="m-2" />
+                </Suspense>
                 Alert Notification
               </Link>
             </>
@@ -348,7 +445,9 @@ const Sidebar = () => {
                   selectedLink === "/all-managers" ? "selected-link" : ""
                 }`}
               >
-                <BsPersonLinesFill className="m-2 text-[20px]" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <BsPersonLinesFill className="m-2 text-[20px]" />
+                </Suspense>
                 Managers
               </Link>
               {/* <Link
@@ -366,7 +465,9 @@ const Sidebar = () => {
                   selectedLink === "/pricing" ? "selected-link" : ""
                 }`}
               >
-                <FaIndianRupeeSign className="m-2 text-[20px]" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <FaIndianRupeeSign className="m-2 text-[20px]" />
+                </Suspense>
                 Pricing
               </Link>
               <Link
@@ -375,7 +476,9 @@ const Sidebar = () => {
                   selectedLink === "/all-tax" ? "selected-link" : ""
                 }`}
               >
-                <PercentOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <PercentOutlinedIcon className="m-2" />
+                </Suspense>
                 Tax
               </Link>
               <Link
@@ -384,7 +487,9 @@ const Sidebar = () => {
                   selectedLink === "/geofence" ? "selected-link" : ""
                 }`}
               >
-                <ShareLocationOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <ShareLocationOutlinedIcon className="m-2" />
+                </Suspense>
                 Geofence
               </Link>
             </ul>
@@ -404,7 +509,9 @@ const Sidebar = () => {
                   selectedLink === "/customer-app" ? "selected-link" : ""
                 }`}
               >
-                <LuFolderCog className="m-2 text-[20px]" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <LuFolderCog className="m-2 text-[20px]" />
+                </Suspense>
                 Customer App
               </Link>
               <Link
@@ -413,7 +520,9 @@ const Sidebar = () => {
                   selectedLink === "/agent-app" ? "selected-link" : ""
                 }`}
               >
-                <LuFolderCog className="m-2 text-[20px]" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <LuFolderCog className="m-2 text-[20px]" />
+                </Suspense>
                 Agent App
               </Link>
               <Link
@@ -422,7 +531,10 @@ const Sidebar = () => {
                   selectedLink === "/merchant-app" ? "selected-link" : ""
                 }`}
               >
-                <LuFolderCog className="m-2 text-[20px] " /> Merchant App
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <LuFolderCog className="m-2 text-[20px] " />
+                </Suspense>{" "}
+                Merchant App
               </Link>
             </ul>
           )}
@@ -445,7 +557,9 @@ const Sidebar = () => {
                   selectedLink === "/activity-logs" ? "selected-link" : ""
                 }`}
               >
-                <IoMdTime className="m-2" size={24} />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <IoMdTime className="m-2" size={24} />
+                </Suspense>
                 Activity logs
               </Link>
 
@@ -455,7 +569,9 @@ const Sidebar = () => {
                   selectedLink === "/account-logs" ? "selected-link" : ""
                 }`}
               >
-                <AppBlockingOutlinedIcon className="m-2" />
+                <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+                  <AppBlockingOutlinedIcon className="m-2" />
+                </Suspense>
                 Account logs
               </Link>
             </>
@@ -467,7 +583,9 @@ const Sidebar = () => {
               selectedLink === "/settings" ? "selected-link" : ""
             }`}
           >
-            <SettingsOutlinedIcon className="m-2" />
+            <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+              <SettingsOutlinedIcon className="m-2" />
+            </Suspense>
             Settings
           </Link>
         </ul>

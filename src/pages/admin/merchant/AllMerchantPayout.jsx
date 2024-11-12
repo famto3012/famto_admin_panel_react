@@ -13,7 +13,6 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import { FaAngleRight } from "react-icons/fa6";
 
 import GlobalSearch from "../../../components/GlobalSearch";
-import Sidebar from "../../../components/Sidebar";
 
 import { payoutPaymentStatus } from "../../../utils/DefaultData";
 
@@ -180,7 +179,6 @@ const AllMerchantPayout = () => {
 
   return (
     <>
-      <Sidebar />
 
       <div className="pl-[300px] bg-gray-100 h-screen w-full">
         <div className="p-[30px]">

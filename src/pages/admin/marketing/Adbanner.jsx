@@ -9,7 +9,6 @@ import { useToast } from "@chakra-ui/react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdOutlineEdit } from "react-icons/md";
 
-import Sidebar from "../../../components/Sidebar";
 import AddBannerModal from "../../../components/model/AdBannerModels/AddBannerModal";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
@@ -197,7 +196,6 @@ const Adbanner = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
         <nav className="p-5">
           <GlobalSearch />

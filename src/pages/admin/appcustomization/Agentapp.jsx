@@ -1,6 +1,4 @@
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MdCameraAlt } from "react-icons/md";
 import { Switch } from "antd";
 import { FaGoogle } from "react-icons/fa";
@@ -154,7 +152,6 @@ const Agentapp = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="w-fit pl-[290px] h-screen bg-gray-100 ">
             <nav className="p-5">
               <GlobalSearch />

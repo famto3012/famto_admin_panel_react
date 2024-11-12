@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
@@ -178,7 +177,6 @@ const Geofence = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
         <nav className="p-5">
           <GlobalSearch />

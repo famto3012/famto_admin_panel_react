@@ -20,7 +20,6 @@ import {
   StepIcon,
   StepNumber,
 } from "@chakra-ui/react";
-import SidebarDelivery from "../../../components/model/SidebarDelivery";
 import { mappls } from "mappls-web-maps";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
@@ -747,7 +746,6 @@ const DeliveryManagement = () => {
 
   return (
     <>
-      <SidebarDelivery />
       <div className="p-5 pl-[75px] bg-gray-100 h-full">
         <div className="h-[10%]">
           <p className="text-[18px] font-semibold mt-5">

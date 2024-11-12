@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { Switch, Modal, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -422,7 +421,6 @@ const Discount = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="pl-[300px] bg-gray-100 min-w-fit h-screen">
         <nav className="p-5">
           <GlobalSearch />

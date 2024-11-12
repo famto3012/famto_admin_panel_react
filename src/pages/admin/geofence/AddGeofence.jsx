@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { mappls, mappls_plugin } from "mappls-web-maps";
 
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 
@@ -252,7 +251,6 @@ const AddGeofence = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
         <nav className="p-5">
           <GlobalSearch />

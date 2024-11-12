@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
 import {
@@ -716,7 +715,6 @@ const OrderDetails = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="pl-[300px] bg-gray-100 min-w-fit">
         <nav className="p-5">
           <GlobalSearch />

@@ -1,10 +1,13 @@
 import { useContext, useEffect, useRef } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { MdCameraAlt } from "react-icons/md";
 import { useState } from "react";
 import { Switch } from "antd";
-import { GoogleOutlined, AppleFilled, FacebookFilled } from "@ant-design/icons";
+import {
+  GoogleOutlined,
+  AppleFilled,
+  FacebookFilled,
+} from "@ant-design/icons";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -166,7 +169,6 @@ const CustomerApp = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="pl-[300px]  bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

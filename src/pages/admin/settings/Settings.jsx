@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import { Modal } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { useNavigate } from "react-router-dom";
@@ -151,8 +150,6 @@ const Settings = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
-
           <div className="w-full h-screen pl-[300px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

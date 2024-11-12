@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
+import { useContext, useEffect, useState } from "react";
 import { Switch } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
@@ -141,8 +139,6 @@ const AddManager = () => {
       <GIFLoader />
     ) : (
     <>
-      <Sidebar />
-
       <div className="w-full h-screen pl-[300px] bg-gray-100">
         <nav className="p-5">
           <GlobalSearch />

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useState } from "react";
@@ -128,7 +127,6 @@ const AgentDetails = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="pl-[300px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

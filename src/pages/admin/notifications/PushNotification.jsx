@@ -1,10 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
-import Sidebar from "../../../components/Sidebar";
 import { MdCameraAlt } from "react-icons/md";
-import { Modal, Spin, Switch } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import FilterAltOutlined from "@mui/icons-material/FilterAltOutlined";
+import { Modal, Switch } from "antd";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +11,6 @@ import { Spinner, useToast } from "@chakra-ui/react";
 import CropImage from "../../../components/CropImage";
 import {
   userTypeForPushNotificationOptions,
-  userTypeOptions,
 } from "../../../utils/DefaultData";
 import Select from "react-select";
 
@@ -351,7 +347,6 @@ const PushNotification = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="pl-[300px] bg-gray-100">
         <div className="p-5">
           <GlobalSearch />

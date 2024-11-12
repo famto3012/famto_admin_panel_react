@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
@@ -221,7 +220,6 @@ const EditGeofence = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
         <nav className="p-5">
           <GlobalSearch />

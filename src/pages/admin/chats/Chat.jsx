@@ -1,12 +1,10 @@
 import Conversation from "../../../components/Chat/Conversation";
 import MessageContainer from "../../../components/Chat/MessageContainer";
 import GlobalSearch from "../../../components/GlobalSearch";
-import Sidebar from "../../../components/Sidebar";
 
 const Chat = () => {
   return (
     <>
-      <Sidebar />
       <div className="w-full min-h-screen pl-[300px] bg-gray-100 flex flex-col">
         <nav className="p-5">
           <GlobalSearch />

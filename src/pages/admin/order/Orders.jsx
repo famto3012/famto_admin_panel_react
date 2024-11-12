@@ -6,7 +6,6 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
@@ -23,7 +22,6 @@ import {
 import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
-import { formatDateForDateSelect } from "../../../utils/formatter";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -542,7 +540,6 @@ const Orders = () => {
 
   return (
     <>
-      <Sidebar />
       <main className="pl-[300px] bg-gray-100 h-screen overflow-auto">
         <nav className="p-5">
           <GlobalSearch />

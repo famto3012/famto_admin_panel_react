@@ -3,7 +3,7 @@ import loaderAnimation from "../assets/animation.json";
 
 const GIFLoader = () => {
   return (
-    <figure className="h-[100vh] flex items-center justify-center">
+    <figure className="h-[100vh] ps-[270px] flex items-center justify-center">
       <Player
         autoplay
         loop

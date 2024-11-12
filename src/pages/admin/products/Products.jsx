@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
-import { ArrowDownOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { Switch } from "antd";
@@ -51,7 +50,6 @@ const Products = () => {
   const [isCategoryListLoading, setIsCategoryListLoading] = useState(false);
   const [isProductListLoading, setIsProductListLoading] = useState(false);
   const [isProductDetailLoading, setIsProductDetailLoading] = useState(false);
-  const [CSVDownloadLoading, setCSVDownloadLoading] = useState(false);
 
   const { token, role, userId } = useContext(UserContext);
   const navigate = useNavigate();
@@ -549,7 +547,6 @@ const Products = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="pl-[300px] bg-gray-100 h-screen">
         <nav className="p-5">
           <GlobalSearch />

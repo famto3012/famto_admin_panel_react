@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect, useState } from "react";
 import { Switch } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
@@ -161,7 +160,6 @@ const UpdateManager = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="w-full h-screen pl-[300px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

@@ -4,7 +4,6 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 
 import GlobalSearch from "../../../components/GlobalSearch";
-import Sidebar from "../../../components/Sidebar";
 
 import { UserContext } from "../../../context/UserContext";
 
@@ -54,7 +53,6 @@ const ActivityLog = () => {
 
   return (
     <>
-      <Sidebar />
 
       <div className="pl-[300px] bg-gray-100 h-screen w-full">
         <nav className="p-7">

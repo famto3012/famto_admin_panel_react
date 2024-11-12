@@ -1,15 +1,34 @@
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import BookOutlinedIcon from "@mui/icons-material/BookOutlined";
-import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
-import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
-import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
-import TwoWheelerOutlinedIcon from "@mui/icons-material/TwoWheelerOutlined";
-import PercentOutlinedIcon from "@mui/icons-material/PercentOutlined";
+import React, { Suspense, useContext, useEffect, useState } from "react";
+const HomeOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/HomeOutlined")
+);
+const BookOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/BookOutlined")
+);
+const StorefrontOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/StorefrontOutlined")
+);
+const ListAltOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/ListAltOutlined")
+);
+const GroupsOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/GroupsOutlined")
+);
+const AssignmentIndOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/AssignmentIndOutlined")
+);
+const TwoWheelerOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/TwoWheelerOutlined")
+);
+const PercentOutlinedIcon = React.lazy(() =>
+  import("@mui/icons-material/PercentOutlined")
+);
+const FaWhatsapp = React.lazy(() =>
+  import("react-icons/fa").then((module) => ({ default: module.FaWhatsapp }))
+);
 import { Link, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
-import { FaWhatsapp } from "react-icons/fa";
 import { UserContext } from "../../context/UserContext";
+import { Skeleton } from "@chakra-ui/react";
 
 const SidebarDelivery = () => {
   const [selectedLink, setSelectedLink] = useState("");
@@ -33,19 +52,29 @@ const SidebarDelivery = () => {
 
       <ul className="ul-side">
         <Link to="/home" className="side">
-          <HomeOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <HomeOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link to="/all-orders" className="side">
-          <BookOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <BookOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link to="/all-merchants" className="side">
-          <StorefrontOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <StorefrontOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link to="/products" className="side">
-          <ListAltOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <ListAltOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link to="/customers" className="side">
-          <GroupsOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <GroupsOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link
           to="/all-agents"
@@ -53,7 +82,9 @@ const SidebarDelivery = () => {
             selectedLink === "/agent-payout" ? "selected-link" : ""
           }`}
         >
-          <AssignmentIndOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <AssignmentIndOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link
           to="/delivery-management"
@@ -61,10 +92,14 @@ const SidebarDelivery = () => {
             selectedLink === "/delivery-management" ? "selected-link" : ""
           }`}
         >
-          <TwoWheelerOutlinedIcon className="m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <TwoWheelerOutlinedIcon className="m-2" />
+          </Suspense>
         </Link>
         <Link to="/commission" className="side">
-          <PercentOutlinedIcon className="flex mr-[3px] m-2" />
+          <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+            <PercentOutlinedIcon className="flex mr-[3px] m-2" />
+          </Suspense>
         </Link>
         {role === "Admin" && (
           <Link
@@ -73,7 +108,9 @@ const SidebarDelivery = () => {
               selectedLink === "/chat" ? "selected-link" : ""
             }`}
           >
-            <FaWhatsapp className="m-[7px] text-[25px]" />
+            <Suspense fallback={<Skeleton width="24px" height="24px" />}>
+              <FaWhatsapp className="m-[7px] text-[25px]" />
+            </Suspense>
           </Link>
         )}
       </ul>

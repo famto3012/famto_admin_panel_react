@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import { Switch } from "antd";
 import CurrencyRupeeOutlined from "@mui/icons-material/CurrencyRupeeOutlined";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -155,7 +154,6 @@ const LoyalityPoint = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="w-fit min-h-screen pl-[300px] bg-gray-100 flex flex-col">
             <nav className="p-5">
               <GlobalSearch />

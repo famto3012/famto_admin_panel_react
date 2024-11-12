@@ -4,7 +4,6 @@ import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import NewCustomer from "../../../components/Order/NewCustomer";
 import TakeAway from "../../../components/Order/TakeAway";
@@ -163,7 +162,6 @@ const CreateOrder = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full pl-[290px] bg-gray-100">
         <div className="flex justify-between items-center">
           <div className="flex items-center">

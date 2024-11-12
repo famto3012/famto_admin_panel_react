@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { Switch } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -162,7 +161,6 @@ const Referral = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="pl-[300px] bg-gray-100 h-full">
             <nav className="p-5">
               <GlobalSearch />

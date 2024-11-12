@@ -6,7 +6,6 @@ import { Spinner } from "@chakra-ui/react";
 import { UserContext } from "../../../context/UserContext";
 
 import GlobalSearch from "../../../components/GlobalSearch";
-import Sidebar from "../../../components/Sidebar";
 
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
@@ -51,8 +50,6 @@ const MerchantPayoutDetail = () => {
 
   return (
     <>
-      <Sidebar />
-
       <div className="pl-[300px] bg-gray-100 h-screen w-full">
         <div className="p-[30px]">
           <GlobalSearch />

@@ -1,16 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
-  SearchOutlined,
-  BellOutlined,
   PlusOutlined,
   ArrowDownOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Switch } from "antd";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
@@ -363,7 +359,7 @@ const DeliveryAgent = () => {
     }
   };
 
-  const handleDownloadCSV = async (e) => {
+  const handleDownloadCSV = async () => {
     try {
       setCSVDownloadLoading(true);
 
@@ -414,7 +410,6 @@ const DeliveryAgent = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <main className="pl-[300px] bg-gray-100 h-full">
             <nav className="p-5">
               <GlobalSearch />
@@ -429,39 +424,6 @@ const DeliveryAgent = () => {
                 >
                   <ArrowDownOutlined /> <span>CSV</span>
                 </button>
-                {/* <Modal
-                  open={isCSVModalVisible}
-                  footer={null}
-                  width="30rem"
-                  onCancel={handleCancel}
-                  centered
-                >
-                  <div className="flex rounded-xl justify-between p-10">
-                    <div className="grid">
-                      <button className="flex gap-2 p-3 bg-cyan-200 px-5 font-[500] rounded-xl border">
-                        <AiOutlineCloudUpload className="text-[22px]" />
-                        Upload
-                      </button>
-                      <p className="text-blue-700 underline mx-2">
-                        Download Sample CSV
-                      </p>
-                    </div>
-                    <div>
-                      <button className="flex gap-2 p-3 bg-teal-800 rounded-xl px-5 border text-white">
-                        <CSVLink
-                          data={agent}
-                          headers={allAgentsCSVDataHeading}
-                          filename={"All_DeliveryAgents_Data.csv"}
-                        >
-                          <div className="flex gap-2">
-                            <TbArrowsSort className="text-[22px]" />
-                            Download
-                          </div>
-                        </CSVLink>
-                      </button>
-                    </div>
-                  </div>
-                </Modal> */}
                 <Link to="/agent-payout">
                   <button className="bg-teal-800 text-white rounded-md px-4 py-2 font-semibold gap-1 flex items-center space-x-1 ">
                     <FaIndianRupeeSign /> Agent Payout
