@@ -18,6 +18,7 @@ import CustomOrder from "../../../components/CustomerApp/CustomOrder";
 import PickAndDrop from "../../../components/CustomerApp/PickAndDrop";
 import ServiceCategory from "../../../components/CustomerApp/ServiceCategory";
 import CropImage from "../../../components/CropImage";
+import DatePicker from "react-datepicker";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -32,6 +33,14 @@ const CustomerApp = () => {
     loginViaGoogle: false,
     loginViaApple: false,
     loginViaFacebook: false,
+    customOrderTiming: {
+      startTime: "",
+      endTime: "",
+    },
+    pickAndDropTiming: {
+      startTime: "",
+      endTime: "",
+    },
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -45,9 +54,6 @@ const CustomerApp = () => {
   const [isInnerVisible, setIsInnerVisible] = useState(false);
   const [img, setImg] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
-
-  console.log("Customer Data", customerData);
-  //API for fetch data..
 
   useEffect(() => {
     if (!token || role !== "Admin") {
@@ -117,7 +123,6 @@ const CustomerApp = () => {
         }
       );
       if (response.status === 200) {
-        console.log(customerData);
         toast({
           title: "Success",
           description: "Customer App updated successfully.",
@@ -125,13 +130,11 @@ const CustomerApp = () => {
           status: "success",
           isClosable: true,
         });
-        // handleCancel();
       }
     } catch (err) {
-      console.error(`Error in saving data ${err.message}`);
       toast({
         title: "Error",
-        description: "Error in creating Customer App ",
+        description: "Error in updating customization",
         duration: 3000,
         status: "error",
         isClosable: true,
@@ -158,15 +161,7 @@ const CustomerApp = () => {
     }
   }
 
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    // setSelectedFile(croppedFile)// Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
-
-  const handleModalClose = () => {
-    // setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  const handleCropComplete = (croppedFile) => setCroppedFile(croppedFile);
 
   return (
     <div>
@@ -195,9 +190,11 @@ const CustomerApp = () => {
                     />
                   </figure>
                 )}
+
                 {!croppedFile && !customerData?.splashScreenUrl && (
                   <div className="h-[66px] w-[66px] bg-gray-200 rounded-md"></div>
                 )}
+
                 {!!croppedFile && (
                   <>
                     <div>
@@ -272,6 +269,7 @@ const CustomerApp = () => {
                       />
                     </div>
                   </div>
+
                   <div className="bg-white p-5 grid rounded-lg mt-20">
                     <label className="font-semibold">Signup Verification</label>
                     <div className="flex justify-between">
@@ -297,6 +295,7 @@ const CustomerApp = () => {
                       />
                     </div>
                   </div>
+
                   <div className="bg-white p-5 gap-5 grid rounded-lg">
                     <label className="font-semibold">Login via</label>
                     <div className="flex">
@@ -344,6 +343,8 @@ const CustomerApp = () => {
                   </div>
                 </div>
               </div>
+
+              <DatePicker />
             </div>
 
             <div className="flex justify-end p-10 gap-4 border-b-2 border-gray-200">
