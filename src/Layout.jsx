@@ -9,7 +9,14 @@ const Layout = () => {
   const location = useLocation();
   const path = location.pathname;
 
-  const pathsForNoSideBar = ["sign-in", "sign-up"];
+  const pathsForNoSideBar = [
+    "login",
+    "sign-up",
+    "success",
+    "verify",
+    "reset-password",
+    "forgot-password",
+  ];
   const pathsForSmallSidebar = ["delivery-management", "agent-payout"];
 
   const noSidebar = pathsForNoSideBar.some((p) => path.includes(p));
@@ -36,7 +43,9 @@ const Layout = () => {
 
   return (
     <>
-      {!noSidebar && !isSmallScreen && (showSmallSidebar ? <SidebarDelivery /> : <Sidebar />)}
+      {!noSidebar &&
+        !isSmallScreen &&
+        (showSmallSidebar ? <SidebarDelivery /> : <Sidebar />)}
       <main
       // className={`h-screen w-full ${
       //   noSidebar ? "" : showSmallSidebar ? "ps-[4rem]" : "ps-[270px]"
