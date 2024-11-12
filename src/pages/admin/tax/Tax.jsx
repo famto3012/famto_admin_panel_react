@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import { PlusOutlined } from "@ant-design/icons";
 import { Switch } from "antd";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -189,7 +188,6 @@ const Tax = () => {
   return (
     <div>
       <>
-        <Sidebar />
         <div className="pl-[300px] w-full">
           <nav className="p-5">
             <GlobalSearch />

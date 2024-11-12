@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { DownloadOutlined, SearchOutlined } from "@ant-design/icons";
-import Sidebar from "../../../components/Sidebar";
 import { Switch } from "antd";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import axios from "axios";
@@ -174,8 +173,6 @@ const AccountLogs = () => {
 
   return (
     <>
-      <Sidebar />
-
       <div className="pl-[300px] bg-gray-100 h-screen w-full">
         <nav className="p-7">
           <GlobalSearch />

@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import { ArrowDownOutlined, SearchOutlined } from "@ant-design/icons";
 import { FilterAltOutlined } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
@@ -299,7 +298,7 @@ const Customers = () => {
     }
   };
 
-  const handleDownloadCSV = async (e) => {
+  const handleDownloadCSV = async () => {
     try {
       setCSVDownloadLoading(true);
 
@@ -345,7 +344,6 @@ const Customers = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <main className="w-full h-screen pl-[290px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

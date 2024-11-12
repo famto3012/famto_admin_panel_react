@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import HomeComponents from "../../../components/HomeComponents";
 import {
@@ -502,7 +501,6 @@ const HomePage = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="bg-gray-100 pl-[300px] w-full">
         <nav className="p-5">
           <GlobalSearch />

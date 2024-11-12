@@ -188,7 +188,7 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
+      {/* <BrowserRouter> */}
         <Suspense fallback={<GIFLoader />}>
           {isSmallScreen ? (
             <MobileAppPrompt />
@@ -289,7 +289,7 @@ function App() {
             </Routes>
           )}
         </Suspense>
-      </BrowserRouter>
+      {/* </BrowserRouter> */}
     </>
   );
 }

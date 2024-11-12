@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect, useState } from "react";
 import { Switch, Modal, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -27,7 +26,6 @@ const PromoCode = () => {
   const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [status, setStatus] = useState("");
 
   const { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove } =
     useDraggable();
@@ -196,8 +194,6 @@ const PromoCode = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
-
           <div className="pl-[300px] bg-gray-100 w-full h-fit">
             <div>
               <nav className="p-5">

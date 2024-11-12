@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
@@ -169,7 +168,6 @@ const Notificationlog = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full h-screen pl-[290px] bg-gray-100">
         <nav className="p-5">
           <GlobalSearch />

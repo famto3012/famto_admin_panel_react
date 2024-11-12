@@ -5,10 +5,8 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Switch } from "antd";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { UserContext } from "../../../context/UserContext";
 import GIFLoader from "../../../components/GIFLoader";
@@ -622,7 +620,6 @@ const Merchant = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <main className="pl-[300px] bg-gray-100 h-screen">
             <nav className="p-5">
               <GlobalSearch />

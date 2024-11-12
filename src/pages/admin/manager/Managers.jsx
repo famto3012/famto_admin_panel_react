@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import GlobalSearch from "../../../components/GlobalSearch";
-import Sidebar from "../../../components/Sidebar";
 import { UserContext } from "../../../context/UserContext";
 import { Modal, Spin } from "antd";
 import { useToast } from "@chakra-ui/react";
@@ -194,7 +193,6 @@ const Managers = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="pl-[300px] bg-gray-100 h-screen w-screen">
             <nav className="p-7">
               <GlobalSearch />

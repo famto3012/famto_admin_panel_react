@@ -10,6 +10,8 @@ import { MapProvider } from "./context/MapContext.jsx";
 import { SoundProvider } from "./context/SoundContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
 import { register } from "./serviceWorker.js";
+import Layout from "./Layout.jsx";
+import { BrowserRouter } from "react-router-dom";
 
 const theme = createTheme({
   typography: {
@@ -22,12 +24,14 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider theme={theme}>
     <StyledEngineProvider injectFirst>
-      <ChakraProvider >
+      <ChakraProvider>
         <SocketProvider>
           <SoundProvider>
             <MapProvider>
               <UserProvider>
-                <App />
+                <BrowserRouter>
+                  <Layout />
+                </BrowserRouter>
               </UserProvider>
             </MapProvider>
           </SoundProvider>

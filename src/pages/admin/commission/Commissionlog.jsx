@@ -1,12 +1,10 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { ArrowBack } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { Modal } from "antd";
-import GIFLoader from "../../../components/GIFLoader";
 import { FaCalendarAlt } from "react-icons/fa";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -245,7 +243,6 @@ const Commissionlog = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="w-full h-screen pl-[290px] bg-gray-100">
         <div className="flex justify-between items-center">
           <div className="flex items-center">

@@ -1,16 +1,12 @@
-import { useContext } from "react";
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 import CommissionComponent from "../../../components/CommissionComponent";
 import SubscriptionComponent from "../../../components/SubscriptionComponent";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserContext } from "../../../context/UserContext";
 
 const Commission = () => {
   const [isCommission, setIsCommission] = useState(false);
 
-  const { role } = useContext(UserContext);
 
   const handleToggle = () => {
     setIsCommission(!isCommission);
@@ -18,7 +14,6 @@ const Commission = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="h-screen">
         <nav className="p-5">
           <GlobalSearch />

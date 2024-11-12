@@ -1,9 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import SidebarDelivery from "../../../components/model/SidebarDelivery";
 import GlobalSearch from "../../../components/GlobalSearch";
 import { ArrowDownOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircleOutlined, FilterAltOutlined } from "@mui/icons-material";
+import { CheckCircleOutlined } from "@mui/icons-material";
 import { Modal } from "antd";
 import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -301,7 +300,6 @@ const AgentPayout = () => {
         <GIFLoader />
       ) : (
         <>
-          <SidebarDelivery />
           <div className="w-full h-screen pl-[60px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

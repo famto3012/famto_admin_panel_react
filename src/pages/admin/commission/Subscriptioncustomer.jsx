@@ -6,7 +6,6 @@ import { Modal } from "antd";
 import DatePicker from "react-datepicker";
 import { useToast } from "@chakra-ui/react";
 
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import { ArrowBack } from "@mui/icons-material";
 import { FaCalendarAlt } from "react-icons/fa";
 
@@ -388,7 +387,6 @@ const Subscriptioncustomer = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="pl-[290px] bg-gray-100">
             <div className="flex justify-between items-center pt-5 pe-4">
               <div className="flex items-center">

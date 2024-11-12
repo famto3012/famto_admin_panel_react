@@ -11,7 +11,6 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 
 import { UserContext } from "../../../context/UserContext";
 
-import Sidebar from "../../../components/Sidebar";
 import GlobalSearch from "../../../components/GlobalSearch";
 
 import SponsorshipDetail from "../../../components/Merchant/SponsorshipDetail";
@@ -277,8 +276,6 @@ const MerchantDetails = () => {
 
   return (
     <>
-      <Sidebar />
-
       <main className="p-6 bg-gray-100 pl-[300px] h-full">
         <GlobalSearch />
         <div className="flex justify-between my-[15px] mt-8 mb-8">

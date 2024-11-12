@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
+import { useContext, useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Switch } from "antd";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -162,7 +161,6 @@ const NotificationSettings = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="w-full h-screen pl-[300px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

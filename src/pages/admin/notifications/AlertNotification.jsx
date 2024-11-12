@@ -1,7 +1,4 @@
-import { SearchOutlined } from "@ant-design/icons";
 import { useContext, useEffect, useRef, useState } from "react";
-import Sidebar from "../../../components/Sidebar";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { MdCameraAlt } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Modal } from "antd";
@@ -272,7 +269,6 @@ const AlertNotification = () => {
         <GIFLoader />
       ) : (
         <>
-          <Sidebar />
           <div className="w-full  pl-[300px] bg-gray-100">
             <nav className="p-5">
               <GlobalSearch />

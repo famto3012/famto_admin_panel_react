@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import BlockIcon from "@mui/icons-material/Block";
-import Sidebar from "../../../components/Sidebar";
 import { PlusOutlined } from "@ant-design/icons";
 import { MdOutlineEdit } from "react-icons/md";
 import GlobalSearch from "../../../components/GlobalSearch";
@@ -80,8 +79,7 @@ const CustomerDetails = () => {
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } finally {
-      }
+      } 
     };
 
     fetchData();
@@ -232,7 +230,6 @@ const CustomerDetails = () => {
 
   return (
     <>
-      <Sidebar />
 
       <div className=" pl-[290px] bg-gray-100">
         <nav className="p-5">
