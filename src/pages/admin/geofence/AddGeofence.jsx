@@ -120,7 +120,7 @@ const AddGeofence = () => {
 
     if (authToken) {
       const script = document.createElement("script");
-      script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
+      script.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
       script.async = true;
       script.onload = () => console.log("Mappls script loaded successfully.");
       script.onerror = () => console.error("Error loading Mappls script.");
@@ -341,19 +341,19 @@ const AddGeofence = () => {
               id="map"
               className="map-container w-full h-[600px]"
             >
-              <input
+              {/* <input
                 type="text"
                 id="auto"
                 name="auto"
                 className="mt-2 ms-2 w-[300px] absolute top-0 left-0 text-[15px] p-[10px] outline-none focus:outline-none"
                 placeholder="Search places"
                 spellCheck="false"
-              />
+              /> */}
               {isMapLoaded && <PlaceSearchPlugin map={mapObject} />}
+              {isMapLoaded && geofences.length >= 0 && (
+                <GeoJsonComponent map={mapObject} />
+              )}
             </div>
-            {isMapLoaded && geofences.length >= 0 && (
-              <GeoJsonComponent map={mapObject} />
-            )}
           </div>
         </div>
       </div>

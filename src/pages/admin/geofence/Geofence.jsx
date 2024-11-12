@@ -8,7 +8,7 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { mappls } from "mappls-web-maps";
 import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
 import {
   Menu,
   MenuButton,
@@ -53,38 +53,41 @@ const Geofence = () => {
   }, []);
 
   const mapplsClassObject = new mappls();
+  const initializeMap = async () => {
+    const mapProps = {
+      center: [8.528818999999999, 76.94310683333333],
+      traffic: true,
+      zoom: 12,
+      geolocation: true,
+      clickableIcons: true,
+    };
+
+    mapplsClassObject.initialize(`${authToken}`, async () => {
+      if (mapContainerRef.current) {
+        const map = await mapplsClassObject.Map({
+          id: "map",
+          properties: mapProps,
+        });
+
+        if (map && typeof map.on === "function") {
+          map.on("load", async () => {
+            setMapObject(map);
+            setIsMapLoaded(true);
+          });
+        } else {
+          console.error(
+            "mapObject.on is not a function or mapObject is not defined"
+          );
+        }
+      } else {
+        console.error("Map container not found");
+      }
+    });
+  };
 
   useEffect(() => {
     if (geofences.length >= 0) {
-      const mapProps = {
-        center: [8.528818999999999, 76.94310683333333],
-        traffic: true,
-        zoom: 12,
-        geolocation: true,
-        clickableIcons: true,
-      };
-
-      mapplsClassObject.initialize(`${authToken}`, async () => {
-        if (mapContainerRef.current) {
-          const map = await mapplsClassObject.Map({
-            id: "map",
-            properties: mapProps,
-          });
-
-          if (map && typeof map.on === "function") {
-            map.on("load", async () => {
-              setMapObject(map);
-              setIsMapLoaded(true);
-            });
-          } else {
-            console.error(
-              "mapObject.on is not a function or mapObject is not defined"
-            );
-          }
-        } else {
-          console.error("Map container not found");
-        }
-      });
+      initializeMap();
     }
   }, [geofences]);
 
@@ -271,6 +274,14 @@ const Geofence = () => {
             ))}
           </div>
           <div className="w-3/4 bg-white h-[520px]">
+            {!isMapLoaded && (
+              <Button
+                onClick={initializeMap}
+                className="m-2 bg-teal-600 text-[15px] font-bold text-white"
+              >
+                Initialize Map
+              </Button>
+            )}
             <div
               id="map"
               ref={mapContainerRef}
