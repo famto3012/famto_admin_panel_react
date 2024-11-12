@@ -465,7 +465,7 @@ const AgentPayout = () => {
                 <tbody>
                   {isTableLoading && (
                     <tr className="bg-gray-200">
-                      <td colSpan={11} className="text-center h-20">
+                      <td colSpan={12} className="text-center h-20">
                         Loading Data...
                       </td>
                     </tr>
@@ -504,7 +504,7 @@ const AgentPayout = () => {
                         <td>{payout?.loginHours}</td>
                         <td>{payout?.cashInHand}</td>
                         <td>{payout?.totalEarnings}</td>
-                        <td>{payout?.calculatedPayment}</td>
+                        <td>{payout?.calculatedEarnings}</td>
                         <td>
                           {payout?.paymentSettled === true ? (
                             <span className="text-green-500">Approved</span>
