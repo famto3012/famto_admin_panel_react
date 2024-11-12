@@ -339,14 +339,14 @@ const AddGeofence = () => {
               id="map"
               className="map-container w-full h-[600px]"
             >
-              {/* <input
+              <input
                 type="text"
                 id="auto"
                 name="auto"
                 className="mt-2 ms-2 w-[300px] absolute top-0 left-0 text-[15px] p-[10px] outline-none focus:outline-none"
                 placeholder="Search places"
                 spellCheck="false"
-              /> */}
+              />
               {isMapLoaded && <PlaceSearchPlugin map={mapObject} />}
               {isMapLoaded && geofences.length >= 0 && (
                 <GeoJsonComponent map={mapObject} />

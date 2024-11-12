@@ -5,8 +5,68 @@ import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
+import { mappls, mappls_plugin } from "mappls-web-maps";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
+const mapplsClassObject = new mappls();
+const mapplsPluginObject = new mappls_plugin();
+
+const PlaceSearchPlugin = ({ map }) => {
+  const placeSearchRef = useRef(null);
+  const markerRef = useRef(null);
+
+  useEffect(() => {
+    if (map && placeSearchRef.current) {
+      mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+    }
+
+    const optional_config = {
+      location: [28.61, 77.23],
+      region: "IND",
+      height: 300,
+    };
+
+    const callback = (data) => {
+      if (data) {
+        const dt = data[0];
+        if (!dt) return false;
+        const eloc = dt.eLoc;
+        const place = `${dt.placeName}`;
+        if (markerRef.current) markerRef.current.remove();
+        mapplsPluginObject.pinMarker(
+          {
+            map: map,
+            pin: eloc,
+            popupHtml: place,
+            popupOptions: {
+              openPopup: true,
+            },
+            zoom: 10,
+          },
+          (data) => {
+            markerRef.current = data;
+            markerRef.current.fitbounds();
+          }
+        );
+        markerRef.current.remove();
+      }
+    };
+    placeSearchRef.current = mapplsPluginObject.search(
+      document.getElementById("auto"),
+      optional_config,
+      callback
+    );
+
+    return () => {
+      if (map && placeSearchRef.current) {
+        mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+      }
+    };
+  }, [map]);
+
+  return null;
+};
 
 const EditGeofence = () => {
   const { token } = useContext(UserContext);
@@ -313,6 +373,15 @@ const EditGeofence = () => {
               id="map"
               className="map-container w-full h-[600px]"
             >
+              <input
+                type="text"
+                id="auto"
+                name="auto"
+                className="mt-2 ms-2 w-[300px] absolute top-0 left-0 text-[15px] p-[10px] outline-none focus:outline-none"
+                placeholder="Search places"
+                spellCheck="false"
+              />
+              {isMapLoaded && <PlaceSearchPlugin map={mapObject} />}
               {isMapLoaded &&
                 geofences.coordinates &&
                 Array.isArray(geofences.coordinates) && (
