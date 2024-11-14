@@ -50,6 +50,18 @@ const AddNotificationModal = ({
       value: "reachedDeliveryLocation",
     },
     {
+      name: "Agent reached pickup Location",
+      value: "reachedPickupLocation",
+    },
+    {
+      name: "Agent not reached pickup Location",
+      value: "agentNotReachedPickupLocation",
+    },
+    {
+      name: "Agent not reached delivery Location",
+      value: "agentNotReachedDeliveryLocation",
+    },
+    {
       name: "New order (Agent)",
       value: "newOrder",
     },
