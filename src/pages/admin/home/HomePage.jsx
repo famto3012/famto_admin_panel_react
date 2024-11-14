@@ -37,7 +37,6 @@ const HomePage = () => {
   const [subscription, setSubscription] = useState([]);
   const [merchantAvailability, setMerchantAvailability] = useState();
   const [isAvailable, setIsAvailable] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
 
   const [dateRange, setDateRange] = useState([
     new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -105,13 +104,13 @@ const HomePage = () => {
         setMerchantAvailability(response.data.data.merchantDetail.availability);
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description: `Error in getting merchant profile`,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      // toast({
+      //   title: "Error",
+      //   description: `Error in getting merchant profile`,
+      //   status: "error",
+      //   duration: 3000,
+      //   isClosable: true,
+      // });
     }
   };
 
@@ -340,13 +339,13 @@ const HomePage = () => {
           }
         }
       } catch (err) {
-        toast({
-          title: "Error",
-          description: "An error while fetching graph detail.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
+        // toast({
+        //   title: "Error",
+        //   description: "An error while fetching graph detail.",
+        //   status: "error",
+        //   duration: 3000,
+        //   isClosable: true,
+        // });
       }
     };
 
