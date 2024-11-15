@@ -23,6 +23,7 @@ const ShowBill = ({ data }) => {
 
   useEffect(() => {
     setCartData(data);
+    console.log(data);
   }, [data]);
 
   const downloadInvoiceBill = async (e) => {
@@ -172,9 +173,11 @@ const ShowBill = ({ data }) => {
                   <tr key={data.index} className="text-left align-middle">
                     <td className="p-4">Delivery charges</td>
                     <td className="p-4">
-                      {cartData?.billDetail?.discountedDeliveryCharge ||
-                        cartData?.billDetail?.originalDeliveryCharge ||
-                        0}
+                      {cartData?.buyFromAnyWhere
+                        ? "Will be updated soon"
+                        : cartData?.billDetail?.discountedDeliveryCharge ||
+                          cartData?.billDetail?.originalDeliveryCharge ||
+                          0}
                     </td>
                   </tr>
                   <tr key={data.index} className="text-left align-middle">
@@ -204,10 +207,11 @@ const ShowBill = ({ data }) => {
                   <tr className="bg-teal-700 text-white font-semibold text-[18px]">
                     <td className="p-4">Net Payable Amount</td>
                     <td className="p-4">
-                      ₹{" "}
-                      {cartData?.billDetail?.discountedGrandTotal ||
-                        cartData?.billDetail?.originalGrandTotal ||
-                        0}
+                      {cartData?.buyFromAnyWhere
+                        ? "Will be updated soon"
+                        : cartData?.billDetail?.discountedGrandTotal ||
+                          cartData?.billDetail?.originalGrandTotal ||
+                          0}
                     </td>
                   </tr>
                 </>

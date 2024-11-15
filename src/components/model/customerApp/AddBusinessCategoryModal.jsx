@@ -78,26 +78,41 @@ const AddBusinessCategoryModal = ({
 
       if (response.status === 201) {
         onAddCategory(response.data.data);
+        resetImageStates();
         onCancel();
         toast({
           title: "Success",
-          description: "Business Category Created Successfully.",
+          description: "Business category Created Successfully.",
           duration: 3000,
           status: "success",
           isClosable: true,
         });
       }
     } catch (err) {
-      console.error(`Error in creating business ${err.message}`);
+      toast({
+        title: "Error",
+        description: "Error in creating business category",
+        duration: 3000,
+        status: "error",
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const resetImageStates = () => {
+    // Reset image preview and cropping states
+    setImgSrc("");
+    setCroppedFile(null);
+    setImg(null);
+    setCrop(null);
+  };
+
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setIsInnerVisible(true);
-      setCrop(null); // Makes crop preview update between images.
+      setCrop(null);
       const reader = new FileReader();
       reader.addEventListener("load", () =>
         setImgSrc(reader.result?.toString() || "")
@@ -107,15 +122,9 @@ const AddBusinessCategoryModal = ({
     }
   }
 
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    // setSelectedFile(croppedFile); // Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
+  const handleCropComplete = (croppedFile) => setCroppedFile(croppedFile);
 
-  const handleModalClose = () => {
-    // setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  const handleModalClose = () => {};
 
   return (
     <Modal
@@ -125,7 +134,7 @@ const AddBusinessCategoryModal = ({
       footer={null}
       centered
     >
-      <form onSubmit={handleAddBusinessCategory}>
+      <div>
         <div className="flex mt-5 gap-4">
           <label className="w-1/2 text-gray-500">Service title</label>
           <input
@@ -207,12 +216,12 @@ const AddBusinessCategoryModal = ({
           </button>
           <button
             className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
-            type="submit"
+            onClick={handleAddBusinessCategory}
           >
             {isLoading ? "Adding..." : "Add"}
           </button>
         </div>
-      </form>
+      </div>
     </Modal>
   );
 };

@@ -16,6 +16,7 @@ const HomeDelivery = ({ data }) => {
     deliveryMode: data.deliveryMode,
     deliveryOption: data.deliveryOption,
     newCustomer: data.newCustomer,
+    newCustomerAddress: {},
     merchantId: "",
     customerAddressType: "",
     customerAddressOtherAddressId: "",
@@ -157,7 +158,7 @@ const HomeDelivery = ({ data }) => {
   };
 
   const selectProduct = (product) => {
-    console.log("selected product", product);
+    console.log(product);
 
     const existingProduct = homeDeliveryData.items.find(
       (item) => item.productId === product.id
@@ -182,13 +183,13 @@ const HomeDelivery = ({ data }) => {
           {
             productName: product.productName,
             productId: product.id,
-            price: product.price,
+            price: product?.discountPrice || product.price,
             quantity: 1,
             variants: product?.variants?.map((variant) => ({
               variantName: variant.variantName,
               variantTypes: variant.variantTypes.map((type) => ({
                 typeName: type.typeName,
-                price: type.price,
+                price: type?.discountPrice || type.price,
                 id: type.id,
               })),
             })),
@@ -471,9 +472,9 @@ const HomeDelivery = ({ data }) => {
                 onMouseUp={handleMouseUp}
                 onMouseMove={handleMouseMove}
               >
-                {homeDeliveryData.items.map((item) => (
+                {homeDeliveryData.items.map((item, index) => (
                   <div
-                    key={item._id}
+                    key={index}
                     className="flex items-center gap-3 py-2 bg-gray-100 p-3 border-2 border-gray-300 rounded-md"
                   >
                     <div>

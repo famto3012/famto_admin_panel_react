@@ -107,20 +107,20 @@ const EditBusinessCategoryModal = ({
 
       if (response.status === 200) {
         onEditCategory(response.data.data);
+        resetImageStates();
         onCancel();
         toast({
           title: "Success",
-          description: "Business Category Updated Successfully.",
+          description: "Business category updated successfully.",
           duration: 3000,
           status: "success",
           isClosable: true,
         });
       }
     } catch (err) {
-      console.error(`Error in updating business category: ${err.message}`);
       toast({
         title: "Error",
-        description: "Failed to update business category.",
+        description: "Failed to update business category",
         duration: 3000,
         status: "error",
         isClosable: true,
@@ -128,6 +128,14 @@ const EditBusinessCategoryModal = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetImageStates = () => {
+    // Reset image preview and cropping states
+    setImgSrc("");
+    setCroppedFile(null);
+    setImg(null);
+    setCrop(null);
   };
 
   function onSelectFile(e) {
@@ -143,15 +151,9 @@ const EditBusinessCategoryModal = ({
     }
   }
 
-  const handleCropComplete = (croppedFile) => {
-    setCroppedFile(croppedFile);
-    // setSelectedFile(croppedFile); // Get the cropped image file
-    console.log("Cropped image file:", croppedFile);
-  };
+  const handleCropComplete = (croppedFile) => setCroppedFile(croppedFile);
 
-  const handleModalClose = () => {
-    // setSelectedFile(null); // Reset the selected file to allow new selection
-  };
+  const handleModalClose = () => {};
 
   return (
     <Modal
@@ -162,7 +164,7 @@ const EditBusinessCategoryModal = ({
       footer={null}
       centered
     >
-      <form onSubmit={handleEditBusinessCategory}>
+      <div>
         <div className="flex mt-5 gap-4">
           <label className="w-1/2 text-gray-500">Title</label>
           <input
@@ -194,50 +196,38 @@ const EditBusinessCategoryModal = ({
 
         <div className="flex mt-5 gap-4">
           <label className="w-1/2 text-gray-500">Image (342px x 160px)</label>
-          <div className="w-2/3 flex items-center justify-start gap-[30px]">
-            {!croppedFile && (
-              <img
-                className="h-[66px] w-[66px] bg-gray-200 rounded-md"
-                src={categoryData.bannerImageURL}
-              />
-            )}
-            {!!croppedFile && (
-              <>
-                <div>
-                  <img
-                    ref={previewCanvasRef}
-                    src={URL.createObjectURL(croppedFile)}
-                    style={{
-                      border: "1px solid white",
-                      borderRadius: "5px",
-                      objectFit: "contain",
-                      width: "66px",
-                      height: "66px",
-                    }}
-                  />
-                </div>
-              </>
-            )}
+          <div className="w-2/3 flex items-center gap-[30px]">
+            <img
+              className="h-[66px] w-[66px] bg-gray-200 rounded-md"
+              src={
+                croppedFile
+                  ? URL.createObjectURL(croppedFile)
+                  : categoryData.bannerImageURL
+              }
+              style={{ objectFit: "contain" }}
+            />
+
             <input
               type="file"
-              name="businessImage"
               id="businessImage"
               className="hidden"
               accept="image/*"
               onChange={onSelectFile}
             />
-            <label htmlFor="businessImage" className="cursor-pointer ">
+
+            <label htmlFor="businessImage" className="cursor-pointer">
               <MdCameraAlt
-                className="bg-teal-800 text-[40px] text-white p-6 h-16 w-16 rounded"
+                className="bg-teal-800 text-white p-6 h-16 w-16 rounded"
                 size={30}
               />
             </label>
+
             {imgSrc && (
               <CropImage
                 selectedImage={img}
-                aspectRatio={1 / 1} // Optional, set aspect ratio (1:1 here)
+                aspectRatio={1 / 1}
                 onCropComplete={handleCropComplete}
-                onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                onClose={handleModalClose}
               />
             )}
           </div>
@@ -252,12 +242,12 @@ const EditBusinessCategoryModal = ({
           </button>
           <button
             className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold"
-            type="submit"
+            onClick={handleEditBusinessCategory}
           >
             {isLoading ? "Saving..." : "Save"}
           </button>
         </div>
-      </form>
+      </div>
     </Modal>
   );
 };
