@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MapModal from "./MapModal";
 import { useMap } from "../../context/MapContext";
 import { useToast } from "@chakra-ui/react";
@@ -74,6 +74,12 @@ const NewAddress = ({ onAddCustomerAddress, BASE_URL, token }) => {
 
     setShowButton(false);
   };
+
+  useEffect(() => {
+    if (!showButton) {
+      setShowButton(true);
+    }
+  }, [addressData]);
 
   return (
     <>
