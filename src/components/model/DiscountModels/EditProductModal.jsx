@@ -17,13 +17,13 @@ const EditProductModal = ({
 }) => {
   const [productDiscount, setProductDiscount] = useState({
     discountName: "",
-    maxAmount: "",
     discountType: "",
-    discountValue: "",
-    description: "",
-    productId: "",
+    value: "",
+    maxAmount: "",
+    productId: [],
     validFrom: "",
     validTo: "",
+    description: "",
     geofenceId: "",
     onAddOn: false,
     merchantId: "",
@@ -38,6 +38,7 @@ const EditProductModal = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log("Getting data");
         const response = await axios.get(
           `${BASE_URL}/merchant/product-discount/get-product-discount-id/${currentProduct}`,
           {
@@ -48,6 +49,7 @@ const EditProductModal = ({
         if (response.status === 200) {
           const { data } = response.data;
           setProductDiscount(data);
+          console.log(data);
         }
       } catch (err) {
         console.error(`Error in fetching data ${err.message}`);
@@ -79,7 +81,7 @@ const EditProductModal = ({
     };
 
     if (productDiscount.merchantId) fetchAllProductsOfMerchant();
-  }, [productDiscount.productId]);
+  }, [productDiscount.merchantId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,16 +141,26 @@ const EditProductModal = ({
     });
   };
 
-  const productOptions = allProducts?.map((product) => ({
-    label: product.productName,
-    value: product._id,
-  }));
+  const productOptions = [
+    { label: "Select All", value: "selectAll" },
+    ...allProducts?.map((product) => ({
+      label: product.productName,
+      value: product._id,
+    })),
+  ];
 
-  const handleSelectChange = (selectedOption) => {
-    setProductDiscount({
-      ...productDiscount,
-      productId: selectedOption ? selectedOption.value : "",
-    });
+  const handleSelectChange = (selected) => {
+    if (selected && selected.some((option) => option.value === "selectAll")) {
+      setProductDiscount({
+        ...productDiscount,
+        productId: allProducts.map((product) => product._id),
+      });
+    } else {
+      setProductDiscount({
+        ...productDiscount,
+        productId: selected ? selected.map((option) => option.value) : [],
+      });
+    }
   };
 
   return (
@@ -207,7 +219,7 @@ const EditProductModal = ({
               type="text"
               className="border-2 border-gray-300 rounded ml-72 p-2 w-[360px] focus:outline-none"
               name="discountValue"
-              value={productDiscount.discountValue}
+              value={productDiscount.value}
               onChange={handleInputChange}
             />
           </div>
@@ -235,12 +247,15 @@ const EditProductModal = ({
             <Select
               name="productId"
               className="border-2 border-gray-300 rounded w-2/3 focus:outline-none"
-              value={productOptions.find(
-                (option) => option.value === productDiscount.productId
+              value={productOptions.filter((option) =>
+                productDiscount.productId?.includes(option.value)
               )}
               onChange={handleSelectChange}
               options={productOptions}
               placeholder="Select Product"
+              isClearable={true}
+              isMulti={true}
+              isSearchable={true}
             />
           </div>
 
