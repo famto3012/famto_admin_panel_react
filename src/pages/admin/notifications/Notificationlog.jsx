@@ -194,7 +194,7 @@ const Notificationlog = () => {
             <tbody>
               {tableData.map((table) => (
                 <tr className="text-center bg-white h-20 " key={table._id}>
-                  <td className="p-2 flex items-center justify-center">
+                  <td className="pt-6 flex items-center justify-center">
                     {table.orderId ? (
                       table.orderId
                     ) : table.imageUrl ? (

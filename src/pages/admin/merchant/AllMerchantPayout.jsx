@@ -177,9 +177,44 @@ const AllMerchantPayout = () => {
     }
   };
 
+  const downloadPayoutCSV = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await axios.get(
+        `${BASE_URL}/merchants/admin/payout-csv`,
+        {
+          params: {
+            paymentStatus: selectedPaymentStatus,
+            merchantId: selectedMerchant,
+            geofenceId: selectedGeofence,
+            query: search,
+            startDate: startDate ? startDate.toLocaleDateString("en-CA") : null,
+            endDate: endDate ? endDate.toLocaleDateString("en-CA") : null,
+          },
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Merchant_Payout.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // setAllPayouts(response.data.data);
+    } catch (err) {
+      console.log(`Error in filtering payouts: ${err}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
-
       <div className="pl-[300px] bg-gray-100 h-screen w-full">
         <div className="p-[30px]">
           <GlobalSearch />
@@ -188,7 +223,10 @@ const AllMerchantPayout = () => {
         <div className="flex items-center justify-between px-[20px]">
           <h3 className="font-[600] text-[18px]">Merchant Payout</h3>
 
-          <button className=" bg-teal-600 text-white rounded-md px-4 py-2">
+          <button
+            className=" bg-teal-600 text-white rounded-md px-4 py-2"
+            onClick={downloadPayoutCSV}
+          >
             <ArrowDownOutlined size={10} />
             <span className="text-[16px] ml-2">CSV</span>
           </button>
