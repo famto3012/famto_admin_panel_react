@@ -62,6 +62,10 @@ const AddNotificationModal = ({
       value: "agentNotReachedDeliveryLocation",
     },
     {
+      name: "Agent started delivery",
+      value: "agentDeliveryStarted",
+    },
+    {
       name: "New order (Agent)",
       value: "newOrder",
     },
