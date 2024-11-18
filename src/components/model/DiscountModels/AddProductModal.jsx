@@ -26,7 +26,7 @@ const AddProductModal = ({
     validFrom: "",
     validTo: "",
     geofenceId: "",
-    productId: "",
+    productId: [],
     onAddOn: false,
   });
   const [allProducts, setAllProducts] = useState([]);
@@ -76,10 +76,13 @@ const AddProductModal = ({
     fetchAllProductsOfMerchant();
   }, [role, selectedMerchant, userId, token, BASE_URL]);
 
-  const productOptions = allProducts?.map((product) => ({
-    label: product.productName,
-    value: product._id,
-  }));
+  const productOptions = [
+    { label: "Select All", value: "selectAll" },
+    ...allProducts?.map((product) => ({
+      label: product.productName,
+      value: product._id,
+    })),
+  ];
 
   const geofenceOptions = geofence?.map((geofence) => ({
     label: geofence.name,
@@ -142,11 +145,18 @@ const AddProductModal = ({
     setProductDiscount({ ...productDiscount, onAddOn: checked });
   };
 
-  const handleSelectProduct = (selectedOption) => {
-    setProductDiscount({
-      ...productDiscount,
-      productId: selectedOption ? selectedOption.value : "",
-    });
+  const handleSelectChange = (selected) => {
+    if (selected && selected.some((option) => option.value === "selectAll")) {
+      setProductDiscount({
+        ...productDiscount,
+        productId: allProducts.map((product) => product._id),
+      });
+    } else {
+      setProductDiscount({
+        ...productDiscount,
+        productId: selected ? selected.map((option) => option.value) : [],
+      });
+    }
   };
 
   const handleInputChangeBasic = (e) => {
@@ -251,14 +261,15 @@ const AddProductModal = ({
 
             <Select
               className="rounded w-2/3 outline-none focus:outline-none"
-              value={productOptions.find(
-                (option) => option.value === productDiscount.productId
+              value={productOptions.filter((option) =>
+                productDiscount.productId?.includes(option.value)
               )}
               isSearchable={true}
-              onChange={handleSelectProduct}
+              onChange={handleSelectChange}
               options={productOptions}
               placeholder="Select product"
               isClearable={true}
+              isMulti={true}
             />
           </div>
 

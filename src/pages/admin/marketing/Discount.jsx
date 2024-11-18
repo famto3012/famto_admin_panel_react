@@ -414,7 +414,9 @@ const Discount = () => {
   const handleEditProductDiscount = (updatedDiscount) => {
     setAllProductDiscounts((prevDiscount) =>
       prevDiscount.map((discount) =>
-        discount._id === updatedDiscount._id ? updatedDiscount : discount
+        discount.discountId === updatedDiscount.discountId
+          ? updatedDiscount
+          : discount
       )
     );
   };
@@ -655,46 +657,54 @@ const Discount = () => {
                     style={{
                       backgroundColor: index % 2 === 0 ? "white" : "#f3f4f6",
                     }}
-                    key={discount._id}
+                    key={discount.discountId}
                   >
                     <td className="py-5 px-4 border-b  border-gray-100">
                       {discount.discountName}
                     </td>
                     <td className="py-2 px-4 border-b border-gray-100">
-                      {discount.discountValue}
+                      {discount.value}
                     </td>
                     <td className="py-2 px-4 border-b border-gray-100">
-                      {discount?.productId?.productName}
+                      {discount?.products?.slice(0, 3).map((product, index) => (
+                        <span key={index}>
+                          {product}
+                          {index < Math.min(discount.products.length, 3) - 1 &&
+                            ", "}
+                          <br />
+                        </span>
+                      ))}
+                      {discount?.products?.length > 3 && <span>...</span>}
                     </td>
                     <td className="py-2 px-4 border-b border-gray-100">
-                      {formatDate(discount.validFrom)}
-                      <br />
-                      {formatTime(discount.validFrom)}
+                      {discount.validFrom}
                     </td>
                     <td className="py-2 px-4 border-b border-gray-100">
-                      {formatDate(discount.validTo)}
-                      <br />
-                      {formatTime(discount.validTo)}
+                      {discount.validTo}
                     </td>
                     <td className="py-2 px-4 border-b border-gray-100">
-                      {discount?.geofenceId?.name}
+                      {discount?.geofence}
                     </td>
                     <td className="py-5 px-4 border-b  border-gray-100">
                       <div className="flex gap-4">
                         <Switch
                           className="text-teal-700 mt-2"
                           checked={discount.status}
-                          onChange={() => handleToggleProduct(discount._id)}
+                          onChange={() =>
+                            handleToggleProduct(discount.discountId)
+                          }
                         />
                         <div className="flex item-center">
                           <button
-                            onClick={() => showModalProductEdit(discount._id)}
+                            onClick={() =>
+                              showModalProductEdit(discount.discountId)
+                            }
                           >
                             <MdOutlineEdit className="bg-gray-200 rounded-lg p-2 text-[35px]" />
                           </button>
                         </div>
                         <button
-                          onClick={() => showModalDelete2(discount._id)}
+                          onClick={() => showModalDelete2(discount.discountId)}
                           className="outline-none focus:outline-none"
                         >
                           <RiDeleteBinLine className="text-red-900 rounded-lg bg-red-100 p-2 text-[35px]" />

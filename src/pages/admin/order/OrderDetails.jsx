@@ -1082,7 +1082,13 @@ const OrderDetails = () => {
                     <td>{item.itemName}</td>
                     <td>{item.quantity}</td>
                     <td>{item.numOfUnits}</td>
-                    <td>{item.itemImageURL}</td>
+                    <td className="flex justify-center items-center">
+                      <img
+                        src={item.itemImageURL}
+                        alt={item.itemName}
+                        className="w-[100px] h-[100px] object-contain"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
