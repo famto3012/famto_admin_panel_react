@@ -3,11 +3,7 @@ import GlobalSearch from "../../../components/GlobalSearch";
 import { MdCameraAlt } from "react-icons/md";
 import { useState } from "react";
 import { Switch } from "antd";
-import {
-  GoogleOutlined,
-  AppleFilled,
-  FacebookFilled,
-} from "@ant-design/icons";
+import { GoogleOutlined, AppleFilled, FacebookFilled } from "@ant-design/icons";
 import axios from "axios";
 import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -89,7 +85,7 @@ const CustomerApp = () => {
 
     try {
       setIsSaveLoading(true);
-
+      console.log("customerData", customerData);
       const customerDataToSend = new FormData();
       customerDataToSend.append("phoneNumber", customerData.phoneNumber),
         customerDataToSend.append("email", customerData.email),
@@ -112,6 +108,16 @@ const CustomerApp = () => {
           customerData.emailVerification
         ),
         customerDataToSend.append("splashScreenImage", croppedFile);
+      customerDataToSend.append(
+        "customOrderTiming",
+        JSON.stringify(customerData.customOrderTiming)
+      );
+      customerDataToSend.append(
+        "pickAndDropTiming",
+        JSON.stringify(customerData.pickAndDropTiming)
+      );
+
+      console.log("data", customerDataToSend);
 
       const response = await axios.post(
         `${BASE_URL}/admin/app-customization/customer-app`,
@@ -146,6 +152,36 @@ const CustomerApp = () => {
 
   const onChange = (name, checked) => {
     setCustomerData({ ...customerData, [name]: checked });
+  };
+
+  const handleTimeChange = (field, time, type) => {
+    // Convert the selected time to a string in "HH:mm" format
+    const timeString = time
+      ? time.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+      : "";
+
+    // Update the customerData state with the new time
+    if (type === "customOrder") {
+      setCustomerData((prevData) => ({
+        ...prevData,
+        customOrderTiming: {
+          ...prevData.customOrderTiming,
+          [field]: timeString,
+        },
+      }));
+    } else {
+      setCustomerData((prevData) => ({
+        ...prevData,
+        pickAndDropTiming: {
+          ...prevData.pickAndDropTiming,
+          [field]: timeString,
+        },
+      }));
+    }
   };
 
   function onSelectFile(e) {
@@ -231,7 +267,7 @@ const CustomerApp = () => {
                     selectedImage={img}
                     aspectRatio={9 / 16} // Optional, set aspect ratio (1:1 here)
                     onCropComplete={handleCropComplete}
-                    onClose={handleModalClose} // Pass the handler to close the modal and reset the state
+                    // onClose={handleModalClose} // Pass the handler to close the modal and reset the state
                   />
                 )}
               </div>
@@ -345,6 +381,112 @@ const CustomerApp = () => {
               </div>
 
               <DatePicker />
+            </div>
+            <div className="mt-10 flex mx-5">
+              <h1>Manage Custom order timing</h1>
+              <div className="ml-10 flex-col">
+                <p className="text-gray-500 mb-3">
+                  The purpose of this time is to set the working time for custom
+                  order.
+                </p>
+                <DatePicker
+                  selected={
+                    customerData?.customOrderTiming?.startTime &&
+                    /^\d{2}:\d{2}$/.test(
+                      customerData?.customOrderTiming?.startTime
+                    )
+                      ? new Date(
+                          `1970-01-01T${customerData?.customOrderTiming?.startTime}:00`
+                        )
+                      : null
+                  }
+                  onChange={(time) =>
+                    handleTimeChange("startTime", time, "customOrder")
+                  }
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="h:mm aa"
+                  placeholderText="Start time"
+                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
+                />
+                <DatePicker
+                  selected={
+                    customerData?.customOrderTiming?.endTime &&
+                    /^\d{2}:\d{2}$/.test(
+                      customerData?.customOrderTiming?.endTime
+                    )
+                      ? new Date(
+                          `1970-01-01T${customerData?.customOrderTiming?.endTime}:00`
+                        )
+                      : null
+                  }
+                  onChange={(time) =>
+                    handleTimeChange("endTime", time, "customOrder")
+                  }
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="h:mm aa"
+                  placeholderText="End time"
+                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit ml-5"
+                />
+              </div>
+            </div>
+            <div className="mt-10 flex mx-5">
+              <h1>Manage Pick and Drop timing</h1>
+              <div className="ml-10 flex-col">
+                <p className="text-gray-500 mb-3">
+                  The purpose of this time is to set the working time for Pick
+                  and Drop.
+                </p>
+                <DatePicker
+                  selected={
+                    customerData?.pickAndDropTiming?.startTime &&
+                    /^\d{2}:\d{2}$/.test(
+                      customerData?.pickAndDropTiming?.startTime
+                    )
+                      ? new Date(
+                          `1970-01-01T${customerData?.pickAndDropTiming?.startTime}:00`
+                        )
+                      : null
+                  }
+                  onChange={(time) =>
+                    handleTimeChange("startTime", time, "pickAndDrop")
+                  }
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="h:mm aa"
+                  placeholderText="Start time"
+                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
+                />
+                <DatePicker
+                  selected={
+                    customerData?.pickAndDropTiming?.endTime &&
+                    /^\d{2}:\d{2}$/.test(
+                      customerData?.pickAndDropTiming?.endTime
+                    )
+                      ? new Date(
+                          `1970-01-01T${customerData?.pickAndDropTiming?.endTime}:00`
+                        )
+                      : null
+                  }
+                  onChange={(time) =>
+                    handleTimeChange("endTime", time, "pickAndDrop")
+                  }
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="h:mm aa"
+                  placeholderText="End time"
+                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit ml-5"
+                />
+              </div>
             </div>
 
             <div className="flex justify-end p-10 gap-4 border-b-2 border-gray-200">

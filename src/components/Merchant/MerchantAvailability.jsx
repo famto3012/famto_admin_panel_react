@@ -46,7 +46,7 @@ const MerchantAvailability = ({ detail, onDataChange }) => {
         },
       },
     };
-
+    console.log("updatedDetail", updatedDetail)
     onDataChange(updatedDetail);
   };
 

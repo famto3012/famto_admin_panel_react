@@ -7,6 +7,7 @@ import { UserContext } from "../../context/UserContext";
 import { MdOutlineEdit } from "react-icons/md";
 import { useToast } from "@chakra-ui/react";
 import { DeleteOutlined } from "@mui/icons-material";
+import DatePicker from "react-datepicker";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -281,7 +282,7 @@ const CustomerOrder = () => {
         setStatus(response.data.data);
         toast({
           title: "Success",
-          description: "Pick and Drop Status updated successfully.",
+          description: "Custom order Status updated successfully.",
           duration: 3000,
           status: "success",
           isClosable: true,
