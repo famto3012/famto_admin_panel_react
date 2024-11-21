@@ -85,6 +85,10 @@ const AddNotificationModal = ({
       name: "Order completed",
       value: "orderCompleted",
     },
+    {
+      name: "Cancel custom Order By Agent",
+      value: "cancelCustomOrderByAgent",
+    },
   ];
 
   const handleInputChange = (e) => {
