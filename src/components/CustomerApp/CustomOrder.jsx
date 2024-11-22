@@ -130,7 +130,6 @@ const CustomerOrder = () => {
           });
         }
       } catch (err) {
-        console.error(`Error fetching business category ${err.message}`);
         toast({
           title: "Error",
           description: "Failed to fetch business category.",
@@ -200,8 +199,6 @@ const CustomerOrder = () => {
 
   const bannerStatus = banner.some((banner) => banner.status === true);
 
-  console.log("Updated status", bannerStatus);
-
   const handleBannerChange = (e) => {
     setAddBanner({ ...addBanner, [e.target.name]: e.target.value });
   };
@@ -243,7 +240,6 @@ const CustomerOrder = () => {
           isClosable: true,
         });
       } else {
-        console.error(`Unexpected status code: ${deleteResponse.status}`);
         toast({
           title: "Error",
           description: "Failed to delete the banner. Unexpected status code.",
@@ -253,7 +249,6 @@ const CustomerOrder = () => {
         });
       }
     } catch (err) {
-      console.error(`Error deleting banner: ${err.message}`);
       toast({
         title: "Error",
         description: "Failed to delete the banner.",
@@ -332,8 +327,6 @@ const CustomerOrder = () => {
     setServiceFile(file);
     setServicePreviewURL(URL.createObjectURL(file));
   };
-  console.log("banner", addBanner);
-  console.log("delete", currentBannerDelete);
 
   return (
     <div>

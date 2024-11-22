@@ -15,6 +15,7 @@ import PickAndDrop from "../../../components/CustomerApp/PickAndDrop";
 import ServiceCategory from "../../../components/CustomerApp/ServiceCategory";
 import CropImage from "../../../components/CropImage";
 import DatePicker from "react-datepicker";
+import Select from "react-select";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -29,16 +30,19 @@ const CustomerApp = () => {
     loginViaGoogle: false,
     loginViaApple: false,
     loginViaFacebook: false,
-    customOrderTiming: {
+    customOrderCustomization: {
       startTime: "",
       endTime: "",
+      taxId: null,
     },
-    pickAndDropTiming: {
+    pickAndDropOrderCustomization: {
       startTime: "",
       endTime: "",
+      taxId: null,
     },
   });
 
+  const [allTax, setAllTax] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const { token, role } = useContext(UserContext);
@@ -61,15 +65,23 @@ const CustomerApp = () => {
       try {
         setIsLoading(false);
 
-        const response = await axios.get(
-          `${BASE_URL}/admin/app-customization/customer-app`,
-          {
+        const [appCustomizationResponse, taxResponse] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/app-customization/customer-app`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (response.status === 200) {
-          setCustomerData(response.data.data);
+          }),
+          axios.get(`${BASE_URL}/admin/taxes/all-tax`, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        if (appCustomizationResponse.status === 200) {
+          console.log("Data", appCustomizationResponse.data);
+          setCustomerData(appCustomizationResponse.data);
+        }
+        if (taxResponse.status === 200) {
+          setAllTax(taxResponse.data.data);
         }
       } catch (err) {
         console.error(`Error in fetching data ${err.message}`);
@@ -77,57 +89,78 @@ const CustomerApp = () => {
     };
 
     fetchData();
-  }, [token, role, navigate]);
+  }, []);
 
-  //API to save customer data
+  const taxOptions = allTax?.map((tax) => ({
+    label: tax.taxName,
+    value: tax.taxId,
+  }));
+
   const submitAction = async (e) => {
     e.preventDefault();
 
     try {
       setIsSaveLoading(true);
-      console.log("customerData", customerData);
+
       const customerDataToSend = new FormData();
-      customerDataToSend.append("phoneNumber", customerData.phoneNumber),
-        customerDataToSend.append("email", customerData.email),
-        customerDataToSend.append(
-          "otpVerification",
-          customerData.otpVerification
-        ),
-        customerDataToSend.append("loginViaApple", customerData.loginViaApple),
-        customerDataToSend.append(
-          "loginViaFacebook",
-          customerData.loginViaFacebook
-        ),
-        customerDataToSend.append(
-          "loginViaGoogle",
-          customerData.loginViaGoogle
-        ),
-        customerDataToSend.append("loginViaOtp", customerData.loginViaOtp),
-        customerDataToSend.append(
-          "emailVerification",
-          customerData.emailVerification
-        ),
-        customerDataToSend.append("splashScreenImage", croppedFile);
+
+      // Append fields to FormData
+      customerDataToSend.append("splashScreenImage", croppedFile || "");
+
+      // Append primitive values
       customerDataToSend.append(
-        "customOrderTiming",
-        JSON.stringify(customerData.customOrderTiming)
+        "phoneNumber",
+        customerData.phoneNumber.toString()
+      );
+      customerDataToSend.append("email", customerData.email.toString());
+      customerDataToSend.append(
+        "otpVerification",
+        customerData.otpVerification.toString()
       );
       customerDataToSend.append(
-        "pickAndDropTiming",
-        JSON.stringify(customerData.pickAndDropTiming)
+        "loginViaApple",
+        customerData.loginViaApple.toString()
+      );
+      customerDataToSend.append(
+        "loginViaFacebook",
+        customerData.loginViaFacebook.toString()
+      );
+      customerDataToSend.append(
+        "loginViaGoogle",
+        customerData.loginViaGoogle.toString()
+      );
+      customerDataToSend.append(
+        "loginViaOtp",
+        customerData.loginViaOtp.toString()
+      );
+      customerDataToSend.append(
+        "emailVerification",
+        customerData.emailVerification.toString()
       );
 
-      console.log("data", customerDataToSend);
+      // Serialize nested objects
+      customerDataToSend.append(
+        "customOrderCustomization",
+        JSON.stringify(customerData.customOrderCustomization)
+      );
+      customerDataToSend.append(
+        "pickAndDropOrderCustomization",
+        JSON.stringify(customerData.pickAndDropOrderCustomization)
+      );
 
+      // Send the request
       const response = await axios.post(
         `${BASE_URL}/admin/app-customization/customer-app`,
         customerDataToSend,
         {
           withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-          "Content-Type": "multipart/form-data",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
+
       if (response.status === 200) {
         toast({
           title: "Success",
@@ -138,6 +171,7 @@ const CustomerApp = () => {
         });
       }
     } catch (err) {
+      console.error("Error in updating customization:", err);
       toast({
         title: "Error",
         description: "Error in updating customization",
@@ -152,36 +186,6 @@ const CustomerApp = () => {
 
   const onChange = (name, checked) => {
     setCustomerData({ ...customerData, [name]: checked });
-  };
-
-  const handleTimeChange = (field, time, type) => {
-    // Convert the selected time to a string in "HH:mm" format
-    const timeString = time
-      ? time.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })
-      : "";
-
-    // Update the customerData state with the new time
-    if (type === "customOrder") {
-      setCustomerData((prevData) => ({
-        ...prevData,
-        customOrderTiming: {
-          ...prevData.customOrderTiming,
-          [field]: timeString,
-        },
-      }));
-    } else {
-      setCustomerData((prevData) => ({
-        ...prevData,
-        pickAndDropTiming: {
-          ...prevData.pickAndDropTiming,
-          [field]: timeString,
-        },
-      }));
-    }
   };
 
   function onSelectFile(e) {
@@ -265,13 +269,13 @@ const CustomerApp = () => {
                 {imgSrc && (
                   <CropImage
                     selectedImage={img}
-                    aspectRatio={9 / 16} // Optional, set aspect ratio (1:1 here)
+                    aspectRatio={9 / 16}
                     onCropComplete={handleCropComplete}
-                    // onClose={handleModalClose} // Pass the handler to close the modal and reset the state
                   />
                 )}
               </div>
             </div>
+
             <div className="flex mx-5 mt-10 gap-10 pb-5">
               <div className="w-[42rem]">Sign up and Sign in Settings</div>
               <div className="text-gray-500">
@@ -290,7 +294,7 @@ const CustomerApp = () => {
                       Phone No.
                       <Switch
                         className="ml-6"
-                        checked={customerData.phoneNumber}
+                        checked={customerData?.phoneNumber}
                         onChange={(checked) => onChange("phoneNumber", checked)}
                         name="phoneNumber"
                       />
@@ -299,7 +303,7 @@ const CustomerApp = () => {
                       Email{" "}
                       <Switch
                         className="ml-14"
-                        checked={customerData.email}
+                        checked={customerData?.email}
                         onChange={(checked) => onChange("email", checked)}
                         name="email"
                       />
@@ -312,7 +316,7 @@ const CustomerApp = () => {
                       Email verification
                       <Switch
                         className="ml-5"
-                        checked={customerData.emailVerification}
+                        checked={customerData?.emailVerification}
                         onChange={(checked) =>
                           onChange("emailVerification", checked)
                         }
@@ -323,7 +327,7 @@ const CustomerApp = () => {
                       OTP verification{" "}
                       <Switch
                         className="ml-6"
-                        checked={customerData.otpVerification}
+                        checked={customerData?.otpVerification}
                         onChange={(checked) =>
                           onChange("otpVerification", checked)
                         }
@@ -338,7 +342,7 @@ const CustomerApp = () => {
                       OTP
                       <Switch
                         className="ml-32"
-                        checked={customerData.loginViaOtp}
+                        checked={customerData?.loginViaOtp}
                         onChange={(checked) => onChange("loginViaOtp", checked)}
                         name="loginViaOtp"
                       />
@@ -347,7 +351,7 @@ const CustomerApp = () => {
                       <GoogleOutlined className="text-[30px]" />
                       <Switch
                         className="ml-[125px]"
-                        checked={customerData.loginViaGoogle}
+                        checked={customerData?.loginViaGoogle}
                         onChange={(checked) =>
                           onChange("loginViaGoogle", checked)
                         }
@@ -358,7 +362,7 @@ const CustomerApp = () => {
                       <AppleFilled className="text-[30px]" />
                       <Switch
                         className="ml-[125px]"
-                        checked={customerData.loginViaApple}
+                        checked={customerData?.loginViaApple}
                         onChange={(checked) =>
                           onChange("loginViaApple", checked)
                         }
@@ -369,7 +373,7 @@ const CustomerApp = () => {
                       <FacebookFilled className="text-[30px]" />
                       <Switch
                         className="ml-[125px]"
-                        checked={customerData.loginViaFacebook}
+                        checked={customerData?.loginViaFacebook}
                         onChange={(checked) =>
                           onChange("loginViaFacebook", checked)
                         }
@@ -379,114 +383,217 @@ const CustomerApp = () => {
                   </div>
                 </div>
               </div>
-
-              <DatePicker />
             </div>
+
             <div className="mt-10 flex mx-5">
-              <h1>Manage Custom order timing</h1>
-              <div className="ml-10 flex-col">
+              <h1 className="w-1/5">Manage Custom order timing</h1>
+              <div className="w-4/5 flex-col justify-start">
                 <p className="text-gray-500 mb-3">
                   The purpose of this time is to set the working time for custom
                   order.
                 </p>
-                <DatePicker
-                  selected={
-                    customerData?.customOrderTiming?.startTime &&
-                    /^\d{2}:\d{2}$/.test(
-                      customerData?.customOrderTiming?.startTime
-                    )
-                      ? new Date(
-                          `1970-01-01T${customerData?.customOrderTiming?.startTime}:00`
-                        )
-                      : null
-                  }
-                  onChange={(time) =>
-                    handleTimeChange("startTime", time, "customOrder")
-                  }
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeIntervals={15}
-                  timeCaption="Time"
-                  dateFormat="h:mm aa"
-                  placeholderText="Start time"
-                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
-                />
-                <DatePicker
-                  selected={
-                    customerData?.customOrderTiming?.endTime &&
-                    /^\d{2}:\d{2}$/.test(
-                      customerData?.customOrderTiming?.endTime
-                    )
-                      ? new Date(
-                          `1970-01-01T${customerData?.customOrderTiming?.endTime}:00`
-                        )
-                      : null
-                  }
-                  onChange={(time) =>
-                    handleTimeChange("endTime", time, "customOrder")
-                  }
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeIntervals={15}
-                  timeCaption="Time"
-                  dateFormat="h:mm aa"
-                  placeholderText="End time"
-                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit ml-5"
-                />
+
+                <div className="flex flex-row items-center">
+                  <DatePicker
+                    selected={
+                      customerData?.customOrderCustomization?.startTime
+                        ? new Date(
+                            `1970-01-01T${customerData.customOrderCustomization.startTime}`
+                          )
+                        : null
+                    }
+                    onChange={(time) => {
+                      if (time) {
+                        const formattedTime = time.toLocaleTimeString("en-CA", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        });
+
+                        setCustomerData((prev) => ({
+                          ...prev,
+                          customOrderCustomization: {
+                            ...prev.customOrderCustomization,
+                            startTime: formattedTime, // Save the formatted time string
+                          },
+                        }));
+                      }
+                    }}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                    placeholderText="Start time"
+                    className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
+                  />
+
+                  <DatePicker
+                    selected={
+                      customerData?.customOrderCustomization?.endTime
+                        ? new Date(
+                            `1970-01-01T${customerData.customOrderCustomization.endTime}`
+                          )
+                        : null
+                    }
+                    onChange={(time) => {
+                      if (time) {
+                        const formattedTime = time.toLocaleTimeString("en-CA", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        });
+
+                        setCustomerData((prev) => ({
+                          ...prev,
+                          customOrderCustomization: {
+                            ...prev.customOrderCustomization,
+                            endTime: formattedTime,
+                          },
+                        }));
+                      }
+                    }}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                    placeholderText="End time"
+                    className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit ml-5"
+                  />
+                </div>
               </div>
             </div>
+
             <div className="mt-10 flex mx-5">
-              <h1>Manage Pick and Drop timing</h1>
-              <div className="ml-10 flex-col">
+              <h1 className="w-1/5">Manage Custom order tax</h1>
+
+              <Select
+                options={taxOptions}
+                value={taxOptions.find(
+                  (option) =>
+                    option.value === customerData.customOrderCustomization.taxId
+                )}
+                onChange={(option) => {
+                  setCustomerData((prev) => ({
+                    ...prev,
+                    customOrderCustomization: {
+                      ...prev.customOrderCustomization,
+                      taxId: option.value,
+                    },
+                  }));
+                }}
+                isSearchable
+                isMulti={false}
+                className="w-[20%]"
+              />
+            </div>
+
+            <div className="mt-10 flex mx-5">
+              <h1 className="w-1/5">Manage Pick and Drop timing</h1>
+              <div className="w-4/5 flex-col">
                 <p className="text-gray-500 mb-3">
                   The purpose of this time is to set the working time for Pick
                   and Drop.
                 </p>
-                <DatePicker
-                  selected={
-                    customerData?.pickAndDropTiming?.startTime &&
-                    /^\d{2}:\d{2}$/.test(
-                      customerData?.pickAndDropTiming?.startTime
-                    )
-                      ? new Date(
-                          `1970-01-01T${customerData?.pickAndDropTiming?.startTime}:00`
-                        )
-                      : null
-                  }
-                  onChange={(time) =>
-                    handleTimeChange("startTime", time, "pickAndDrop")
-                  }
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeIntervals={15}
-                  timeCaption="Time"
-                  dateFormat="h:mm aa"
-                  placeholderText="Start time"
-                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
-                />
-                <DatePicker
-                  selected={
-                    customerData?.pickAndDropTiming?.endTime &&
-                    /^\d{2}:\d{2}$/.test(
-                      customerData?.pickAndDropTiming?.endTime
-                    )
-                      ? new Date(
-                          `1970-01-01T${customerData?.pickAndDropTiming?.endTime}:00`
-                        )
-                      : null
-                  }
-                  onChange={(time) =>
-                    handleTimeChange("endTime", time, "pickAndDrop")
-                  }
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeIntervals={15}
-                  timeCaption="Time"
-                  dateFormat="h:mm aa"
-                  placeholderText="End time"
-                  className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit ml-5"
-                />
+
+                <div className="flex flex-row items-center">
+                  <DatePicker
+                    selected={
+                      customerData?.pickAndDropOrderCustomization?.startTime
+                        ? new Date(
+                            `1970-01-01T${customerData.pickAndDropOrderCustomization.startTime}`
+                          )
+                        : null
+                    }
+                    onChange={(time) => {
+                      if (time) {
+                        const formattedTime = time.toLocaleTimeString("en-CA", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        });
+
+                        setCustomerData((prev) => ({
+                          ...prev,
+                          pickAndDropOrderCustomization: {
+                            ...prev.pickAndDropOrderCustomization,
+                            startTime: formattedTime, // Save the formatted time string
+                          },
+                        }));
+                      }
+                    }}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                    placeholderText="Start time"
+                    className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-full"
+                  />
+
+                  <DatePicker
+                    selected={
+                      customerData?.pickAndDropOrderCustomization?.endTime
+                        ? new Date(
+                            `1970-01-01T${customerData.pickAndDropOrderCustomization.endTime}`
+                          )
+                        : null
+                    }
+                    onChange={(time) => {
+                      if (time) {
+                        const formattedTime = time.toLocaleTimeString("en-CA", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        });
+
+                        setCustomerData((prev) => ({
+                          ...prev,
+                          pickAndDropOrderCustomization: {
+                            ...prev.pickAndDropOrderCustomization,
+                            endTime: formattedTime,
+                          },
+                        }));
+                      }
+                    }}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                    placeholderText="End time"
+                    className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none w-fit ml-5"
+                  />
+                </div>
               </div>
+            </div>
+
+            <div className="mt-10 flex mx-5">
+              <h1 className="w-1/5">
+                Manage Pick and Drop Order <br /> tax
+              </h1>
+
+              <Select
+                options={taxOptions}
+                value={taxOptions.find(
+                  (option) =>
+                    option.value ===
+                    customerData.pickAndDropOrderCustomization.taxId
+                )}
+                onChange={(option) => {
+                  setCustomerData((prev) => ({
+                    ...prev,
+                    pickAndDropOrderCustomization: {
+                      ...prev.pickAndDropOrderCustomization,
+                      taxId: option.value,
+                    },
+                  }));
+                }}
+                isSearchable
+                isMulti={false}
+                className="w-[20%]"
+              />
             </div>
 
             <div className="flex justify-end p-10 gap-4 border-b-2 border-gray-200">
@@ -502,18 +609,6 @@ const CustomerApp = () => {
             <ServiceCategory />
 
             <BusinessCategory />
-
-            {/* // Customer Login Restriction */}
-
-            {/* <div className="mt-10 justify-between flex mx-5 border-b-2 pb-10 mb-5 border-gray-200">
-              <h1>Customer login Restriction</h1>
-              <p className="w-[43rem] text-gray-500">
-                Enable this, to restrict Customer from accessing the platform
-                without logging in into the platform. (Make sure your apps are
-                updated).
-              </p>
-              <Switch />
-            </div> */}
 
             <CustomOrder />
 
