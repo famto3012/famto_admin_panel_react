@@ -180,6 +180,7 @@ const Referral = () => {
               checkout while placing the order. Note: Referrer - who shares;
               Referee - who receives
             </p>
+
             <form
               onSubmit={submitAction}
               className="bg-white m-5 p-10 rounded-lg"

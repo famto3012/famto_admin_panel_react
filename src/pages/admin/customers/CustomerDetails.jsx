@@ -79,7 +79,7 @@ const CustomerDetails = () => {
         }
       } catch (err) {
         console.error(`Error in fetching data: ${err}`);
-      } 
+      }
     };
 
     fetchData();
@@ -230,7 +230,6 @@ const CustomerDetails = () => {
 
   return (
     <>
-
       <div className=" pl-[290px] bg-gray-100">
         <nav className="p-5">
           <GlobalSearch />

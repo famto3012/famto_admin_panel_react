@@ -313,10 +313,11 @@ const Discount = () => {
     }
   };
 
-  const onProductDiscountToggle = (dicountId) => {
+  const onProductDiscountToggle = (discountId) => {
+    console.log("discountId", discountId);
     setAllProductDiscounts((prevDiscount) =>
       prevDiscount.map((discount) =>
-        discount._id === dicountId
+        discount.discountId === discountId
           ? { ...discount, status: !discount.status }
           : discount
       )
