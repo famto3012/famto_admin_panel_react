@@ -186,6 +186,7 @@ const AccountLogs = () => {
             </CSVLink>
           </button>
         </div>
+
         <div className="bg-white p-5 mx-5 mb-5 mt-5 rounded-lg flex justify-between">
           <div className="flex gap-10">
             <Select
@@ -251,6 +252,7 @@ const AccountLogs = () => {
             />
           </div>
         </div>
+
         <table className="w-full">
           <thead>
             <tr>
